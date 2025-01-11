@@ -1,0 +1,327 @@
+swagger: '2.0'
+info:
+  title: AstroShield Microservice API
+  version: '1.0'
+  description: API for spacecraft conjunction analysis and threat detection
+basePath: /api
+schemes:
+  - http
+paths:
+  /:
+    get:
+      summary: API root endpoint
+      description: Returns API overview and available endpoints
+      responses:
+        200:
+          description: API information retrieved successfully
+  /health:
+    get:
+      summary: Health check endpoint
+      responses:
+        200:
+          description: Service is healthy
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: healthy
+  /spacecraft/{spacecraft_id}/cyber-threats:
+    get:
+      summary: Get cyber threats for spacecraft
+      parameters:
+        - name: spacecraft_id
+          in: path
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Cyber threats retrieved successfully
+          schema:
+            type: object
+            properties:
+              spacecraft_id:
+                type: integer
+              cyber_threats:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    type:
+                      type: string
+                      enum: [CYBER, JAMMING, SPOOFING]
+                    confidence:
+                      type: number
+                      format: float
+                    severity:
+                      type: number
+                      format: float
+                    timestamp:
+                      type: string
+                      format: date-time
+  /spacecraft/{spacecraft_id}/cyber-countermeasures:
+    post:
+      summary: Deploy cyber countermeasures
+      parameters:
+        - name: spacecraft_id
+          in: path
+          required: true
+          type: integer
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            properties:
+              type:
+                type: string
+                enum: [SIGNAL_MASKING, FREQUENCY_HOPPING, ENCRYPTION]
+              parameters:
+                type: object
+      responses:
+        200:
+          description: Cyber countermeasure deployed successfully
+          schema:
+            type: object
+            properties:
+              spacecraft_id:
+                type: integer
+              countermeasure:
+                type: object
+              status:
+                type: string
+              timestamp:
+                type: string
+                format: date-time
+  /spacecraft:
+    post:
+      summary: Update spacecraft data
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                example: "Spacecraft-A"
+      responses:
+        200:
+          description: Spacecraft data updated successfully
+        400:
+          description: Invalid request data
+  /spacecraft/{spacecraft_id}/maneuvers:
+    get:
+      summary: Get spacecraft maneuvers
+      parameters:
+        - name: spacecraft_id
+          in: path
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Maneuver data retrieved successfully
+  /spacecraft/{spacecraft_id}/intent:
+    get:
+      summary: Analyze spacecraft intent
+      parameters:
+        - name: spacecraft_id
+          in: path
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Intent analysis completed successfully
+  /spacecraft/{spacecraft_id}/ccdm/{other_spacecraft_id}:
+    get:
+      summary: Analyze conjunction between two spacecraft
+      parameters:
+        - name: spacecraft_id
+          in: path
+          required: true
+          type: integer
+        - name: other_spacecraft_id
+          in: path
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Conjunction analysis completed successfully
+  /spacecraft/{spacecraft_id}/threats:
+    get:
+      summary: Get spacecraft threats
+      parameters:
+        - name: spacecraft_id
+          in: path
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Threats retrieved successfully
+          schema:
+            type: object
+            properties:
+              spacecraft_id:
+                type: integer
+              threats:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    threat_id:
+                      type: integer
+                    type:
+                      type: string
+                      enum: [KINETIC, ELECTRONIC, CYBER]
+                    confidence:
+                      type: number
+                      format: float
+                    severity:
+                      type: number
+                      format: float
+                    coordinates:
+                      type: object
+    post:
+      summary: Add threat information
+      parameters:
+        - name: spacecraft_id
+          in: path
+          required: true
+          type: integer
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            properties:
+              type:
+                type: string
+                enum: [KINETIC, ELECTRONIC, CYBER]
+              severity:
+                type: number
+                format: float
+              coordinates:
+                type: object
+      responses:
+        200:
+          description: Threat added successfully
+  /spacecraft/{spacecraft_id}/countermeasures:
+    post:
+      summary: Deploy countermeasures
+      parameters:
+        - name: spacecraft_id
+          in: path
+          required: true
+          type: integer
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            properties:
+              threat_id:
+                type: integer
+              action:
+                type: string
+                enum: [EVASIVE_MANEUVER, JAMMING, DECOY, CHAFF]
+      responses:
+        200:
+          description: Countermeasure deployed successfully
+  /spacecraft/{spacecraft_id}/camouflage:
+    post:
+      summary: Manage camouflage protocols
+      parameters:
+        - name: spacecraft_id
+          in: path
+          required: true
+          type: integer
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            properties:
+              protocol:
+                type: string
+                enum: [THERMAL_REDUCTION, TRAJECTORY_DECEPTION, SIGNAL_MASKING]
+      responses:
+        200:
+          description: Camouflage protocol activated successfully
+  /mission/{mission_id}/ccdm:
+    get:
+      summary: Get mission CCDM strategy
+      parameters:
+        - name: mission_id
+          in: path
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Mission CCDM strategy retrieved successfully
+  /spacecraft/{spacecraft_id}/history:
+    get:
+      summary: Get spacecraft history
+      parameters:
+        - name: spacecraft_id
+          in: path
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Spacecraft history retrieved successfully
+  /simulations:
+    post:
+      summary: Create simulation
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            properties:
+              scenario:
+                type: string
+              parameters:
+                type: object
+      responses:
+        200:
+          description: Simulation created successfully
+  /simulations/{simulation_id}/results:
+    get:
+      summary: Get simulation results
+      parameters:
+        - name: simulation_id
+          in: path
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Simulation results retrieved successfully
+  /spacecraft/{spacecraft_id}/status:
+    get:
+      summary: Get spacecraft status
+      parameters:
+        - name: spacecraft_id
+          in: path
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Spacecraft status retrieved successfully
+          schema:
+            type: object
+            properties:
+              spacecraft_id:
+                type: integer
+              status:
+                type: object
+                properties:
+                  health:
+                    type: string
+                  energy:
+                    type: integer
+                  systems:
+                    type: object

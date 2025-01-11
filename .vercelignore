@@ -1,0 +1,7 @@
+# Ignore everything
+*
+
+# Allow only necessary files
+!api/
+!requirements.txt
+!vercel.json 

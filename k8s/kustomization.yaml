@@ -1,0 +1,22 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - manifests/namespace.yaml
+  - manifests/secrets.yaml
+  - manifests/configmap.yaml
+  - manifests/frontend.yaml
+  - manifests/backend.yaml
+  - manifests/postgres.yaml
+  - manifests/redis.yaml
+  - manifests/ingress.yaml
+
+namespace: astroshield
+
+commonLabels:
+  app: astroshield
+
+configMapGenerator:
+  - name: app-config
+    envs:
+      - .env.production 

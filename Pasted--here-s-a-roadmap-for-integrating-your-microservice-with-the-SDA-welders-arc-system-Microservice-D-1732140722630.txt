@@ -1,0 +1,45 @@
+ here's a roadmap for integrating your microservice with the SDA welders arc system:
+
+Microservice Development:
+
+   - Focus on creating a UCT (Uncorrelated Track) processing microservice (SDA workshop).
+   - Ensure your microservice has a well-defined API that can process sensor tracks and output candidate orbits.
+   - Implement your unique algorithm for UCT processing, as multiple companies are working on this in parallel.
+Node-RED Integration:
+
+   - Your microservice will need to be integrated into the Node-RED workflow for the State Estimation subsystem (SDA welders arc).
+   - Expose your microservice via an externally accessible REST API.
+   - In Node-RED, create a new node that calls your API when triggered by incoming data or events.
+UDL (Unified Data Library) Integration:
+
+   - Your microservice should be able to pull uncorrelated tracks from the UDL (SDA tap lab).
+   - Implement functionality to push your processed candidate orbits back to the UDL.
+   - Ensure your data format is compatible with the UDL standards.
+Swagger Documentation:
+
+   - Create a Swagger page that documents your API endpoints, input parameters, and output formats (SDA welders arc).
+   - This will allow other team members and the subsystem lead to easily understand and interact with your microservice.
+Collaboration and Integration:
+
+   - Work closely with the State Estimation subsystem lead to ensure your microservice fits into the overall workflow (CCDM).
+   - Coordinate with other UCT processing teams to ensure your outputs can be compared and combined effectively.
+Testing and Validation:
+
+   - Use the provided sandbox environment to test your microservice integration (SDA tap lab).
+   - Participate in exercises like the IFT six launch to validate your microservice in a realistic scenario (SDA).
+Performance Optimization:
+
+   - Focus on minimizing processing time to enable rapid UCT resolution.
+   - Implement efficient algorithms to handle large volumes of uncorrelated tracks.
+Security and Compliance:
+
+   - Ensure your microservice adheres to the security and data handling requirements outlined for the project (CCDM).
+   - Be prepared to handle different levels of data sensitivity appropriately.
+Demonstration and Reporting:
+
+   - Prepare for Demo Day by showcasing your microservice's capabilities within the larger welders arc system (SDA tap lab).
+   - Be ready to provide regular updates on your progress and any challenges faced.
+Remember, the goal is to create a microservice that can efficiently process uncorrelated tracks and contribute to the overall state estimation process within the welders arc system. Your work will be part of an ensemble approach to UCT processing, so focus on your unique strengths while ensuring seamless integration with the broader ecosystem.
+
+
+

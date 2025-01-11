@@ -1,0 +1,76 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: disaster-recovery
+spec:
+  template:
+    spec:
+      containers:
+      - name: recovery
+        image: postgres:15-alpine
+        command:
+        - /bin/sh
+        - -c
+        - |
+          # Get backup file from args or latest
+          BACKUP_FILE=${1:-$(aws s3 ls s3://${BACKUP_BUCKET}/database/ | sort | tail -n 1 | awk '{print $4}')}
+          
+          # Download backup
+          aws s3 cp s3://${BACKUP_BUCKET}/database/${BACKUP_FILE} /backup/restore.dump
+
+          # Extract connection details
+          DB_HOST=$(echo $DATABASE_URL | sed 's/.*@\(.*\):.*/\1/')
+          DB_PORT=$(echo $DATABASE_URL | sed 's/.*:\([0-9]*\)\/.*/\1/')
+          DB_USER=$(echo $DATABASE_URL | sed 's/.*:\/\/\(.*\):.*/\1/')
+          DB_NAME=$(echo $DATABASE_URL | sed 's/.*\/\(.*\)$/\1/')
+
+          # Drop and recreate database
+          PGPASSWORD=$PGPASSWORD psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d postgres -c "
+            SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '$DB_NAME';
+            DROP DATABASE IF EXISTS $DB_NAME;
+            CREATE DATABASE $DB_NAME;
+          "
+
+          # Restore backup
+          PGPASSWORD=$PGPASSWORD pg_restore -h $DB_HOST -p $DB_PORT -U $DB_USER -d $DB_NAME /backup/restore.dump
+
+          # Verify restoration
+          PGPASSWORD=$PGPASSWORD psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d $DB_NAME -c "
+            SELECT COUNT(*) FROM users;
+            SELECT COUNT(*) FROM maneuvers;
+            SELECT COUNT(*) FROM analytics;
+          "
+
+          echo "Disaster recovery completed successfully"
+        env:
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: astroshield-secrets
+              key: database-url
+        - name: PGPASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: astroshield-secrets
+              key: database-password
+        - name: BACKUP_BUCKET
+          value: "astroshield-backups"
+        - name: AWS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: aws-backup-creds
+              key: access-key-id
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: aws-backup-creds
+              key: secret-access-key
+        - name: AWS_DEFAULT_REGION
+          value: "us-west-2"
+        volumeMounts:
+        - name: backup
+          mountPath: /backup
+      volumes:
+      - name: backup
+        emptyDir: {}
+      restartPolicy: OnFailure 

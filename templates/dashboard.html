@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AstroShield Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>AstroShield Microservice Dashboard</h1>
+        
+        <nav class="navigation">
+            <a href="/api/swagger" class="nav-link">API Interface</a>
+            <a href="{{ url_for('api.doc') }}" class="nav-link">API Documentation</a>
+            <a href="/api/health" class="nav-link">Health Check</a>
+            <a href="/api/swagger.json" class="nav-link">API Spec</a>
+        </nav>
+
+        <div class="endpoints-card">
+            <h2>Available Endpoints</h2>
+            <div class="endpoints-category">
+                <h3>System Endpoints</h3>
+                <ul class="endpoints-list">
+                    <li>
+                        <span class="method">GET</span>
+                        <span class="endpoint">/api</span>
+                        <span class="description">API root endpoint - Overview and available endpoints</span>
+                    </li>
+                    <li>
+                        <span class="method">GET</span>
+                        <span class="endpoint">/api/health</span>
+                        <span class="description">Health check endpoint</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="endpoints-category">
+                <h3>Spacecraft Management</h3>
+                <ul class="endpoints-list">
+                    <li>
+                        <span class="method">POST</span>
+                        <span class="endpoint">/api/spacecraft</span>
+                        <span class="description">Update spacecraft data</span>
+                    </li>
+                    <li>
+                        <span class="method">GET</span>
+                        <span class="endpoint">/api/spacecraft/{id}/status</span>
+                        <span class="description">Get spacecraft status</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="endpoints-category">
+                <h3>Threat Detection & Analysis</h3>
+                <ul class="endpoints-list">
+                    <li>
+                        <span class="method">GET</span>
+                        <span class="endpoint">/api/spacecraft/{id}/threats</span>
+                        <span class="description">Get all spacecraft threats</span>
+                    </li>
+                    <li>
+                        <span class="method">POST</span>
+                        <span class="endpoint">/api/spacecraft/{id}/threats</span>
+                        <span class="description">Add threat information</span>
+                    </li>
+                    <li>
+                        <span class="method">GET</span>
+                        <span class="endpoint">/api/spacecraft/{id}/cyber-threats</span>
+                        <span class="description">Get cyber threats for spacecraft</span>
+                    </li>
+                    <li>
+                        <span class="method">POST</span>
+                        <span class="endpoint">/api/spacecraft/{id}/cyber-countermeasures</span>
+                        <span class="description">Deploy cyber countermeasures</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="endpoints-category">
+                <h3>Spacecraft Analysis</h3>
+                <ul class="endpoints-list">
+                    <li>
+                        <span class="method">GET</span>
+                        <span class="endpoint">/api/spacecraft/{id}/maneuvers</span>
+                        <span class="description">Get spacecraft maneuvers</span>
+                    </li>
+                    <li>
+                        <span class="method">GET</span>
+                        <span class="endpoint">/api/spacecraft/{id}/intent</span>
+                        <span class="description">Analyze spacecraft intent</span>
+                    </li>
+                    <li>
+                        <span class="method">GET</span>
+                        <span class="endpoint">/api/spacecraft/{id}/ccdm/{other_id}</span>
+                        <span class="description">Analyze conjunction between two spacecraft</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="status-card">
+            <h2>System Status</h2>
+            <p>Status: <span class="status-badge">Operational</span></p>
+            <p>Services Running:</p>
+            <ul>
+                <li>CCDM Service - Basic Mode</li>
+                <li>POL Service - Basic Mode</li>
+                <li>Maneuver Service - Basic Mode</li>
+                <li>Intent Service - Basic Mode</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

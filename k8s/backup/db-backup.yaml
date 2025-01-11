@@ -1,0 +1,59 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: db-backup
+spec:
+  schedule: "0 1 * * *"  # Run daily at 1 AM
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: db-backup
+            image: postgres:15-alpine
+            command:
+            - /bin/sh
+            - -c
+            - |
+              pg_dump -Fc \
+                -h $(echo $DATABASE_URL | sed 's/.*@\(.*\):.*/\1/') \
+                -p $(echo $DATABASE_URL | sed 's/.*:\([0-9]*\)\/.*/\1/') \
+                -U $(echo $DATABASE_URL | sed 's/.*:\/\/\(.*\):.*/\1/') \
+                -d $(echo $DATABASE_URL | sed 's/.*\/\(.*\)$/\1/') \
+                -f /backup/backup-$(date +%Y%m%d-%H%M%S).dump && \
+              aws s3 cp /backup/*.dump s3://${BACKUP_BUCKET}/database/
+            env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: astroshield-secrets
+                  key: database-url
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: astroshield-secrets
+                  key: database-password
+            - name: BACKUP_BUCKET
+              value: "astroshield-backups"
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: aws-backup-creds
+                  key: access-key-id
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: aws-backup-creds
+                  key: secret-access-key
+            - name: AWS_DEFAULT_REGION
+              value: "us-west-2"
+            volumeMounts:
+            - name: backup
+              mountPath: /backup
+          volumes:
+          - name: backup
+            emptyDir: {}
+          restartPolicy: OnFailure 

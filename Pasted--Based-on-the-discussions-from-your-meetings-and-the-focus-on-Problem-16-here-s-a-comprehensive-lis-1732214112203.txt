@@ -1,0 +1,75 @@
+ Based on the discussions from your meetings and the focus on Problem 16, here's a comprehensive list of API endpoints you might consider for your CCDM evaluation system:
+
+`/analyze_object`
+
+   - Input: Object ID, observation data
+   - Output: CCDM assessment, confidence level
+`/historical_analysis`
+
+   - Input: Object ID, time range
+   - Output: Historical CCDM patterns, trend analysis
+`/correlation_analysis`
+
+   - Input: Multiple object IDs or event data
+   - Output: Correlation results, potential relationships
+`/recommend_observations`
+
+   - Input: Object ID, current assessment
+   - Output: Recommended observation times, sensors, parameters
+`/update_object_data`
+
+   - Input: Object ID, new observation data
+   - Output: Confirmation of update, any immediate flags
+`/bulk_analysis`
+
+   - Input: List of object IDs
+   - Output: Batch CCDM assessments
+`/anomaly_detection`
+
+   - Input: Object ID, observation data
+   - Output: Detected anomalies, confidence levels
+`/classify_behavior`
+
+   - Input: Object ID, behavior data
+   - Output: Behavior classification (e.g., maneuvering, debris shedding)
+`/predict_future_state`
+
+   - Input: Object ID, current state, time frame
+   - Output: Predicted future state, confidence level
+`/compare_to_baseline`
+
+    - Input: Object ID, observation data
+    - Output: Comparison to expected baseline behavior
+`/assess_rf_emissions`
+
+    - Input: Object ID, RF observation data
+    - Output: Analysis of RF emissions, anomalies
+`/evaluate_optical_signature`
+
+    - Input: Object ID, optical observation data
+    - Output: Analysis of optical signature, detected changes
+`/analyze_radar_cross_section`
+
+    - Input: Object ID, radar observation data
+    - Output: Analysis of radar cross section, anomalies
+`/detect_proximity_operations`
+
+    - Input: Multiple object IDs, observation data
+    - Output: Assessment of potential proximity operations
+`/evaluate_propulsive_capabilities`
+
+    - Input: Object ID, maneuver data
+    - Output: Assessment of propulsive capabilities, anomalies
+`/detect_shape_changes`
+
+    - Input: Object ID, observational data over time
+    - Output: Analysis of potential shape or size changes
+`/assess_thermal_signature`
+
+    - Input: Object ID, thermal observation data
+    - Output: Analysis of thermal signature, detected anomalies
+`/generate_ccdm_report`
+
+    - Input: Object ID
+    - Output: Comprehensive CCDM report with all analyses
+These endpoints align with the CCDM evaluation subsystem discussed in your meetings (Raffaele Nicholas Russo and Jack Al-Kahwati, CCDM). They cover the various aspects of CCDM detection and analysis, allowing for comprehensive evaluation of space objects. Remember to design these endpoints to be easily integrated into the SDA's workflow, possibly using Node-RED as mentioned in your discussions.

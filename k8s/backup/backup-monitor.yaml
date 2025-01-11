@@ -1,0 +1,81 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: backup-monitor
+spec:
+  schedule: "0 5 * * *"  # Run daily at 5 AM
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: backup-monitor
+            image: amazon/aws-cli:latest
+            command:
+            - /bin/sh
+            - -c
+            - |
+              # Check if we have a backup from the last 24 hours
+              LATEST_BACKUP=$(aws s3 ls s3://${BACKUP_BUCKET}/database/ --recursive | sort | tail -n 1)
+              BACKUP_DATE=$(echo $LATEST_BACKUP | awk '{print $1}')
+              CURRENT_DATE=$(date +%Y-%m-%d)
+              
+              # Function to send alert
+              send_alert() {
+                curl -X POST ${ALERT_WEBHOOK_URL} \
+                  -H "Content-Type: application/json" \
+                  -d "{\"text\": \"🚨 Backup Alert: $1\"}"
+              }
+              
+              # Check backup age
+              if [ "$BACKUP_DATE" != "$CURRENT_DATE" ]; then
+                send_alert "No backup found for today. Latest backup is from $BACKUP_DATE"
+                exit 1
+              fi
+              
+              # Check backup size
+              BACKUP_SIZE=$(echo $LATEST_BACKUP | awk '{print $3}')
+              MIN_SIZE=1048576  # 1MB in bytes
+              
+              if [ $BACKUP_SIZE -lt $MIN_SIZE ]; then
+                send_alert "Latest backup is suspiciously small: $(($BACKUP_SIZE/1024))KB"
+                exit 1
+              fi
+              
+              # Verify backup integrity
+              BACKUP_FILE=$(echo $LATEST_BACKUP | awk '{print $4}')
+              aws s3api head-object \
+                --bucket ${BACKUP_BUCKET} \
+                --key database/$BACKUP_FILE \
+                --output json > /tmp/backup-metadata.json
+              
+              if [ $? -ne 0 ]; then
+                send_alert "Failed to verify backup metadata"
+                exit 1
+              fi
+              
+              echo "Backup verification completed successfully"
+            env:
+            - name: BACKUP_BUCKET
+              value: "astroshield-backups"
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: aws-backup-creds
+                  key: access-key-id
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: aws-backup-creds
+                  key: secret-access-key
+            - name: AWS_DEFAULT_REGION
+              value: "us-west-2"
+            - name: ALERT_WEBHOOK_URL
+              valueFrom:
+                secretKeyRef:
+                  name: alert-webhooks
+                  key: backup-webhook-url
+          restartPolicy: OnFailure 

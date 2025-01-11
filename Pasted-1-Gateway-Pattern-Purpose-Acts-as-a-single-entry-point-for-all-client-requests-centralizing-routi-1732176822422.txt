@@ -1,0 +1,95 @@
+1. Gateway Pattern
+Purpose: Acts as a single entry point for all client requests, centralizing routing, security, logging, and load balancing.
+Key Features:
+Routes requests to appropriate microservices.
+Provides centralized authentication, rate limiting, and request aggregation.
+Simplifies client-side communication by abstracting backend complexities.
+2. Service Registry Pattern
+Purpose: Enables microservices to discover and communicate with each other dynamically.
+Key Features:
+Maintains a dynamic directory of services.
+Services register themselves with the registry upon startup and deregister upon shutdown.
+Simplifies service discovery using registry-aware clients.
+Examples: Eureka, Consul, or Zookeeper.
+3. Circuit Breaker Pattern
+Purpose: Prevents cascading failures by temporarily halting requests to a failing service.
+Key Features:
+Monitors service health and triggers fallback mechanisms when failure thresholds are exceeded.
+Ensures system resilience by isolating and retrying failed services.
+Commonly used with retry logic to restore service once it recovers.
+4. Saga Pattern
+Purpose: Manages distributed transactions by breaking them into a series of smaller, independent transactions.
+Key Features:
+Orchestrates long-lived transactions across multiple microservices.
+Ensures consistency through compensation transactions in case of failures.
+Can follow two coordination styles:
+Choreography: Each service triggers the next.
+Orchestration: A central coordinator handles transaction flow.
+5. CQRS (Command Query Responsibility Segregation) Pattern
+Purpose: Separates read and write operations for optimized performance and scalability.
+Key Features:
+Write operations are handled by a Command Model.
+Read operations are served by a Query Model.
+Enables optimized queries and domain-driven design (DDD).
+Often used with Event Sourcing.
+6. Bulkhead Pattern
+Purpose: Isolates failures within specific services to prevent them from impacting the entire system.
+Key Features:
+Divides system resources into isolated "compartments" (bulkheads).
+Limits failure domains, ensuring that failures in one component do not propagate.
+Improves system stability and fault tolerance.
+7. Sidecar Pattern
+Purpose: Attaches auxiliary tasks (e.g., logging, monitoring) to a microservice in a separate process.
+Key Features:
+Runs peripheral tasks (e.g., proxying, configuration) alongside the main service.
+Decouples infrastructure concerns from the core application.
+Commonly used in service mesh architectures like Istio.
+8. API Composition Pattern
+Purpose: Combines results from multiple microservices into a single response for the client.
+Key Features:
+Aggregates data from multiple services via an API Composer.
+Reduces client-side complexity by handling orchestration in the backend.
+Useful for creating feature-rich APIs without exposing multiple endpoints to the client.
+9. Event-Driven Architecture Pattern
+Purpose: Facilitates loose coupling between microservices by communicating through events.
+Key Features:
+Uses a message broker (e.g., Kafka, RabbitMQ) for event publishing and consumption.
+Enables real-time, asynchronous communication between services.
+Increases system scalability and responsiveness.
+10. Database Per Service Pattern
+Purpose: Each microservice has its own dedicated database to ensure loose coupling and autonomy.
+Key Features:
+Avoids shared data models, enabling independent service scaling and deployment.
+Facilitates data isolation and service autonomy.
+May introduce challenges in maintaining data consistency across services.
+11. Retry Pattern
+Purpose: Automatically retries failed operations to improve reliability and ensure eventual success.
+Key Features:
+Implements backoff strategies (e.g., exponential backoff) to avoid overwhelming a service.
+Reduces transient errors and enhances system reliability.
+Often paired with Circuit Breaker for fault tolerance.
+12. Configuration Externalization Pattern
+Purpose: Stores configuration settings outside the codebase for centralized management.
+Key Features:
+Dynamically loads configuration settings from externalized sources (e.g., configuration servers, environment variables).
+Enables easier updates and environment-specific settings without redeployment.
+Commonly used tools: Spring Cloud Config, Consul, or Kubernetes ConfigMaps.
+13. Strangler Fig Pattern
+Purpose: Gradually replaces a monolithic legacy system with microservices.
+Key Features:
+Introduces new functionality via microservices without affecting the legacy system.
+Routes requests through a proxy, directing traffic to the new system incrementally.
+The legacy system is “strangled” as more components are replaced by microservices.
+14. Leader Election Pattern
+Purpose: Designates a leader among service instances for coordination tasks.
+Key Features:
+Ensures one instance takes responsibility for tasks like scheduling, decision-making, or data aggregation.
+Uses algorithms like Paxos or Raft for consensus in distributed systems.
+Prevents conflicts and ensures consistency in distributed environments.
+15. Anti-Corruption Layer (Implied)
+Although not explicitly shown, this might fit within the Strangler Fig Pattern or similar:
+Purpose: Ensures smooth transition and compatibility between new microservices and legacy systems.
+Key Features:
+Introduces a translation layer to adapt interfaces and models.
+Prevents older systems from polluting the design of newer microservices.
+These patterns together form a strong foundation for building scalable, fault-tolerant, and maintainable microservices architectures. Let me know if you’d like additional insights or recommendations for any specific pattern!

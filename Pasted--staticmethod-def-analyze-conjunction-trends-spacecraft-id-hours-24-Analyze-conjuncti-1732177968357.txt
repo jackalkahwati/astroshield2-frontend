@@ -1,0 +1,125 @@
+@staticmethod
+def analyze_conjunction_trends(spacecraft_id, hours=24):
+    """
+    Analyze conjunction trends for a spacecraft over time with enhanced metrics.
+    
+    Args:
+        spacecraft_id (int): ID of the spacecraft to analyze
+        hours (int): Number of hours to look back
+        
+    Returns:
+        dict: Comprehensive trend analysis including risk levels, statistics, and temporal patterns
+        
+    Raises:
+        ValueError: If spacecraft_id is invalid or hours is out of range
+        Exception: For database errors or calculation issues
+    """
+    if not isinstance(spacecraft_id, int) or spacecraft_id <= 0:
+        raise ValueError("Invalid spacecraft_id")
+        
+    if not isinstance(hours, int) or hours <= 0 or hours > 168:  # Max 1 week
+        raise ValueError("Hours must be between 1 and 168")
+
+    timeframe = datetime.utcnow() - timedelta(hours=hours)
+    
+    try:
+        # First verify spacecraft exists
+        spacecraft = Spacecraft.query.get(spacecraft_id)
+        if not spacecraft:
+            raise ValueError(f"Spacecraft with ID {spacecraft_id} not found")
+            
+        # Get indicators with proper type handling and explicit type casting
+        indicators = CCDMIndicator.query.filter(
+            CCDMIndicator.spacecraft_id == spacecraft_id,
+            db.cast(CCDMIndicator.timestamp, db.DateTime) >= timeframe
+        ).order_by(CCDMIndicator.timestamp.desc()).all()
+        
+        if not indicators:
+            return {
+                'total_conjunctions': 0,
+                'risk_levels': {'critical': 0, 'high': 0, 'moderate': 0, 'low': 0},
+                'temporal_metrics': {
+                    'hourly_rate': 0,
+                    'peak_hour': None,
+                    'trend_direction': 'stable'
+                },
+                'velocity_metrics': {
+                    'average_velocity': 0,
+                    'max_velocity': 0,
+                    'velocity_trend': 'stable'
+                }
+            }
+        
+        # Calculate risk levels with proper null handling
+        risk_levels = {
+            'critical': sum(1 for i in indicators if i.probability_of_collision is not None and float(i.probability_of_collision) >= CCDMService.CRITICAL_PROBABILITY_THRESHOLD),
+            'high': sum(1 for i in indicators if i.probability_of_collision is not None and CCDMService.HIGH_RISK_THRESHOLD <= float(i.probability_of_collision) < CCDMService.CRITICAL_PROBABILITY_THRESHOLD),
+            'moderate': sum(1 for i in indicators if i.probability_of_collision is not None and CCDMService.MODERATE_RISK_THRESHOLD <= float(i.probability_of_collision) < CCDMService.HIGH_RISK_THRESHOLD),
+            'low': sum(1 for i in indicators if i.probability_of_collision is not None and float(i.probability_of_collision) < CCDMService.MODERATE_RISK_THRESHOLD)
+        }
+        
+        result = {
+            'total_conjunctions': len(indicators),
+            'risk_levels': risk_levels,
+            'average_miss_distance': sum(float(i.miss_distance) for i in indicators if i.miss_distance is not None) / len([i for i in indicators if i.miss_distance is not None]) if indicators else 0.0,
+            'max_probability': max((float(i.probability_of_collision) for i in indicators if i.probability_of_collision is not None), default=0.0)
+        }
+        
+        # Calculate temporal metrics
+        hourly_counts = {}
+        velocity_values = []
+        
+        for indicator in indicators:
+            hour = indicator.timestamp.replace(minute=0, second=0, microsecond=0)
+            hourly_counts[hour] = hourly_counts.get(hour, 0) + 1
+            if indicator.relative_velocity is not None:
+                velocity_values.append(indicator.relative_velocity)
+        
+        peak_hour = max(hourly_counts.items(), key=lambda x: x[1])[0] if hourly_counts else None
+        hourly_rate = len(indicators) / hours
+        
+        # Calculate velocity metrics and trends
+        filtered_velocity_values = [float(v) for v in velocity_values if v is not None]
+        
+        if filtered_velocity_values:
+            avg_velocity = float(np.mean(filtered_velocity_values))
+            max_velocity = float(max(filtered_velocity_values))
+            
+            if len(filtered_velocity_values) >= 2:
+                recent_vel = filtered_velocity_values[-1]
+                old_vel = filtered_velocity_values[0]
+                velocity_trend = 'increasing' if recent_vel > old_vel else 'decreasing' if recent_vel < old_vel else 'stable'
+            else:
+                velocity_trend = 'stable'
+        else:
+            avg_velocity = 0.0
+            max_velocity = 0.0
+            velocity_trend = 'stable'
+            
+        # Determine probability trend
+        if len(indicators) >= 2:
+            recent_prob = float(indicators[0].probability_of_collision or 0.0)  # Most recent first due to desc order
+            old_prob = float(indicators[-1].probability_of_collision or 0.0)
+            trend_direction = 'increasing' if recent_prob > old_prob else 'decreasing' if recent_prob < old_prob else 'stable'
+        else:
+            trend_direction = 'stable'
+        
+        result.update({
+            'temporal_metrics': {
+                'hourly_rate': round(hourly_rate, 2),
+                'peak_hour': peak_hour.isoformat() if peak_hour else None,
+                'trend_direction': trend_direction
+            },
+            'velocity_metrics': {
+                'average_velocity': round(avg_velocity, 2),
+                'max_velocity': round(max_velocity, 2),
+                'velocity_trend': velocity_trend
+            }
+        })
+        
+        return result
+        
+    except ValueError as ve:
+        raise ve
+    except Exception as e:
+        raise Exception(f"Failed to analyze conjunction trends: {str(e)}")

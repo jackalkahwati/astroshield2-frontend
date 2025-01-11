@@ -1,0 +1,81 @@
+ConnectionError
+redis.exceptions.ConnectionError: Error 111 connecting to 127.0.0.1:6379. Connection refused.
+Traceback (most recent call last)
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/redis/connection.py", line 357, in connect
+sock = self.retry.call_with_retry(
+       
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/redis/retry.py", line 62, in call_with_retry
+return do()
+       ^^^^
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/redis/connection.py", line 358, in <lambda>
+lambda: self._connect(), lambda error: self.disconnect(error)
+        ^^^^^^^^^^^^^^^
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/redis/connection.py", line 730, in _connect
+raise err
+^^^^^^^^^
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/redis/connection.py", line 718, in _connect
+sock.connect(socket_address)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+During handling of the above exception, another exception occurred:
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 1536, in __call__
+return self.wsgi_app(environ, start_response)
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 1514, in wsgi_app
+response = self.handle_exception(e)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 1511, in wsgi_app
+response = self.full_dispatch_request()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 919, in full_dispatch_request
+rv = self.handle_user_exception(e)
+     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 915, in full_dispatch_request
+rv = self.preprocess_request()
+     ^^^^^^^^^^^^^^^^^^^^^^^^^
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 1291, in preprocess_request
+rv = self.ensure_sync(before_func)()
+     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask_limiter/extension.py", line 1176, in _check_request_limit
+raise e
+^^^^^^^
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask_limiter/extension.py", line 1157, in _check_request_limit
+self.__evaluate_limits(endpoint, all_limits)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask_limiter/extension.py", line 1094, in __evaluate_limits
+if not method(lim.limit, *args, **kwargs):
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/limits/strategies.py", line 140, in hit
+self.storage.incr(
+^
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/limits/storage/base.py", line 27, in inner
+return fn(*args, **kwargs)
+       ^^^^^^^^^^^^^^^^^^^
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/limits/storage/redis.py", line 209, in incr
+return int(self.lua_incr_expire([key], [expiry, amount]))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/redis/commands/core.py", line 5501, in __call__
+return client.evalsha(self.sha, len(keys), *args)
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/redis/commands/core.py", line 5710, in evalsha
+return self._evalsha("EVALSHA", sha, numkeys, *keys_and_args)
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/redis/commands/core.py", line 5694, in _evalsha
+return self.execute_command(command, sha, numkeys, *keys_and_args)
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/redis/client.py", line 559, in execute_command
+return self._execute_command(*args, **options)
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/redis/client.py", line 565, in _execute_command
+conn = self.connection or pool.get_connection(command_name, **options)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/redis/connection.py", line 1422, in get_connection
+connection.connect()
+^^^^^^^^^^^^^^^^^^^^
+File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/redis/connection.py", line 363, in connect
+raise ConnectionError(self._error_message(e))
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+redis.exceptions.ConnectionError: Error 111 connecting to 127.0.0.1:6379. Connection refused. 
+The debugger caught an exception in your WSGI application. You can now look at the traceback which led to the error.
+To switch between the interactive traceback and the plaintext one, you can click on the "Traceback" headline. From the text traceback you can also create a paste of it.
+
+Brought to you by DON'T PANIC, your friendly Werkzeug powered traceback interpreter.

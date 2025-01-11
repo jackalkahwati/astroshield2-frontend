@@ -1,0 +1,74 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: backup-verification
+spec:
+  schedule: "0 3 * * *"  # Run daily at 3 AM
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: backup-verify
+            image: postgres:15-alpine
+            command:
+            - /bin/sh
+            - -c
+            - |
+              # Get latest backup
+              aws s3 ls s3://${BACKUP_BUCKET}/database/ | sort | tail -n 1 | awk '{print $4}' | xargs -I {} aws s3 cp s3://${BACKUP_BUCKET}/database/{} /backup/latest.dump
+
+              # Create temporary database
+              export PGHOST=localhost
+              export PGPORT=5432
+              export PGUSER=postgres
+              export PGDATABASE=verify_backup
+
+              # Start temporary PostgreSQL instance
+              mkdir -p /data
+              initdb -D /data
+              pg_ctl -D /data -o "-p 5432" start
+              createdb verify_backup
+
+              # Restore backup
+              pg_restore -d verify_backup /backup/latest.dump
+
+              # Run verification queries
+              psql -d verify_backup -c "SELECT COUNT(*) FROM users;" > /dev/null
+              psql -d verify_backup -c "SELECT COUNT(*) FROM maneuvers;" > /dev/null
+              psql -d verify_backup -c "SELECT COUNT(*) FROM analytics;" > /dev/null
+
+              # Cleanup
+              pg_ctl -D /data stop
+              rm -rf /data /backup/latest.dump
+
+              echo "Backup verification completed successfully"
+            env:
+            - name: BACKUP_BUCKET
+              value: "astroshield-backups"
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: aws-backup-creds
+                  key: access-key-id
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: aws-backup-creds
+                  key: secret-access-key
+            - name: AWS_DEFAULT_REGION
+              value: "us-west-2"
+            volumeMounts:
+            - name: backup
+              mountPath: /backup
+            - name: data
+              mountPath: /data
+          volumes:
+          - name: backup
+            emptyDir: {}
+          - name: data
+            emptyDir: {}
+          restartPolicy: OnFailure 
