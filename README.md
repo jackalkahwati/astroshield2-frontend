@@ -6,192 +6,95 @@ AstroShield is a comprehensive satellite monitoring and management platform that
 
 ## Features
 
+- **Comprehensive Dashboard**: Overview of all satellite metrics and status
 - **Stability Analysis**: Real-time monitoring and analysis of satellite stability parameters
+- **Satellite Tracking**: Real-time tracking and position monitoring
 - **Maneuver Planning**: Automated planning and execution of orbital maneuvers
 - **Analytics Dashboard**: Comprehensive analytics and reporting capabilities
-- **Real-time Monitoring**: Continuous monitoring of satellite health and performance
 - **Alert System**: Automated alerts for critical events and anomalies
 - **API Integration**: RESTful API for seamless integration with existing systems
 
-## Architecture
+## Project Structure
 
 ```
 ├── frontend/               # Next.js frontend application
-│   ├── src/               # Source code
-│   ├── public/            # Static assets
-│   └── tests/             # Frontend tests
-├── backend/               # FastAPI backend application
-│   ├── app/               # Application code
-│   ├── tests/             # Backend tests
-│   └── migrations/        # Database migrations
-├── k8s/                   # Kubernetes manifests
-│   ├── frontend/          # Frontend deployment
-│   ├── backend/           # Backend deployment
-│   └── config/           # Configuration files
-└── docs/                  # Documentation
-    ├── api.md            # API documentation
-    ├── deployment.md     # Deployment guide
-    ├── development.md    # Development guide
-    ├── monitoring.md     # Monitoring setup
-    └── security.md       # Security documentation
+│   ├── src/               
+│   │   ├── components/    # React components
+│   │   ├── lib/          # Utility functions and configurations
+│   │   └── pages/        # Next.js pages
+│   ├── public/           # Static assets
+│   └── tests/            # Frontend tests
+├── api/                  # FastAPI backend application
+│   ├── endpoints.py      # API endpoints
+│   ├── index.py         # Main application entry
+│   └── tests/           # Backend tests
+├── deployment/          # Deployment configurations
+└── docs/               # Documentation
 ```
 
 ## Quick Start
 
 ### Prerequisites
 
-- Python 3.11+
-- Node.js 20+
-- Docker
-- Kubernetes
-- PostgreSQL 15+
-- Redis
+- Python 3.9+
+- Node.js 18+
+- npm or yarn
 
 ### Local Development
 
-1. Clone the repository
-   ```bash
-   git clone https://github.com/your-org/astroshield.git
-   cd astroshield
-   ```
-
-2. Set up environment
-   ```bash
-   # Copy environment files
-   cp .env.example .env
-   cp frontend/.env.example frontend/.env
-   cp backend/.env.example backend/.env
-   ```
-
-3. Start services
-   ```bash
-   # Start all services
-   docker-compose up -d
-   
-   # Or start individual components
-   cd frontend && npm run dev
-   cd backend && poetry run uvicorn app.main:app --reload
-   ```
-
-4. Access the application
-   - Frontend: http://localhost:3000
-   - Backend: http://localhost:8000
-   - API Docs: http://localhost:8000/docs
-
-## Documentation
-
-- [API Documentation](docs/api.md)
-- [Deployment Guide](docs/deployment.md)
-- [Development Guide](docs/development.md)
-- [Monitoring Setup](docs/monitoring.md)
-- [Security Documentation](docs/security.md)
-- [Disaster Recovery](docs/disaster-recovery.md)
-
-## Development
-
-### Backend Development
-
+1. Clone the repository:
 ```bash
-# Install dependencies
-cd backend
-poetry install
-
-# Run development server
-poetry run uvicorn app.main:app --reload
-
-# Run tests
-poetry run pytest
-
-# Run linting
-poetry run flake8
-poetry run black .
+git clone https://github.com/your-username/astroshield.git
+cd astroshield
 ```
 
-### Frontend Development
-
+2. Set up the backend:
 ```bash
-# Install dependencies
+cd api
+python -m venv venv
+source venv/bin/activate  # On Windows: .\venv\Scripts\activate
+pip install -r requirements.txt
+uvicorn index:app --reload --port 8000
+```
+
+3. Set up the frontend:
+```bash
 cd frontend
 npm install
-
-# Run development server
 npm run dev
-
-# Run tests
-npm test
-
-# Run linting
-npm run lint
 ```
 
-## Deployment
+The application will be available at:
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:8000
 
-### Docker Deployment
+## Available Pages
 
-```bash
-# Build images
-docker-compose build
+- `/comprehensive` - Main dashboard with comprehensive overview
+- `/indicators` - Key performance indicators
+- `/tracking` - Satellite tracking interface
+- `/stability` - Stability analysis dashboard
+- `/maneuvers` - Maneuver planning and execution
+- `/analytics` - Detailed analytics and reporting
+- `/settings` - System configuration
 
-# Start services
-docker-compose up -d
-```
+## Tech Stack
 
-### Kubernetes Deployment
+### Frontend
+- Next.js
+- React
+- Material-UI
+- TypeScript
 
-```bash
-# Apply manifests
-kubectl apply -f k8s/
-
-# Verify deployment
-kubectl get pods
-```
-
-## Monitoring
-
-- Prometheus for metrics collection
-- Grafana for visualization
-- ELK Stack for log aggregation
-- Sentry for error tracking
-
-## Security
-
-- JWT authentication
-- Role-based access control
-- Network policies
-- Pod security policies
-- TLS encryption
-- Regular security audits
+### Backend
+- FastAPI
+- Python
+- uvicorn
 
 ## Contributing
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'feat: add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct and the process for submitting pull requests.
 
 ## License
 
-This software is proprietary and confidential. Copyright © 2024 Stardrive Inc. All rights reserved.
-
-Unauthorized copying, transferring, or reproduction of this software, via any medium, is strictly prohibited. The software is protected by copyright law and international treaties.
-
-For licensing inquiries, please contact legal@stardrive.com.
-
-## Support
-
-For support, please contact:
-
-- Technical Support: support@stardrive.com
-- Security Issues: security@stardrive.com
-- General Inquiries: info@stardrive.com
-
-## Acknowledgments
-
-- [FastAPI](https://fastapi.tiangolo.com/)
-- [Next.js](https://nextjs.org/)
-- [Kubernetes](https://kubernetes.io/)
-- [Prometheus](https://prometheus.io/)
-- [Grafana](https://grafana.com/)
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
