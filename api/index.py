@@ -15,11 +15,11 @@ app.add_middleware(
 )
 
 # Include the router with /api prefix
-app.include_router(router)
+app.include_router(router, prefix="/api")
 
 # Create handler for AWS Lambda
 handler = Mangum(app)
 
-@app.get("/api")
+@app.get("/")
 async def root():
     return {"message": "Welcome to AstroShield API"} 
