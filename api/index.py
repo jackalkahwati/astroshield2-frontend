@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from mangum import Mangum
 from endpoints import router
 
-app = FastAPI(title="AstroShield API")
+app = FastAPI(title="AstroShield API", root_path="/api")
 
 # Configure CORS
 app.add_middleware(
@@ -14,8 +14,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Include the router with /api prefix
-app.include_router(router, prefix="/api")
+# Include the router without prefix since root_path handles it
+app.include_router(router)
 
 # Create handler for AWS Lambda
 handler = Mangum(app)
