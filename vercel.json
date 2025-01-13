@@ -6,7 +6,7 @@
             "use": "@vercel/next"
         },
         {
-            "src": "api/index.py",
+            "src": "backend/app/server.py",
             "use": "@vercel/python",
             "config": {
                 "runtime": "python3.9",
@@ -17,7 +17,7 @@
     "routes": [
         {
             "src": "/api/(.*)",
-            "dest": "api/index.py"
+            "dest": "backend/app/server.py"
         },
         {
             "src": "/(.*)",
@@ -25,7 +25,7 @@
         }
     ],
     "env": {
-        "PYTHONPATH": ".",
+        "PYTHONPATH": "./backend",
         "NEXT_PUBLIC_API_URL": "https://${VERCEL_URL}"
     }
 } 
