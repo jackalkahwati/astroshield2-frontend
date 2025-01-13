@@ -14,11 +14,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Include the router with prefix since we want all routes under /api
-app.include_router(router, prefix="/api")
+# Include the router without prefix since Vercel will handle the /api prefix
+app.include_router(router)
 
-# Create handler for AWS Lambda
-handler = Mangum(app)
+# Create handler for AWS Lambda with base path
+handler = Mangum(app, api_gateway_base_path="/api")
 
 @app.get("/")
 async def root():
