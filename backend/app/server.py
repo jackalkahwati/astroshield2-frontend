@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from mangum import Mangum
 
-app = FastAPI(title="AstroShield API")
+app = FastAPI(title="AstroShield API v1.0")
 
 # Configure CORS
 app.add_middleware(
@@ -24,4 +24,4 @@ handler = Mangum(app)
 
 @app.get("/")
 async def root():
-    return {"message": "Welcome to AstroShield API"} 
+    return {"message": "Welcome to AstroShield API v1.0"} 
