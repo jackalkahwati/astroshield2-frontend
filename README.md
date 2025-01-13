@@ -44,8 +44,8 @@ AstroShield is a comprehensive satellite monitoring and management platform that
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/your-username/astroshield.git
-cd astroshield
+git clone https://github.com/jackalkahwati/astroshield2.git
+cd astroshield2
 ```
 
 2. Set up the backend:
