@@ -3,34 +3,32 @@
     "builds": [
         {
             "src": "api/index.py",
-            "use": "@vercel/python",
-            "config": {
-                "runtime": "python3.9",
-                "maxLambdaSize": "15mb"
-            }
+            "use": "@vercel/python"
         },
         {
             "src": "frontend/package.json",
-            "use": "@vercel/next",
-            "config": {
-                "distDir": ".next"
-            }
+            "use": "@vercel/next"
         }
     ],
     "routes": [
         {
             "src": "/api/(.*)",
-            "dest": "/api/index.py"
+            "dest": "api/index.py",
+            "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+            "headers": {
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+                "Access-Control-Allow-Headers": "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version",
+                "Access-Control-Allow-Credentials": "false",
+                "Access-Control-Max-Age": "86400"
+            }
         },
         {
             "src": "/(.*)",
-            "dest": "/frontend/$1"
+            "dest": "frontend/$1"
         }
     ],
-    "crons": [
-        {
-            "path": "/api/cron",
-            "schedule": "0 10 * * *"
-        }
-    ]
+    "env": {
+        "NEXT_PUBLIC_API_URL": "https://astroshield2-fbxj9rp2i-jackalkahwatis-projects.vercel.app/api"
+    }
 } 

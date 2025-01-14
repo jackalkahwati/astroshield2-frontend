@@ -1,6 +1,7 @@
+"use client"
+
 import { Moon, Sun } from "lucide-react"
 import { useTheme } from "next-themes"
-
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -8,9 +9,58 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { useEffect, useState } from "react"
 
 export function ModeToggle() {
-  const { setTheme } = useTheme()
+  const { theme, setTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    const fetchInitialTheme = async () => {
+      try {
+        const response = await fetch('http://localhost:8001/api/settings')
+        const settings = await response.json()
+        if (settings.theme) {
+          setTheme(settings.theme)
+        }
+      } catch (error) {
+        console.error('Error fetching theme:', error)
+        // Set a default theme if fetch fails
+        setTheme('dark')
+      }
+      setMounted(true)
+    }
+    
+    fetchInitialTheme()
+  }, [setTheme])
+
+  const updateTheme = async (newTheme: string) => {
+    try {
+      // Update theme in the UI first for immediate feedback
+      setTheme(newTheme)
+
+      // Then sync with backend
+      const response = await fetch('http://localhost:8001/api/settings', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ theme: newTheme }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to update theme in backend')
+      }
+    } catch (error) {
+      console.error('Error updating theme:', error)
+      // Revert theme if backend update fails
+      setTheme(theme || 'dark')
+    }
+  }
+
+  if (!mounted) {
+    return null
+  }
 
   return (
     <DropdownMenu>
@@ -22,14 +72,11 @@ export function ModeToggle() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => setTheme("light")}>
+        <DropdownMenuItem onClick={() => updateTheme("light")}>
           Light
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("dark")}>
+        <DropdownMenuItem onClick={() => updateTheme("dark")}>
           Dark
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("system")}>
-          System
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

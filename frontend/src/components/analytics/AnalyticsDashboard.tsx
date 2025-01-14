@@ -94,6 +94,9 @@ const AnalyticsDashboard: React.FC = () => {
       try {
         setLoading(true);
         const data = await fetchAnalyticsData(timeRange);
+        if (!data || !data.current_metrics) {
+          throw new Error('Invalid data format received');
+        }
         setAnalyticsData(data);
         setError(null);
       } catch (err) {
@@ -129,6 +132,34 @@ const AnalyticsDashboard: React.FC = () => {
       );
     }
     return null;
+  };
+
+  const renderCurrentMetrics = () => {
+    if (!analyticsData?.current_metrics) {
+      return (
+        <Grid item xs={12}>
+          <Alert severity="warning">No metrics data available</Alert>
+        </Grid>
+      );
+    }
+
+    return Object.entries(analyticsData.current_metrics).map(([key, metric]) => (
+      <Grid item xs={12} md={3} key={key}>
+        <Card>
+          <CardContent>
+            <Typography variant="subtitle1" gutterBottom>
+              {key.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
+            </Typography>
+            <Typography variant="h4" color={metric.status === 'critical' ? 'error' : 'primary'}>
+              {metric.value.toFixed(1)}%
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Trend: {metric.trend}
+            </Typography>
+          </CardContent>
+        </Card>
+      </Grid>
+    ));
   };
 
   if (loading) {
@@ -236,23 +267,7 @@ const AnalyticsDashboard: React.FC = () => {
               Current System Metrics
             </Typography>
             <Grid container spacing={2}>
-              {Object.entries(analyticsData.current_metrics).map(([key, metric]) => (
-                <Grid item xs={12} md={3} key={key}>
-                  <Card>
-                    <CardContent>
-                      <Typography variant="subtitle1" gutterBottom>
-                        {key.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
-                      </Typography>
-                      <Typography variant="h4" color={metric.status === 'critical' ? 'error' : 'primary'}>
-                        {metric.value.toFixed(1)}%
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        Trend: {metric.trend}
-                      </Typography>
-                    </CardContent>
-                  </Card>
-                </Grid>
-              ))}
+              {renderCurrentMetrics()}
             </Grid>
           </Paper>
         </Grid>

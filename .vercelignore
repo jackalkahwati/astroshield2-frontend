@@ -1,7 +1,18 @@
-# Ignore everything
-*
+# Ignore development files
+.git
+.env
+.env.local
+__pycache__
+*.pyc
+.pytest_cache
+.coverage
+.venv
+venv
+node_modules
 
-# Allow only necessary files
+# Allow necessary files
 !api/
+!frontend/
 !requirements.txt
-!vercel.json 
+!vercel.json
+!package.json 
