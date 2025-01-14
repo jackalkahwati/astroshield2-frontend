@@ -22,12 +22,10 @@ app = FastAPI()
 # Add CORS middleware with more permissive settings
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allow all origins
-    allow_credentials=False,  # Must be False when allow_origins=["*"]
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_origins=["*"],  # Allow all origins in development
+    allow_credentials=True,
+    allow_methods=["*"],
     allow_headers=["*"],
-    expose_headers=["*"],
-    max_age=86400
 )
 
 # Global settings store (in a real app, this would be in a database)
@@ -52,9 +50,13 @@ async def logging_middleware(request: Request, call_next):
             content={"detail": str(e)}
         )
 
-@app.get("/api")
+@app.get("/")
 async def read_root():
-    return {"message": "Welcome to AstroShield API"}
+    return {
+        "message": "Welcome to AstroShield API",
+        "version": "1.0.1",
+        "status": "operational"
+    }
 
 @app.get("/api/settings")
 async def get_settings():
@@ -213,5 +215,11 @@ async def get_maneuvers():
         logger.error(traceback.format_exc())
         return JSONResponse(status_code=500, content={"detail": str(e)})
 
-# Update the Mangum handler with specific configuration
-handler = Mangum(app, lifespan="off") 
+# Configure handler for Vercel serverless deployment
+handler = Mangum(app, lifespan="off")
+
+# Export the handler for Vercel
+__all__ = ['handler']
+
+# Make sure we don't reassign app
+# app = app  # Remove this line 
