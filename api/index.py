@@ -3,8 +3,12 @@ from mangum import Mangum
 
 app = FastAPI()
 
-@app.get("/")
+@app.get("/api")
 async def root():
+    return {"message": "Welcome to AstroShield API v1.0"}
+
+@app.get("/")
+async def default_root():
     return {"message": "Welcome to AstroShield API v1.0"}
 
 # Create handler for AWS Lambda
