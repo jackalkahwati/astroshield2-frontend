@@ -16,5 +16,5 @@ async def cron_job(authorization: Optional[str] = Header(None)):
         raise HTTPException(status_code=401, detail="Unauthorized")
     return {"message": "Hello Cron!"}
 
-# Create handler for AWS Lambda with base path
-handler = Mangum(app, api_gateway_base_path="/api") 
+# Create handler for AWS Lambda
+handler = Mangum(app) 
