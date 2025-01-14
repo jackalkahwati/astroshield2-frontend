@@ -3,7 +3,7 @@ from mangum import Mangum
 from typing import Optional
 import os
 
-app = FastAPI()
+app = FastAPI(root_path="/api")
 
 @app.get("/")
 async def root():
