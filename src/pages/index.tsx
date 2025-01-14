@@ -1,20 +1,23 @@
-import React, { useEffect } from 'react'
-import { useTheme } from 'next-themes'
+import React from 'react';
+import { useTheme } from 'next-themes';
 
 export default function Home() {
-  const { theme, setTheme } = useTheme()
-
-  useEffect(() => {
-    // Set initial theme
-    setTheme('dark')
-  }, [])
+  const { theme, setTheme } = useTheme();
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm">
-        <h1 className="text-4xl font-bold">AstroShield Dashboard</h1>
-        <p className="mt-4">Welcome to the AstroShield monitoring system.</p>
-      </div>
+    <main className="flex min-h-screen flex-col items-center justify-center p-24">
+      <h1 className="text-4xl font-bold mb-8">
+        Welcome to AstroShield Dashboard
+      </h1>
+      <p className="text-lg mb-4">
+        Current theme: {theme}
+      </p>
+      <button
+        onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+      >
+        Toggle Theme
+      </button>
     </main>
-  )
+  );
 } 
