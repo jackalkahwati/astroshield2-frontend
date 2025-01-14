@@ -11,7 +11,8 @@ async def root():
 
 @app.get("/cron")
 async def cron_job(authorization: Optional[str] = Header(None)):
-    if not authorization or authorization != f"Bearer {os.getenv('CRON_SECRET')}":
+    expected_auth = "Bearer 1234"
+    if not authorization or authorization != expected_auth:
         raise HTTPException(status_code=401, detail="Unauthorized")
     return {"message": "Hello Cron!"}
 
