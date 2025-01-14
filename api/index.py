@@ -3,17 +3,9 @@ from mangum import Mangum
 
 app = FastAPI()
 
-@app.get("/api")
+@app.get("/")
 async def root():
     return {"message": "Welcome to AstroShield API v1.0"}
 
-@app.get("/")
-async def default_root():
-    return {"message": "Welcome to AstroShield API v1.0"}
-
-# Create handler for AWS Lambda
-handler = Mangum(app)
-
-# Only import and include router after basic setup works
-# from endpoints import router
-# app.include_router(router, prefix="/api") 
+# Create handler for AWS Lambda with base path
+handler = Mangum(app, api_gateway_base_path="/api") 
