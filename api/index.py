@@ -3,7 +3,7 @@ from mangum import Mangum
 
 app = FastAPI()
 
-@app.get("/api")
+@app.get("/")
 async def root():
     return {"message": "Welcome to AstroShield API v1.0"}
 
