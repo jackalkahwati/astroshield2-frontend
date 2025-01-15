@@ -2,22 +2,15 @@ FROM node:18-alpine
 
 WORKDIR /app
 
-# Copy package files
-COPY package*.json ./
-COPY .npmrc ./
-
-# Clean install dependencies with legacy peer deps
-RUN npm cache clean --force && \
-    npm install --legacy-peer-deps
+# Install dependencies first for better caching
+COPY package.json package-lock.json ./
+RUN npm install
 
 # Copy the rest of the application
 COPY . .
 
-# Build the application
+# Build the Next.js application
 RUN npm run build
 
-# Expose the port
-EXPOSE 3000
-
 # Start the application
-CMD ["npm", "start"] 
+CMD npm start 
