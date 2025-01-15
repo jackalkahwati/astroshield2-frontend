@@ -1,21 +1,18 @@
-# Build Stage
+# Stage 1: Build
 FROM node:18-alpine AS builder
 WORKDIR /app
 
-# Copy package files
+# Install dependencies first for better caching
 COPY package*.json ./
 RUN npm install
 
 # Copy the rest of the application
 COPY . .
 
-# Ensure public directory exists
-RUN mkdir -p public
-
-# Build the application
+# Build the Next.js application
 RUN npm run build
 
-# Production Stage
+# Stage 2: Production
 FROM node:18-alpine
 WORKDIR /app
 
@@ -26,10 +23,12 @@ COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
 
 # Set environment variables
-ENV NODE_ENV production
-ENV PORT 3000
-ENV HOSTNAME "0.0.0.0"
+ENV NODE_ENV=production
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
 
+# Expose the port
 EXPOSE 3000
 
+# Start the application
 CMD ["npm", "start"] 
