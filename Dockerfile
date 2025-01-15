@@ -29,15 +29,13 @@ ENV NODE_ENV=production
 ENV PORT=3000
 ENV NEXT_TELEMETRY_DISABLED=1
 
-# Copy only necessary files from builder
-COPY --from=builder /app/next.config.js ./
-COPY --from=builder /app/package*.json ./
-COPY --from=builder /app/.next ./.next
+# Copy standalone build
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
-COPY --from=builder /app/node_modules ./node_modules
 
 # Expose the port
 EXPOSE 3000
 
-# Set the command to run the web service
-CMD ["npm", "start"] 
+# Start the server using the standalone build
+CMD ["node", "server.js"] 
