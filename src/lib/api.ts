@@ -3,13 +3,12 @@ import axios from "axios";
 // Update to use the Railway deployment URL
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://astroshield2-api-production.up.railway.app";
 
-// Configure axios defaults for CORS
+// Configure axios defaults
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     "Content-Type": "application/json",
-  },
-  withCredentials: true
+  }
 });
 
 export interface AnalyticsData {

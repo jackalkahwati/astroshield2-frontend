@@ -4,8 +4,7 @@ WORKDIR /app
 
 # Install dependencies first for better caching
 COPY package.json package-lock.json ./
-RUN npm cache clean --force && \
-    npm install --legacy-peer-deps
+RUN npm install
 
 # Copy the rest of the application
 COPY . .
@@ -18,4 +17,4 @@ ENV PORT=3000
 EXPOSE 3000
 
 # Start the application
-CMD npm start 
+CMD ["npm", "start"] 
