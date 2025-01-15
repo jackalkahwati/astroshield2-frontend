@@ -3,6 +3,15 @@ import axios from "axios";
 // Update to use the Railway deployment URL
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://astroshield2-api-production.up.railway.app";
 
+// Configure axios defaults for CORS
+const api = axios.create({
+  baseURL: API_BASE_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
+  withCredentials: true
+});
+
 export interface AnalyticsData {
   dailyTrends: Array<{
     timestamp: string;
@@ -20,8 +29,8 @@ export interface AnalyticsData {
 
 export async function fetchAnalyticsData(): Promise<AnalyticsData> {
   try {
-    // Make actual API call to the deployed endpoint
-    const response = await axios.get(`${API_BASE_URL}/analytics`);
+    // Make actual API call to the deployed endpoint using the configured axios instance
+    const response = await api.get("/analytics");
     return response.data;
   } catch (error) {
     // Fallback to mock data if API call fails
