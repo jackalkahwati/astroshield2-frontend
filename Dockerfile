@@ -6,6 +6,12 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm install --legacy-peer-deps
 
+# Create necessary directories
+RUN mkdir -p src/lib
+
+# Copy the API file first
+COPY src/lib/api.ts src/lib/
+
 # Copy the rest of the application
 COPY . .
 
