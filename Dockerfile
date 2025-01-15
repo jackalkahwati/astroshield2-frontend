@@ -24,10 +24,13 @@ FROM node:18-alpine AS runner
 
 WORKDIR /app
 
+# Set production environment
 ENV NODE_ENV=production
 ENV PORT=3000
+ENV NEXT_TELEMETRY_DISABLED=1
 
 # Copy only necessary files from builder
+COPY --from=builder /app/next.config.js ./
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
@@ -36,5 +39,5 @@ COPY --from=builder /app/node_modules ./node_modules
 # Expose the port
 EXPOSE 3000
 
-# Start the application
+# Set the command to run the web service
 CMD ["npm", "start"] 
