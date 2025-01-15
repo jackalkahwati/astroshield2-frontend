@@ -1,41 +1,25 @@
-# Build stage
+# Build Stage
 FROM node:18-alpine AS builder
-
 WORKDIR /app
-
-# Copy package files
 COPY package*.json ./
-
-# Install dependencies
-RUN npm cache clean --force && \
-    npm install --legacy-peer-deps
-
-# Copy source files
+RUN npm install
 COPY . .
-
-# Create public directory if it doesn't exist
-RUN mkdir -p public
-
-# Build the application
 RUN npm run build
 
-# Production stage
-FROM node:18-alpine AS runner
-
+# Production Stage
+FROM node:18-alpine
 WORKDIR /app
-
-# Set production environment
-ENV NODE_ENV=production
-ENV PORT=8080
-ENV NEXT_TELEMETRY_DISABLED=1
-
-# Copy necessary files from builder
-COPY --from=builder /app/.next/standalone ./
-COPY --from=builder /app/.next/static ./.next/static
+COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
 
-# Expose the port
-EXPOSE 8080
+ENV NODE_ENV production
+ENV PORT 3000
 
-# Start the server using the standalone build
-CMD ["node", ".next/standalone/server.js"] 
+# Ensure Next.js listens on all network interfaces
+ENV HOSTNAME "0.0.0.0"
+
+EXPOSE 3000
+
+CMD ["npm", "start"] 
