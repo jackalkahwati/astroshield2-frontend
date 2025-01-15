@@ -2,12 +2,33 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { CircularProgress, Box, Typography } from '@mui/material';
 
-export default function Home() {
+// Add a getServerSideProps function to handle health checks
+export async function getServerSideProps({ req, res }) {
+  // If it's a health check (typically from Railway)
+  if (req.headers['user-agent']?.toLowerCase().includes('railway')) {
+    res.statusCode = 200;
+    return {
+      props: {
+        isHealthCheck: true
+      }
+    };
+  }
+
+  return {
+    props: {
+      isHealthCheck: false
+    }
+  };
+}
+
+export default function Home({ isHealthCheck }) {
   const router = useRouter();
 
   useEffect(() => {
-    router.push('/comprehensive');
-  }, [router]);
+    if (!isHealthCheck) {
+      router.push('/comprehensive');
+    }
+  }, [router, isHealthCheck]);
 
   return (
     <Box
