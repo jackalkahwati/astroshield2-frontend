@@ -9,7 +9,7 @@ import {
   Legend,
   ResponsiveContainer
 } from 'recharts';
-import { fetchAnalyticsData, AnalyticsData } from '../../lib/api';
+import { fetchAnalyticsData, AnalyticsData } from '@/lib/api';
 
 interface DailyTrend {
   timestamp: string;

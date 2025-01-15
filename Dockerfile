@@ -2,11 +2,15 @@ FROM node:18-alpine
 
 WORKDIR /app
 
-# Copy the entire project first
+# Copy package files first for better caching
+COPY package*.json ./
+RUN npm install --legacy-peer-deps
+
+# Copy the rest of the application
 COPY . .
 
-# Install dependencies
-RUN npm install --legacy-peer-deps
+# Install TypeScript globally
+RUN npm install -g typescript
 
 # Build the Next.js application
 RUN npm run build
