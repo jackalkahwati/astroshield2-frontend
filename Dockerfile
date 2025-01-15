@@ -26,7 +26,7 @@ WORKDIR /app
 
 # Set production environment
 ENV NODE_ENV=production
-ENV PORT=3000
+ENV PORT=8080
 ENV NEXT_TELEMETRY_DISABLED=1
 
 # Copy necessary files from builder
@@ -35,7 +35,7 @@ COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
 
 # Expose the port
-EXPOSE 3000
+EXPOSE 8080
 
 # Start the server using the standalone build
 CMD ["node", ".next/standalone/server.js"] 
