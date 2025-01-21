@@ -15,7 +15,7 @@ import {
   CircularProgress,
   Alert,
 } from '@mui/material';
-import { API_CONFIG } from '../../lib/config';
+import config from '@/config';
 
 interface TrackingData {
   objectId: string;
@@ -73,7 +73,7 @@ const TrackingDashboard: React.FC = () => {
           }));
           setTrackingData(updatedData);
         } else {
-          const response = await fetch(`${API_CONFIG.baseUrl}/api/tracking/data`);
+          const response = await fetch(`${config.apiUrl}/api/tracking/data`);
           if (!response.ok) {
             throw new Error('Failed to fetch tracking data');
           }
@@ -226,4 +226,4 @@ const TrackingDashboard: React.FC = () => {
   );
 };
 
-export default TrackingDashboard; 
+export default TrackingDashboard;

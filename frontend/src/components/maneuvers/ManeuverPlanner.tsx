@@ -23,16 +23,32 @@ import {
   CircularProgress,
   SelectChangeEvent,
 } from '@mui/material';
-import { fetchManeuversData } from '../../lib/api';
-import { API_CONFIG } from '../../lib/config';
+import api from '@/services/api';
+import config from '@/config';
 
-interface ManeuverPlan {
+interface Maneuver {
   id: string;
   type: string;
-  deltaV: number;
-  executionTime: string;
-  duration: number;
-  status: 'planned' | 'executing' | 'completed' | 'failed';
+  status: string;
+  scheduledTime: string;
+  completedTime?: string;
+  details: {
+    deltaV?: number;
+    duration?: number;
+    fuel_required?: number;
+    rotation_angle?: number;
+    fuel_used?: number;
+  };
+}
+
+interface ManeuverData {
+  maneuvers: Maneuver[];
+  resources: {
+    fuel_remaining: number;
+    thrust_capacity: number;
+    next_maintenance: string;
+  };
+  lastUpdate: string;
 }
 
 interface ManeuverFormData {
@@ -42,7 +58,7 @@ interface ManeuverFormData {
 }
 
 const ManeuverPlanner: React.FC = () => {
-  const [maneuvers, setManeuvers] = useState<ManeuverPlan[]>([]);
+  const [maneuverData, setManeuverData] = useState<ManeuverData | null>(null);
   const [formData, setFormData] = useState<ManeuverFormData>({
     type: '',
     deltaV: 0,
@@ -56,14 +72,17 @@ const ManeuverPlanner: React.FC = () => {
     const loadManeuvers = async () => {
       try {
         setLoading(true);
-        const data = await fetchManeuversData();
-        // Ensure data is an array, if not, use empty array
-        setManeuvers(Array.isArray(data) ? data : []);
+        const response = await fetch('/api/maneuvers/data');
+        if (!response.ok) {
+          throw new Error('Failed to fetch maneuvers data');
+        }
+        const data = await response.json();
+        setManeuverData(data);
         setError(null);
       } catch (err) {
         console.error('Error loading maneuvers:', err);
         setError('Failed to load maneuvers data');
-        setManeuvers([]); // Reset to empty array on error
+        setManeuverData(null);
       } finally {
         setLoading(false);
       }
@@ -128,7 +147,7 @@ const ManeuverPlanner: React.FC = () => {
     setLoading(true);
 
     try {
-      const response = await fetch(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.maneuvers}/plan`, {
+      const response = await fetch('/api/maneuvers/plan', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -141,7 +160,12 @@ const ManeuverPlanner: React.FC = () => {
       }
 
       const newManeuver = await response.json();
-      setManeuvers(prev => [newManeuver, ...prev]);
+      if (maneuverData) {
+        setManeuverData({
+          ...maneuverData,
+          maneuvers: [newManeuver, ...maneuverData.maneuvers]
+        });
+      }
       setSuccess('Maneuver planned successfully');
       
       // Reset form
@@ -157,14 +181,16 @@ const ManeuverPlanner: React.FC = () => {
     }
   };
 
-  const getStatusColor = (status: ManeuverPlan['status']) => {
+  const getStatusColor = (status: string) => {
     switch (status) {
-      case 'executing':
-        return '#ffa726';
+      case 'scheduled':
+        return '#2196f3';
       case 'completed':
         return '#4caf50';
       case 'failed':
         return '#f44336';
+      case 'executing':
+        return '#ffa726';
       default:
         return '#2196f3';
     }
@@ -263,7 +289,7 @@ const ManeuverPlanner: React.FC = () => {
                         <Alert severity="error">{error}</Alert>
                       </TableCell>
                     </TableRow>
-                  ) : maneuvers.length === 0 ? (
+                  ) : !maneuverData || maneuverData.maneuvers.length === 0 ? (
                     <TableRow>
                       <TableCell colSpan={6} align="center">
                         <Typography color="textSecondary">
@@ -272,15 +298,15 @@ const ManeuverPlanner: React.FC = () => {
                       </TableCell>
                     </TableRow>
                   ) : (
-                    maneuvers.map((maneuver) => (
+                    maneuverData.maneuvers.map((maneuver) => (
                       <TableRow key={maneuver.id}>
                         <TableCell>{maneuver.id}</TableCell>
                         <TableCell>{maneuver.type}</TableCell>
-                        <TableCell>{maneuver.deltaV.toFixed(2)}</TableCell>
+                        <TableCell>{maneuver.details.deltaV?.toFixed(2) || 'N/A'}</TableCell>
                         <TableCell>
-                          {new Date(maneuver.executionTime).toLocaleString()}
+                          {new Date(maneuver.scheduledTime).toLocaleString()}
                         </TableCell>
-                        <TableCell>{maneuver.duration}</TableCell>
+                        <TableCell>{maneuver.details.duration || 'N/A'}</TableCell>
                         <TableCell>
                           <Typography
                             sx={{
@@ -324,4 +350,4 @@ const ManeuverPlanner: React.FC = () => {
   );
 };
 
-export default ManeuverPlanner; 
+export default ManeuverPlanner;

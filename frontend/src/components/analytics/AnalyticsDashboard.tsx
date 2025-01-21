@@ -10,10 +10,17 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
-  CircularProgress,
   Alert,
   SelectChangeEvent,
+  Skeleton,
+  IconButton,
+  Tooltip as MuiTooltip,
 } from '@mui/material';
+import {
+  Refresh,
+  ZoomIn,
+  ZoomOut,
+} from '@mui/icons-material';
 import {
   LineChart,
   Line,
@@ -26,41 +33,41 @@ import {
   TooltipProps,
 } from 'recharts';
 import { NameType, ValueType } from 'recharts/types/component/DefaultTooltipContent';
-import { fetchAnalyticsData } from '../../lib/api';
 
 interface DailyTrend {
   timestamp: string;
-  stability_score: number;
-  anomaly_count: number;
-  power_efficiency: number;
-  thermal_status: number;
-  communication_quality: number;
+  conjunction_count: number;
+  threat_level: number;
+  protection_coverage: number;
+  response_time: number;
+  mitigation_success: number;
 }
 
 interface AnalyticsData {
   summary: {
-    total_operational_time: number;
-    total_anomalies_detected: number;
-    average_stability: number;
-    current_health_score: number;
+    total_conjunctions_analyzed: number;
+    threats_detected: number;
+    threats_mitigated: number;
+    average_response_time: number;
+    protection_coverage: number;
   };
   current_metrics: {
-    power_consumption: {
+    threat_analysis: {
       value: number;
       trend: string;
       status: string;
     };
-    thermal_control: {
+    collision_avoidance: {
       value: number;
       trend: string;
       status: string;
     };
-    communication_quality: {
+    debris_tracking: {
       value: number;
       trend: string;
       status: string;
     };
-    orbit_stability: {
+    protection_status: {
       value: number;
       trend: string;
       status: string;
@@ -69,16 +76,16 @@ interface AnalyticsData {
   trends: {
     daily: DailyTrend[];
     weekly_summary: {
-      average_stability: number;
-      total_anomalies: number;
-      power_efficiency: number;
-      communication_uptime: number;
+      average_threat_level: number;
+      total_conjunctions: number;
+      mitigation_success_rate: number;
+      average_response_time: number;
     };
     monthly_summary: {
-      average_stability: number;
-      total_anomalies: number;
-      power_efficiency: number;
-      communication_uptime: number;
+      average_threat_level: number;
+      total_conjunctions: number;
+      mitigation_success_rate: number;
+      average_response_time: number;
     };
   };
 }
@@ -88,25 +95,27 @@ const AnalyticsDashboard: React.FC = () => {
   const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [chartZoom, setChartZoom] = useState(1);
+
+  const loadData = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('/api/analytics/data');
+      if (!response.ok) {
+        throw new Error('Failed to fetch analytics data');
+      }
+      const data = await response.json();
+      setAnalyticsData(data);
+      setError(null);
+    } catch (err) {
+      setError('Failed to load analytics data');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const loadData = async () => {
-      try {
-        setLoading(true);
-        const data = await fetchAnalyticsData(timeRange);
-        if (!data || !data.current_metrics) {
-          throw new Error('Invalid data format received');
-        }
-        setAnalyticsData(data);
-        setError(null);
-      } catch (err) {
-        setError('Failed to load analytics data');
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     loadData();
     const interval = setInterval(loadData, 30000); // Refresh every 30 seconds
     return () => clearInterval(interval);
@@ -125,7 +134,8 @@ const AnalyticsDashboard: React.FC = () => {
           </Typography>
           {payload.map((entry) => (
             <Typography key={entry.name} variant="body2" sx={{ color: entry.color }}>
-              {entry.name}: {typeof entry.value === 'number' ? entry.value.toFixed(2) : entry.value}%
+              {String(entry.name)}: {typeof entry.value === 'number' ? entry.value.toFixed(2) : entry.value}
+              {String(entry.name).toLowerCase().includes('time') ? 's' : '%'}
             </Typography>
           ))}
         </Paper>
@@ -134,38 +144,19 @@ const AnalyticsDashboard: React.FC = () => {
     return null;
   };
 
-  const renderCurrentMetrics = () => {
-    if (!analyticsData?.current_metrics) {
-      return (
-        <Grid item xs={12}>
-          <Alert severity="warning">No metrics data available</Alert>
-        </Grid>
-      );
-    }
-
-    return Object.entries(analyticsData.current_metrics).map(([key, metric]) => (
-      <Grid item xs={12} md={3} key={key}>
-        <Card>
-          <CardContent>
-            <Typography variant="subtitle1" gutterBottom>
-              {key.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
-            </Typography>
-            <Typography variant="h4" color={metric.status === 'critical' ? 'error' : 'primary'}>
-              {metric.value.toFixed(1)}%
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Trend: {metric.trend}
-            </Typography>
-          </CardContent>
-        </Card>
-      </Grid>
-    ));
-  };
-
   if (loading) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
-        <CircularProgress />
+      <Box>
+        <Grid container spacing={3}>
+          {[1, 2, 3, 4].map((i) => (
+            <Grid item xs={12} md={3} key={i}>
+              <Skeleton variant="rectangular" height={120} />
+            </Grid>
+          ))}
+          <Grid item xs={12}>
+            <Skeleton variant="rectangular" height={400} />
+          </Grid>
+        </Grid>
       </Box>
     );
   }
@@ -189,9 +180,14 @@ const AnalyticsDashboard: React.FC = () => {
         <Grid item xs={12}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
             <Typography variant="h4" gutterBottom>
-              System Analytics
+              Protection Analytics
             </Typography>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <MuiTooltip title="Refresh Data">
+                <IconButton onClick={loadData} color="primary">
+                  <Refresh />
+                </IconButton>
+              </MuiTooltip>
               <FormControl sx={{ minWidth: 120 }}>
                 <InputLabel>Time Range</InputLabel>
                 <Select
@@ -210,15 +206,18 @@ const AnalyticsDashboard: React.FC = () => {
           </Box>
         </Grid>
 
-        {/* Key Metrics */}
+        {/* Summary Cards */}
         <Grid item xs={12} md={3}>
           <Card>
             <CardContent>
               <Typography variant="h6" gutterBottom>
-                Operational Time
+                Total Conjunctions
               </Typography>
-              <Typography variant="h3">
-                {analyticsData.summary.total_operational_time}h
+              <Typography variant="h4" color="primary">
+                {analyticsData.summary.total_conjunctions_analyzed}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Analyzed and Tracked
               </Typography>
             </CardContent>
           </Card>
@@ -227,22 +226,13 @@ const AnalyticsDashboard: React.FC = () => {
           <Card>
             <CardContent>
               <Typography variant="h6" gutterBottom>
-                Total Anomalies
+                Threats Detected
               </Typography>
-              <Typography variant="h3" color="error">
-                {analyticsData.summary.total_anomalies_detected}
+              <Typography variant="h4" color="warning.main">
+                {analyticsData.summary.threats_detected}
               </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} md={3}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                Average Stability
-              </Typography>
-              <Typography variant="h3" color="primary">
-                {analyticsData.summary.average_stability.toFixed(1)}%
+              <Typography variant="body2" color="success.main">
+                {analyticsData.summary.threats_mitigated} Mitigated
               </Typography>
             </CardContent>
           </Card>
@@ -251,10 +241,28 @@ const AnalyticsDashboard: React.FC = () => {
           <Card>
             <CardContent>
               <Typography variant="h6" gutterBottom>
-                Health Score
+                Response Time
               </Typography>
-              <Typography variant="h3" color="success">
-                {analyticsData.summary.current_health_score.toFixed(1)}%
+              <Typography variant="h4" color="primary">
+                {analyticsData.summary.average_response_time.toFixed(2)}s
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Average Response Time
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={12} md={3}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>
+                Protection Coverage
+              </Typography>
+              <Typography variant="h4" color="success.main">
+                {analyticsData.summary.protection_coverage.toFixed(1)}%
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Overall Coverage
               </Typography>
             </CardContent>
           </Card>
@@ -264,10 +272,26 @@ const AnalyticsDashboard: React.FC = () => {
         <Grid item xs={12}>
           <Paper sx={{ p: 3 }}>
             <Typography variant="h6" gutterBottom>
-              Current System Metrics
+              Current Protection Metrics
             </Typography>
             <Grid container spacing={2}>
-              {renderCurrentMetrics()}
+              {Object.entries(analyticsData.current_metrics).map(([key, metric]) => (
+                <Grid item xs={12} md={3} key={key}>
+                  <Card>
+                    <CardContent>
+                      <Typography variant="subtitle1" gutterBottom>
+                        {key.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
+                      </Typography>
+                      <Typography variant="h4" color={metric.status === 'critical' ? 'error' : 'primary'}>
+                        {metric.value.toFixed(1)}%
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        Trend: {metric.trend}
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              ))}
             </Grid>
           </Paper>
         </Grid>
@@ -275,9 +299,29 @@ const AnalyticsDashboard: React.FC = () => {
         {/* Trends Chart */}
         <Grid item xs={12}>
           <Paper sx={{ p: 3 }}>
-            <Typography variant="h6" gutterBottom>
-              Performance Trends
-            </Typography>
+            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+              <Typography variant="h6" gutterBottom>
+                Protection Trends
+              </Typography>
+              <Box>
+                <MuiTooltip title="Zoom In">
+                  <IconButton
+                    onClick={() => setChartZoom(Math.min(2, chartZoom + 0.1))}
+                    size="small"
+                  >
+                    <ZoomIn />
+                  </IconButton>
+                </MuiTooltip>
+                <MuiTooltip title="Zoom Out">
+                  <IconButton
+                    onClick={() => setChartZoom(Math.max(0.5, chartZoom - 0.1))}
+                    size="small"
+                  >
+                    <ZoomOut />
+                  </IconButton>
+                </MuiTooltip>
+              </Box>
+            </Box>
             <Box sx={{ height: 400 }}>
               <ResponsiveContainer>
                 <LineChart
@@ -287,34 +331,46 @@ const AnalyticsDashboard: React.FC = () => {
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis
                     dataKey="timestamp"
-                    tickFormatter={(timestamp) => new Date(timestamp).toLocaleDateString()}
+                    tickFormatter={(timestamp) => new Date(timestamp).toLocaleString()}
+                    scale="time"
+                    type="number"
+                    domain={['auto', 'auto']}
                   />
                   <YAxis />
                   <Tooltip content={<CustomTooltip />} />
                   <Legend />
                   <Line
                     type="monotone"
-                    dataKey="stability_score"
-                    name="Stability Score"
-                    stroke="#8884d8"
+                    dataKey="threat_level"
+                    name="Threat Level"
+                    stroke="#ff4444"
                     strokeWidth={2}
                     dot={false}
                     isAnimationActive={false}
                   />
                   <Line
                     type="monotone"
-                    dataKey="power_efficiency"
-                    name="Power Efficiency"
-                    stroke="#82ca9d"
+                    dataKey="protection_coverage"
+                    name="Protection Coverage"
+                    stroke="#00C851"
                     strokeWidth={2}
                     dot={false}
                     isAnimationActive={false}
                   />
                   <Line
                     type="monotone"
-                    dataKey="communication_quality"
-                    name="Communication Quality"
-                    stroke="#ffc658"
+                    dataKey="response_time"
+                    name="Response Time"
+                    stroke="#33b5e5"
+                    strokeWidth={2}
+                    dot={false}
+                    isAnimationActive={false}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="mitigation_success"
+                    name="Mitigation Success"
+                    stroke="#ffbb33"
                     strokeWidth={2}
                     dot={false}
                     isAnimationActive={false}
@@ -329,4 +385,4 @@ const AnalyticsDashboard: React.FC = () => {
   );
 };
 
-export default AnalyticsDashboard; 
+export default AnalyticsDashboard;

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Box } from '@mui/material';
-import Layout from '../../components/Layout';
-import ComprehensiveDashboard from '../../components/ComprehensiveDashboard';
-import { API_CONFIG } from '../../lib/config';
+import Layout from '@/components/Layout';
+import ComprehensiveDashboard from '@/components/ComprehensiveDashboard';
+import config from '@/config';
 
 interface ComprehensiveData {
   metrics: {
@@ -26,7 +26,7 @@ const ComprehensivePage = () => {
     const fetchData = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.comprehensive}`);
+        const response = await fetch('/api/comprehensive/data');
         if (!response.ok) {
           throw new Error('Failed to fetch data');
         }

@@ -1,19 +1,16 @@
 import React from 'react';
-import { Box, Typography } from '@mui/material';
-import Layout from '../../components/Layout';
-import ManeuverPlanner from '../../components/maneuvers/ManeuverPlanner';
+import Layout from '@/components/Layout';
+import ManeuverPlanner from '@/components/maneuvers/ManeuverPlanner';
+import { Box } from '@mui/material';
 
-const ManeuversPage: React.FC = () => {
+const ManeuversPage = () => {
   return (
     <Layout>
-      <Box sx={{ p: 3 }}>
-        <Typography variant="h4" gutterBottom>
-          Maneuver Planning
-        </Typography>
+      <Box p={3}>
         <ManeuverPlanner />
       </Box>
     </Layout>
   );
 };
 
-export default ManeuversPage; 
+export default ManeuversPage;

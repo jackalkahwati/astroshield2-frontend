@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Grid, Paper, Typography, Card, CardContent, CircularProgress } from '@mui/material';
-import { API_CONFIG } from '../../lib/config';
 
 interface StabilityData {
   metrics: {
@@ -22,7 +21,7 @@ const StabilityAnalysis: React.FC = () => {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const response = await fetch(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.stability}`);
+        const response = await fetch('/api/stability/metrics');
         if (!response.ok) {
           throw new Error('Failed to fetch stability data');
         }
@@ -96,7 +95,7 @@ const StabilityAnalysis: React.FC = () => {
 
         {/* Stability Metrics */}
         {Object.entries(data.metrics).map(([key, value]) => (
-          <Grid item xs={12} md={6} key={key}>
+          <Grid item xs={12} md={4} key={key}>
             <Card>
               <CardContent>
                 <Typography variant="h6" gutterBottom>
@@ -109,7 +108,7 @@ const StabilityAnalysis: React.FC = () => {
                 </Box>
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                   <Typography variant="body1" color={getStatusColor(value)}>
-                    Status: {value > 90 ? 'STABLE' : value > 70 ? 'WARNING' : 'CRITICAL'}
+                    Status: {value > 90 ? 'NOMINAL' : value > 70 ? 'WARNING' : 'CRITICAL'}
                   </Typography>
                 </Box>
               </CardContent>

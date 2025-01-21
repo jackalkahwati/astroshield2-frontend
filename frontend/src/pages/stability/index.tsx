@@ -1,19 +1,16 @@
 import React from 'react';
-import { Box, Typography } from '@mui/material';
-import Layout from '../../components/Layout';
-import StabilityAnalysis from '../../components/stability/StabilityAnalysis';
+import Layout from '@/components/Layout';
+import StabilityAnalysis from '@/components/stability/StabilityAnalysis';
+import { Box } from '@mui/material';
 
-const StabilityPage: React.FC = () => {
+const StabilityPage = () => {
   return (
     <Layout>
-      <Box sx={{ p: 3 }}>
-        <Typography variant="h4" gutterBottom>
-          Stability Analysis
-        </Typography>
+      <Box p={3}>
         <StabilityAnalysis />
       </Box>
     </Layout>
   );
 };
 
-export default StabilityPage; 
+export default StabilityPage;
