@@ -1,11 +1,14 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  output: 'standalone',
   async rewrites() {
     return [
       {
         source: '/api/:path*',
-        destination: 'http://localhost:8001/api/:path*',
+        destination: process.env.NODE_ENV === 'production' 
+          ? 'https://astroshield2-production.up.railway.app/api/:path*'
+          : 'http://localhost:8001/api/:path*',
       },
     ];
   },
