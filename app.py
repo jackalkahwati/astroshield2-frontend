@@ -2,7 +2,7 @@ from flask import Flask, render_template, jsonify, redirect
 from flask_migrate import Migrate
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
-from models import db
+from models.database import db
 import os
 
 migrate = Migrate()
