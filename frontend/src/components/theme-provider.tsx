@@ -12,7 +12,7 @@ interface Props {
 
 function ThemeProviderInner({ children }: Props) {
   const { resolvedTheme } = useTheme();
-  const muiTheme = React.useMemo(() => getTheme(resolvedTheme || 'light'), [resolvedTheme]);
+  const muiTheme = React.useMemo(() => getTheme(resolvedTheme || 'dark'), [resolvedTheme]);
 
   return (
     <MuiThemeProvider theme={muiTheme}>
@@ -36,7 +36,7 @@ export function ThemeProvider({ children }: Props) {
   return (
     <NextThemesProvider
       attribute="data-theme"
-      defaultTheme="system"
+      defaultTheme="dark"
       enableSystem
       disableTransitionOnChange
     >
