@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTheme } from 'next-themes';
 import {
   Box,
   Grid,
@@ -16,7 +17,7 @@ import {
   Alert,
   Snackbar,
 } from '@mui/material';
-import { API_CONFIG } from '../../lib/config';
+import config from '@/config';
 
 interface Settings {
   darkMode: boolean;
@@ -39,7 +40,11 @@ const defaultSettings: Settings = {
 const SETTINGS_STORAGE_KEY = 'astroShieldSettings';
 
 const SettingsPanel: React.FC = () => {
-  const [settings, setSettings] = useState<Settings>(defaultSettings);
+  const { resolvedTheme, setTheme } = useTheme();
+  const [settings, setSettings] = useState<Settings>({
+    ...defaultSettings,
+    darkMode: resolvedTheme === 'dark',
+  });
   const [success, setSuccess] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -49,21 +54,38 @@ const SettingsPanel: React.FC = () => {
     if (savedSettings) {
       try {
         const parsedSettings = JSON.parse(savedSettings);
-        setSettings(parsedSettings);
+        setSettings(prev => ({
+          ...parsedSettings,
+          darkMode: resolvedTheme === 'dark', // Sync with system theme
+        }));
       } catch (err) {
         console.error('Failed to parse saved settings:', err);
         setError('Failed to load saved settings');
       }
     }
-  }, []);
+  }, [resolvedTheme]);
+
+  // Keep settings in sync with theme changes
+  useEffect(() => {
+    setSettings(prev => ({
+      ...prev,
+      darkMode: resolvedTheme === 'dark',
+    }));
+  }, [resolvedTheme]);
 
   const handleSwitchChange = (field: keyof Pick<Settings, 'darkMode' | 'notificationsEnabled'>) => (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
+    const newValue = event.target.checked;
     setSettings(prev => ({
       ...prev,
-      [field]: event.target.checked,
+      [field]: newValue,
     }));
+    
+    // Apply theme immediately for dark mode toggle
+    if (field === 'darkMode') {
+      setTheme(newValue ? 'dark' : 'light');
+    }
   };
 
   const handleNumberChange = (field: keyof Pick<Settings, 'updateInterval' | 'dataRetentionDays'>) => (
@@ -113,7 +135,7 @@ const SettingsPanel: React.FC = () => {
 
       // In production, you would also save to backend
       if (process.env.NODE_ENV !== 'development') {
-        const response = await fetch(`${API_CONFIG.baseUrl}/api/settings`, {
+        const response = await fetch(`${config.apiUrl}/api/settings`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -127,10 +149,6 @@ const SettingsPanel: React.FC = () => {
       }
 
       setSuccess('Settings saved successfully');
-
-      // Apply settings
-      document.documentElement.setAttribute('data-theme', settings.darkMode ? 'dark' : 'light');
-      // Add other settings applications as needed
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to save settings');
     }
@@ -286,4 +304,4 @@ const SettingsPanel: React.FC = () => {
   );
 };
 
-export default SettingsPanel; 
+export default SettingsPanel;

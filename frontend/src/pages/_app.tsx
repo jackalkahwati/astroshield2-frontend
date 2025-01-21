@@ -1,28 +1,10 @@
 import React from 'react';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
-import { ThemeProvider as MUIThemeProvider, createTheme, CssBaseline } from '@mui/material';
 import { ThemeProvider } from '../components/theme-provider';
-import { useTheme } from 'next-themes';
+import '../styles/globals.css';
 
 const App = ({ Component, pageProps }: AppProps) => {
-  const { theme: nextTheme } = useTheme();
-  
-  const muiTheme = React.useMemo(() => 
-    createTheme({
-      palette: {
-        mode: nextTheme === 'dark' ? 'dark' : 'light',
-        primary: {
-          main: '#1976d2',
-        },
-        secondary: {
-          main: '#dc004e',
-        },
-      },
-    }),
-    [nextTheme]
-  );
-
   return (
     <React.StrictMode>
       <Head>
@@ -30,10 +12,7 @@ const App = ({ Component, pageProps }: AppProps) => {
         <title>AstroShield</title>
       </Head>
       <ThemeProvider>
-        <MUIThemeProvider theme={muiTheme}>
-          <CssBaseline />
-          <Component {...pageProps} />
-        </MUIThemeProvider>
+        <Component {...pageProps} />
       </ThemeProvider>
     </React.StrictMode>
   );
