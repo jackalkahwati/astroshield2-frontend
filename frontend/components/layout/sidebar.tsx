@@ -14,6 +14,11 @@ import {
   Settings,
   ChevronLeft,
   ChevronRight,
+  Satellite,
+  Activity,
+  BarChart3,
+  AlertCircle,
+  Gauge
 } from "lucide-react"
 
 const routes = [
@@ -23,9 +28,24 @@ const routes = [
     href: "/dashboard",
   },
   {
-    label: "Analytics",
-    icon: ChartBar,
-    href: "/analytics",
+    label: "Comprehensive",
+    icon: Activity,
+    href: "/comprehensive",
+  },
+  {
+    label: "Indicators",
+    icon: AlertCircle,
+    href: "/indicators",
+  },
+  {
+    label: "Satellite Tracking",
+    icon: Satellite,
+    href: "/tracking",
+  },
+  {
+    label: "Stability Analysis",
+    icon: Gauge,
+    href: "/stability",
   },
   {
     label: "Maneuvers",
@@ -33,9 +53,9 @@ const routes = [
     href: "/maneuvers",
   },
   {
-    label: "Protection",
-    icon: Shield,
-    href: "/protection",
+    label: "Analytics",
+    icon: BarChart3,
+    href: "/analytics",
   },
   {
     label: "Settings",

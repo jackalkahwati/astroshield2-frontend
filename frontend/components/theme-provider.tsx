@@ -19,10 +19,9 @@ const colors = {
 export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
   return (
     <NextThemesProvider
-      attribute="data-theme"
-      defaultTheme="system"
+      attribute="class"
+      defaultTheme="dark"
       enableSystem={true}
-      themes={["light", "dark", "system"]}
       {...props}
     >
       {children}
