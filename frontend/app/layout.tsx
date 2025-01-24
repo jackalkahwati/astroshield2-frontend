@@ -1,9 +1,9 @@
 import { Inter } from "next/font/google"
 import { ThemeProvider } from "@/components/theme-provider"
-import { SidebarProvider } from "@/components/ui/sidebar"
+import { SidebarProvider } from "@/components/providers/sidebar-provider"
 import { Toaster } from "@/components/ui/toaster"
 import { cn } from "@/lib/utils"
-import { RootLayout as AppLayout } from "@/components/layout/root-layout"
+import { Layout } from "@/components/layout/Layout"
 
 import "@/styles/globals.css"
 
@@ -29,11 +29,11 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head />
       <body className={cn(inter.className, "min-h-screen bg-background font-sans antialiased")}>
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} forcedTheme="dark">
+        <ThemeProvider>
           <SidebarProvider>
-            <AppLayout>
+            <Layout>
               {children}
-            </AppLayout>
+            </Layout>
           </SidebarProvider>
           <Toaster />
         </ThemeProvider>
