@@ -7,7 +7,7 @@
     "regions": ["sfo1"],
     "builds": [
         {
-            "src": "frontend/**",
+            "src": "frontend/next.config.mjs",
             "use": "@vercel/next"
         }
     ],
