@@ -5,6 +5,157 @@ import random
 
 router = APIRouter()
 
+# Health Check
+@router.get("/health")
+async def get_health():
+    return {
+        "status": "healthy",
+        "timestamp": datetime.now().isoformat(),
+        "services": {
+            "database": "connected",
+            "api": "operational",
+            "telemetry": "active"
+        }
+    }
+
+# Satellites
+@router.get("/satellites")
+async def get_satellites():
+    return [
+        {
+            "id": "SAT-001",
+            "name": "AstroShield-1",
+            "status": "operational",
+            "orbit": {
+                "altitude": 500,
+                "inclination": 51.6,
+                "period": 92.7
+            },
+            "health": {
+                "power": 98,
+                "thermal": 95,
+                "communication": 99
+            }
+        },
+        {
+            "id": "SAT-002",
+            "name": "AstroShield-2",
+            "status": "operational",
+            "orbit": {
+                "altitude": 520,
+                "inclination": 51.6,
+                "period": 93.1
+            },
+            "health": {
+                "power": 97,
+                "thermal": 96,
+                "communication": 98
+            }
+        }
+    ]
+
+@router.get("/satellites/{satellite_id}")
+async def get_satellite_by_id(satellite_id: str):
+    # Mock data for a single satellite
+    return {
+        "id": satellite_id,
+        "name": f"AstroShield-{satellite_id[-1]}",
+        "status": "operational",
+        "orbit": {
+            "altitude": 500 + random.randint(0, 50),
+            "inclination": 51.6,
+            "period": 92.7 + random.random()
+        },
+        "health": {
+            "power": random.randint(95, 100),
+            "thermal": random.randint(95, 100),
+            "communication": random.randint(95, 100)
+        },
+        "telemetry": {
+            "lastUpdate": datetime.now().isoformat(),
+            "signalStrength": random.randint(85, 100),
+            "temperature": 20 + random.random() * 5,
+            "batteryLevel": random.randint(85, 100)
+        }
+    }
+
+@router.get("/telemetry/{satellite_id}")
+async def get_telemetry_data(satellite_id: str):
+    return {
+        "satellite_id": satellite_id,
+        "timestamp": datetime.now().isoformat(),
+        "data": {
+            "power": {
+                "battery_level": random.randint(85, 100),
+                "solar_panel_output": random.uniform(90, 100),
+                "power_consumption": random.uniform(50, 80)
+            },
+            "thermal": {
+                "internal_temp": 20 + random.random() * 5,
+                "external_temp": -10 + random.random() * 5,
+                "heating_power": random.uniform(20, 40)
+            },
+            "communication": {
+                "signal_strength": random.randint(85, 100),
+                "bit_error_rate": random.uniform(0, 0.001),
+                "latency": random.uniform(0.1, 0.5)
+            }
+        }
+    }
+
+@router.get("/indicators")
+async def get_indicators():
+    return {
+        "timestamp": datetime.now().isoformat(),
+        "indicators": {
+            "orbit_stability": {
+                "value": random.uniform(95, 100),
+                "trend": "stable",
+                "alerts": []
+            },
+            "power_management": {
+                "value": random.uniform(90, 100),
+                "trend": "improving",
+                "alerts": []
+            },
+            "thermal_control": {
+                "value": random.uniform(92, 98),
+                "trend": "stable",
+                "alerts": []
+            },
+            "communication_quality": {
+                "value": random.uniform(95, 100),
+                "trend": "stable",
+                "alerts": []
+            }
+        }
+    }
+
+@router.get("/stability/{satellite_id}")
+async def get_stability_analysis(satellite_id: str):
+    return {
+        "satellite_id": satellite_id,
+        "timestamp": datetime.now().isoformat(),
+        "analysis": {
+            "attitude_stability": {
+                "value": random.uniform(95, 100),
+                "confidence": random.uniform(90, 100),
+                "trend": "stable"
+            },
+            "orbit_stability": {
+                "value": random.uniform(95, 100),
+                "confidence": random.uniform(90, 100),
+                "trend": "stable"
+            },
+            "thermal_stability": {
+                "value": random.uniform(92, 98),
+                "confidence": random.uniform(90, 100),
+                "trend": "stable"
+            }
+        },
+        "recommendations": []
+    }
+
 @router.get("/comprehensive/data")
 async def get_comprehensive_data():
     return {
@@ -17,7 +168,7 @@ async def get_comprehensive_data():
         },
         "status": "nominal",
         "alerts": [],
-        "timestamp": "2024-01-21T12:00:00Z"
+        "timestamp": datetime.now().isoformat()
     }
 
 @router.get("/stability/metrics")
@@ -99,8 +250,8 @@ async def get_analytics_data():
         }
     }
 
-@router.get("/maneuvers/data")
-async def get_maneuvers_data():
+@router.get("/maneuvers")
+async def get_maneuvers():
     current_time = datetime.now()
     
     # Generate mock maneuvers data
@@ -132,4 +283,16 @@ async def get_maneuvers_data():
             "next_maintenance": (current_time + timedelta(days=random.randint(10, 30))).isoformat()
         },
         "lastUpdate": current_time.isoformat()
+    }
+
+@router.post("/maneuvers")
+async def create_maneuver(data: dict):
+    # Mock creating a new maneuver
+    return {
+        "id": f"MNV-{random.randint(1000, 9999)}",
+        "type": data.get("type", "unknown"),
+        "status": "scheduled",
+        "scheduledTime": datetime.now().isoformat(),
+        "details": data.get("details", {}),
+        "created": datetime.now().isoformat()
     }

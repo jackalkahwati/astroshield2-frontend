@@ -34,9 +34,10 @@ export default function RootLayout({
         "loading-none" // Prevents FOUC
       )}>
         <ThemeProvider
-          attribute="data-theme"
+          attribute="class"
           defaultTheme="system"
           enableSystem
+          disableTransitionOnChange
         >
           <SidebarProvider>
             <Layout>

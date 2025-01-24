@@ -4,6 +4,18 @@ from datetime import datetime, timedelta
 from unittest.mock import Mock, patch
 from services.ccdm_service import CCDMService
 from analysis.ml_evaluators import MLManeuverEvaluator, MLSignatureEvaluator, MLAMREvaluator
+from fastapi.testclient import TestClient
+from app.main import app
+from app.models.ccdm import (
+    ObservationData,
+    ObjectAnalysisRequest,
+    ShapeChangeResponse,
+    ThermalSignatureResponse,
+    PropulsiveCapabilityResponse,
+    ConfidenceLevel
+)
+
+client = TestClient(app)
 
 @pytest.fixture
 def mock_evaluators():
@@ -27,6 +39,26 @@ def mock_evaluators():
 def ccdm_service():
     """Create CCDM service instance."""
     return CCDMService()
+
+@pytest.fixture
+def test_observation_data():
+    return ObservationData(
+        timestamp=datetime.utcnow(),
+        sensor_id="test_sensor_1",
+        measurements={
+            "position_x": 100.0,
+            "position_y": 200.0,
+            "position_z": 300.0,
+            "velocity_x": 1.0,
+            "velocity_y": 2.0,
+            "velocity_z": 3.0
+        },
+        metadata={"source": "test"}
+    )
+
+@pytest.fixture
+def test_object_id():
+    return "TEST_OBJ_001"
 
 def test_analyze_conjunction_success(ccdm_service, mock_evaluators):
     """Test successful conjunction analysis."""
@@ -133,3 +165,125 @@ def test_error_handling(ccdm_service):
         result = ccdm_service.analyze_conjunction_trends(spacecraft_id)
         assert result['status'] == 'error'
         assert 'message' in result
+
+class TestCCDMService:
+    @pytest.mark.asyncio
+    async def test_analyze_object(self, test_object_id, test_observation_data):
+        request = ObjectAnalysisRequest(
+            object_id=test_object_id,
+            observation_data=test_observation_data
+        )
+        response = client.post("/api/v1/ccdm/analyze_object", json=request.dict())
+        assert response.status_code == 200
+        data = response.json()
+        assert data["object_id"] == test_object_id
+        assert 0.0 <= data["confidence_level"] <= 1.0
+
+    @pytest.mark.asyncio
+    async def test_detect_shape_changes(self, test_object_id):
+        end_time = datetime.utcnow()
+        start_time = end_time - timedelta(hours=24)
+        response = client.post(
+            "/api/v1/ccdm/detect_shape_changes",
+            json={
+                "object_id": test_object_id,
+                "start_time": start_time.isoformat(),
+                "end_time": end_time.isoformat()
+            }
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert data["object_id"] == test_object_id
+        assert isinstance(data["detected_changes"], list)
+        assert data["analysis_confidence"] in [level.value for level in ConfidenceLevel]
+
+    @pytest.mark.asyncio
+    async def test_assess_thermal_signature(self, test_object_id):
+        timestamp = datetime.utcnow()
+        response = client.post(
+            "/api/v1/ccdm/assess_thermal_signature",
+            json={
+                "object_id": test_object_id,
+                "timestamp": timestamp.isoformat()
+            }
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert data["object_id"] == test_object_id
+        assert "temperature_kelvin" in data["metrics"]
+        assert 0.0 <= data["metrics"]["anomaly_score"] <= 1.0
+
+    @pytest.mark.asyncio
+    async def test_evaluate_propulsive_capabilities(self, test_object_id):
+        response = client.post(
+            "/api/v1/ccdm/evaluate_propulsive_capabilities",
+            json={
+                "object_id": test_object_id,
+                "analysis_period": 24
+            }
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert data["object_id"] == test_object_id
+        assert "estimated_thrust" in data["metrics"]
+        assert data["metrics"]["maneuver_capability_score"] >= 0.0
+
+    @pytest.mark.asyncio
+    async def test_get_historical_analysis(self, test_object_id):
+        end_date = datetime.utcnow()
+        start_date = end_date - timedelta(days=7)
+        response = client.get(
+            f"/api/v1/ccdm/historical_analysis/{test_object_id}",
+            params={
+                "start_date": start_date.isoformat(),
+                "end_date": end_date.isoformat()
+            }
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert isinstance(data, list)
+
+@pytest.mark.performance
+class TestCCDMPerformance:
+    @pytest.mark.asyncio
+    async def test_concurrent_analysis(self, test_object_id, test_observation_data):
+        import asyncio
+        import time
+
+        request = ObjectAnalysisRequest(
+            object_id=test_object_id,
+            observation_data=test_observation_data
+        )
+
+        async def make_request():
+            response = client.post("/api/v1/ccdm/analyze_object", json=request.dict())
+            return response.status_code
+
+        start_time = time.time()
+        num_requests = 100
+        tasks = [make_request() for _ in range(num_requests)]
+        results = await asyncio.gather(*tasks)
+        end_time = time.time()
+
+        success_count = sum(1 for status in results if status == 200)
+        assert success_count >= num_requests * 0.95  # 95% success rate
+        assert end_time - start_time < 30  # Complete within 30 seconds
+
+    @pytest.mark.asyncio
+    async def test_shape_change_detection_performance(self, test_object_id):
+        end_time = datetime.utcnow()
+        start_time = end_time - timedelta(days=30)
+        
+        start_perf_time = time.time()
+        response = client.post(
+            "/api/v1/ccdm/detect_shape_changes",
+            json={
+                "object_id": test_object_id,
+                "start_time": start_time.isoformat(),
+                "end_time": end_time.isoformat()
+            }
+        )
+        end_perf_time = time.time()
+        
+        assert response.status_code == 200
+        assert end_perf_time - start_perf_time < 5  # Complete within 5 seconds

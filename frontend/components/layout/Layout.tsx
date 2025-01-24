@@ -3,7 +3,7 @@
 import { cn } from "@/lib/utils"
 import { useSidebar } from "@/components/providers/sidebar-provider"
 import { Sidebar } from "./sidebar"
-import { Header } from "./header"
+import { Navbar } from "./navbar"
 
 interface LayoutProps {
   children: React.ReactNode
@@ -19,7 +19,7 @@ export function Layout({ children }: LayoutProps) {
         "flex min-h-screen flex-col transition-all",
         isOpen ? "lg:pl-64" : "lg:pl-[72px]"
       )}>
-        <Header />
+        <Navbar />
         <main className="flex-1">
           <div className="container mx-auto p-6 pt-4">
             {children}

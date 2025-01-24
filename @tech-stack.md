@@ -1,251 +1,139 @@
-# AstroShield Microservice Tech Stack
+# AstroShield Technical Stack
 
-## Core Technologies
+## Backend Stack
 
-### Backend Framework
-- **Node.js** (Runtime Environment)
-- **Express.js** (Web Framework)
-  - Version: 4.18.2
-  - Purpose: API server and middleware management
-  - Key Features:
-    - Route handling
-    - Middleware support
-    - Error handling
-    - Request processing
+### Core Framework
+- FastAPI (v0.109.0)
+  - High-performance async web framework
+  - Built-in OpenAPI documentation
+  - WebSocket support for real-time updates
+
+### Authentication & Security
+- JWT-based authentication with key rotation
+- Role-based access control (RBAC)
+- Secure password hashing with bcrypt
+- API key management for external integrations
 
 ### Database
-- **PostgreSQL** (Primary Database)
-  - Version: 14
-  - Purpose: Persistent data storage
-  - Features:
-    - ACID compliance
-    - JSON support
-    - Complex queries
-    - Spatial data support
+- PostgreSQL for persistent storage
+- Redis for caching and real-time data
+- SQLAlchemy ORM with async support
+- Alembic for database migrations
 
-- **Knex.js** (Query Builder)
-  - Version: 3.1.0
-  - Purpose: Database operations and migrations
-  - Features:
-    - Query building
-    - Migrations
-    - Connection pooling
-    - Transaction support
+### Monitoring & Observability
+- OpenTelemetry integration
+  - Distributed tracing with Jaeger
+  - Metrics collection and monitoring
+  - Error tracking and logging
+- Health check endpoints
+- Performance monitoring
 
-### Security
-- **bcrypt** (Password Hashing)
-  - Version: 5.1.1
-  - Purpose: Secure password storage
+### Testing
+- Pytest for unit and integration tests
+- Async test support with pytest-asyncio
+- Coverage reporting with pytest-cov
+- Performance testing suite
 
-- **jsonwebtoken** (JWT)
-  - Version: 9.0.2
-  - Purpose: Authentication tokens
+## Frontend Stack
 
-- **csurf** (CSRF Protection)
-  - Version: 1.11.0
-  - Purpose: Cross-site request forgery protection
+### Core Framework
+- Next.js 14
+  - React 18 with Server Components
+  - TypeScript support
+  - API routes and middleware
 
-- **express-rate-limit**
-  - Version: 7.5.0
-  - Purpose: API rate limiting
+### State Management
+- Zustand for global state
+- React Query for server state
+- WebSocket integration for real-time updates
 
-### Observability Stack
+### UI Components
+- Radix UI primitives
+- Tailwind CSS for styling
+- Custom theme system with dark mode support
+- Responsive design patterns
 
-#### Logging
-- **Winston** (Logging Framework)
-  - Version: 3.11.0
-  - Features:
-    - Multiple transports
-    - Log levels
-    - Structured logging
-    - Custom formats
+### Data Visualization
+- Recharts for charts and graphs
+- Three.js for 3D visualizations
+- Custom WebGL shaders for advanced effects
 
-#### Metrics
-- **Prometheus** (Metrics Collection)
-  - Client: prom-client v15.1.0
-  - Features:
-    - Histograms
-    - Counters
-    - Gauges
-    - Custom metrics
+### Testing
+- Jest for unit testing
+- React Testing Library for component tests
+- Cypress for end-to-end testing
 
-#### Tracing
-- **OpenTelemetry** (Distributed Tracing)
-  - Version: 1.7.0 (API)
-  - Components:
-    - @opentelemetry/api
-    - @opentelemetry/sdk-trace-node
-    - @opentelemetry/exporter-jaeger
-    - @opentelemetry/resources
-    - @opentelemetry/semantic-conventions
+## DevOps & Infrastructure
 
-### Testing Framework
-- **Jest** (Testing Framework)
-  - Version: 29.7.0
-  - Features:
-    - Unit testing
-    - Integration testing
-    - Mocking
-    - Code coverage
-
-- **Supertest** (HTTP Testing)
-  - Version: 6.3.3
-  - Purpose: API endpoint testing
-
-### Data Validation
-- **Ajv** (JSON Schema Validator)
-  - Version: 8.12.0
-  - Purpose: Request/response validation
-  - Features:
-    - JSON Schema validation
-    - Custom formats
-    - Error messages
-
-### Development Tools
-- **nodemon** (Development Server)
-  - Version: 3.0.2
-  - Purpose: Auto-restart during development
-
-### Machine Learning (Planned)
-- **PyTorch**
-  - Purpose: Deep learning models
-  - Components:
-    - torch
-    - torchvision
-    - CUDA support (optional)
-
-- **ONNX**
-  - Purpose: Model interoperability
-  - Features:
-    - Model export
-    - Cross-platform support
-
-## Infrastructure
-
-### Containerization
-- **Docker**
-  - Purpose: Application containerization
-  - Components:
-    - Dockerfile
-    - docker-compose.yml
-    - Multi-stage builds
-
-### Orchestration
-- **Kubernetes**
-  - Components:
-    - Deployments
-    - Services
-    - ConfigMaps
-    - Secrets
-
-### CI/CD
-- **GitHub Actions**
-  - Features:
-    - Automated testing
-    - Build pipeline
-    - Deployment automation
-    - Security scanning
+### Deployment
+- Vercel for frontend hosting
+- Docker containers for backend services
+- Kubernetes for orchestration
+- CI/CD pipelines with GitHub Actions
 
 ### Monitoring
-- **Prometheus** (Metrics Storage)
-  - Purpose: Time-series data storage
-  - Features:
-    - Query language (PromQL)
-    - Alerting rules
-    - Service discovery
+- Grafana dashboards
+- Prometheus metrics
+- ELK stack for log aggregation
+- Uptime monitoring
 
-- **Grafana** (Visualization)
-  - Purpose: Metrics visualization
-  - Features:
-    - Custom dashboards
-    - Alerting
-    - Data source integration
+### Security
+- SSL/TLS encryption
+- Regular security audits
+- Automated vulnerability scanning
+- Secure secret management
 
-### Tracing Backend
-- **Jaeger**
-  - Purpose: Distributed tracing storage
-  - Features:
-    - Trace visualization
-    - Performance analysis
-    - Root cause analysis
+## Development Tools
 
-## Development Environment
+### Version Control
+- Git with GitHub
+- Conventional commits
+- Branch protection rules
+- Code review process
 
-### Required Tools
-- Node.js >= 18.x
-- PostgreSQL >= 14
-- Docker >= 20.x
-- kubectl (for Kubernetes)
-- Git
+### Code Quality
+- ESLint for JavaScript/TypeScript
+- Black for Python formatting
+- Pre-commit hooks
+- Automated testing on PR
 
-### Recommended IDEs/Editors
-- VSCode with extensions:
-  - ESLint
-  - Prettier
-  - Jest
-  - Docker
-  - Kubernetes
-  - PostgreSQL
+### Documentation
+- OpenAPI/Swagger for API docs
+- TypeDoc for TypeScript
+- Sphinx for Python
+- Markdown for general docs
 
-### Package Management
-- npm (Node Package Manager)
-  - package.json
-  - package-lock.json
-  - Scripts for common tasks
+## Communication Protocols
 
-## Version Control
-- **Git**
-  - Branching strategy:
-    - main (production)
-    - develop (integration)
-    - feature/* (features)
-    - hotfix/* (urgent fixes)
+### HTTP/HTTPS
+- RESTful API endpoints
+- GraphQL for complex queries
+- Webhook support
 
-## Documentation
-- **Markdown**
-  - API documentation
-  - Technical documentation
-  - Setup guides
+### WebSocket
+- Real-time CCDM updates
+- Bi-directional communication
+- Automatic reconnection
+- Message queuing
 
-## Environment Configuration
-- **dotenv**
-  - Purpose: Environment variable management
-  - Environments:
-    - development
-    - test
-    - production
+### Data Formats
+- JSON for API responses
+- Protocol Buffers for efficiency
+- Binary formats for large datasets
 
-## Performance Optimization
-- **Compression**
-  - express-compression
-  - Purpose: Response compression
+## ML Infrastructure
 
-- **Caching**
-  - Memory caching
-  - Response caching
-  - Database query caching
+### Model Training
+- PyTorch for deep learning
+- Scikit-learn for traditional ML
+- CUDA support for GPU acceleration
 
-## Security Measures
-- HTTPS enforcement
-- Helmet.js for headers
-- Rate limiting
-- CSRF protection
-- Input validation
-- Output sanitization
-- Audit logging
+### Model Deployment
+- ONNX Runtime for inference
+- TensorRT for optimization
+- Model versioning and A/B testing
 
-## Deployment Platforms
-- **Production**
-  - Kubernetes cluster
-  - Load balancer
-  - SSL termination
-
-- **Staging**
-  - Kubernetes namespace
-  - Feature flags
-  - A/B testing
-
-- **Development**
-  - Local environment
-  - Docker compose
-  - Hot reloading 
+### Data Pipeline
+- Apache Airflow for orchestration
+- Kafka for event streaming
+- MinIO for object storage 
