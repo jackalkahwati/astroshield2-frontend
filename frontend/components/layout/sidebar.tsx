@@ -50,7 +50,7 @@ export function Sidebar() {
 
   return (
     <div className={cn(
-      "fixed inset-y-0 left-0 z-50 flex h-full flex-col border-r bg-background transition-all",
+      "relative h-full flex flex-col border-r bg-background transition-all duration-300",
       isOpen ? "w-64" : "w-[72px]"
     )}>
       <div className="flex h-16 items-center justify-between px-4 py-4">
@@ -61,31 +61,33 @@ export function Sidebar() {
         <Button
           onClick={toggle}
           variant="ghost"
-          className={cn("h-8 w-8 p-0", !isOpen && "hidden")}
+          size="icon"
+          className={cn("h-8 w-8", !isOpen && "hidden")}
         >
           <ChevronLeft className="h-4 w-4" />
         </Button>
         <Button
           onClick={toggle}
           variant="ghost"
-          className={cn("h-8 w-8 p-0", isOpen && "hidden")}
+          size="icon"
+          className={cn("h-8 w-8", isOpen && "hidden")}
         >
           <ChevronRight className="h-4 w-4" />
         </Button>
       </div>
-      <ScrollArea className="flex-1 overflow-hidden">
+      <ScrollArea className="flex-1">
         <div className="space-y-2 p-4">
           {routes.map((route) => (
             <Link
               key={route.href}
               href={route.href}
               className={cn(
-                "flex items-center gap-x-2 rounded-lg px-3 py-2 text-sm font-medium transition-all hover:bg-accent hover:text-accent-foreground",
+                "flex items-center gap-x-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground",
                 pathname === route.href ? "bg-accent text-accent-foreground" : "text-muted-foreground",
                 !isOpen && "justify-center"
               )}
             >
-              <route.icon className="h-4 w-4" />
+              <route.icon className="h-5 w-5" />
               {isOpen && <span>{route.label}</span>}
             </Link>
           ))}
