@@ -5,6 +5,7 @@ from opentelemetry.exporter.jaeger.thrift import JaegerExporter
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
+from app.endpoints import router
 
 # Initialize tracer
 trace.set_tracer_provider(TracerProvider())
@@ -21,7 +22,7 @@ trace.get_tracer_provider().add_span_processor(
 
 app = FastAPI(
     title="AstroShield API",
-    description="Space object analysis and protection system",
+    description="Backend API for the AstroShield satellite protection system",
     version="1.0.0"
 )
 
@@ -45,6 +46,9 @@ app.include_router(analytics.router, prefix="/api/v1/analytics", tags=["Analytic
 app.include_router(maneuvers.router, prefix="/api/v1/maneuvers", tags=["Maneuvers"])
 app.include_router(health.router, prefix="/api/v1/health", tags=["Health"])
 
+# Include router
+app.include_router(router, prefix="/api")
+
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000) 
+    uvicorn.run(app, host="0.0.0.0", port=3001) 

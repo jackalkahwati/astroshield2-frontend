@@ -2,6 +2,8 @@ from fastapi import FastAPI, HTTPException, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime, timedelta
 import random
+from typing import List, Optional
+from pydantic import BaseModel
 
 router = APIRouter()
 
@@ -18,8 +20,52 @@ async def get_health():
         }
     }
 
+# Models
+class OrbitData(BaseModel):
+    altitude: float
+    inclination: float
+    period: float
+
+class HealthData(BaseModel):
+    power: int
+    thermal: int
+    communication: int
+
+class TelemetryData(BaseModel):
+    lastUpdate: str
+    signalStrength: int
+    temperature: float
+    batteryLevel: int
+
+class Satellite(BaseModel):
+    id: str
+    name: str
+    status: str
+    orbit: OrbitData
+    health: HealthData
+    telemetry: Optional[TelemetryData]
+
+class ManeuverDetails(BaseModel):
+    deltaV: float
+    duration: int
+    fuel_required: float
+    rotation_angle: float
+    fuel_used: Optional[float]
+
+class Maneuver(BaseModel):
+    id: str
+    type: str
+    status: str
+    scheduledTime: str
+    completedTime: Optional[str]
+    details: ManeuverDetails
+
+class CreateManeuverRequest(BaseModel):
+    type: str
+    details: dict
+
 # Satellites
-@router.get("/satellites")
+@router.get("/satellites", response_model=List[Satellite])
 async def get_satellites():
     return [
         {
@@ -54,7 +100,7 @@ async def get_satellites():
         }
     ]
 
-@router.get("/satellites/{satellite_id}")
+@router.get("/satellites/{satellite_id}", response_model=Satellite)
 async def get_satellite_by_id(satellite_id: str):
     # Mock data for a single satellite
     return {
@@ -156,35 +202,6 @@ async def get_stability_analysis(satellite_id: str):
         "recommendations": []
     }
 
-@router.get("/comprehensive/data")
-async def get_comprehensive_data():
-    return {
-        "metrics": {
-            "attitude_stability": 95.5,
-            "orbit_stability": 98.2,
-            "thermal_stability": 87.3,
-            "power_stability": 92.8,
-            "communication_stability": 96.1
-        },
-        "status": "nominal",
-        "alerts": [],
-        "timestamp": datetime.now().isoformat()
-    }
-
-@router.get("/stability/metrics")
-async def get_stability_metrics():
-    return {
-        "metrics": {
-            "attitude_stability": 95.5,
-            "orbit_stability": 98.2,
-            "thermal_stability": 87.3,
-            "power_stability": 92.8,
-            "communication_stability": 96.1
-        },
-        "status": "nominal",
-        "timestamp": "2024-01-21T12:00:00Z"
-    }
-
 @router.get("/analytics/data")
 async def get_analytics_data():
     # Generate mock analytics data
@@ -250,7 +267,7 @@ async def get_analytics_data():
         }
     }
 
-@router.get("/maneuvers")
+@router.get("/maneuvers", response_model=List[Maneuver])
 async def get_maneuvers():
     current_time = datetime.now()
     
@@ -275,24 +292,22 @@ async def get_maneuvers():
             }
         })
     
-    return {
-        "maneuvers": maneuvers,
-        "resources": {
-            "fuel_remaining": random.uniform(50, 100),
-            "thrust_capacity": random.uniform(80, 100),
-            "next_maintenance": (current_time + timedelta(days=random.randint(10, 30))).isoformat()
-        },
-        "lastUpdate": current_time.isoformat()
-    }
+    return maneuvers
 
-@router.post("/maneuvers")
-async def create_maneuver(data: dict):
+@router.post("/maneuvers", response_model=Maneuver)
+async def create_maneuver(data: CreateManeuverRequest):
     # Mock creating a new maneuver
     return {
         "id": f"MNV-{random.randint(1000, 9999)}",
-        "type": data.get("type", "unknown"),
+        "type": data.type,
         "status": "scheduled",
         "scheduledTime": datetime.now().isoformat(),
-        "details": data.get("details", {}),
-        "created": datetime.now().isoformat()
+        "completedTime": None,
+        "details": {
+            "deltaV": random.uniform(0.1, 2.0),
+            "duration": random.randint(1800, 7200),
+            "fuel_required": random.uniform(5, 20),
+            "rotation_angle": random.uniform(0, 360),
+            "fuel_used": None
+        }
     }
