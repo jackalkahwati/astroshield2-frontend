@@ -3,135 +3,94 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
+import { useSidebar } from "@/components/providers/sidebar-provider"
+import { Button } from "@/components/ui/button"
+import { ScrollArea } from "@/components/ui/scroll-area"
 import {
-  BarChart2,
-  List,
-  Satellite,
-  TrendingUp,
+  LayoutDashboard,
+  ChartBar,
+  Rocket,
   Shield,
-  Activity,
   Settings,
-  Menu,
   ChevronLeft,
   ChevronRight,
 } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { useSidebar } from "@/components/ui/sidebar"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
-const navigation = [
+const routes = [
   {
-    name: "Comprehensive",
-    href: "/",
-    icon: BarChart2,
+    label: "Dashboard",
+    icon: LayoutDashboard,
+    href: "/dashboard",
   },
   {
-    name: "Indicators",
-    href: "/indicators",
-    icon: List,
-  },
-  {
-    name: "Satellite Tracking",
-    href: "/tracking",
-    icon: Satellite,
-  },
-  {
-    name: "Stability Analysis",
-    href: "/stability",
-    icon: TrendingUp,
-  },
-  {
-    name: "Maneuvers",
-    href: "/maneuvers",
-    icon: Shield,
-  },
-  {
-    name: "Analytics",
+    label: "Analytics",
+    icon: ChartBar,
     href: "/analytics",
-    icon: Activity,
+  },
+  {
+    label: "Maneuvers",
+    icon: Rocket,
+    href: "/maneuvers",
+  },
+  {
+    label: "Protection",
+    icon: Shield,
+    href: "/protection",
+  },
+  {
+    label: "Settings",
+    icon: Settings,
+    href: "/settings",
   },
 ]
 
-interface SidebarProps {
-  className?: string
-}
-
-export function Sidebar({ className }: SidebarProps) {
+export function Sidebar() {
   const pathname = usePathname()
-  const { isCollapsed, toggleSidebar } = useSidebar()
+  const { isOpen, toggle } = useSidebar()
 
   return (
-    <div
-      className={cn(
-        "flex h-screen flex-col bg-background transition-all duration-300 ease-in-out",
-        isCollapsed ? "w-16" : "w-64",
-        className,
-      )}
-    >
-      <div className="flex items-center justify-between px-4 py-4">
-        <Link href="/" className={cn("flex items-center gap-2", isCollapsed && "justify-center")}>
-          <Shield className="h-6 w-6 text-primary" />
-          {!isCollapsed && <span className="text-xl font-bold">AstroShield</span>}
-        </Link>
-        <Button variant="ghost" size="icon" onClick={toggleSidebar} className="hidden md:flex">
-          {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+    <div className={cn(
+      "fixed inset-y-0 left-0 z-50 flex h-full flex-col border-r bg-background transition-all",
+      isOpen ? "w-64" : "w-[72px]"
+    )}>
+      <div className="flex h-16 items-center justify-between px-4 py-4">
+        <div className={cn("flex items-center gap-x-2", !isOpen && "justify-center w-full")}>
+          <Shield className="h-8 w-8 text-primary" />
+          {isOpen && <span className="text-xl font-bold">AstroShield</span>}
+        </div>
+        <Button
+          onClick={toggle}
+          variant="ghost"
+          className={cn("h-8 w-8 p-0", !isOpen && "hidden")}
+        >
+          <ChevronLeft className="h-4 w-4" />
+        </Button>
+        <Button
+          onClick={toggle}
+          variant="ghost"
+          className={cn("h-8 w-8 p-0", isOpen && "hidden")}
+        >
+          <ChevronRight className="h-4 w-4" />
         </Button>
       </div>
-      <div className="flex-1 overflow-auto py-2">
-        <nav className="grid gap-1 px-2">
-          {navigation.map((item) => {
-            const isActive = pathname === item.href
-            return (
-              <TooltipProvider key={item.name}>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Link
-                      href={item.href}
-                      className={cn(
-                        "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors",
-                        isActive
-                          ? "bg-secondary text-secondary-foreground"
-                          : "text-muted-foreground hover:bg-secondary/50 hover:text-secondary-foreground",
-                        isCollapsed && "justify-center",
-                      )}
-                    >
-                      <item.icon className="h-4 w-4" />
-                      {!isCollapsed && <span>{item.name}</span>}
-                    </Link>
-                  </TooltipTrigger>
-                  <TooltipContent
-                    side="right"
-                    className={cn("bg-popover text-popover-foreground", !isCollapsed && "hidden")}
-                  >
-                    {item.name}
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            )
-          })}
-        </nav>
-      </div>
-      <div className="border-t p-2">
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Link
-                href="/settings"
-                className={cn(
-                  "flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-secondary/50 hover:text-secondary-foreground",
-                  isCollapsed && "justify-center",
-                )}
-              >
-                <Settings className="h-4 w-4" />
-                {!isCollapsed && <span>Settings</span>}
-              </Link>
-            </TooltipTrigger>
-            <TooltipContent side="right" className={cn("bg-popover text-popover-foreground", !isCollapsed && "hidden")}>
-              Settings
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      </div>
+      <ScrollArea className="flex-1 overflow-hidden">
+        <div className="space-y-2 p-4">
+          {routes.map((route) => (
+            <Link
+              key={route.href}
+              href={route.href}
+              className={cn(
+                "flex items-center gap-x-2 rounded-lg px-3 py-2 text-sm font-medium transition-all hover:bg-accent hover:text-accent-foreground",
+                pathname === route.href ? "bg-accent text-accent-foreground" : "text-muted-foreground",
+                !isOpen && "justify-center"
+              )}
+            >
+              <route.icon className="h-4 w-4" />
+              {isOpen && <span>{route.label}</span>}
+            </Link>
+          ))}
+        </div>
+      </ScrollArea>
     </div>
   )
 }
