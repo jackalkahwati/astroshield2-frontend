@@ -7,8 +7,14 @@
     "regions": ["sfo1"],
     "builds": [
         {
-            "src": "frontend/next.config.mjs",
+            "src": "frontend/**",
             "use": "@vercel/next"
+        }
+    ],
+    "routes": [
+        {
+            "src": "/(.*)",
+            "dest": "/frontend/$1"
         }
     ]
 } 
