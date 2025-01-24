@@ -11,9 +11,5 @@
       "src": "next.config.mjs",
       "use": "@vercel/next"
     }
-  ],
-  "project": {
-    "name": "asttroshield-v0",
-    "org": "jackalkahwatis-projects"
-  }
+  ]
 } 
