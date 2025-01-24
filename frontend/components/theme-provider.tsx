@@ -19,11 +19,10 @@ const colors = {
 export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
   return (
     <NextThemesProvider
-      attribute="class"
-      defaultTheme="dark"
-      enableSystem={false}
-      forcedTheme="dark"
-      themes={["dark"]}
+      attribute="data-theme"
+      defaultTheme="system"
+      enableSystem={true}
+      themes={["light", "dark", "system"]}
       {...props}
     >
       {children}

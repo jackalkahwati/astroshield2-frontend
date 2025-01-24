@@ -7,7 +7,7 @@ import { Layout } from "@/components/layout/Layout"
 
 import "@/styles/globals.css"
 
-const inter = Inter({ subsets: ["latin"] })
+const inter = Inter({ subsets: ["latin"], display: "swap" })
 
 export const metadata = {
   title: "AstroShield - Advanced Satellite Protection System",
@@ -28,8 +28,16 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head />
-      <body className={cn(inter.className, "min-h-screen bg-background font-sans antialiased")}>
-        <ThemeProvider>
+      <body className={cn(
+        inter.className,
+        "min-h-screen bg-background font-sans antialiased",
+        "loading-none" // Prevents FOUC
+      )}>
+        <ThemeProvider
+          attribute="data-theme"
+          defaultTheme="system"
+          enableSystem
+        >
           <SidebarProvider>
             <Layout>
               {children}
