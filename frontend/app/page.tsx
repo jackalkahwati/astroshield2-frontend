@@ -11,10 +11,13 @@ export default function HomePage() {
   }, [router])
 
   return (
-    <div className="flex h-screen w-full items-center justify-center">
-      <div className="flex flex-col items-center space-y-4">
-        <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-t-2 border-primary"></div>
-        <p className="text-lg text-muted-foreground">Loading AstroShield...</p>
+    <div className="flex h-screen w-full items-center justify-center bg-background">
+      <div className="flex flex-col items-center space-y-6">
+        <div className="h-10 w-10 animate-spin rounded-full border-b-2 border-t-2 border-primary"></div>
+        <div className="text-center">
+          <p className="text-xl font-semibold text-foreground">Welcome to AstroShield</p>
+          <p className="text-sm text-muted-foreground">Initializing satellite protection systems...</p>
+        </div>
       </div>
     </div>
   )
