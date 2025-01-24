@@ -1,6 +1,5 @@
 {
   "version": 2,
-  // Trigger new deployment
   "framework": "nextjs",
   "buildCommand": "npm run build",
   "devCommand": "npm run dev",
