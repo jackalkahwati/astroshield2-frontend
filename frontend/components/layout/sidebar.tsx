@@ -8,17 +8,12 @@ import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import {
   LayoutDashboard,
-  ChartBar,
+  BarChart,
   Rocket,
   Shield,
   Settings,
   ChevronLeft,
   ChevronRight,
-  Satellite,
-  Activity,
-  BarChart3,
-  AlertCircle,
-  Gauge
 } from "lucide-react"
 
 const routes = [
@@ -28,24 +23,9 @@ const routes = [
     href: "/dashboard",
   },
   {
-    label: "Comprehensive",
-    icon: Activity,
-    href: "/comprehensive",
-  },
-  {
-    label: "Indicators",
-    icon: AlertCircle,
-    href: "/indicators",
-  },
-  {
-    label: "Satellite Tracking",
-    icon: Satellite,
-    href: "/tracking",
-  },
-  {
-    label: "Stability Analysis",
-    icon: Gauge,
-    href: "/stability",
+    label: "Analytics",
+    icon: BarChart,
+    href: "/analytics",
   },
   {
     label: "Maneuvers",
@@ -53,9 +33,9 @@ const routes = [
     href: "/maneuvers",
   },
   {
-    label: "Analytics",
-    icon: BarChart3,
-    href: "/analytics",
+    label: "Protection",
+    icon: Shield,
+    href: "/protection",
   },
   {
     label: "Settings",
@@ -70,7 +50,7 @@ export function Sidebar() {
 
   return (
     <div className={cn(
-      "relative h-full flex flex-col border-r bg-background transition-all duration-300",
+      "fixed inset-y-0 left-0 z-50 flex h-full flex-col border-r bg-background transition-all",
       isOpen ? "w-64" : "w-[72px]"
     )}>
       <div className="flex h-16 items-center justify-between px-4 py-4">
