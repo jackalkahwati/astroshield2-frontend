@@ -13,17 +13,19 @@ export function Layout({ children }: LayoutProps) {
   const { isOpen } = useSidebar()
 
   return (
-    <div className="relative h-screen overflow-hidden">
+    <div className="min-h-screen">
       <Sidebar />
-      <main className={cn(
-        "flex-1 overflow-y-auto transition-all",
-        isOpen ? "lg:pl-64" : "lg:pl-20"
+      <div className={cn(
+        "flex min-h-screen flex-col transition-all",
+        isOpen ? "lg:pl-64" : "lg:pl-[72px]"
       )}>
         <Header />
-        <div className="container mx-auto p-6 space-y-6">
-          {children}
-        </div>
-      </main>
+        <main className="flex-1">
+          <div className="container mx-auto p-6 pt-4">
+            {children}
+          </div>
+        </main>
+      </div>
     </div>
   )
 } 
