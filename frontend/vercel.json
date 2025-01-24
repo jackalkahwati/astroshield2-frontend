@@ -1,14 +1,14 @@
 {
   "version": 2,
   "framework": "nextjs",
-  "buildCommand": "cd frontend && npm install && npm run build",
-  "devCommand": "cd frontend && npm run dev",
-  "installCommand": "cd frontend && npm install",
-  "outputDirectory": "frontend/.next",
+  "buildCommand": "npm run build",
+  "devCommand": "npm run dev",
+  "installCommand": "npm install",
+  "outputDirectory": ".next",
   "regions": ["sfo1", "iad1"],
   "builds": [
     {
-      "src": "frontend/next.config.mjs",
+      "src": "next.config.mjs",
       "use": "@vercel/next"
     }
   ]
