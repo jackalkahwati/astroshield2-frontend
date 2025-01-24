@@ -22,16 +22,17 @@ jobs:
       - run: npm ci
       - run: npm run build
 
-  api-ci:
+  backend-ci:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./api
+        working-directory: ./backend
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v4
         with:
-          python-version: '3.9'
+          python-version: '3.11'
           cache: 'pip'
-      - run: pip install -r requirements.txt
-      - run: python -m pytest -v 
+      - run: python -m venv venv
+      - run: source venv/bin/activate && pip install -r requirements.txt
+      - run: source venv/bin/activate && python -m pytest -v 
