@@ -1,20 +1,7 @@
 {
     "version": 2,
     "framework": "nextjs",
-    "buildCommand": "cd frontend && npm install && npm run build",
     "outputDirectory": "frontend/.next",
-    "installCommand": "cd frontend && npm install",
-    "regions": ["sfo1"],
-    "builds": [
-        {
-            "src": "frontend/package.json",
-            "use": "@vercel/next"
-        }
-    ],
-    "routes": [
-        {
-            "src": "/(.*)",
-            "dest": "/frontend/$1"
-        }
-    ]
+    "buildCommand": "cd frontend && npm install && npm run build",
+    "installCommand": "cd frontend && npm install"
 } 
