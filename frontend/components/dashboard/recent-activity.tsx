@@ -1,52 +1,65 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+"use client"
 
-const recentActivity = [
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+
+const events = [
   {
     id: "1",
-    title: "New Satellite Detected",
-    description: "AstroShield-1 detected a new satellite in orbit",
-    timestamp: "2 hours ago"
+    type: "Threat Detected",
+    description: "Potential collision risk identified for SAT-001",
+    timestamp: "2 minutes ago",
+    status: "warning",
   },
   {
     id: "2",
-    title: "Maneuver Completed",
-    description: "Successful collision avoidance maneuver executed",
-    timestamp: "4 hours ago"
+    type: "Maneuver Completed",
+    description: "Successful orbit adjustment for SAT-003",
+    timestamp: "10 minutes ago",
+    status: "success",
   },
   {
     id: "3",
-    title: "System Update",
-    description: "Software update completed successfully",
-    timestamp: "6 hours ago"
+    type: "System Update",
+    description: "Collision avoidance algorithms updated",
+    timestamp: "25 minutes ago",
+    status: "info",
   },
   {
     id: "4",
-    title: "Alert Resolved",
-    description: "Potential collision threat resolved",
-    timestamp: "8 hours ago"
-  }
+    type: "Alert Cleared",
+    description: "Threat level normalized for SAT-002",
+    timestamp: "1 hour ago",
+    status: "success",
+  },
+  {
+    id: "5",
+    type: "Data Collection",
+    description: "New telemetry data received from all satellites",
+    timestamp: "2 hours ago",
+    status: "info",
+  },
 ]
 
 export function RecentActivity() {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Recent Activity</CardTitle>
-        <CardDescription>A list of recent events and updates</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-8">
-          {recentActivity.map((activity) => (
-            <div key={activity.id} className="flex items-center">
-              <div className="ml-4 space-y-1">
-                <p className="text-sm font-medium leading-none">{activity.title}</p>
-                <p className="text-sm text-muted-foreground">{activity.description}</p>
-                <p className="text-xs text-muted-foreground">{activity.timestamp}</p>
-              </div>
-            </div>
-          ))}
+    <div className="space-y-8">
+      {events.map((event) => (
+        <div key={event.id} className="flex items-center">
+          <Avatar className="h-9 w-9">
+            <AvatarImage src={`/avatars/0${event.id}.png`} alt="Avatar" />
+            <AvatarFallback>AS</AvatarFallback>
+          </Avatar>
+          <div className="ml-4 space-y-1">
+            <p className="text-sm font-medium leading-none">{event.type}</p>
+            <p className="text-sm text-muted-foreground">
+              {event.description}
+            </p>
+          </div>
+          <div className="ml-auto font-medium">
+            {event.timestamp}
+          </div>
         </div>
-      </CardContent>
-    </Card>
+      ))}
+    </div>
   )
 } 
