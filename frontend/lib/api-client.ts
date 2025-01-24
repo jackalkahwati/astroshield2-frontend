@@ -9,53 +9,59 @@ const apiClient = axios.create({
 
 // Satellite Data
 export const getSatellites = async () => {
-  const response = await apiClient.get('/satellites')
+  const response = await apiClient.get('/api/satellites')
   return response.data
 }
 
 export const getSatelliteById = async (id: string) => {
-  const response = await apiClient.get(`/satellites/${id}`)
+  const response = await apiClient.get(`/api/satellites/${id}`)
   return response.data
 }
 
 // Telemetry Data
 export const getTelemetryData = async (satelliteId: string) => {
-  const response = await apiClient.get(`/telemetry/${satelliteId}`)
+  const response = await apiClient.get(`/api/telemetry/${satelliteId}`)
   return response.data
 }
 
 // Maneuvers
 export const getManeuvers = async () => {
-  const response = await apiClient.get('/maneuvers')
+  const response = await apiClient.get('/api/maneuvers')
   return response.data
 }
 
 export const createManeuver = async (data: any) => {
-  const response = await apiClient.post('/maneuvers', data)
+  const response = await apiClient.post('/api/maneuvers', data)
   return response.data
 }
 
 // Analytics
 export const getAnalytics = async () => {
-  const response = await apiClient.get('/analytics')
+  const response = await apiClient.get('/api/analytics/data')
   return response.data
 }
 
 // System Health
 export const getSystemHealth = async () => {
-  const response = await apiClient.get('/health')
+  const response = await apiClient.get('/api/health')
   return response.data
 }
 
 // Indicators
 export const getIndicators = async () => {
-  const response = await apiClient.get('/indicators')
+  const response = await apiClient.get('/api/indicators')
   return response.data
 }
 
 // Stability Analysis
 export const getStabilityAnalysis = async (satelliteId: string) => {
-  const response = await apiClient.get(`/stability/${satelliteId}`)
+  const response = await apiClient.get(`/api/stability/${satelliteId}`)
+  return response.data
+}
+
+// Comprehensive Data
+export const getComprehensiveData = async () => {
+  const response = await apiClient.get('/api/comprehensive/data')
   return response.data
 }
 

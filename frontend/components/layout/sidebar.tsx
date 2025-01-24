@@ -8,24 +8,38 @@ import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import {
   LayoutDashboard,
-  BarChart,
+  Activity,
   Rocket,
   Shield,
   Settings,
   ChevronLeft,
   ChevronRight,
+  Satellite,
+  AlertCircle,
+  BarChart3,
+  Gauge
 } from "lucide-react"
 
 const routes = [
   {
-    label: "Dashboard",
-    icon: LayoutDashboard,
-    href: "/dashboard",
+    label: "Comprehensive",
+    icon: Activity,
+    href: "/comprehensive",
   },
   {
-    label: "Analytics",
-    icon: BarChart,
-    href: "/analytics",
+    label: "Indicators",
+    icon: AlertCircle,
+    href: "/indicators",
+  },
+  {
+    label: "Satellite Tracking",
+    icon: Satellite,
+    href: "/tracking",
+  },
+  {
+    label: "Stability Analysis",
+    icon: Gauge,
+    href: "/stability",
   },
   {
     label: "Maneuvers",
@@ -33,9 +47,9 @@ const routes = [
     href: "/maneuvers",
   },
   {
-    label: "Protection",
-    icon: Shield,
-    href: "/protection",
+    label: "Analytics",
+    icon: BarChart3,
+    href: "/analytics",
   },
   {
     label: "Settings",
