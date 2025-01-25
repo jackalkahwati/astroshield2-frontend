@@ -34,9 +34,9 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "https://asttroshieldv0-lb7e5ekcn-jackalkahwatis-projects.vercel.app",
-        "http://localhost:3000",  # Development
-        "https://api.astroshield.com",  # Production API
+        "https://asttroshieldv0-dodjmxe8f-jackalkahwatis-projects.vercel.app",
+        "http://localhost:3000",
+        "https://astroshield2-api-production.up.railway.app"
     ],
     allow_credentials=True,
     allow_methods=["*"],

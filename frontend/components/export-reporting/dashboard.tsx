@@ -34,6 +34,8 @@ export function ExportReportingDashboard() {
     })
   }
 
+  const entries = dateRange ? Object.entries(dateRange) : []
+
   return (
     <Card>
       <CardHeader>
