@@ -1,29 +1,21 @@
 "use client"
 
-import { cn } from "@/lib/utils"
-import { useSidebar } from "@/components/providers/sidebar-provider"
-import { Sidebar } from "./sidebar"
-import { Navbar } from "./navbar"
+import { ReactNode } from 'react'
+import { Navbar } from './navbar'
+import { Sidebar } from './sidebar'
 
 interface LayoutProps {
-  children: React.ReactNode
+  children: ReactNode
 }
 
-export function Layout({ children }: LayoutProps) {
-  const { isOpen } = useSidebar()
-
+export default function Layout({ children }: LayoutProps) {
   return (
     <div className="min-h-screen">
-      <Sidebar />
-      <div className={cn(
-        "flex min-h-screen flex-col transition-all",
-        isOpen ? "lg:pl-64" : "lg:pl-[72px]"
-      )}>
-        <Navbar />
-        <main className="flex-1">
-          <div className="container mx-auto p-6 pt-4">
-            {children}
-          </div>
+      <Navbar />
+      <div className="flex h-[calc(100vh-4rem)]">
+        <Sidebar />
+        <main className="flex-1 overflow-y-auto p-4 md:p-8">
+          {children}
         </main>
       </div>
     </div>

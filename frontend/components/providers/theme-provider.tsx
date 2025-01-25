@@ -7,11 +7,12 @@ import { type ThemeProviderProps } from "next-themes/dist/types"
 export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
   return (
     <NextThemesProvider
-      attribute="data-theme"
+      attribute="class"
       defaultTheme="dark"
       enableSystem
-      disableTransitionOnChange
-      themes={["light", "dark"]}
+      disableTransitionOnChange={false}
+      enableColorScheme
+      storageKey="astroshield-theme"
       {...props}
     >
       {children}

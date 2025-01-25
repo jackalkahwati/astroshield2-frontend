@@ -1,5 +1,6 @@
 """Tests for the enhanced CCDM service with ML capabilities."""
 import pytest
+import time
 from datetime import datetime, timedelta
 from unittest.mock import Mock, patch
 from services.ccdm_service import CCDMService
@@ -12,9 +13,12 @@ from app.models.ccdm import (
     ShapeChangeResponse,
     ThermalSignatureResponse,
     PropulsiveCapabilityResponse,
-    ConfidenceLevel
+    ConfidenceLevel,
+    CCDMUpdate,
+    CCDMAssessment
 )
 
+# Test client setup
 client = TestClient(app)
 
 @pytest.fixture
@@ -287,3 +291,23 @@ class TestCCDMPerformance:
         
         assert response.status_code == 200
         assert end_perf_time - start_perf_time < 5  # Complete within 5 seconds
+
+def test_process_ccdm_update():
+    update = CCDMUpdate(
+        object_id="test-sat-001",
+        timestamp=time.time(),
+        update_type="position",
+        data={"x": 100, "y": 200, "z": 300},
+        confidence=ConfidenceLevel.HIGH,
+        severity="low"
+    )
+    response = client.post("/ccdm/update", json=update.dict())
+    assert response.status_code == 200
+    assert response.json()["status"] == "success"
+
+def test_get_assessment():
+    object_id = "test-sat-001"
+    response = client.get(f"/ccdm/assessment/{object_id}")
+    assert response.status_code == 200
+    assessment = CCDMAssessment(**response.json())
+    assert assessment.object_id == object_id

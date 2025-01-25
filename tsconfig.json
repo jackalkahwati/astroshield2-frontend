@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es2020",
+    "target": "es5",
     "lib": [
       "dom",
       "dom.iterable",
@@ -13,21 +13,30 @@
     "noEmit": true,
     "esModuleInterop": true,
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
-    "baseUrl": ".",
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
     "paths": {
-      "@/*": ["src/*"],
-      "@/lib/*": ["src/lib/*"],
-      "@/components/*": ["src/components/*"]
-    }
+      "@/*": ["./frontend/*"]
+    },
+    "typeRoots": [
+      "./frontend/types",
+      "./node_modules/@types"
+    ]
   },
   "include": [
     "next-env.d.ts",
-    "src/**/*"
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "frontend/types/**/*.d.ts"
   ],
   "exclude": [
     "node_modules"

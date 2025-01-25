@@ -4,7 +4,7 @@ import { useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { DatePickerWithRange } from "@/components/ui/date-range-picker"
+import { DateRangePicker } from "@/components/ui/date-range-picker"
 import { Loader2 } from "lucide-react"
 import { toast } from "@/components/ui/use-toast"
 
@@ -57,7 +57,11 @@ export function ExportReportingDashboard() {
           </div>
           <div className="space-y-2">
             <label className="text-sm font-medium">Date Range</label>
-            <DatePickerWithRange date={dateRange} setDate={setDateRange} />
+            <DateRangePicker
+              onDateChange={(range) => {
+                console.log(range)
+              }}
+            />
           </div>
         </div>
         <Button onClick={handleExport} disabled={isExporting}>

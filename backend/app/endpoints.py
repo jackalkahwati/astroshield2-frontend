@@ -2,8 +2,10 @@ from fastapi import FastAPI, HTTPException, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime, timedelta
 import random
-from typing import List, Optional
+from typing import List, Optional, Dict
 from pydantic import BaseModel
+import time
+from .core.metrics import metrics_collector
 
 router = APIRouter()
 
@@ -63,6 +65,25 @@ class Maneuver(BaseModel):
 class CreateManeuverRequest(BaseModel):
     type: str
     details: dict
+
+class SecurityMetrics(BaseModel):
+    httpsPercentage: float
+    cspViolations: int
+    blockedRequests: int
+    rateLimited: int
+    sanitizedErrors: int
+    potentialLeaks: int
+    timestamp: str
+
+class SecurityMetricsResponse(BaseModel):
+    security: dict[str, List[SecurityMetrics]]
+
+class SecurityAlert(BaseModel):
+    type: str
+    severity: str
+    value: int
+    threshold: int
+    timestamp: str
 
 # Satellites
 @router.get("/satellites", response_model=List[Satellite])
@@ -311,3 +332,18 @@ async def create_maneuver(data: CreateManeuverRequest):
             "fuel_used": None
         }
     }
+
+@router.get("/api/security/metrics", response_model=SecurityMetricsResponse)
+async def get_security_metrics():
+    try:
+        current_metrics = SecurityMetrics(**metrics_collector.get_current_metrics())
+        return {"security": {"current": [current_metrics]}}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/api/security/alerts", response_model=List[SecurityAlert])
+async def get_security_alerts():
+    try:
+        return metrics_collector.get_active_alerts()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

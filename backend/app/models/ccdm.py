@@ -69,4 +69,65 @@ class PropulsiveCapabilityResponse(BaseModel):
     metrics: PropulsiveCapabilityMetrics
     historical_events: List[Dict[str, Any]]
     confidence_level: ConfidenceLevel
-    timestamp: datetime 
+    timestamp: datetime
+
+class CCDMUpdate(BaseModel):
+    """Model for CCDM real-time updates"""
+    object_id: str
+    timestamp: datetime
+    update_type: str = Field(..., description="Type of update (e.g., 'shape_change', 'thermal_signature')")
+    data: Dict[str, Any]
+    confidence: float = Field(..., ge=0.0, le=1.0)
+    severity: Optional[str] = Field(None, description="Severity level if applicable")
+
+class CCDMAssessment(BaseModel):
+    """Model for CCDM assessment results"""
+    object_id: str
+    assessment_type: str
+    timestamp: datetime
+    results: Dict[str, Any]
+    confidence_level: float = Field(..., ge=0.0, le=1.0)
+    recommendations: List[str]
+
+class HistoricalAnalysis(BaseModel):
+    """Model for historical analysis results"""
+    object_id: str
+    time_range: Dict[str, datetime]
+    patterns: List[Dict[str, Any]]
+    trend_analysis: Dict[str, Any]
+    anomalies: List[Dict[str, Any]]
+
+class CorrelationResult(BaseModel):
+    """Model for correlation analysis results"""
+    object_ids: List[str]
+    timestamp: datetime
+    correlations: List[Dict[str, Any]]
+    relationship_strength: float = Field(..., ge=0.0, le=1.0)
+    significance_level: float
+
+class AnomalyDetection(BaseModel):
+    """Model for anomaly detection results"""
+    object_id: str
+    timestamp: datetime
+    anomaly_type: str
+    details: Dict[str, Any]
+    confidence: float = Field(..., ge=0.0, le=1.0)
+    recommended_actions: List[str]
+
+class ObservationRecommendation(BaseModel):
+    """Model for observation recommendations"""
+    object_id: str
+    recommended_times: List[datetime]
+    recommended_sensors: List[str]
+    observation_parameters: Dict[str, Any]
+    priority_level: int = Field(..., ge=1, le=5)
+
+class CCDMReport(BaseModel):
+    """Model for comprehensive CCDM reports"""
+    object_id: str
+    report_timestamp: datetime
+    assessment_summary: CCDMAssessment
+    historical_data: Optional[HistoricalAnalysis]
+    anomalies: List[AnomalyDetection]
+    recommendations: List[str]
+    confidence_metrics: Dict[str, float] 

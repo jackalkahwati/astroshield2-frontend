@@ -6,6 +6,10 @@ from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from app.endpoints import router
+from app.core.tasks import setup_periodic_tasks
+from app.core.security import key_store
+from app.api.api_v1.api import api_router
+from datetime import datetime
 
 # Initialize tracer
 trace.set_tracer_provider(TracerProvider())
@@ -29,7 +33,11 @@ app = FastAPI(
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In production, replace with specific origins
+    allow_origins=[
+        "https://asttroshieldv0-lb7e5ekcn-jackalkahwatis-projects.vercel.app",
+        "http://localhost:3000",  # Development
+        "https://api.astroshield.com",  # Production API
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -39,15 +47,48 @@ app.add_middleware(
 FastAPIInstrumentor.instrument_app(app)
 
 # Import and include routers
-from app.routers import ccdm, analytics, maneuvers, health
+from app.routers import ccdm, analytics, maneuvers, health, comprehensive
 
 app.include_router(ccdm.router, prefix="/api/v1/ccdm", tags=["CCDM"])
 app.include_router(analytics.router, prefix="/api/v1/analytics", tags=["Analytics"])
 app.include_router(maneuvers.router, prefix="/api/v1/maneuvers", tags=["Maneuvers"])
 app.include_router(health.router, prefix="/api/v1/health", tags=["Health"])
+app.include_router(comprehensive.router, prefix="/api/v1/comprehensive", tags=["Comprehensive"])
 
 # Include router
 app.include_router(router, prefix="/api")
+
+# Include API router
+app.include_router(api_router, prefix="/api/v1")
+
+@app.on_event("startup")
+async def startup_event():
+    """Initialize services on startup"""
+    # Ensure we have valid encryption keys
+    if not key_store.get_current_key():
+        key_store.rotate_keys()
+    
+    # Setup periodic tasks
+    setup_periodic_tasks(app)
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    """Cleanup on shutdown"""
+    if hasattr(app.state, "scheduler"):
+        app.state.scheduler.shutdown()
+
+@app.get("/health")
+async def health_check():
+    """Health check endpoint"""
+    return {
+        "status": "healthy",
+        "timestamp": datetime.utcnow().isoformat(),
+        "current_key_version": key_store.current_version
+    }
+
+@app.get("/")
+async def root():
+    return {"message": "AstroShield API is running"}
 
 if __name__ == "__main__":
     import uvicorn
