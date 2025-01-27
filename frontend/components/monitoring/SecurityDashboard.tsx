@@ -23,8 +23,15 @@ export function SecurityDashboard() {
   useEffect(() => {
     const fetchMetrics = async () => {
       try {
-        const data = await getSecurityMetrics()
-        setMetrics(data.security.current[0] || null)
+        const response = await getSecurityMetrics()
+        if (!response.data) {
+          setError(response.error?.message || 'No security data available')
+          setMetrics(null)
+          return
+        }
+        
+        const current = response.data.security.current[0]
+        setMetrics(current || null)
         setError(null)
       } catch (err) {
         setError('Failed to fetch security metrics')
