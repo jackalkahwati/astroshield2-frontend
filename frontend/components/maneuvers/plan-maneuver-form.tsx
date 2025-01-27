@@ -42,63 +42,66 @@ import {
 } from "@/components/ui/popover"
 import { createManeuver } from "@/lib/api-client"
 import { useToast } from "@/components/ui/use-toast"
+import type { ManeuverData } from "@/lib/types"
 
 const maneuverTypes = [
   { value: "hohmann", label: "Hohmann Transfer" },
   { value: "stationkeeping", label: "Station Keeping" },
   { value: "phasing", label: "Phasing Maneuver" },
   { value: "collision", label: "Collision Avoidance" }
-]
+] as const
 
 const formSchema = z.object({
-  type: z.string(),
+  type: z.enum(["hohmann", "stationkeeping", "phasing", "collision"] as const),
   scheduledTime: z.date(),
-  deltaV: z.string().transform(Number),
-  duration: z.string().transform(Number),
-  fuelRequired: z.string().transform(Number),
-  rotationAngle: z.string().transform(Number)
+  delta_v: z.number().min(0),
+  duration: z.number().min(0),
+  fuel_required: z.number().min(0),
 })
+
+type FormValues = z.infer<typeof formSchema>
 
 export function PlanManeuverForm() {
   const [open, setOpen] = useState(false)
   const { toast } = useToast()
   
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       type: "hohmann",
-      deltaV: 0,
-      duration: 1800,
-      fuelRequired: 5,
-      rotationAngle: 0
-    }
+      delta_v: 0,
+      duration: 0,
+      fuel_required: 0,
+    },
   })
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(data: FormValues) {
     try {
-      const response = await createManeuver({
-        type: values.type,
-        scheduledTime: values.scheduledTime.toISOString(),
+      const maneuverData: Partial<ManeuverData> = {
+        type: data.type,
+        status: "scheduled",
+        scheduledTime: data.scheduledTime.toISOString(),
         details: {
-          deltaV: values.deltaV,
-          duration: values.duration,
-          fuel_required: values.fuelRequired,
-          rotation_angle: values.rotationAngle
+          delta_v: data.delta_v,
+          duration: data.duration,
+          fuel_required: data.fuel_required,
         }
-      })
-
+      }
+      
+      await createManeuver(maneuverData)
+      
       toast({
         title: "Maneuver Planned",
-        description: `Successfully scheduled a ${values.type} maneuver.`
+        description: "The maneuver has been scheduled successfully.",
       })
-
+      
       setOpen(false)
       form.reset()
     } catch (error) {
       toast({
-        variant: "destructive",
         title: "Error",
-        description: "Failed to plan maneuver. Please try again."
+        description: "Failed to plan maneuver. Please try again.",
+        variant: "destructive",
       })
     }
   }
@@ -106,13 +109,13 @@ export function PlanManeuverForm() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>Plan Maneuver</Button>
+        <Button>Plan New Maneuver</Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>Plan New Maneuver</DialogTitle>
           <DialogDescription>
-            Schedule a new orbital maneuver. All times are in UTC.
+            Schedule a new orbital maneuver. All fields are required.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -158,9 +161,9 @@ export function PlanManeuverForm() {
                           )}
                         >
                           {field.value ? (
-                            format(field.value, "PPP HH:mm")
+                            format(field.value, "PPP")
                           ) : (
-                            <span>Pick a date and time</span>
+                            <span>Pick a date</span>
                           )}
                           <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                         </Button>
@@ -171,6 +174,9 @@ export function PlanManeuverForm() {
                         mode="single"
                         selected={field.value}
                         onSelect={field.onChange}
+                        disabled={(date) =>
+                          date < new Date() || date < new Date("1900-01-01")
+                        }
                         initialFocus
                       />
                     </PopoverContent>
@@ -181,16 +187,17 @@ export function PlanManeuverForm() {
             />
             <FormField
               control={form.control}
-              name="deltaV"
+              name="delta_v"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Delta-V (m/s)</FormLabel>
                   <FormControl>
-                    <Input type="number" step="0.1" {...field} />
+                    <Input
+                      type="number"
+                      {...field}
+                      onChange={e => field.onChange(parseFloat(e.target.value))}
+                    />
                   </FormControl>
-                  <FormDescription>
-                    Change in velocity required for the maneuver (meters per second)
-                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -202,43 +209,35 @@ export function PlanManeuverForm() {
                 <FormItem>
                   <FormLabel>Duration (seconds)</FormLabel>
                   <FormControl>
-                    <Input type="number" {...field} />
+                    <Input
+                      type="number"
+                      {...field}
+                      onChange={e => field.onChange(parseFloat(e.target.value))}
+                    />
                   </FormControl>
-                  <FormDescription>
-                    Total duration of the maneuver
-                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
             <FormField
               control={form.control}
-              name="fuelRequired"
+              name="fuel_required"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Fuel Required (kg)</FormLabel>
                   <FormControl>
-                    <Input type="number" step="0.1" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="rotationAngle"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Rotation Angle (degrees)</FormLabel>
-                  <FormControl>
-                    <Input type="number" step="0.1" {...field} />
+                    <Input
+                      type="number"
+                      {...field}
+                      onChange={e => field.onChange(parseFloat(e.target.value))}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
             <DialogFooter>
-              <Button type="submit">Schedule Maneuver</Button>
+              <Button type="submit">Plan Maneuver</Button>
             </DialogFooter>
           </form>
         </Form>
