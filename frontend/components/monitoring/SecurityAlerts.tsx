@@ -26,8 +26,13 @@ export function SecurityAlerts() {
   useEffect(() => {
     const checkAlerts = async () => {
       try {
-        const data = await getSecurityMetrics()
-        const current = data.security.current[0]
+        const response = await getSecurityMetrics()
+        if (!response.data) {
+          console.error(response.error?.message || "No security data available")
+          return
+        }
+        
+        const current = response.data.security.current[0]
         
         if (!current) return
 
