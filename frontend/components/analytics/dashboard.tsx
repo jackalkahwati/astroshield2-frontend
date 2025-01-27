@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { HighLevelMetrics } from "./high-level-metrics"
+import HighLevelMetrics from "./high-level-metrics"
 import { TrendAnalysis } from "./trend-analysis"
 import { PredictiveAnalytics } from "./predictive-analytics"
 import { InteractiveVisualization } from "./interactive-visualization"
@@ -20,6 +20,7 @@ export function AnalyticsDashboard() {
             className="bg-background border rounded px-3 py-1"
             value={timeRange}
             onChange={(e) => setTimeRange(e.target.value)}
+            aria-label="Select time range"
           >
             <option value="24h">Last 24 Hours</option>
             <option value="7d">Last 7 Days</option>
