@@ -39,6 +39,33 @@ export interface ComprehensiveData {
   timestamp: string
 }
 
+export interface SatelliteData {
+  id: string
+  name: string
+  status: string
+  orbit: {
+    altitude: number
+    inclination: number
+    period: number
+  }
+  telemetry: {
+    battery: number
+    temperature: number
+    signal_strength: number
+  }
+  lastContact: string
+}
+
+export interface SystemHealth {
+  status: string
+  timestamp: string
+  services: {
+    database: string
+    api: string
+    telemetry: string
+  }
+}
+
 // API-specific Types
 export interface RateLimitError extends ApiError {
   retryAfter: number
