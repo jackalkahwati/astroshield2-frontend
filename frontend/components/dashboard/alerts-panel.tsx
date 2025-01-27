@@ -1,4 +1,4 @@
-import { DataCard } from "@/components/ui/data-card"
+import { DashboardCard } from "@/components/dashboard/dashboard-card"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { AlertCircle, AlertTriangle, Info } from "lucide-react"
 
@@ -10,7 +10,7 @@ const alerts = [
 
 export function AlertsPanel() {
   return (
-    <DataCard title="Recent Alerts">
+    <DashboardCard title="Recent Alerts">
       <div className="space-y-4">
         {alerts.map((alert, index) => (
           <Alert key={index} variant={alert.type as "default" | "destructive"}>
@@ -22,7 +22,7 @@ export function AlertsPanel() {
           </Alert>
         ))}
       </div>
-    </DataCard>
+    </DashboardCard>
   )
 }
 
