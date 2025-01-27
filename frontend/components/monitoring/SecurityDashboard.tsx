@@ -47,24 +47,28 @@ export function SecurityDashboard() {
   }, [])
 
   if (loading) {
-    return <div>Loading security metrics...</div>
+    return <div className="min-h-screen p-6">Loading security metrics...</div>
   }
 
   if (error) {
     return (
-      <Alert variant="destructive">
-        <AlertTitle>Error</AlertTitle>
-        <AlertDescription>{error}</AlertDescription>
-      </Alert>
+      <div className="min-h-screen p-6">
+        <Alert variant="destructive">
+          <AlertTitle>Error</AlertTitle>
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      </div>
     )
   }
 
   if (!metrics) {
     return (
-      <Alert>
-        <AlertTitle>No Data</AlertTitle>
-        <AlertDescription>No security metrics available</AlertDescription>
-      </Alert>
+      <div className="min-h-screen p-6">
+        <Alert>
+          <AlertTitle>No Data</AlertTitle>
+          <AlertDescription>No security metrics available</AlertDescription>
+        </Alert>
+      </div>
     )
   }
 
@@ -72,102 +76,109 @@ export function SecurityDashboard() {
   const threatLevel = getThreatLevel(metrics)
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-      <Card>
-        <CardHeader>
-          <CardTitle>Security Score</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-2">
-            <Progress value={securityScore} className="w-full" />
-            <p className="text-sm text-muted-foreground">
-              {securityScore}% Secure
-            </p>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Threat Level</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className={`text-2xl font-bold ${getThreatLevelColor(threatLevel)}`}>
-            {threatLevel}
-          </div>
-          <p className="text-sm text-muted-foreground">
-            Based on current metrics
-          </p>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>HTTPS Usage</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">
-            {metrics.httpsPercentage}%
-          </div>
-          <Progress 
-            value={metrics.httpsPercentage} 
-            className="w-full mt-2"
-          />
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Security Violations</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div className="flex justify-between">
-              <span>CSP Violations</span>
-              <span className="font-bold">{metrics.cspViolations}</span>
+    <div className="min-h-screen p-6 pl-8">
+      <div className="mb-8">
+        <h2 className="text-2xl font-semibold tracking-tight">Security Overview</h2>
+      </div>
+      
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <Card className="shadow-sm">
+          <CardHeader className="pb-4">
+            <CardTitle className="text-lg">Security Score</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <Progress value={securityScore} className="w-full h-2" />
+              <p className="text-sm text-muted-foreground">
+                {securityScore}% Secure
+              </p>
             </div>
-            <div className="flex justify-between">
-              <span>Blocked Requests</span>
-              <span className="font-bold">{metrics.blockedRequests}</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Rate Limited</span>
-              <span className="font-bold">{metrics.rateLimited}</span>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Error Handling</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div className="flex justify-between">
-              <span>Sanitized Errors</span>
-              <span className="font-bold">{metrics.sanitizedErrors}</span>
+        <Card className="shadow-sm">
+          <CardHeader className="pb-4">
+            <CardTitle className="text-lg">Threat Level</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              <div className={`text-2xl font-bold ${getThreatLevelColor(threatLevel)}`}>
+                {threatLevel}
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Based on current metrics
+              </p>
             </div>
-            <div className="flex justify-between">
-              <span>Potential Leaks</span>
-              <span className="font-bold text-red-500">
-                {metrics.potentialLeaks}
-              </span>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Last Updated</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-sm text-muted-foreground">
-            {new Date(metrics.timestamp).toLocaleString()}
-          </div>
-        </CardContent>
-      </Card>
+        <Card className="shadow-sm">
+          <CardHeader className="pb-4">
+            <CardTitle className="text-lg">HTTPS Usage</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <Progress value={metrics.httpsPercentage} className="w-full h-2" />
+              <p className="text-sm text-muted-foreground">
+                {metrics.httpsPercentage}% HTTPS Traffic
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="shadow-sm">
+          <CardHeader className="pb-4">
+            <CardTitle className="text-lg">Security Violations</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-2xl font-bold">{metrics.cspViolations}</p>
+                  <p className="text-sm text-muted-foreground">CSP Violations</p>
+                </div>
+                <div>
+                  <p className="text-2xl font-bold">{metrics.blockedRequests}</p>
+                  <p className="text-sm text-muted-foreground">Blocked Requests</p>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="shadow-sm">
+          <CardHeader className="pb-4">
+            <CardTitle className="text-lg">Error Handling</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-2xl font-bold">{metrics.sanitizedErrors}</p>
+                  <p className="text-sm text-muted-foreground">Sanitized Errors</p>
+                </div>
+                <div>
+                  <p className="text-2xl font-bold">{metrics.rateLimited}</p>
+                  <p className="text-sm text-muted-foreground">Rate Limited</p>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="shadow-sm">
+          <CardHeader className="pb-4">
+            <CardTitle className="text-lg">Last Updated</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                {new Date(metrics.timestamp).toLocaleString()}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   )
 }
