@@ -7,7 +7,7 @@ from pydantic import BaseModel
 import time
 from .core.metrics import metrics_collector
 
-router = APIRouter()
+router = APIRouter(prefix="/api/v1")
 
 # Health Check
 @router.get("/health")

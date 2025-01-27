@@ -40,7 +40,7 @@ app.add_middleware(
         "https://astroshield2.vercel.app",
         "http://localhost:3000",
         "https://astroshield2-api-production.up.railway.app",
-        "*"  # For development - remove in production
+        "https://nosy-boy-production.up.railway.app"
     ],
     allow_credentials=True,
     allow_methods=["*"],
