@@ -26,10 +26,18 @@ export default function ManeuversPage() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const maneuvers = await getManeuvers()
+        const response = await getManeuvers()
+        if (!response.data) {
+          setState(prev => ({
+            ...prev,
+            error: response.error?.message || 'No maneuvers data available',
+            isLoading: false
+          }))
+          return
+        }
         setState(prev => ({
           ...prev,
-          data: maneuvers,
+          data: response.data,
           isLoading: false
         }))
       } catch (err) {

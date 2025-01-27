@@ -19,6 +19,7 @@ import {
   BarChart3,
   Gauge
 } from "lucide-react"
+import { ReactNode } from "react"
 
 const routes = [
   {
@@ -58,14 +59,20 @@ const routes = [
   },
 ]
 
-export function Sidebar() {
+interface SidebarProps {
+  className?: string
+  children?: ReactNode
+}
+
+export function Sidebar({ className }: SidebarProps) {
   const pathname = usePathname()
   const { isOpen, toggle } = useSidebar()
 
   return (
     <div className={cn(
       "fixed inset-y-0 left-0 z-50 flex h-full flex-col border-r bg-background transition-all",
-      isOpen ? "w-64" : "w-[72px]"
+      isOpen ? "w-64" : "w-[72px]",
+      className
     )}>
       <div className="flex h-16 items-center justify-between px-4 py-4">
         <div className={cn("flex items-center gap-x-2", !isOpen && "justify-center w-full")}>

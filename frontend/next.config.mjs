@@ -24,6 +24,14 @@ const nextConfig = {
     webpackBuildWorker: true,
     parallelServerBuildTraces: true,
     parallelServerCompiles: true,
+    optimizeCss: true,
+    optimizePackageImports: ['@/components', '@/lib'],
+  },
+  webpack: (config, { isServer }) => {
+    config.ignoreWarnings = [
+      { module: /node_modules\/punycode/ }
+    ]
+    return config
   },
 }
 

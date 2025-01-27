@@ -31,4 +31,17 @@ async def get_comprehensive_data():
             "timestamp": datetime.now().isoformat()
         }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e)) 
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/status")
+async def get_comprehensive_status():
+    """Get comprehensive system status"""
+    return {
+        "status": "operational",
+        "timestamp": datetime.utcnow().isoformat(),
+        "subsystems": {
+            "ccdm": "operational",
+            "analytics": "operational",
+            "maneuvers": "operational"
+        }
+    } 

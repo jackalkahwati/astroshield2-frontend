@@ -83,7 +83,7 @@ export function ProximityMonitor() {
                 <TableCell>{event.obj2}</TableCell>
                 <TableCell>{event.distance.toFixed(2)}</TableCell>
                 <TableCell>
-                  <Badge variant={event.distance < 50 ? "destructive" : event.distance < 75 ? "warning" : "default"}>
+                  <Badge variant={event.distance < 50 ? "destructive" : event.distance < 75 ? "secondary" : "default"}>
                     {event.distance < 50 ? "High" : event.distance < 75 ? "Medium" : "Low"}
                   </Badge>
                 </TableCell>

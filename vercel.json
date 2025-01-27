@@ -3,5 +3,14 @@
     "framework": "nextjs",
     "outputDirectory": "frontend/.next",
     "buildCommand": "cd frontend && npm install && npm run build",
-    "installCommand": "cd frontend && npm install"
+    "installCommand": "cd frontend && npm install",
+    "rewrites": [
+        {
+            "source": "/api/:path*",
+            "destination": "/api/:path*"
+        }
+    ],
+    "env": {
+        "NEXT_PUBLIC_API_URL": "https://api.astroshield.com"
+    }
 } 

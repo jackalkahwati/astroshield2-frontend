@@ -88,7 +88,16 @@ export function PlanManeuverForm() {
         }
       }
       
-      await createManeuver(maneuverData)
+      const response = await createManeuver(maneuverData)
+      
+      if (!response.data) {
+        toast({
+          title: "Error",
+          description: response.error?.message || "Failed to plan maneuver. Please try again.",
+          variant: "destructive",
+        })
+        return
+      }
       
       toast({
         title: "Maneuver Planned",

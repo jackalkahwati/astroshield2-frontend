@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { ThemeToggle } from "@/components/ui/theme-toggle"
+import { cn } from "@/lib/utils"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,7 +21,11 @@ const user = {
   initials: "JD"
 }
 
-export function Navbar() {
+interface NavbarProps {
+  className?: string
+}
+
+export function Navbar({ className }: NavbarProps) {
   const router = useRouter()
 
   const handleLogout = () => {
@@ -29,7 +34,7 @@ export function Navbar() {
   }
 
   return (
-    <div className="border-b">
+    <div className={cn("border-b", className)}>
       <div className="flex h-16 items-center px-4">
         <div className="ml-auto flex items-center space-x-4">
           <ThemeToggle />

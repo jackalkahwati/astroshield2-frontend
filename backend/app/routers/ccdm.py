@@ -8,19 +8,20 @@ from app.models.ccdm import (
     ObjectAnalysisResponse,
     ShapeChangeResponse,
     ThermalSignatureResponse,
-    PropulsiveCapabilityResponse
+    PropulsiveCapabilityResponse,
+    HistoricalAnalysis
 )
-from app.core.security import get_current_user, RoleChecker
+from app.core.security import get_current_user, check_roles
+from app.models.user import User
 
 router = APIRouter()
-allow_admin = RoleChecker(["admin"])
 ccdm_service = CCDMService()
 
-@router.post("/analyze_object", response_model=ObjectAnalysisResponse)
+@router.post("/analyze", response_model=ObjectAnalysisResponse)
 async def analyze_object(
     request: ObjectAnalysisRequest,
-    current_user = Depends(get_current_user)
-):
+    current_user: User = Depends(check_roles(["active"]))
+) -> ObjectAnalysisResponse:
     """Analyze a space object using CCDM techniques"""
     try:
         result = await ccdm_service.analyze_object(request.object_id, request.observation_data)
@@ -33,7 +34,7 @@ async def detect_shape_changes(
     object_id: str,
     start_time: datetime,
     end_time: datetime,
-    current_user = Depends(get_current_user)
+    current_user: User = Depends(check_roles(["active"]))
 ):
     """Detect changes in object shape over time"""
     try:
@@ -46,7 +47,7 @@ async def detect_shape_changes(
 async def assess_thermal_signature(
     object_id: str,
     timestamp: datetime,
-    current_user = Depends(get_current_user)
+    current_user: User = Depends(check_roles(["active"]))
 ):
     """Assess thermal signature of an object"""
     try:
@@ -59,7 +60,7 @@ async def assess_thermal_signature(
 async def evaluate_propulsive_capabilities(
     object_id: str,
     analysis_period: int,
-    current_user = Depends(get_current_user)
+    current_user: User = Depends(check_roles(["active", "admin"]))
 ):
     """Evaluate object's propulsive capabilities"""
     try:
@@ -68,15 +69,23 @@ async def evaluate_propulsive_capabilities(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.get("/historical_analysis/{object_id}")
-async def get_historical_analysis(
+@router.get("/history/{object_id}", response_model=List[HistoricalAnalysis])
+async def retrieve_historical_analysis(
     object_id: str,
-    start_date: Optional[datetime] = None,
-    end_date: Optional[datetime] = None,
-    current_user = Depends(get_current_user)
-):
+    current_user: User = Depends(check_roles(["active", "admin"]))
+) -> List[HistoricalAnalysis]:
     """Retrieve historical CCDM analysis for an object"""
     try:
-        return await ccdm_service.get_historical_analysis(object_id, start_date, end_date)
+        return await ccdm_service.get_historical_analysis(object_id)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e)) 
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/status")
+async def get_ccdm_status(
+    current_user: User = Depends(check_roles())
+) -> dict:
+    return {
+        "status": "operational",
+        "timestamp": datetime.utcnow(),
+        "active_analyses": 3
+    } 

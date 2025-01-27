@@ -345,8 +345,8 @@ export const useWebSocketStore = create<WebSocketState>((
           // Notify handlers with validated payload
           messageHandlers.forEach(handler => handler(timestampedMessage))
 
-          if (message.type === 'error') {
-            set({ error: message.payload.message })
+          if (message.type === 'error' && 'message' in message.payload) {
+            set({ error: (message.payload as { message: string }).message })
           }
         } catch (error) {
           console.error('Error parsing WebSocket message:', error)

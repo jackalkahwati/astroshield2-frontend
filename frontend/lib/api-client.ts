@@ -102,23 +102,39 @@ export async function getComprehensiveData(): Promise<ApiResponse<ComprehensiveD
   }
 }
 
-export async function getManeuvers(): Promise<ManeuverData[]> {
+export async function getManeuvers(): Promise<ApiResponse<ManeuverData[]>> {
   try {
-    const response = await axios.get('/api/maneuvers')
-    return response.data
+    const response = await apiClient.get<ManeuverData[]>('/api/v1/maneuvers')
+    return {
+      data: response.data,
+      status: response.status
+    }
   } catch (error) {
     console.error('Error fetching maneuvers:', error)
-    throw error
+    return {
+      data: null,
+      error: {
+        message: 'Failed to fetch maneuvers'
+      }
+    }
   }
 }
 
-export async function createManeuver(maneuverData: Partial<ManeuverData>): Promise<ManeuverData> {
+export async function createManeuver(maneuverData: Partial<ManeuverData>): Promise<ApiResponse<ManeuverData>> {
   try {
-    const response = await axios.post('/api/maneuvers', maneuverData)
-    return response.data
+    const response = await apiClient.post<ManeuverData>('/api/v1/maneuvers', maneuverData)
+    return {
+      data: response.data,
+      status: response.status
+    }
   } catch (error) {
     console.error('Error creating maneuver:', error)
-    throw error
+    return {
+      data: null,
+      error: {
+        message: 'Failed to create maneuver'
+      }
+    }
   }
 }
 
