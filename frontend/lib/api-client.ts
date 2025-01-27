@@ -138,6 +138,36 @@ export async function createManeuver(maneuverData: Partial<ManeuverData>): Promi
   }
 }
 
+export async function getSecurityMetrics(): Promise<ApiResponse<{
+  security: {
+    current: Array<{
+      httpsPercentage: number
+      cspViolations: number
+      blockedRequests: number
+      rateLimited: number
+      sanitizedErrors: number
+      potentialLeaks: number
+      timestamp: string
+    }>
+  }
+}>> {
+  try {
+    const response = await apiClient.get('/api/v1/security/metrics')
+    return {
+      data: response.data,
+      status: response.status
+    }
+  } catch (error) {
+    console.error('Error fetching security metrics:', error)
+    return {
+      data: null,
+      error: {
+        message: 'Failed to fetch security metrics'
+      }
+    }
+  }
+}
+
 // Initialize API client with configuration
 const apiClient = axios.create(API_CONFIG)
 
