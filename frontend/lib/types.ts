@@ -66,6 +66,28 @@ export interface SystemHealth {
   }
 }
 
+export interface TelemetryData {
+  satellite_id: string
+  timestamp: string
+  data: {
+    power: {
+      battery_level: number
+      solar_panel_output: number
+      power_consumption: number
+    }
+    thermal: {
+      internal_temp: number
+      external_temp: number
+      heating_power: number
+    }
+    communication: {
+      signal_strength: number
+      bit_error_rate: number
+      latency: number
+    }
+  }
+}
+
 // API-specific Types
 export interface RateLimitError extends ApiError {
   retryAfter: number

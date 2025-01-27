@@ -1,5 +1,21 @@
 import axios, { AxiosError, AxiosResponse } from 'axios'
 import { toast } from '@/components/ui/use-toast'
+import { 
+  ApiResponse,
+  ApiError,
+  RateLimitError,
+  NetworkError,
+  ValidationError,
+  EnhancedApiError,
+  SecurityHeaders,
+  MonitoringMetrics,
+  ComprehensiveData,
+  SatelliteData,
+  SystemHealth,
+  TelemetryData,
+  ManeuverData
+} from './types'
+import { API_CONFIG } from './api-config'
 
 const MAX_RETRIES = 3
 const RETRY_DELAY = 1000
@@ -14,34 +30,6 @@ const RATE_LIMIT = {
 // Rate limiting state
 let requestCount = 0
 let windowStart = Date.now()
-
-interface ApiError {
-  message: string
-  code: string
-  details?: any
-}
-
-// Enhanced error types
-interface RateLimitError extends ApiError {
-  retryAfter: number
-}
-
-interface NetworkError extends ApiError {
-  isNetworkError: true
-  originalError: Error
-}
-
-interface ValidationError extends ApiError {
-  fieldErrors: Record<string, string[]>
-}
-
-type EnhancedApiError = ApiError | RateLimitError | NetworkError | ValidationError
-
-interface ApiResponse<T> {
-  data: T | null
-  error?: EnhancedApiError
-  retryAfter?: number
-}
 
 // Add security and monitoring enhancements
 interface SecurityHeaders {
@@ -100,8 +88,8 @@ class MetricsCollector {
   }
 
   private getMemoryUsage(): number {
-    if (typeof window !== 'undefined' && window.performance?.memory) {
-      return window.performance.memory.usedJSHeapSize
+    if (typeof window !== 'undefined' && (window.performance as any)?.memory?.usedJSHeapSize) {
+      return (window.performance as any).memory.usedJSHeapSize
     }
     return 0
   }
@@ -129,6 +117,10 @@ class SecurityMonitor {
     rateLimit: 0,
     sanitized: 0,
     leaks: 0
+  }
+
+  getViolations() {
+    return { ...this.violations }
   }
 
   record() {
@@ -185,17 +177,7 @@ const securityHeaders: SecurityHeaders = {
 }
 
 // Update API client
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.astroshield.com'
-
-const apiClient = axios.create({
-  baseURL: API_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-    ...securityHeaders
-  },
-  timeout: 10000,
-  withCredentials: true
-})
+const apiClient = axios.create(API_CONFIG)
 
 // Enhanced error sanitization
 const sanitizeError = (error: any): ApiError => {
@@ -218,141 +200,29 @@ const sanitizeError = (error: any): ApiError => {
 // Request interceptor
 apiClient.interceptors.request.use(
   (config) => {
-    // Add auth token if available
-    const token = localStorage.getItem('auth_token')
+    const token = localStorage.getItem('token')
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
     }
     return config
   },
-  (error) => {
-    console.error('Request error:', error)
-    return Promise.reject(error)
-  }
+  (error) => Promise.reject(error)
 )
 
 // Response interceptor
 apiClient.interceptors.response.use(
-  (response: AxiosResponse) => response,
-  async (error: AxiosError<ApiError>) => {
-    const originalRequest = error.config
-    if (!originalRequest) {
-      return Promise.reject(error)
+  (response) => response,
+  async (error) => {
+    if (error.response?.status === 401) {
+      // Handle token expiration
+      localStorage.removeItem('token')
+      window.location.href = '/login'
     }
-
-    // Handle network errors
-    if (!error.response) {
-      toast({
-        variant: "destructive",
-        title: "Network Error",
-        description: "Please check your internet connection."
-      })
-      return Promise.reject(error)
-    }
-
-    // Retry logic for network errors or 5xx responses
-    if (
-      (error.response.status >= 500 || error.response.status === 0) &&
-      originalRequest._retry !== MAX_RETRIES
-    ) {
-      originalRequest._retry = (originalRequest._retry || 0) + 1
-      await new Promise(resolve => setTimeout(resolve, RETRY_DELAY * originalRequest._retry))
-      return apiClient(originalRequest)
-    }
-
-    // Handle specific error cases
-    switch (error.response.status) {
-      case 401:
-        // Unauthorized - clear auth and redirect to login
-        localStorage.removeItem('auth_token')
-        window.location.href = '/login'
-        break
-      case 403:
-        toast({
-          variant: "destructive",
-          title: "Access Denied",
-          description: error.response.data?.message || "You don't have permission to perform this action."
-        })
-        break
-      case 429:
-        toast({
-          variant: "destructive",
-          title: "Rate Limited",
-          description: "Please try again later."
-        })
-        break
-      default:
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: error.response.data?.message || "An unexpected error occurred."
-        })
-    }
-
     return Promise.reject(error)
   }
 )
 
 // API endpoints with strong typing
-export interface SatelliteData {
-  id: string
-  name: string
-  status: string
-  orbit: {
-    altitude: number
-    inclination: number
-    period: number
-  }
-  health: {
-    power: number
-    thermal: number
-    communication: number
-  }
-  telemetry?: {
-    lastUpdate: string
-    signalStrength: number
-    temperature: number
-    batteryLevel: number
-  }
-}
-
-export interface ManeuverData {
-  id: string
-  type: string
-  status: string
-  scheduledTime: string
-  completedTime?: string
-  details: {
-    deltaV: number
-    duration: number
-    fuel_required: number
-    rotation_angle: number
-    fuel_used?: number
-  }
-}
-
-export interface TelemetryData {
-  satellite_id: string
-  timestamp: string
-  data: {
-    power: {
-      battery_level: number
-      solar_panel_output: number
-      power_consumption: number
-    }
-    thermal: {
-      internal_temp: number
-      external_temp: number
-      heating_power: number
-    }
-    communication: {
-      signal_strength: number
-      bit_error_rate: number
-      latency: number
-    }
-  }
-}
-
 export interface IndicatorData {
   timestamp: string
   indicators: {
@@ -441,23 +311,6 @@ export interface AnalyticsData {
   }
 }
 
-export interface SystemHealth {
-  status: string
-  timestamp: string
-  services: {
-    database: string
-    api: string
-    telemetry: string
-  }
-}
-
-export interface ComprehensiveData {
-  metrics: Record<string, number>
-  status: string
-  alerts: string[]
-  timestamp: string
-}
-
 // Rate limiting check
 function checkRateLimit(): boolean {
   const now = Date.now()
@@ -535,8 +388,8 @@ class CircuitBreaker {
       }
 
       // Capture success metrics
-      if (result && 'status' in result) {
-        status = result.status
+      if (result && typeof result === 'object' && result !== null && 'status' in result) {
+        status = (result as { status: number }).status
       }
       
       return result
@@ -620,15 +473,15 @@ class CircuitBreaker {
 const circuitBreaker = new CircuitBreaker((state) => {
   if (state === 'OPEN') {
     toast({
-      variant: "warning",
-      title: "Service Degraded",
-      description: "Some services are currently unavailable. Retrying shortly."
+      title: "Warning",
+      description: "Rate limit approaching. Please slow down your requests.",
+      variant: "default"
     })
   } else if (state === 'CLOSED') {
     toast({
-      variant: "success",
-      title: "Service Restored",
-      description: "All services are now operational."
+      title: "Success",
+      description: "Circuit breaker reset successfully",
+      variant: "default"
     })
   }
 })
@@ -927,8 +780,8 @@ async function apiCall<T>(
       return {
         data: null,
         error: {
+          message: 'Rate limit exceeded',
           code: 'RATE_LIMIT_EXCEEDED',
-          message: 'Too many requests',
           retryAfter: RATE_LIMIT.retryAfter
         } as RateLimitError,
         retryAfter: RATE_LIMIT.retryAfter
@@ -1002,8 +855,23 @@ async function apiCall<T>(
 }
 
 // Strongly typed API functions
-export const getSatellites = (options?: { bypassCache?: boolean }) => 
-  apiCall<SatelliteData[]>('get', '/api/satellites', undefined, options)
+export const getSatellites = async (): Promise<ApiResponse<SatelliteData[]>> => {
+  try {
+    const response = await apiClient.get<SatelliteData[]>('/api/v1/satellites')
+    return {
+      data: response.data,
+      status: response.status
+    }
+  } catch (error) {
+    console.error('Error fetching satellites:', error)
+    return {
+      data: null,
+      error: {
+        message: 'Failed to fetch satellites'
+      }
+    }
+  }
+}
 
 export const getSatelliteById = (id: string) => 
   apiCall<SatelliteData>('get', `/api/satellites/${id}`)
@@ -1021,7 +889,20 @@ export const getTelemetryData = (
   }
 )
 
-export const getManeuvers = () => apiCall<ManeuverData[]>('get', '/api/v1/maneuvers')
+interface ManeuversResponse {
+  maneuvers: ManeuverData[]
+  resources: {
+    fuel_remaining: number
+    thrust_capacity: number
+    next_maintenance: string
+  }
+  lastUpdate: string
+}
+
+export const getManeuvers = async (): Promise<ApiResponse<ManeuversResponse>> => {
+  const response = await apiClient.get<ApiResponse<ManeuversResponse>>('/api/v1/maneuvers')
+  return response.data
+}
 
 export const createManeuver = (data: Omit<ManeuverData, 'id'>) => 
   apiCall<ManeuverData>('post', '/api/v1/maneuvers', data)
@@ -1029,15 +910,23 @@ export const createManeuver = (data: Omit<ManeuverData, 'id'>) =>
 export const getAnalytics = () => 
   apiCall<AnalyticsData>('get', '/api/v1/analytics/data')
 
-export const getSystemHealth = () => apiCall<SystemHealth>(
-  'get',
-  '/api/v1/health',
-  undefined,
-  {
-    staleAfter: 60000, // 1 minute
-    refreshInterval: 30000 // Refresh every 30s
+export const getSystemHealth = async (): Promise<ApiResponse<SystemHealth>> => {
+  try {
+    const response = await apiClient.get<SystemHealth>('/api/v1/health')
+    return {
+      data: response.data,
+      status: response.status
+    }
+  } catch (error) {
+    console.error('Error fetching system health:', error)
+    return {
+      data: null,
+      error: {
+        message: 'Failed to fetch system health'
+      }
+    }
   }
-)
+}
 
 export const getIndicators = () => 
   apiCall<IndicatorData>('get', '/api/v1/indicators')
@@ -1045,8 +934,23 @@ export const getIndicators = () =>
 export const getStabilityAnalysis = (satelliteId: string) => 
   apiCall<StabilityData>('get', `/api/v1/stability/${satelliteId}`)
 
-export const getComprehensiveData = () => 
-  apiCall<ComprehensiveData>('get', '/api/v1/comprehensive/data')
+export async function getComprehensiveData(): Promise<ApiResponse<ComprehensiveData>> {
+  try {
+    const response = await axios.get<ComprehensiveData>(`${API_CONFIG.baseUrl}/comprehensive`)
+    return {
+      data: response.data,
+      status: response.status
+    }
+  } catch (error) {
+    console.error('Error fetching comprehensive data:', error)
+    return {
+      data: null,
+      error: {
+        message: 'Failed to fetch comprehensive data'
+      }
+    }
+  }
+}
 
 // Export enhanced monitoring functions
 export const getApiMetrics = () => ({
@@ -1077,7 +981,7 @@ export const getSecurityMetrics = () => ({
   ...getApiMetrics(),
   security: {
     current: securityMonitor.getMetrics(),
-    violations: securityMonitor.violations
+    violations: securityMonitor.getViolations()
   }
 })
 
