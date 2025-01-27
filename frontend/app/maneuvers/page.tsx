@@ -8,6 +8,17 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { PlanManeuverForm } from "@/components/maneuvers/plan-maneuver-form"
 import { Badge } from "@/components/ui/badge"
 import { format } from "date-fns"
+import { ManeuverData, ApiResponse } from '@/lib/types'
+
+interface ManeuversResponse {
+  maneuvers: ManeuverData[]
+  resources: {
+    fuel_remaining: number
+    thrust_capacity: number
+    next_maintenance: string
+  }
+  lastUpdate: string
+}
 
 interface ManeuverDetails {
   deltaV: number
@@ -26,16 +37,6 @@ interface Maneuver {
   details: ManeuverDetails
 }
 
-interface ManeuversResponse {
-  maneuvers: Maneuver[]
-  resources: {
-    fuel_remaining: number
-    thrust_capacity: number
-    next_maintenance: string
-  }
-  lastUpdate: string
-}
-
 export default function ManeuversPage() {
   const [data, setData] = useState<ManeuversResponse | null>(null)
   const [loading, setLoading] = useState(true)
@@ -44,13 +45,10 @@ export default function ManeuversPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        setLoading(true)
-        setError(null)
         const response = await getManeuvers()
-        setData(response)
-      } catch (error) {
-        console.error("Error fetching maneuvers:", error)
-        setError("Failed to load maneuvers. Please try again later.")
+        setData(response.data)
+      } catch (err) {
+        setError('Failed to fetch maneuvers data')
       } finally {
         setLoading(false)
       }
@@ -59,41 +57,9 @@ export default function ManeuversPage() {
     fetchData()
   }, [])
 
-  if (loading) {
-    return (
-      <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
-        <div className="flex items-center justify-between">
-          <h2 className="text-3xl font-bold tracking-tight">Maneuvers</h2>
-        </div>
-        <div className="grid gap-4">
-          {[1, 2, 3].map((i) => (
-            <Card key={i}>
-              <CardHeader>
-                <Skeleton className="h-4 w-[250px]" />
-              </CardHeader>
-              <CardContent>
-                <Skeleton className="h-20 w-full" />
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </div>
-    )
-  }
-
-  if (error) {
-    return (
-      <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
-        <Alert variant="destructive">
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      </div>
-    )
-  }
-
-  if (!data) {
-    return null
-  }
+  if (loading) return <div>Loading...</div>
+  if (error) return <div>Error: {error}</div>
+  if (!data) return <div>No data available</div>
 
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
@@ -185,16 +151,28 @@ export default function ManeuversPage() {
                 )}
                 <div className="space-y-2">
                   <div className="text-sm font-medium">Delta-V</div>
-                  <div>{maneuver.details.deltaV.toFixed(2)} m/s</div>
+                  <div>{maneuver.details.delta_v?.toFixed(2)} m/s</div>
                 </div>
                 <div className="space-y-2">
                   <div className="text-sm font-medium">Duration</div>
-                  <div>{maneuver.details.duration} seconds</div>
+                  <div>{maneuver.details.duration?.toFixed(2)} s</div>
                 </div>
                 <div className="space-y-2">
                   <div className="text-sm font-medium">Fuel Required</div>
-                  <div>{maneuver.details.fuel_required.toFixed(2)} kg</div>
+                  <div>{maneuver.details.fuel_required?.toFixed(2)} kg</div>
                 </div>
+                {maneuver.details.target_orbit && (
+                  <>
+                    <div className="space-y-2">
+                      <div className="text-sm font-medium">Target Altitude</div>
+                      <div>{maneuver.details.target_orbit.altitude?.toFixed(2)} km</div>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="text-sm font-medium">Target Inclination</div>
+                      <div>{maneuver.details.target_orbit.inclination?.toFixed(2)}°</div>
+                    </div>
+                  </>
+                )}
                 {maneuver.details.fuel_used && (
                   <div className="space-y-2">
                     <div className="text-sm font-medium">Fuel Used</div>
