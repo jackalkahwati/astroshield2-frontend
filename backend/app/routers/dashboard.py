@@ -5,15 +5,15 @@ from typing import List, Optional
 
 router = APIRouter()
 
-class ComprehensiveData(BaseModel):
+class DashboardData(BaseModel):
     metrics: dict[str, float]
     status: str
     alerts: List[str]
     timestamp: str
 
-@router.get("/comprehensive", response_model=ComprehensiveData)
-@router.get("/comprehensive/", response_model=ComprehensiveData)  # Handle both with and without trailing slash
-async def get_comprehensive_data():
+@router.get("/dashboard", response_model=DashboardData)
+@router.get("/dashboard/", response_model=DashboardData)  # Handle both with and without trailing slash
+async def get_dashboard_data():
     try:
         current_time = datetime.utcnow()  # Use UTC time consistently
         # Mock data for demonstration
@@ -36,8 +36,8 @@ async def get_comprehensive_data():
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/status")
-async def get_comprehensive_status():
-    """Get comprehensive system status"""
+async def get_dashboard_status():
+    """Get dashboard system status"""
     current_time = datetime.utcnow()  # Use UTC time consistently
     return {
         "status": "operational",

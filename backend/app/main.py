@@ -38,13 +38,13 @@ if os.getenv("JAEGER_ENABLED", "false").lower() == "true":
     FastAPIInstrumentor.instrument_app(app)
 
 # Import and include routers
-from app.routers import ccdm, analytics, maneuvers, health, comprehensive, satellites
+from app.routers import ccdm, analytics, maneuvers, health, dashboard, satellites
 
 # Include routers with prefixes
 app.include_router(health.router, prefix="/api/v1", tags=["health"])
 app.include_router(maneuvers.router, prefix="/api/v1", tags=["maneuvers"])
 app.include_router(analytics.router, prefix="/api/v1", tags=["analytics"])
-app.include_router(comprehensive.router, prefix="/api/v1", tags=["comprehensive"])
+app.include_router(dashboard.router, prefix="/api/v1", tags=["dashboard"])
 app.include_router(ccdm.router, prefix="/api/v1", tags=["ccdm"])
 app.include_router(satellites.router, prefix="/api/v1", tags=["satellites"])
 

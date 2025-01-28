@@ -2,162 +2,138 @@
 
 import { useEffect, useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Overview } from "@/components/dashboard/overview"
+import { Badge } from "@/components/ui/badge"
+import { RecentSatellites } from "@/components/dashboard/recent-satellites"
 import { RecentActivity } from "@/components/dashboard/recent-activity"
-import { getSystemHealth, getSatellites } from "@/lib/api-client"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import type { SystemHealth, SatelliteData } from "@/lib/types"
+import { formatDate } from "@/lib/utils/date"
 
-interface DashboardState {
-  health: SystemHealth | null
-  satellites: SatelliteData[]
-  loading: boolean
-  error: string | null
+interface DashboardData {
+  metrics: {
+    orbit_stability: number
+    power_efficiency: number
+    thermal_control: number
+    communication_quality: number
+    protection_coverage: number
+  }
+  status: string
+  alerts: string[]
+  timestamp: string
 }
 
 export default function DashboardPage() {
-  const [state, setState] = useState<DashboardState>({
-    health: null,
-    satellites: [],
-    loading: true,
-    error: null
-  })
+  const [data, setData] = useState<DashboardData | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    const fetchData = async () => {
+    async function fetchData() {
       try {
-        setState(prev => ({ ...prev, error: null }))
-        const [healthResponse, satellitesResponse] = await Promise.all([
-          getSystemHealth(),
-          getSatellites()
-        ])
-
-        if (healthResponse.error || satellitesResponse.error) {
-          setState(prev => ({
-            ...prev,
-            loading: false,
-            error: healthResponse.error?.message || satellitesResponse.error?.message || "Failed to fetch data"
-          }))
-          return
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/dashboard`)
+        if (!res.ok) {
+          throw new Error(`Failed to fetch dashboard data: ${res.statusText}`)
         }
-
-        setState({
-          health: healthResponse.data,
-          satellites: satellitesResponse.data || [],
-          loading: false,
-          error: null
-        })
-      } catch (error) {
-        console.error('Error fetching dashboard data:', error)
-        setState(prev => ({
-          ...prev,
-          loading: false,
-          error: "An unexpected error occurred"
-        }))
+        const result = await res.json()
+        setData(result)
+      } catch (err: any) {
+        console.error("Error fetching dashboard data:", err)
+        setError(err.message)
+      } finally {
+        setIsLoading(false)
       }
     }
 
     fetchData()
   }, [])
 
-  if (state.loading) {
-    return (
-      <div className="flex h-[200px] items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-primary"></div>
-      </div>
-    )
+  if (isLoading) {
+    return <div className="p-4">Loading dashboard data...</div>
   }
 
-  if (state.error) {
-    return (
-      <div className="flex h-[200px] items-center justify-center text-destructive">
-        {state.error}
-      </div>
-    )
+  if (error) {
+    return <div className="p-4 text-destructive">Error: {error}</div>
   }
 
   return (
-    <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
-      <div className="flex items-center justify-between space-y-2">
-        <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
+    <div className="p-4 space-y-8">
+      {/* System Status Card */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center justify-between">
+            <span>System Status</span>
+            <Badge variant={data?.status === "operational" ? "default" : "destructive"}>
+              {data?.status || "Unknown"}
+            </Badge>
+          </CardTitle>
+          <CardDescription>
+            Last updated: {data?.timestamp ? formatDate(data.timestamp) : "N/A"}
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {data?.metrics && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {Object.entries(data.metrics).map(([key, value]) => (
+                <div key={key} className="flex flex-col space-y-1">
+                  <span className="text-sm font-medium capitalize">
+                    {key.replace(/_/g, " ")}
+                  </span>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-full bg-secondary rounded-full h-2">
+                      <div
+                        className="bg-primary rounded-full h-2"
+                        style={{ width: `${value}%` }}
+                      />
+                    </div>
+                    <span className="text-sm text-muted-foreground">{value}%</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Alerts Section */}
+      {data?.alerts && data.alerts.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Active Alerts</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              {data.alerts.map((alert, index) => (
+                <div
+                  key={index}
+                  className="p-2 bg-muted rounded-lg text-sm flex items-center space-x-2"
+                >
+                  <span className="w-2 h-2 rounded-full bg-destructive" />
+                  <span>{alert}</span>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Recent Activity and Satellites Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <Card>
+          <CardHeader>
+            <CardTitle>Recent Activity</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <RecentActivity />
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Recent Satellites</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <RecentSatellites />
+          </CardContent>
+        </Card>
       </div>
-      <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="activity">Recent Activity</TabsTrigger>
-        </TabsList>
-        <TabsContent value="overview" className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total Satellites</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{state.satellites.length}</div>
-                <p className="text-xs text-muted-foreground">
-                  Active and operational
-                </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">System Health</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{state.health?.status || 'Unknown'}</div>
-                <p className="text-xs text-muted-foreground">
-                  {state.health?.services?.api || 'Checking status...'}
-                </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Response Time</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">1.2s</div>
-                <p className="text-xs text-muted-foreground">
-                  Average over last 24h
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-            <Card className="col-span-4">
-              <CardHeader>
-                <CardTitle>Overview</CardTitle>
-              </CardHeader>
-              <CardContent className="pl-2">
-                <Overview />
-              </CardContent>
-            </Card>
-            <Card className="col-span-3">
-              <CardHeader>
-                <CardTitle>Recent Activity</CardTitle>
-                <CardDescription>
-                  System events from the last 24 hours
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <RecentActivity />
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-        <TabsContent value="activity" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Activity Log</CardTitle>
-              <CardDescription>
-                Detailed system activity and events
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <RecentActivity />
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
     </div>
   )
 } 
