@@ -9,4 +9,5 @@ healthcheckTimeout = 100
 restartPolicyType = "on_failure"
 
 [nixpacks]
-python_version = "3.11" 
+python_version = "3.11"
+install_phase = "pip install -r backend/requirements.txt" 
