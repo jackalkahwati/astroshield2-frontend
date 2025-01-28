@@ -26,8 +26,8 @@ export default function RootLayout({
             <div className="flex min-h-screen flex-col">
               <TopBar />
               <div className="flex flex-1">
-                <Sidebar className="w-64 fixed h-[calc(100vh-3.5rem)]" />
-                <main className="flex-1 ml-64 p-6 overflow-auto mt-14 transition-all duration-300">
+                <Sidebar />
+                <main className="flex-1 p-6 overflow-auto">
                   {children}
                 </main>
               </div>

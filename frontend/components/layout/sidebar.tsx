@@ -59,22 +59,19 @@ const routes = [
   },
 ]
 
-interface SidebarProps {
-  className?: string
-  children?: ReactNode
-}
-
-export function Sidebar({ className }: SidebarProps) {
+export function Sidebar() {
   const pathname = usePathname()
   const { isOpen, toggle } = useSidebar()
 
   return (
-    <div className={cn(
-      "fixed inset-y-14 left-0 z-50 flex flex-col border-r bg-background transition-all duration-300",
-      isOpen ? "w-64" : "w-[72px]",
-      className
-    )}>
-      <div className="flex h-16 items-center justify-between px-4 py-4">
+    <aside
+      className={cn(
+        "relative z-50 border-r bg-background transition-all duration-300",
+        isOpen ? "w-64" : "w-16"
+      )}
+      style={{ height: "calc(100vh - 3.5rem)" }}
+    >
+      <div className="flex h-14 items-center justify-between px-4">
         <div className={cn("flex items-center gap-x-2", !isOpen && "justify-center w-full")}>
           <Shield className="h-8 w-8 text-primary" />
           {isOpen && <span className="text-xl font-bold">AstroShield</span>}
@@ -97,7 +94,7 @@ export function Sidebar({ className }: SidebarProps) {
         </Button>
       </div>
       <ScrollArea className="flex-1">
-        <div className="space-y-2 p-4">
+        <nav className="space-y-2 p-4">
           {routes.map((route) => (
             <Link
               key={route.href}
@@ -112,9 +109,9 @@ export function Sidebar({ className }: SidebarProps) {
               {isOpen && <span>{route.label}</span>}
             </Link>
           ))}
-        </div>
+        </nav>
       </ScrollArea>
-    </div>
+    </aside>
   )
 }
 
