@@ -2,10 +2,7 @@
 
 import * as React from "react"
 import { ThemeProvider as NextThemesProvider } from "next-themes"
-import type { ThemeProviderProps, Attribute } from "next-themes/dist/types"
-
-// Define local attribute type union
-type MyAttribute = "class" | "body" | "html" | "data-theme"
+import type { ThemeProviderProps } from "next-themes/dist/types"
 
 const colors = {
   dark: {
@@ -22,7 +19,7 @@ const colors = {
 export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
   return (
     <NextThemesProvider
-      attribute={"class" as unknown as Attribute}
+      attribute={"class" as any}
       defaultTheme="light"
       enableSystem
       disableTransitionOnChange
