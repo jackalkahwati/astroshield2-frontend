@@ -70,7 +70,7 @@ export function Sidebar({ className }: SidebarProps) {
 
   return (
     <div className={cn(
-      "fixed inset-y-0 left-0 z-50 flex h-full flex-col border-r bg-background transition-all",
+      "fixed inset-y-14 left-0 z-50 flex flex-col border-r bg-background transition-all duration-300",
       isOpen ? "w-64" : "w-[72px]",
       className
     )}>
