@@ -1,6 +1,6 @@
 [build]
-builder = "DOCKERFILE"
-dockerfilePath = "Dockerfile"
+builder = "nixpacks"
+buildCommand = "cd backend && pip install -r requirements.txt"
 
 [deploy]
 startCommand = "cd backend && uvicorn app.main:app --host 0.0.0.0 --port $PORT --workers 4"
@@ -9,5 +9,4 @@ healthcheckTimeout = 100
 restartPolicyType = "on_failure"
 
 [nixpacks]
-python_version = "3.11"
-engines = { python = "3.11" } 
+python_version = "3.11" 
