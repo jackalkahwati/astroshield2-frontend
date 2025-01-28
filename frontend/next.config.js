@@ -9,7 +9,16 @@ const nextConfig = {
       { module: /node_modules\/punycode/ }
     ]
     return config
-  }
+  },
+  async redirects() {
+    return [
+      {
+        source: "/comprehensive",
+        destination: "/dashboard",
+        permanent: false,
+      },
+    ];
+  },
 }
 
 module.exports = nextConfig 
