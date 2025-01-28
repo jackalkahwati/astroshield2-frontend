@@ -12,15 +12,6 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8  # 8 days
     ALGORITHM: str = "HS256"
     
-    # CORS
-    BACKEND_CORS_ORIGINS: list[str] = [
-        "http://localhost:3000",
-        "https://localhost:3000",
-        "http://localhost",
-        "http://localhost:8080",
-        "https://asttroshieldv0-lb7e5ekcn-jackalkahwatis-projects.vercel.app"
-    ]
-    
     # Database
     DATABASE_URL: Optional[str] = None
     

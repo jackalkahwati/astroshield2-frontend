@@ -1,13 +1,13 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { format } from "date-fns"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { getManeuvers } from "@/lib/api-client"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Skeleton } from "@/components/ui/skeleton"
 import { PlanManeuverForm } from "@/components/maneuvers/plan-maneuver-form"
 import { Badge } from "@/components/ui/badge"
-import { format } from "date-fns"
 import type { ManeuverData } from "@/lib/types"
 
 interface ManeuversState {
@@ -52,6 +52,37 @@ export default function ManeuversPage() {
     fetchData()
   }, [])
 
+  const formatDate = (dateString: string | undefined) => {
+    if (!dateString || isNaN(Date.parse(dateString))) {
+      return 'N/A';
+    }
+    return format(new Date(dateString), 'PPp');
+  };
+
+  const renderManeuvers = () => {
+    if (!state.data) return null;
+    
+    return state.data.map((maneuver) => (
+      <Card key={maneuver.id} className="mb-4">
+        <CardHeader>
+          <CardTitle>Maneuver {maneuver.id}</CardTitle>
+          <CardDescription>
+            Type: {maneuver.type}
+            <Badge className="ml-2" variant={maneuver.status === 'completed' ? 'default' : 'secondary'}>
+              {maneuver.status}
+            </Badge>
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-2">
+            <div>Scheduled: {formatDate(maneuver.scheduledTime)}</div>
+            {maneuver.completedTime && <div>Completed: {formatDate(maneuver.completedTime)}</div>}
+          </div>
+        </CardContent>
+      </Card>
+    ));
+  };
+
   if (state.error) {
     return (
       <Alert variant="destructive">
@@ -74,43 +105,7 @@ export default function ManeuversPage() {
       <PlanManeuverForm />
       
       <div className="grid gap-4">
-        {state.data?.map((maneuver) => (
-          <Card key={maneuver.id}>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <CardTitle>{maneuver.type}</CardTitle>
-                  <CardDescription>ID: {maneuver.id}</CardDescription>
-                </div>
-                <Badge
-                  variant={
-                    maneuver.status === "completed"
-                      ? "default"
-                      : maneuver.status === "failed"
-                      ? "destructive"
-                      : "secondary"
-                  }
-                >
-                  {maneuver.status}
-                </Badge>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="space-y-2">
-                  <div className="text-sm font-medium">Scheduled Time</div>
-                  <div>{format(new Date(maneuver.scheduledTime), "PPP HH:mm")}</div>
-                </div>
-                {maneuver.completedTime && (
-                  <div className="space-y-2">
-                    <div className="text-sm font-medium">Completed Time</div>
-                    <div>{format(new Date(maneuver.completedTime), "PPP HH:mm")}</div>
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+        {renderManeuvers()}
       </div>
     </div>
   )

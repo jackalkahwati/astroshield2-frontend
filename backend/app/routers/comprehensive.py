@@ -11,9 +11,11 @@ class ComprehensiveData(BaseModel):
     alerts: List[str]
     timestamp: str
 
-@router.get("/data", response_model=ComprehensiveData)
+@router.get("/comprehensive", response_model=ComprehensiveData)
+@router.get("/comprehensive/", response_model=ComprehensiveData)  # Handle both with and without trailing slash
 async def get_comprehensive_data():
     try:
+        current_time = datetime.utcnow()  # Use UTC time consistently
         # Mock data for demonstration
         return {
             "metrics": {
@@ -28,7 +30,7 @@ async def get_comprehensive_data():
                 "Minor thermal fluctuation in Sector A",
                 "Scheduled maintenance in 48 hours"
             ],
-            "timestamp": datetime.now().isoformat()
+            "timestamp": current_time.isoformat()  # Use the same time reference
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -36,9 +38,10 @@ async def get_comprehensive_data():
 @router.get("/status")
 async def get_comprehensive_status():
     """Get comprehensive system status"""
+    current_time = datetime.utcnow()  # Use UTC time consistently
     return {
         "status": "operational",
-        "timestamp": datetime.utcnow().isoformat(),
+        "timestamp": current_time.isoformat(),  # Use the same time reference
         "subsystems": {
             "ccdm": "operational",
             "analytics": "operational",

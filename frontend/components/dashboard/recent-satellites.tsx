@@ -1,4 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { getRelativeTime } from "@/lib/utils/date"
 
 export function RecentSatellites() {
   return (
@@ -24,37 +25,37 @@ const recentSatellites = [
   {
     id: "SAT-001",
     name: "AstroShield-1",
-    avatar: "/satellites/astroshield-1.png",
+    avatar: "https://avatar.vercel.sh/astroshield-1.png",
     status: "Active",
-    lastSeen: "2 minutes ago",
+    lastSeen: getRelativeTime(new Date().toISOString()),
   },
   {
     id: "SAT-002",
     name: "AstroShield-2",
-    avatar: "/satellites/astroshield-2.png",
+    avatar: "https://avatar.vercel.sh/astroshield-2.png",
     status: "Inactive",
-    lastSeen: "2 hours ago",
+    lastSeen: getRelativeTime(new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString()),
   },
   {
     id: "SAT-003",
     name: "AstroShield-3",
-    avatar: "/satellites/astroshield-3.png",
+    avatar: "https://avatar.vercel.sh/astroshield-3.png",
     status: "Active",
-    lastSeen: "5 minutes ago",
+    lastSeen: getRelativeTime(new Date(Date.now() - 5 * 60 * 1000).toISOString()),
   },
   {
     id: "SAT-004",
     name: "AstroShield-4",
-    avatar: "/satellites/astroshield-4.png",
+    avatar: "https://avatar.vercel.sh/astroshield-4.png",
     status: "Active",
-    lastSeen: "1 minute ago",
+    lastSeen: getRelativeTime(new Date(Date.now() - 60 * 1000).toISOString()),
   },
   {
     id: "SAT-005",
     name: "AstroShield-5",
-    avatar: "/satellites/astroshield-5.png",
+    avatar: "https://avatar.vercel.sh/astroshield-5.png",
     status: "Maintenance",
-    lastSeen: "1 day ago",
+    lastSeen: getRelativeTime(new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()),
   },
 ]
 

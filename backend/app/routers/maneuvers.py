@@ -21,14 +21,15 @@ router = APIRouter()
 @router.get("/maneuvers", response_model=List[ManeuverStatus])
 async def get_maneuvers():
     """Get list of maneuvers"""
+    current_time = datetime.utcnow()
     # Mock data for now
     return [
         {
             "id": "mnv-001",
             "status": "completed",
             "type": "collision_avoidance",
-            "start_time": datetime.utcnow(),
-            "end_time": datetime.utcnow(),
+            "start_time": current_time,  # Using same time reference
+            "end_time": current_time,    # to ensure valid dates
             "resources": {
                 "fuel_remaining": 85.5,
                 "power_available": 90.0,
@@ -40,14 +41,15 @@ async def get_maneuvers():
 @router.get("/maneuvers/{maneuver_id}", response_model=ManeuverStatus)
 async def get_maneuver(maneuver_id: str):
     """Get specific maneuver details"""
+    current_time = datetime.utcnow()
     # Mock data for now
     if maneuver_id == "mnv-001":
         return {
             "id": maneuver_id,
             "status": "completed",
             "type": "collision_avoidance",
-            "start_time": datetime.utcnow(),
-            "end_time": datetime.utcnow(),
+            "start_time": current_time,  # Using same time reference
+            "end_time": current_time,    # to ensure valid dates
             "resources": {
                 "fuel_remaining": 85.5,
                 "power_available": 90.0,

@@ -2,12 +2,16 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime
 import os
+from app.middleware.cors import dynamic_cors_middleware
 
 app = FastAPI(
     title="AstroShield API",
     description="Backend API for the AstroShield satellite protection system",
     version="1.0.0"
 )
+
+# Add our dynamic CORS middleware
+app.middleware("http")(dynamic_cors_middleware)
 
 # Configure tracing only if JAEGER_ENABLED is set
 if os.getenv("JAEGER_ENABLED", "false").lower() == "true":
@@ -33,22 +37,8 @@ if os.getenv("JAEGER_ENABLED", "false").lower() == "true":
     # Initialize OpenTelemetry instrumentation
     FastAPIInstrumentor.instrument_app(app)
 
-# Configure CORS
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[
-        "https://astroshield2.vercel.app",
-        "http://localhost:3000",
-        "https://astroshield2-api-production.up.railway.app",
-        "https://nosy-boy-production.up.railway.app"
-    ],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
 # Import and include routers
-from app.routers import ccdm, analytics, maneuvers, health, comprehensive
+from app.routers import ccdm, analytics, maneuvers, health, comprehensive, satellites
 
 # Include routers with prefixes
 app.include_router(health.router, prefix="/api/v1", tags=["health"])
@@ -56,6 +46,7 @@ app.include_router(maneuvers.router, prefix="/api/v1", tags=["maneuvers"])
 app.include_router(analytics.router, prefix="/api/v1", tags=["analytics"])
 app.include_router(comprehensive.router, prefix="/api/v1", tags=["comprehensive"])
 app.include_router(ccdm.router, prefix="/api/v1", tags=["ccdm"])
+app.include_router(satellites.router, prefix="/api/v1", tags=["satellites"])
 
 # Root endpoint
 @app.get("/")

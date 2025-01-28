@@ -37,7 +37,7 @@ export function UserProfileDialog() {
         <div className="grid gap-4 py-4">
           <div className="flex items-center gap-4">
             <Avatar className="h-16 w-16">
-              <AvatarImage src="/avatars/01.png" alt="@user" />
+              <AvatarImage src="https://avatar.vercel.sh/user.png" alt="@user" />
               <AvatarFallback>SC</AvatarFallback>
             </Avatar>
             <Button variant="outline">Change Avatar</Button>
