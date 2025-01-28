@@ -1,5 +1,6 @@
 "use client"
 
+import React from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
@@ -19,7 +20,10 @@ import {
   BarChart3,
   Gauge
 } from "lucide-react"
-import { ReactNode } from "react"
+
+interface SidebarProps extends React.HTMLAttributes<HTMLElement> {
+  // Add any additional custom props here
+}
 
 const routes = [
   {
@@ -59,7 +63,7 @@ const routes = [
   },
 ]
 
-export function Sidebar() {
+export function Sidebar({ className, ...props }: SidebarProps) {
   const pathname = usePathname()
   const { isOpen, toggle } = useSidebar()
 
@@ -67,9 +71,11 @@ export function Sidebar() {
     <aside
       className={cn(
         "relative z-50 border-r bg-background transition-all duration-300",
-        isOpen ? "w-64" : "w-16"
+        isOpen ? "w-64" : "w-16",
+        className
       )}
       style={{ height: "calc(100vh - 3.5rem)" }}
+      {...props}
     >
       <div className="flex h-14 items-center justify-between px-4">
         <div className={cn("flex items-center gap-x-2", !isOpen && "justify-center w-full")}>
