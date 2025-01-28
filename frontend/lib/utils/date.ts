@@ -1,3 +1,5 @@
+import { format, parseISO } from "date-fns"
+
 /**
  * Safely parses a date string and returns a Date object or null if invalid
  * @param dateString - The date string to parse
@@ -12,16 +14,25 @@ export function safeDate(dateString: string | null | undefined): Date | null {
 
 /**
  * Formats a date string safely, returning a fallback if the date is invalid
- * @param dateString - The date string to format
+ * @param dateOrString - The date string or Date object to format
  * @param fallback - The fallback string to return if date is invalid (default: "N/A")
  * @returns Formatted date string or fallback
  */
-export function formatDate(dateString: string | null | undefined, fallback: string = "N/A"): string {
-  const date = safeDate(dateString);
-  if (!date) {
-    return fallback;
+export function formatDate(dateOrString: string | Date | null | undefined, fallback: string = "N/A"): string {
+  if (!dateOrString) {
+    return fallback
   }
-  return date.toLocaleString();
+  
+  let validDate: Date
+  if (dateOrString instanceof Date) {
+    validDate = dateOrString
+  } else if (!isNaN(Date.parse(dateOrString))) {
+    validDate = new Date(dateOrString)
+  } else {
+    return fallback
+  }
+
+  return format(validDate, "PPp") // e.g., "Apr 29, 2023, 1:30 PM"
 }
 
 /**
