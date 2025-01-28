@@ -23,9 +23,9 @@ import { ReactNode } from "react"
 
 const routes = [
   {
-    label: "Comprehensive",
-    icon: Activity,
-    href: "/comprehensive",
+    label: "Dashboard",
+    icon: LayoutDashboard,
+    href: "/dashboard",
   },
   {
     label: "Indicators",
