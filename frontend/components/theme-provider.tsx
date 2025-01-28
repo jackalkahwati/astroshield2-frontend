@@ -19,7 +19,7 @@ const colors = {
 export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
   return (
     <NextThemesProvider
-      attribute="class"
+      attribute={"class" as const}
       defaultTheme="light"
       enableSystem
       disableTransitionOnChange
