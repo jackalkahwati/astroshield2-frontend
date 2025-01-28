@@ -1,136 +1,145 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { ActivityChart } from "@/components/charts/activity-chart"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { SatelliteIcon, Activity, AlertTriangle, Shield } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
-import { RecentSatellites } from "@/components/dashboard/recent-satellites"
-import { RecentActivity } from "@/components/dashboard/recent-activity"
 import { formatDate } from "@/lib/utils/date"
 
-interface DashboardData {
-  metrics: {
-    orbit_stability: number
-    power_efficiency: number
-    thermal_control: number
-    communication_quality: number
-    protection_coverage: number
-  }
-  status: string
-  alerts: string[]
-  timestamp: string
-}
-
 export default function DashboardPage() {
-  const [data, setData] = useState<DashboardData | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/dashboard`)
-        if (!res.ok) {
-          throw new Error(`Failed to fetch dashboard data: ${res.statusText}`)
-        }
-        const result = await res.json()
-        setData(result)
-      } catch (err: any) {
-        console.error("Error fetching dashboard data:", err)
-        setError(err.message)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    fetchData()
-  }, [])
-
-  if (isLoading) {
-    return <div className="p-4">Loading dashboard data...</div>
-  }
-
-  if (error) {
-    return <div className="p-4 text-destructive">Error: {error}</div>
-  }
+  const satellites = [
+    { id: "SAT-001", status: "Active", lastSeen: new Date() },
+    { id: "SAT-002", status: "Maintenance", lastSeen: new Date() },
+  ]
+  
+  const activities = [
+    { id: 1, message: "Collision Avoided", type: "alert", timestamp: new Date() },
+    { id: 2, message: "New Satellite Launched", type: "info", timestamp: new Date() },
+  ]
 
   return (
-    <div className="p-4 space-y-8">
-      {/* System Status Card */}
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h1 className="text-3xl font-bold">Dashboard</h1>
+        <Badge variant="outline" className="text-sm">
+          System Status: Operational
+        </Badge>
+      </div>
+
+      {/* System Overview */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Satellites</CardTitle>
+            <SatelliteIcon className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">12</div>
+            <p className="text-xs text-muted-foreground">
+              +2 from last month
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Active Alerts</CardTitle>
+            <AlertTriangle className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">3</div>
+            <p className="text-xs text-muted-foreground">
+              -2 from last week
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">System Health</CardTitle>
+            <Shield className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">98%</div>
+            <p className="text-xs text-muted-foreground">
+              +2% from last check
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Activity Chart */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center justify-between">
-            <span>System Status</span>
-            <Badge variant={data?.status === "operational" ? "default" : "destructive"}>
-              {data?.status || "Unknown"}
-            </Badge>
-          </CardTitle>
+          <CardTitle>System Activity</CardTitle>
           <CardDescription>
-            Last updated: {data?.timestamp ? formatDate(data.timestamp) : "N/A"}
+            Alert frequency over the past week
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {data?.metrics && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {Object.entries(data.metrics).map(([key, value]) => (
-                <div key={key} className="flex flex-col space-y-1">
-                  <span className="text-sm font-medium capitalize">
-                    {key.replace(/_/g, " ")}
-                  </span>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-full bg-secondary rounded-full h-2">
-                      <div
-                        className="bg-primary rounded-full h-2"
-                        style={{ width: `${value}%` }}
-                      />
-                    </div>
-                    <span className="text-sm text-muted-foreground">{value}%</span>
+          <ActivityChart />
+        </CardContent>
+      </Card>
+
+      <div className="grid gap-4 md:grid-cols-2">
+        {/* Recent Satellites */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <SatelliteIcon className="h-5 w-5" />
+              Recent Satellites
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              {satellites.map((sat) => (
+                <div
+                  key={sat.id}
+                  className="flex items-center gap-2 rounded-lg border p-2"
+                >
+                  <SatelliteIcon className="h-5 w-5 text-primary" />
+                  <div className="flex-1">
+                    <p className="font-medium">{sat.id}</p>
+                    <p className="text-sm text-muted-foreground">
+                      Last seen: {formatDate(sat.lastSeen)}
+                    </p>
+                  </div>
+                  <Badge variant={sat.status === "Active" ? "default" : "secondary"}>
+                    {sat.status}
+                  </Badge>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Recent Activity */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Activity className="h-5 w-5" />
+              Recent Activity
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              {activities.map((event) => (
+                <div
+                  key={event.id}
+                  className="flex items-center gap-2 rounded-lg border p-2"
+                >
+                  {event.type === "alert" ? (
+                    <AlertTriangle className="h-5 w-5 text-destructive" />
+                  ) : (
+                    <Activity className="h-5 w-5 text-primary" />
+                  )}
+                  <div className="flex-1">
+                    <p className="font-medium">{event.message}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {formatDate(event.timestamp)}
+                    </p>
                   </div>
                 </div>
               ))}
             </div>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Alerts Section */}
-      {data?.alerts && data.alerts.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Active Alerts</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              {data.alerts.map((alert, index) => (
-                <div
-                  key={index}
-                  className="p-2 bg-muted rounded-lg text-sm flex items-center space-x-2"
-                >
-                  <span className="w-2 h-2 rounded-full bg-destructive" />
-                  <span>{alert}</span>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Recent Activity and Satellites Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Activity</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <RecentActivity />
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Satellites</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <RecentSatellites />
           </CardContent>
         </Card>
       </div>
