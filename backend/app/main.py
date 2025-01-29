@@ -13,39 +13,13 @@ app = FastAPI(
 # Add our dynamic CORS middleware
 app.middleware("http")(dynamic_cors_middleware)
 
-# Configure tracing only if JAEGER_ENABLED is set
-if os.getenv("JAEGER_ENABLED", "false").lower() == "true":
-    from opentelemetry import trace
-    from opentelemetry.exporter.jaeger.thrift import JaegerExporter
-    from opentelemetry.sdk.trace import TracerProvider
-    from opentelemetry.sdk.trace.export import BatchSpanProcessor
-    from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
-
-    # Initialize tracer
-    trace.set_tracer_provider(TracerProvider())
-    tracer = trace.get_tracer(__name__)
-
-    # Set up Jaeger exporter
-    jaeger_exporter = JaegerExporter(
-        agent_host_name=os.getenv("JAEGER_HOST", "localhost"),
-        agent_port=int(os.getenv("JAEGER_PORT", "6831")),
-    )
-    trace.get_tracer_provider().add_span_processor(
-        BatchSpanProcessor(jaeger_exporter)
-    )
-    
-    # Initialize OpenTelemetry instrumentation
-    FastAPIInstrumentor.instrument_app(app)
-
 # Import and include routers
-from app.routers import ccdm, analytics, maneuvers, health, dashboard, satellites, advanced
+from app.routers import health, analytics, maneuvers, satellites, advanced
 
 # Include routers with prefixes
 app.include_router(health.router, prefix="/api/v1", tags=["health"])
-app.include_router(maneuvers.router, prefix="/api/v1", tags=["maneuvers"])
 app.include_router(analytics.router, prefix="/api/v1", tags=["analytics"])
-app.include_router(dashboard.router, prefix="/api/v1", tags=["dashboard"])
-app.include_router(ccdm.router, prefix="/api/v1", tags=["ccdm"])
+app.include_router(maneuvers.router, prefix="/api/v1", tags=["maneuvers"])
 app.include_router(satellites.router, prefix="/api/v1", tags=["satellites"])
 app.include_router(advanced.router, prefix="/api/v1/advanced", tags=["advanced"])
 
