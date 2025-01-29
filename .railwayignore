@@ -1,37 +1,19 @@
-# Ignore everything by default
+# Ignore everything except what we need
 *
 
-# But include these specific files/directories
-!railway.toml
+# Include only what's needed for the backend
+!Dockerfile
 !backend/
 !backend/**/*
-
-# Explicitly ignore any Node.js files that might be in included directories
-**/node_modules/
-package.json
-package-lock.json
-yarn.lock
-.next/
-next.config.js
-
-# Extra safety: explicitly ignore any Node/frontend files that might slip through
-pages/
-components/
-styles/
-public/
-*.js
-*.ts
-*.tsx
-*.jsx
 
 # Development files
 .git/
 .github/
 .vscode/
-__tests__/
-*.test.js
-*.test.ts
-*.spec.js
-*.spec.ts
-*.log
-.env* 
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+.env*
+*.log 
