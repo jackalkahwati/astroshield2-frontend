@@ -2,7 +2,7 @@
 builder = "Nixpacks"
 
 [build.env]
-NIXPACKS_PKGS = "python310, pip, python310Packages.uvicorn"
+NIXPACKS_PKGS = "python311, pip, python311Packages.uvicorn"
 
 [run]
 startCommand = "cd backend && uvicorn app.main:app --host 0.0.0.0 --port $PORT --workers 4"
