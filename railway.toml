@@ -2,6 +2,7 @@
 [build]
 builder = "nixpacks"
 
+# Core environment configuration
 [build.env]
 # Tells Nixpacks to ignore Node completely
 NIXPACKS_IGNORE_STACKS = "node"
@@ -13,7 +14,7 @@ NIXPACKS_LANG = "python"
 NIXPACKS_SUBPATH = "backend"
 
 # Python version
-NIXPACKS_PYTHON_VERSION = "3.11"
+PYTHON_VERSION = "3.11"
 
 # Ensure pip and other Python packages are installed
 NIXPACKS_PKGS = "python311Packages.python python311Packages.pip python311Packages.setuptools python311Packages.wheel python311Packages.uvicorn"
@@ -21,7 +22,10 @@ NIXPACKS_PKGS = "python311Packages.python python311Packages.pip python311Package
 # Build command from within NIXPACKS_SUBPATH
 NIXPACKS_BUILD_CMD = "pip install -r requirements.txt"
 
-# Phases must be nested under [build.phases]
+# Port for the running application
+PORT = "8000"
+
+# Define all build phases explicitly
 [build.phases.setup]
 nixPkgs = [
     "python311",
@@ -32,13 +36,32 @@ nixPkgs = [
     "python311Packages.wheel",
     "python311Packages.uvicorn"
 ]
+cmds = [
+    # Ensure we're in the correct directory
+    "cd backend",
+    # Create and activate a virtual environment
+    "python -m venv /opt/venv",
+    # Update pip and core tools
+    "/opt/venv/bin/pip install --upgrade pip setuptools wheel"
+]
 
 [build.phases.install]
-# Simpler approach, letting Nixpacks handle the Python environment
-cmds = ["pip install -r requirements.txt"]
+cmds = [
+    # Ensure we're in the backend directory
+    "cd backend",
+    # Install requirements using the virtualenv pip
+    "/opt/venv/bin/pip install -r requirements.txt"
+]
 
 [build.phases.start]
-cmd = "uvicorn app.main:app --host 0.0.0.0 --port $PORT --workers 4"
+# Use a shell script to ensure proper environment setup
+cmd = """
+#!/bin/bash
+cd backend
+source /opt/venv/bin/activate
+export PYTHONPATH=/app/backend:$PYTHONPATH
+exec uvicorn app.main:app --host 0.0.0.0 --port $PORT --workers 4
+"""
 
 # Health check and deployment configuration
 [deploy]
@@ -52,4 +75,5 @@ restartPolicyMaxRetries = 5
 [deploy.env]
 ENVIRONMENT = "production"
 PYTHONPATH = "/app/backend"
-PYTHONUNBUFFERED = "1" 
+PYTHONUNBUFFERED = "1"
+TZ = "UTC" 
