@@ -1,4 +1,12 @@
-# Frontend files
+# Ignore everything by default
+*
+
+# Then explicitly allow only what we need
+!backend/
+!railway.toml
+!requirements.txt
+
+# Extra safety: explicitly ignore any Node/frontend files that might slip through
 package.json
 yarn.lock
 node_modules/
@@ -7,6 +15,10 @@ pages/
 components/
 styles/
 public/
+*.js
+*.ts
+*.tsx
+*.jsx
 
 # Development files
 .git/
@@ -17,12 +29,5 @@ __tests__/
 *.test.ts
 *.spec.js
 *.spec.ts
-
-# Only include the backend directory and necessary config files
-!backend/
-!railway.toml
-!requirements.txt
 *.log
-.env.local
-.env.development
-.env.test 
+.env* 
