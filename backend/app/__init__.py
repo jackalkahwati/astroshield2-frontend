@@ -1,3 +1,9 @@
+"""
+AstroShield API Package
+"""
+
+__version__ = "1.0.0"
+
 """API package initialization"""
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
