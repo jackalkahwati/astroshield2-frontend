@@ -1,7 +1,27 @@
-frontend/
+# Frontend files
+package.json
+yarn.lock
 node_modules/
 .next/
+pages/
+components/
+styles/
+public/
+
+# Development files
 .git/
+.github/
+.vscode/
+__tests__/
+*.test.js
+*.test.ts
+*.spec.js
+*.spec.ts
+
+# Only include the backend directory and necessary config files
+!backend/
+!railway.toml
+!requirements.txt
 *.log
 .env.local
 .env.development
