@@ -1,9 +1,9 @@
 [build]
-builder = "Nixpacks"
+builder = "nixpacks"
 
 [build.env]
 # Use python311Packages.* to ensure correct packages
-NIXPACKS_PKGS = "python311Packages.pip python311Packages.uvicorn python311Packages.setuptools python311Packages.wheel"
+NIXPACKS_PKGS = "python311 python311Packages.pip python311Packages.uvicorn python311Packages.setuptools python311Packages.wheel"
 # Force Nixpacks to use Python 3.11
 NIXPACKS_PYTHON_VERSION = "3.11"
 # Nixpacks-recognized environment variable for the build command
