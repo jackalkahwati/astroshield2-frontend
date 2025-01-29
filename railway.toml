@@ -3,17 +3,22 @@
 builder = "nixpacks"
 
 [build.env]
-# Explicitly disable Node.js detection
-NIXPACKS_SKIP_NODE = "true"
-# Force Python as the only language
+# Official way to skip Node detection
+NIXPACKS_IGNORE_STACKS = "node"
+
+# Force Python as the language
 NIXPACKS_LANG = "python"
-# Set the root directory to backend
+
+# Set Python code location
 NIXPACKS_SUBPATH = "backend"
-# Specify exact Python version
+
+# Python version
 NIXPACKS_PYTHON_VERSION = "3.11"
-# Ensure all necessary Python packages are available
-NIXPACKS_PKGS = "python311 python311Packages.pip python311Packages.uvicorn python311Packages.setuptools python311Packages.wheel"
-# Define the build command relative to NIXPACKS_SUBPATH
+
+# Ensure pip and other Python packages are installed
+NIXPACKS_PKGS = "python311Packages.python python311Packages.pip python311Packages.setuptools python311Packages.wheel python311Packages.uvicorn"
+
+# Build command from within NIXPACKS_SUBPATH
 NIXPACKS_BUILD_CMD = "pip install -r requirements.txt"
 
 # Define how to start the Python application
