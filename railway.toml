@@ -1,18 +1,26 @@
+# Force Nixpacks to use Python only
 [build]
 builder = "nixpacks"
 
 [build.env]
+# Explicitly disable Node.js detection
+NIXPACKS_SKIP_NODE = "true"
+# Force Python as the only language
+NIXPACKS_LANG = "python"
+# Set the root directory to backend
 NIXPACKS_SUBPATH = "backend"
-# Use python311Packages.* to ensure correct packages
-NIXPACKS_PKGS = "python311 python311Packages.pip python311Packages.uvicorn python311Packages.setuptools python311Packages.wheel"
-# Force Nixpacks to use Python 3.11
+# Specify exact Python version
 NIXPACKS_PYTHON_VERSION = "3.11"
-# Nixpacks-recognized environment variable for the build command
+# Ensure all necessary Python packages are available
+NIXPACKS_PKGS = "python311 python311Packages.pip python311Packages.uvicorn python311Packages.setuptools python311Packages.wheel"
+# Define the build command relative to NIXPACKS_SUBPATH
 NIXPACKS_BUILD_CMD = "pip install -r requirements.txt"
 
+# Define how to start the Python application
 [run]
 startCommand = "uvicorn app.main:app --host 0.0.0.0 --port $PORT --workers 4"
 
+# Health check and deployment configuration
 [deploy]
 healthcheckPath = "/api/v1/health"
 healthcheckTimeout = 100
@@ -20,6 +28,7 @@ healthcheckInterval = 15
 restartPolicyType = "on_failure"
 restartPolicyMaxRetries = 5
 
+# Environment variables for the running application
 [deploy.env]
 ENVIRONMENT = "production"
 PYTHONPATH = "/app/backend"
