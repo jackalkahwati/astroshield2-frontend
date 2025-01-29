@@ -16,30 +16,21 @@ NIXPACKS_SUBPATH = "backend"
 # Python version
 NIXPACKS_PYTHON_VERSION = "3.11"
 
-# Ensure pip and other Python packages are installed
-NIXPACKS_PKGS = "python311Packages.python python311Packages.pip python311Packages.setuptools python311Packages.wheel python311Packages.uvicorn"
-
-# Build command from within NIXPACKS_SUBPATH
-NIXPACKS_BUILD_CMD = "pip install -r requirements.txt"
-
 # Port for the running application
 PORT = "8000"
 
 # Define all build phases explicitly
 [build.phases.setup]
 nixPkgs = [
-    "python311",
+    "python311Full",  # This includes pip and other essential packages
     "postgresql_16",
-    "gcc",
-    "python311Packages.pip",
-    "python311Packages.setuptools",
-    "python311Packages.wheel",
-    "python311Packages.uvicorn"
+    "gcc"
 ]
 
 [build.phases.install]
 cmds = [
-    "pip install -r requirements.txt"
+    "python -m pip install --upgrade pip setuptools wheel",
+    "python -m pip install -r requirements.txt"
 ]
 
 [build.phases.start]
