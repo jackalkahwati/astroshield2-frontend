@@ -2,8 +2,15 @@
 builder = "nixpacks"
 
 [deploy]
-startCommand = "cd backend && uvicorn app.main:app --host 0.0.0.0 --port $PORT"
+startCommand = "cd backend && pip install -r requirements.txt && uvicorn app.main:app --host 0.0.0.0 --port $PORT"
 restartPolicyType = "on_failure"
 
 [deploy.env]
-PYTHONPATH = "/app/backend" 
+PYTHONPATH = "/app/backend"
+PYTHONUNBUFFERED = "1"
+
+[phases.setup]
+nixPkgs = ["python311", "gcc"]
+
+[phases.install]
+cmds = ["cd backend && pip install -r requirements.txt"] 
