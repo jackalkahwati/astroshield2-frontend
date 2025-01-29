@@ -29,6 +29,7 @@ PORT = "8000"
 [build.phases.setup]
 nixPkgs = [
     "python311Full",
+    "postgresql",
     "gcc"
 ]
 
@@ -36,7 +37,7 @@ nixPkgs = [
 cmds = [
     "python -m ensurepip --upgrade",
     "python -m pip install --upgrade pip setuptools wheel",
-    "cd backend && pip install -r requirements.txt"
+    "cd backend && python -m pip install -r requirements.txt"
 ]
 
 [build.phases.start]
