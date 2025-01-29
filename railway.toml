@@ -28,20 +28,22 @@ PORT = "8000"
 # Define all build phases explicitly
 [build.phases.setup]
 nixPkgs = [
-    "python311Full",
-    "postgresql",
-    "gcc"
+    "python311",
+    "postgresql_16",
+    "gcc",
+    "python311Packages.pip",
+    "python311Packages.setuptools",
+    "python311Packages.wheel",
+    "python311Packages.uvicorn"
 ]
 
 [build.phases.install]
 cmds = [
-    "python -m ensurepip --upgrade",
-    "python -m pip install --upgrade pip setuptools wheel",
-    "cd backend && python -m pip install -r requirements.txt"
+    "pip install -r requirements.txt"
 ]
 
 [build.phases.start]
-cmd = "cd backend && python -m uvicorn app.main:app --host 0.0.0.0 --port $PORT --workers 4"
+cmd = "uvicorn app.main:app --host 0.0.0.0 --port $PORT --workers 4"
 
 # Health check and deployment configuration
 [deploy]
