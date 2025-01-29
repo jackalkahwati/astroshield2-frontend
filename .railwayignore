@@ -1,16 +1,20 @@
 # Ignore everything by default
 *
 
-# Then explicitly allow only what we need
-!backend/
+# But include these specific files/directories
 !railway.toml
-!requirements.txt
+!backend/
+!backend/**/*
+
+# Explicitly ignore any Node.js files that might be in included directories
+**/node_modules/
+package.json
+package-lock.json
+yarn.lock
+.next/
+next.config.js
 
 # Extra safety: explicitly ignore any Node/frontend files that might slip through
-package.json
-yarn.lock
-node_modules/
-.next/
 pages/
 components/
 styles/
