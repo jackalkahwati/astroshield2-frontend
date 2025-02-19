@@ -58,4 +58,6 @@ test-reports/
 *.log
 
 # Kafka
-kafka_2.13-3.9.0/libs/*.jar
+kafka_2.13-3.9.0/
+kafka_2.13-3.9.0.tgz
+*.jar

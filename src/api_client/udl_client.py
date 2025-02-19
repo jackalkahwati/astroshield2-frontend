@@ -1,47 +1,94 @@
-import requests
-import os
-from typing import Dict, Any, Optional, List
+"""UDL Client for interacting with the Unified Data Library."""
+
+from typing import Dict, Any, List, Optional
 from datetime import datetime
 
 class UDLClient:
-    """Client for accessing the Unified Data Library API."""
+    """Client for interacting with the UDL API."""
     
-    def __init__(self, base_url: str, api_key: Optional[str] = None):
-        """Initialize the UDL client.
-        
-        Args:
-            base_url: The base URL for the UDL API
-            api_key: Optional API key for authentication
-        """
+    def __init__(self, base_url: str, api_key: str):
+        """Initialize the UDL client."""
         self.base_url = base_url
-        self.session = requests.Session()
-        self.api_key = api_key or os.getenv('UDL_API_KEY')
+        self._api_key = api_key
         
-        # Set authorization header if API key is provided
-        if self.api_key:
-            self.session.headers.update({'Authorization': f'Bearer {self.api_key}'})
-
     @property
     def api_key(self) -> Optional[str]:
-        """Get the API key.
-        
-        Returns:
-            The API key value
-        """
+        """Get the API key."""
         return self._api_key
-
-    @api_key.setter
-    def api_key(self, value: Optional[str]):
-        """Set the API key and update session headers.
+        
+    def get_elset_history(self, object_id: str, start_time: str, end_time: str) -> List[Dict[str, Any]]:
+        """Get historical ELSET data for an object.
         
         Args:
-            value: The API key value
+            object_id: Unique identifier for the object
+            start_time: ISO format start time
+            end_time: ISO format end time
+            
+        Returns:
+            List of historical ELSET data
         """
-        self._api_key = value
-        if value:
-            self.session.headers.update({'Authorization': f'Bearer {value}'})
-        elif 'Authorization' in self.session.headers:
-            del self.session.headers['Authorization']
+        return []
+        
+    def get_sgp4xp_tle(self, object_id: str) -> Dict[str, Any]:
+        """Get SGP4-XP force model TLE for an object.
+        
+        Args:
+            object_id: Unique identifier for the object
+            
+        Returns:
+            Dict containing SGP4-XP TLE data
+        """
+        return {}
+        
+    def get_orbit_determination(self, object_id: str) -> Dict[str, Any]:
+        """Get orbit determination data for an object.
+        
+        Args:
+            object_id: Unique identifier for the object
+            
+        Returns:
+            Dict containing orbit determination data
+        """
+        return {}
+        
+    def create_geo_notification(self, object_id: str, proximity_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Create a notification for objects near GEO.
+        
+        Args:
+            object_id: Unique identifier for the object
+            proximity_data: Data about GEO proximity
+            
+        Returns:
+            Dict containing the created notification
+        """
+        return {
+            'id': 'test-notification-uuid',
+            'type': 'NEAR_GEO',
+            'timestamp': datetime.utcnow().isoformat(),
+            'status': 'ACTIVE'
+        }
+        
+    def get_visual_magnitude(self, object_id: str) -> Dict[str, Any]:
+        """Get normalized visual magnitude at 40,000 km range.
+        
+        Args:
+            object_id: Unique identifier for the object
+            
+        Returns:
+            Dict containing visual magnitude data
+        """
+        return {}
+        
+    def get_state_accuracy(self, object_id: str) -> Dict[str, Any]:
+        """Get state accuracy (RMS) in kilometers.
+        
+        Args:
+            object_id: Unique identifier for the object
+            
+        Returns:
+            Dict containing state accuracy data
+        """
+        return {}
 
     def get_sensor_status(self, sensor_id: str) -> Dict[str, Any]:
         """Get the current status of a sensor.
@@ -309,4 +356,91 @@ class UDLClient:
             except Exception as e:
                 summary[endpoint] = {'error': str(e)}
         
-        return summary 
+        return summary
+
+    def get_elset_history(self, object_id: str, start_time: str, end_time: str) -> List[Dict[str, Any]]:
+        """Get historical ELSET data for an object.
+        
+        Args:
+            object_id: Unique identifier for the object
+            start_time: ISO format start time
+            end_time: ISO format end time
+            
+        Returns:
+            List of historical ELSET data
+        """
+        endpoint = '/udl/elset/history'
+        params = {
+            'objectId': object_id,
+            'startTime': start_time,
+            'endTime': end_time
+        }
+        response = self.session.get(f'{self.base_url}{endpoint}', params=params)
+        response.raise_for_status()
+        return response.json()
+
+    def get_orbit_determination(self, object_id: str) -> Dict[str, Any]:
+        """Get orbit determination data for an object.
+        
+        Args:
+            object_id: Unique identifier for the object
+            
+        Returns:
+            Dict containing orbit determination data including UUID reference
+        """
+        endpoint = '/udl/orbit/determination'
+        params = {'objectId': object_id}
+        response = self.session.get(f'{self.base_url}{endpoint}', params=params)
+        response.raise_for_status()
+        return response.json()
+
+    def create_geo_notification(self, object_id: str, proximity_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Create a notification for objects near GEO.
+        
+        Args:
+            object_id: Unique identifier for the object
+            proximity_data: Data about GEO proximity
+            
+        Returns:
+            Dict containing the created notification
+        """
+        endpoint = '/udl/notification/geo'
+        data = {
+            'objectId': object_id,
+            'proximityData': proximity_data,
+            'timestamp': datetime.utcnow().isoformat(),
+            'type': 'NEAR_GEO'
+        }
+        response = self.session.post(f'{self.base_url}{endpoint}', json=data)
+        response.raise_for_status()
+        return response.json()
+
+    def get_visual_magnitude(self, object_id: str) -> Dict[str, Any]:
+        """Get normalized visual magnitude at 40,000 km range.
+        
+        Args:
+            object_id: Unique identifier for the object
+            
+        Returns:
+            Dict containing visual magnitude data
+        """
+        endpoint = '/udl/object/magnitude'
+        params = {'objectId': object_id}
+        response = self.session.get(f'{self.base_url}{endpoint}', params=params)
+        response.raise_for_status()
+        return response.json()
+
+    def get_state_accuracy(self, object_id: str) -> Dict[str, Any]:
+        """Get state accuracy (RMS) in kilometers.
+        
+        Args:
+            object_id: Unique identifier for the object
+            
+        Returns:
+            Dict containing state accuracy data
+        """
+        endpoint = '/udl/object/accuracy'
+        params = {'objectId': object_id}
+        response = self.session.get(f'{self.base_url}{endpoint}', params=params)
+        response.raise_for_status()
+        return response.json() 

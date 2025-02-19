@@ -38,7 +38,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="/Users/jackal-kahwati/astroshield2-main/venv"
+VIRTUAL_ENV="/Users/jackal-kahwati/asttroshield_v0/venv"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"

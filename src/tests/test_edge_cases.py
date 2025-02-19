@@ -3,13 +3,13 @@
 import pytest
 from datetime import datetime, timedelta
 import numpy as np
-from models.indicator_models import (
+from asttroshield.models.indicator_models import (
     SpaceWeatherModel,
     ConjunctionModel,
     RFInterferenceModel,
     ManeuverModel
 )
-from models.threat_indicators import (
+from asttroshield.models.threat_indicators import (
     StabilityIndicator,
     ManeuverIndicator,
     RFIndicator,

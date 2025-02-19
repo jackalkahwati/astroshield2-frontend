@@ -1,4 +1,4 @@
-"""Configuration for the UDL API client."""
+"""Configuration for the UDL API client and Supabase."""
 
 # UDL API Configuration
 UDL_API_CONFIG = {
@@ -118,4 +118,95 @@ NOTIFICATION_CONFIG = {
     'default_severity': 'INFO',
     'alert_severity': 'ALERT',
     'error_severity': 'ERROR',
+}
+
+# Supabase Configuration
+SUPABASE_CONFIG = {
+    'url': 'YOUR_SUPABASE_URL',  # Set in environment
+    'anon_key': 'YOUR_ANON_KEY',  # Set in environment
+    'service_role_key': 'YOUR_SERVICE_ROLE_KEY',  # Set in environment
+    'realtime': {
+        'enabled': True,
+        'channels': {
+            'threat_indicators': '*',
+            'sensor_status': '*',
+            'alerts': '*'
+        }
+    },
+    'storage': {
+        'enabled': True,
+        'buckets': {
+            'sensor_data': 'sensor-data',
+            'analysis_results': 'analysis-results'
+        }
+    }
+}
+
+# Database Tables Configuration
+DB_TABLES = {
+    'threat_indicators': {
+        'name': 'threat_indicators',
+        'schema': {
+            'id': 'uuid',
+            'type': 'text',
+            'severity': 'text',
+            'confidence': 'numeric',
+            'metadata': 'jsonb',
+            'created_at': 'timestamp with time zone',
+            'updated_at': 'timestamp with time zone'
+        },
+        'rls_enabled': True
+    },
+    'sensor_status': {
+        'name': 'sensor_status',
+        'schema': {
+            'id': 'uuid',
+            'sensor_id': 'text',
+            'status': 'text',
+            'telemetry': 'jsonb',
+            'last_update': 'timestamp with time zone'
+        },
+        'rls_enabled': True
+    },
+    'analysis_results': {
+        'name': 'analysis_results',
+        'schema': {
+            'id': 'uuid',
+            'indicator_id': 'uuid',
+            'model_version': 'text',
+            'results': 'jsonb',
+            'created_at': 'timestamp with time zone'
+        },
+        'rls_enabled': True
+    }
+}
+
+# Security Configuration
+SECURITY_CONFIG = {
+    'rls_policies': {
+        'threat_indicators': [
+            {
+                'name': 'tenant_isolation',
+                'using': '(auth.uid() = created_by)',
+                'with_check': '(auth.uid() = created_by)'
+            }
+        ],
+        'sensor_status': [
+            {
+                'name': 'sensor_access',
+                'using': '(auth.uid() IN (SELECT user_id FROM sensor_access WHERE sensor_id = sensor_status.sensor_id))',
+                'with_check': 'false'
+            }
+        ]
+    }
+}
+
+# Cache Configuration
+CACHE_CONFIG = {
+    'enabled': True,
+    'ttl': {
+        'threat_indicators': 300,  # 5 minutes
+        'sensor_status': 60,      # 1 minute
+        'analysis_results': 3600   # 1 hour
+    }
 } 

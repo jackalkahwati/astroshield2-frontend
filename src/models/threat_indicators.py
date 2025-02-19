@@ -558,71 +558,310 @@ class ImagingManeuverAnalyzer:
         }
 
 class DebrisAnalyzer:
-    """Model for analyzing debris characteristics."""
+    """Analyzer for space debris objects."""
     
-    def analyze_debris(self, debris_object: Dict[str, Any],
-                      parent_data: Dict[str, Any]) -> Dict[str, Any]:
-        """Analyze debris object characteristics relative to parent.
+    def analyze_debris(self, track_data: Dict[str, Any],
+                      state_history: List[Dict[str, Any]],
+                      visual_magnitude: Optional[Dict[str, Any]] = None,
+                      state_accuracy: Optional[Dict[str, Any]] = None,
+                      orbit_determination_uuid: Optional[str] = None) -> Dict[str, Any]:
+        """Analyze debris data for potential indicators.
         
         Args:
-            debris_object: Debris object data
-            parent_data: Parent object data
+            track_data: Basic tracking data
+            state_history: Historical state vectors
+            visual_magnitude: Optional visual magnitude data
+            state_accuracy: Optional state accuracy data
+            orbit_determination_uuid: Optional orbit determination reference
             
         Returns:
             Dict containing debris analysis results
         """
-        if not debris_object or not parent_data:
-            return {
-                'higher_sma': False,
-                'confidence': 0.0
-            }
+        # Initialize indicators
+        indicators = []
         
-        # Get semi-major axis values
-        debris_sma = debris_object.get('semi_major_axis', 0)
-        parent_sma = parent_data.get('semi_major_axis', 0)
+        # Check for unusual size/mass ratio
+        if track_data.get('mass') and track_data.get('cross_section'):
+            amr = track_data['cross_section'] / track_data['mass']
+            if amr > 1.0:  # Unusually high area-to-mass ratio
+                indicators.append({
+                    'type': 'unusual_amr',
+                    'confidence': 0.7,
+                    'value': amr
+                })
         
-        # Compare SMAs
-        sma_difference = debris_sma - parent_sma
+        # Check for fragmentation
+        if state_history and len(state_history) > 1:
+            velocity_changes = []
+            for i in range(1, len(state_history)):
+                v1 = state_history[i-1].get('velocity', {})
+                v2 = state_history[i].get('velocity', {})
+                if v1 and v2:
+                    delta_v = np.sqrt(sum(
+                        (v2[k] - v1[k])**2 
+                        for k in ['x', 'y', 'z']
+                    ))
+                    velocity_changes.append(delta_v)
+            
+            if any(v > 0.05 for v in velocity_changes):  # Potential fragmentation
+                indicators.append({
+                    'type': 'fragmentation',
+                    'confidence': 0.8
+                })
+        
+        # Calculate base confidence
+        base_confidence = 0.7
+        
+        # Adjust for state accuracy if available
+        if state_accuracy:
+            accuracy_factor = min(1.0, 1.0 / state_accuracy.get('rms', 1.0))
+            base_confidence *= accuracy_factor
+            
+        # Increase confidence with more indicators
+        indicator_boost = min(0.3, len(indicators) * 0.1)
+        final_confidence = min(1.0, base_confidence + indicator_boost)
         
         return {
-            'higher_sma': sma_difference > 0,
-            'sma_difference_km': sma_difference,
-            'confidence': 1.0  # SMA comparison is deterministic
+            'indicators': indicators,
+            'confidence': final_confidence,
+            'orbit_determination_uuid': orbit_determination_uuid
+        }
+
+    def analyze_debris_event(self, debris_data: List[Dict[str, Any]], parent_data: Dict[str, Any], event_context: Dict[str, Any]) -> Dict[str, Any]:
+        """Analyze a debris-generating event for potential CCD indicators.
+
+        Args:
+            debris_data: List of debris object data
+            parent_data: Data about the parent object
+            event_context: Context about the event
+
+        Returns:
+            Dict containing analysis results
+        """
+        indicators = []
+        total_confidence = 0.0
+        num_indicators = 0
+
+        # Check for excessive debris
+        actual_count = len(debris_data)
+        expected_count = event_context.get('expected_debris_count', 1)
+        if actual_count > 1.5 * expected_count:
+            indicators.append({
+                'type': 'excessive_debris',
+                'confidence': 0.85,
+                'detail': f'Debris count {actual_count} exceeds expected {expected_count} by 50%'
+            })
+            total_confidence += 0.85
+            num_indicators += 1
+
+        # Check for unusual AMR values
+        if event_context['type'] == 'breakup':
+            # For breakup events, low AMR is unusual (indicates dense object)
+            low_amr_count = sum(1 for d in debris_data if d.get('amr', 0.0) < 0.1)
+            if low_amr_count > 0:
+                indicators.append({
+                    'type': 'unusual_amr',
+                    'confidence': 0.75,
+                    'detail': f'{low_amr_count} pieces have unusually low AMR for breakup event'
+                })
+                total_confidence += 0.75
+                num_indicators += 1
+        else:
+            # For other events, high AMR is unusual
+            high_amr_count = sum(1 for d in debris_data if d.get('amr', 0.0) > 1.0)
+            if high_amr_count / len(debris_data) > 0.3:  # More than 30% have high AMR
+                indicators.append({
+                    'type': 'unusual_amr',
+                    'confidence': 0.75,
+                    'detail': f'{high_amr_count} of {len(debris_data)} pieces have high AMR'
+                })
+                total_confidence += 0.75
+                num_indicators += 1
+
+        # Check for controlled motion
+        controlled_count = sum(1 for d in debris_data if d.get('controlled_motion', False))
+        if controlled_count > 0:
+            indicators.append({
+                'type': 'controlled_motion',
+                'confidence': 0.9,
+                'detail': f'{controlled_count} pieces show controlled motion'
+            })
+            total_confidence += 0.9
+            num_indicators += 1
+
+        # Calculate average observation quality
+        avg_quality = sum(d.get('observation_quality', 0.5) for d in debris_data) / len(debris_data)
+
+        # Calculate final confidence score
+        ccd_likelihood = (total_confidence / max(1, num_indicators)) * avg_quality if num_indicators > 0 else 0.0
+
+        return {
+            'indicators': indicators,
+            'ccd_likelihood': ccd_likelihood,
+            'confidence': avg_quality,
+            'event_type': event_context['type'],
+            'parent_object': parent_data['id'],
+            'debris_count': actual_count
         }
 
 class UCTAnalyzer:
-    """Model for analyzing uncorrelated tracks."""
+    """Analyzer for Uncorrelated Target (UCT) objects."""
     
-    def analyze_uct(self, track_data: Dict[str, Any],
-                   illumination_data: Dict[str, Any]) -> Dict[str, Any]:
-        """Analyze uncorrelated track during eclipse.
+    def analyze_uct(self, track_data: Dict[str, Any], illumination_data: Dict[str, Any], lunar_data: Dict[str, Any], sensor_data: Dict[str, Any], space_weather: Dict[str, Any], radiation_belt: Dict[str, Any], rf_interference: Dict[str, Any], state_history: List[Dict[str, Any]], visual_magnitude: Optional[Dict[str, float]] = None, state_accuracy: Optional[Dict[str, float]] = None, orbit_determination_id: Optional[str] = None) -> Dict[str, Any]:
+        """Analyze UCT data for potential CCD indicators."""
+        ccd_indicators = []
+        notifications = []
+        total_confidence = 0.0
+        num_indicators = 0
+
+        # Analyze environmental conditions
+        environmental_factors = {
+            'solar_activity': 'high' if space_weather.get('kp_index', 0) > 5 else 'normal',
+            'radiation_belt_activity': 'high' if radiation_belt.get('level', 0) > 3 else 'normal',
+            'lunar_interference': lunar_data.get('phase', 0) > 0.7,
+            'eclipse_period': illumination_data.get('in_eclipse', False)
+        }
+
+        # Check for signature management
+        if visual_magnitude and visual_magnitude.get('magnitude', 0.0) > 16.0:
+            ccd_indicators.append({
+                'type': 'signature_management',
+                'confidence': 0.8,
+                'detail': f'Object appears dimmer than expected (mag {visual_magnitude["magnitude"]:.1f})'
+            })
+            total_confidence += 0.8
+            num_indicators += 1
+
+        # Check for unusual maneuvers
+        if state_history and len(state_history) > 1:
+            max_velocity_change = 0.0
+            for i in range(len(state_history) - 1):
+                v1 = state_history[i]['velocity']
+                v2 = state_history[i + 1]['velocity']
+                delta_v = ((v2['x'] - v1['x'])**2 + (v2['y'] - v1['y'])**2 + (v2['z'] - v1['z'])**2)**0.5
+                max_velocity_change = max(max_velocity_change, delta_v)
+            
+            if max_velocity_change > 0.5:  # Significant velocity change
+                ccd_indicators.append({
+                    'type': 'unusual_maneuver',
+                    'confidence': 0.85,
+                    'detail': f'Velocity change of {max_velocity_change:.2f} km/s detected'
+                })
+                total_confidence += 0.85
+                num_indicators += 1
+
+        # Check for RF anomalies
+        if rf_interference.get('power_level', 0) > -70:  # High RF power level
+            ccd_indicators.append({
+                'type': 'rf_anomaly',
+                'confidence': 0.85,
+                'detail': f'High RF power level detected: {rf_interference["power_level"]} dBm'
+            })
+            total_confidence += 0.85
+            num_indicators += 1
+
+        # Check for GEO proximity
+        if track_data.get('orbit_type') == 'GEO':
+            pos = track_data.get('position', {})
+            geo_radius = 42164.0  # km
+            distance_to_geo = abs(((pos.get('x', 0.0)**2 + pos.get('y', 0.0)**2 + pos.get('z', 0.0)**2)**0.5) - geo_radius)
+            
+            if distance_to_geo < 50.0:  # Within 50 km of GEO
+                notifications.append({
+                    'type': 'NEAR_GEO',
+                    'confidence': 0.9,
+                    'data': {
+                        'distance_to_geo': distance_to_geo,
+                        'threshold': 50.0
+                    }
+                })
+
+        # Calculate final confidence
+        avg_confidence = total_confidence / max(1, num_indicators) if num_indicators > 0 else 0.0
+        
+        # Adjust confidence based on environmental factors
+        if environmental_factors['solar_activity'] == 'high':
+            avg_confidence *= 0.9
+        if environmental_factors['radiation_belt_activity'] == 'high':
+            avg_confidence *= 0.9
+        if environmental_factors['lunar_interference']:
+            avg_confidence *= 0.8
+
+        # Adjust confidence based on state accuracy if available
+        if state_accuracy:
+            accuracy_factor = 1.0 - min(1.0, state_accuracy.get('rms', 0.0))
+            avg_confidence *= accuracy_factor
+
+        result = {
+            'ccd_indicators': ccd_indicators,
+            'notifications': notifications,
+            'confidence': avg_confidence,
+            'orbit_determination_ref': orbit_determination_id,
+            'environmental_factors': environmental_factors
+        }
+
+        # Add visual magnitude at 40,000 km if available
+        if visual_magnitude:
+            result['visual_magnitude_40k'] = visual_magnitude['magnitude']
+
+        # Add state accuracy if available
+        if state_accuracy:
+            result['state_accuracy_km'] = state_accuracy['rms']
+
+        return result
+
+class BOGEYScorer:
+    """Calculate BOGEY scores for space objects."""
+    
+    def calculate_bogey_score(self, custody_duration_days: float, amr_data: Dict[str, float], geo_data: Optional[Dict[str, float]] = None) -> Dict[str, Any]:
+        """Calculate BOGEY score based on custody duration and object characteristics.
         
         Args:
-            track_data: Track observation data
-            illumination_data: Solar illumination data
+            custody_duration_days: Number of days object has been tracked
+            amr_data: Area-to-mass ratio data dictionary
+            geo_data: Optional GEO region data
             
         Returns:
-            Dict containing UCT analysis results
+            Dict containing BOGEY score and component scores
         """
-        if not track_data or not illumination_data:
-            return {
-                'true_uct': False,
-                'in_eclipse': False,
-                'confidence': 0.0
-            }
-        
-        # Check if track is uncorrelated
-        is_uncorrelated = not track_data.get('correlated_object_id')
-        
-        # Check illumination condition
-        track_time = datetime.fromisoformat(track_data.get('time', ''))
-        in_eclipse = any(
-            start <= track_time <= end
-            for start, end in illumination_data.get('eclipse_periods', [])
+        # Calculate custody score (0-10 scale)
+        # For long custody durations (>= 10 years), return minimum score of 1.0
+        custody_score = max(1.0, 10.0 * max(0.0, 1.0 - custody_duration_days / 365.0))
+
+        # Calculate AMR score (0-10 scale)
+        amr = amr_data.get('amr', 0.0)
+        if amr < 0.0:  # Invalid AMR
+            amr_score = 1.0
+        elif amr < 0.01:  # Dense object
+            amr_score = 10.0
+        elif amr < 0.1:  # Typical satellite
+            amr_score = 9.0
+        elif amr < 0.5:  # Rocket body
+            amr_score = 7.0
+        else:  # Debris-like
+            amr_score = 5.0
+
+        # Calculate GEO score (0-10 scale)
+        geo_score = None
+        if geo_data and 'delta_v_to_geo' in geo_data:
+            if geo_data['delta_v_to_geo'] < 25.0:  # Very close to GEO
+                geo_score = 10.0
+            elif geo_data['delta_v_to_geo'] < 100.0:  # Moderately close to GEO
+                geo_score = 5.0
+
+        # Calculate final score (weighted sum)
+        final_score = (
+            0.5 * custody_score +  # 50% weight
+            0.4 * amr_score +      # 40% weight
+            0.1 * (geo_score or 0.0)  # 10% weight, use 0.0 if None
         )
-        
+
         return {
-            'true_uct': is_uncorrelated,
-            'in_eclipse': in_eclipse,
-            'confidence': 0.95 if is_uncorrelated and in_eclipse else 0.7
+            'bogey_score': final_score,
+            'geo_score': geo_score,  # Expose at top level for test
+            'components': {
+                'custody_score': custody_score,
+                'amr_score': amr_score,
+                'geo_score': geo_score
+            }
         } 

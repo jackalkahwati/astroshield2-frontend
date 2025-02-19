@@ -5,16 +5,17 @@ from datetime import datetime, timedelta
 import json
 from typing import Dict, Any
 from unittest.mock import patch, MagicMock
+import os
 
-from api_client.udl_client import UDLClient
-from api_client.config import (
+from asttroshield.api_client.udl_client import UDLClient
+from asttroshield.api_client.config import (
     SPACE_WEATHER_CONFIG,
     CONJUNCTION_CONFIG,
     RF_CONFIG,
     ORBITAL_CONFIG,
     MANEUVER_CONFIG
 )
-from models.indicator_models import (
+from asttroshield.models.indicator_models import (
     SpaceWeatherModel,
     ConjunctionModel,
     RFInterferenceModel,
@@ -24,7 +25,9 @@ from models.indicator_models import (
 @pytest.fixture
 def udl_client():
     """Create a UDL client for testing."""
-    return UDLClient('https://unifieddatalibrary.com/udl')
+    api_key = os.getenv('UDL_API_KEY', 'test-key')
+    base_url = os.getenv('UDL_BASE_URL', 'https://unifieddatalibrary.com/udl')
+    return UDLClient(base_url=base_url, api_key=api_key)
 
 @pytest.fixture
 def test_data():
