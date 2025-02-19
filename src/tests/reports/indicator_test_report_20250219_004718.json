@@ -1,0 +1,36 @@
+{
+  "timestamp": "2025-02-19T00:47:18.015304",
+  "summary": {
+    "total_tests": 4,
+    "passed": 0,
+    "failed": 0,
+    "errors": 4,
+    "success_rate": 0.0
+  },
+  "details": [
+    {
+      "indicator": "test_conjunction_prediction",
+      "status": "ERROR",
+      "message": "Traceback (most recent call last):\n  File \"/Users/jackal-kahwati/asttroshield_v0/src/tests/test_indicators.py\", line 61, in test_conjunction_prediction\n    udl_conjunctions = self.client.get_conjunction_data(self.test_object_id)\n  File \"/Users/jackal-kahwati/asttroshield_v0/src/api_client/udl_client.py\", line 153, in get_conjunction_data\n    response.raise_for_status()\n  File \"/Users/jackal-kahwati/asttroshield_v0/env/lib/python3.10/site-packages/requests/models.py\", line 1024, in raise_for_status\n    raise HTTPError(http_error_msg, response=self)\nrequests.exceptions.HTTPError: 401 Client Error: Unauthorized for url: https://unifieddatalibrary.com/udl/udl/conjunction?objectId=TEST-SAT-001\n",
+      "type": "error"
+    },
+    {
+      "indicator": "test_maneuver_detection",
+      "status": "ERROR",
+      "message": "Traceback (most recent call last):\n  File \"/Users/jackal-kahwati/asttroshield_v0/src/tests/test_indicators.py\", line 110, in test_maneuver_detection\n    udl_maneuvers = self.client.get_maneuver_data(self.test_object_id)\n  File \"/Users/jackal-kahwati/asttroshield_v0/src/api_client/udl_client.py\", line 203, in get_maneuver_data\n    response.raise_for_status()\n  File \"/Users/jackal-kahwati/asttroshield_v0/env/lib/python3.10/site-packages/requests/models.py\", line 1024, in raise_for_status\n    raise HTTPError(http_error_msg, response=self)\nrequests.exceptions.HTTPError: 401 Client Error: Unauthorized for url: https://unifieddatalibrary.com/udl/udl/maneuver?objectId=TEST-SAT-001\n",
+      "type": "error"
+    },
+    {
+      "indicator": "test_rf_interference_detection",
+      "status": "ERROR",
+      "message": "Traceback (most recent call last):\n  File \"/Users/jackal-kahwati/asttroshield_v0/src/tests/test_indicators.py\", line 88, in test_rf_interference_detection\n    udl_rf = self.client.get_rf_interference(RF_CONFIG['frequency_ranges']['uplink'])\n  File \"/Users/jackal-kahwati/asttroshield_v0/src/api_client/udl_client.py\", line 177, in get_rf_interference\n    response.raise_for_status()\n  File \"/Users/jackal-kahwati/asttroshield_v0/env/lib/python3.10/site-packages/requests/models.py\", line 1024, in raise_for_status\n    raise HTTPError(http_error_msg, response=self)\nrequests.exceptions.HTTPError: 401 Client Error: Unauthorized for url: https://unifieddatalibrary.com/udl/udl/rfemitter?minFreq=5925&maxFreq=6425\n",
+      "type": "error"
+    },
+    {
+      "indicator": "test_space_weather_indicators",
+      "status": "ERROR",
+      "message": "Traceback (most recent call last):\n  File \"/Users/jackal-kahwati/asttroshield_v0/src/tests/test_indicators.py\", line 40, in test_space_weather_indicators\n    udl_weather = self.client.get_space_weather_data()\n  File \"/Users/jackal-kahwati/asttroshield_v0/src/api_client/udl_client.py\", line 136, in get_space_weather_data\n    response.raise_for_status()\n  File \"/Users/jackal-kahwati/asttroshield_v0/env/lib/python3.10/site-packages/requests/models.py\", line 1024, in raise_for_status\n    raise HTTPError(http_error_msg, response=self)\nrequests.exceptions.HTTPError: 401 Client Error: Unauthorized for url: https://unifieddatalibrary.com/udl/udl/sgi\n",
+      "type": "error"
+    }
+  ]
+}

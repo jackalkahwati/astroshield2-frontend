@@ -1,0 +1,18 @@
+{
+  "timestamp": "2025-02-19T01:48:04.860625",
+  "summary": {
+    "total_tests": 16,
+    "passed": 15,
+    "failed": 0,
+    "errors": 1,
+    "success_rate": 0.9375
+  },
+  "details": [
+    {
+      "indicator": "test_imaging_maneuver_analysis",
+      "status": "ERROR",
+      "message": "Traceback (most recent call last):\n  File \"/Users/jackal-kahwati/asttroshield_v0/src/tests/test_threat_indicators.py\", line 404, in test_imaging_maneuver_analysis\n    results = self.imaging_maneuver_model.analyze_imaging_maneuvers(\n  File \"/Users/jackal-kahwati/asttroshield_v0/src/models/threat_indicators.py\", line 430, in analyze_imaging_maneuvers\n    in_window = any(\n  File \"/Users/jackal-kahwati/asttroshield_v0/src/models/threat_indicators.py\", line 431, in <genexpr>\n    window['start'] <= maneuver_time <= window['end']\nTypeError: '<=' not supported between instances of 'str' and 'datetime.datetime'\n",
+      "type": "error"
+    }
+  ]
+}

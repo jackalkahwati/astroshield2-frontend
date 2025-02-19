@@ -1,0 +1,24 @@
+{
+  "timestamp": "2025-02-19T01:45:37.207970",
+  "summary": {
+    "total_tests": 16,
+    "passed": 14,
+    "failed": 1,
+    "errors": 1,
+    "success_rate": 0.875
+  },
+  "details": [
+    {
+      "indicator": "test_amr_analysis",
+      "status": "FAILED",
+      "message": "Traceback (most recent call last):\n  File \"/Users/jackal-kahwati/asttroshield_v0/src/tests/test_threat_indicators.py\", line 349, in test_amr_analysis\n    self.assertIsInstance(results['out_of_family'], bool)\nAssertionError: np.False_ is not an instance of <class 'bool'>\n",
+      "type": "failure"
+    },
+    {
+      "indicator": "test_imaging_maneuver_analysis",
+      "status": "ERROR",
+      "message": "Traceback (most recent call last):\n  File \"/Users/jackal-kahwati/asttroshield_v0/src/tests/test_threat_indicators.py\", line 383, in test_imaging_maneuver_analysis\n    results = self.imaging_maneuver_model.analyze_imaging_maneuvers(\n  File \"/Users/jackal-kahwati/asttroshield_v0/src/models/threat_indicators.py\", line 415, in analyze_imaging_maneuvers\n    range_km = np.sqrt(sum(\n  File \"/Users/jackal-kahwati/asttroshield_v0/src/models/threat_indicators.py\", line 416, in <genexpr>\n    (post_maneuver_pos[k] - target_pos[k])**2\nKeyError: 'x'\n",
+      "type": "error"
+    }
+  ]
+}

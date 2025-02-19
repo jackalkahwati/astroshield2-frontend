@@ -1,0 +1,18 @@
+{
+  "timestamp": "2025-02-19T01:47:35.177380",
+  "summary": {
+    "total_tests": 16,
+    "passed": 15,
+    "failed": 0,
+    "errors": 1,
+    "success_rate": 0.9375
+  },
+  "details": [
+    {
+      "indicator": "test_imaging_maneuver_analysis",
+      "status": "ERROR",
+      "message": "Traceback (most recent call last):\n  File \"/Users/jackal-kahwati/asttroshield_v0/src/tests/test_threat_indicators.py\", line 388, in test_imaging_maneuver_analysis\n    results = self.imaging_maneuver_model.analyze_imaging_maneuvers(\n  File \"/Users/jackal-kahwati/asttroshield_v0/src/models/threat_indicators.py\", line 429, in analyze_imaging_maneuvers\n    if baseline_pol.get('maneuver_windows'):\nAttributeError: 'list' object has no attribute 'get'\n",
+      "type": "error"
+    }
+  ]
+}

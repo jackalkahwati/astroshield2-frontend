@@ -1,0 +1,24 @@
+{
+  "timestamp": "2025-02-19T00:48:22.981198",
+  "summary": {
+    "total_tests": 4,
+    "passed": 2,
+    "failed": 1,
+    "errors": 1,
+    "success_rate": 0.5
+  },
+  "details": [
+    {
+      "indicator": "test_conjunction_prediction",
+      "status": "FAILED",
+      "message": "Traceback (most recent call last):\n  File \"/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/unittest/mock.py\", line 1379, in patched\n    return func(*newargs, **newkeywargs)\n  File \"/Users/jackal-kahwati/asttroshield_v0/src/tests/test_indicators.py\", line 111, in test_conjunction_prediction\n    self.assertLess(\nAssertionError: np.float64(15.0) not less than 10 : Conjunction distance prediction error exceeds threshold\n",
+      "type": "failure"
+    },
+    {
+      "indicator": "test_maneuver_detection",
+      "status": "ERROR",
+      "message": "Traceback (most recent call last):\n  File \"/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/unittest/mock.py\", line 1376, in patched\n    with self.decoration_helper(patched,\n  File \"/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/contextlib.py\", line 135, in __enter__\n    return next(self.gen)\n  File \"/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/unittest/mock.py\", line 1358, in decoration_helper\n    arg = exit_stack.enter_context(patching)\n  File \"/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/contextlib.py\", line 492, in enter_context\n    result = _cm_type.__enter__(cm)\n  File \"/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/unittest/mock.py\", line 1447, in __enter__\n    original, local = self.get_original()\n  File \"/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/unittest/mock.py\", line 1420, in get_original\n    raise AttributeError(\nAttributeError: <class 'api_client.udl_client.UDLClient'> does not have the attribute 'get_state_vector_history'\n",
+      "type": "error"
+    }
+  ]
+}
