@@ -1,0 +1,6 @@
+[http]
+    sslBackend = schannel
+[http "https://gitlab.sdataplab.com"]
+    sslVerify = true
+[core]
+    sslCAInfo = /Users/jackal-kahwati/gitlab_cert.p12 

@@ -1,0 +1,130 @@
+{
+  "data": {
+    "submitFeasibilityRequest": {
+      "errors": [],
+      "feasibilityRequest": [
+        {
+          "id": "8c44282e-8287-459b-af15-7574636017a2",
+          "name": "Phoenix Test 1",
+          "description": "test 1",
+          "status": "SAVED",
+          "startDate": "2025-01-31T18:21:00+00:00",
+          "endDate": "2025-02-28T18:21:00+00:00",
+          "recurringStart": null,
+          "recurringEnd": null,
+          "requestType": "SINGLE",
+          "recurringType": null,
+          "cadenceType": null,
+          "buffer": null,
+          "customRecurrence": [],
+          "isRapidAccess": false,
+          "sensorType": ["EO", "HSI", "SAR"],
+          "aoi": {
+            "type": "FeatureCollection",
+            "features": [
+              {
+                "type": "Feature",
+                "geometry": {
+                  "type": "Point",
+                  "coordinates": [-112.074806713, 33.445919109]
+                },
+                "properties": {}
+              }
+            ]
+          },
+          "solarElevationAngleMin": -90,
+          "solarElevationAngleMax": 90,
+          "maxCloudCoveragePct": 20,
+          "aisResolutionMinCm": null,
+          "aisResolutionMaxCm": null,
+          "eoResolutionMinCm": 30,
+          "eoResolutionMaxCm": 1000,
+          "hsiResolutionMinCm": 300,
+          "hsiResolutionMaxCm": 2500,
+          "rfResolutionMinCm": null,
+          "rfResolutionMaxCm": null,
+          "sarResolutionMinCm": 25,
+          "sarResolutionMaxCm": 500,
+          "watchbox": null,
+          "archiveSearch": null,
+          "latestFeasibilityResults": [
+            {
+              "created": "2025-01-15T19:02:25.005638+00:00",
+              "modified": "2025-01-15T19:02:26.020692+00:00",
+              "id": "cb286372-8887-4d1c-b144-d68a275d26f6",
+              "feasibilityRequestId": "8c44282e-8287-459b-af15-7574636017a2",
+              "recommended": true,
+              "collectionBatch": "b9b01dba-6799-4e89-ad25-aa6dcb67603e",
+              "confidence": "HIGH",
+              "confidenceScore": 0.9493709775669483,
+              "totalOpportunities": 116,
+              "likelyOpportunities": 4,
+              "estimatedPrice": "1400.00",
+              "minOna": 8.163175446260517,
+              "maxOna": 44.18386944834642,
+              "maxCloudCoverage": 0.5683836416105287,
+              "minCloudCoverage": 0.49500130432645106,
+              "avgCloudCoverage": 0.5000621551736287,
+              "stdCloudCoverage": 0.018594753359876245,
+              "historicalAvgCloudCoverage": "0.49500130432645106",
+              "timeCollected": null,
+              "sensorType": ["SAR"],
+              "estimatedDeliveryTime": "2025-02-03",
+              "estimatedAcquisitionTime": "2025-02-02",
+              "provider": {
+                "created": "2024-06-10T21:00:45.737101+00:00",
+                "modified": "2025-01-13T17:34:22.435687+00:00",
+                "id": "f63a8993-6a32-4933-8bc9-5cdb4839eb29",
+                "name": "Umbra",
+                "active": true,
+                "constellationName": "Commercial Microsatellite Constellation"
+              },
+              "taskability": {
+                "isTaskable": true,
+                "nonTaskableReason": ""
+              },
+              "additionalInfo": "{}"
+            },
+            {
+              "created": "2025-01-15T19:02:24.886882+00:00",
+              "modified": "2025-01-15T19:02:25.910801+00:00",
+              "id": "349ae6d5-a8f5-4c83-9537-e5575000625b",
+              "feasibilityRequestId": "8c44282e-8287-459b-af15-7574636017a2",
+              "recommended": false,
+              "collectionBatch": "b9b01dba-6799-4e89-ad25-aa6dcb67603e",
+              "confidence": "HIGH",
+              "confidenceScore": 1.0,
+              "totalOpportunities": 1032,
+              "likelyOpportunities": 52,
+              "estimatedPrice": "0.00",
+              "minOna": 0.10321110458794736,
+              "maxOna": 49.957692861709766,
+              "maxCloudCoverage": 0.5683836416105287,
+              "minCloudCoverage": 0.49500130432645106,
+              "avgCloudCoverage": 0.4981300086292606,
+              "stdCloudCoverage": 0.014825749350251868,
+              "historicalAvgCloudCoverage": "0.4950013043264512",
+              "timeCollected": null,
+              "sensorType": ["SAR"],
+              "estimatedDeliveryTime": "2025-02-03",
+              "estimatedAcquisitionTime": "2025-02-03",
+              "provider": {
+                "created": "2024-03-28T19:31:11.765513+00:00",
+                "modified": "2025-01-13T17:34:22.191459+00:00",
+                "id": "1a80e93d-4c27-414e-b4ef-4af34021318a",
+                "name": "ICEYE",
+                "active": false,
+                "constellationName": "X-Constellation"
+              },
+              "taskability": {
+                "isTaskable": false,
+                "nonTaskableReason": "Coming soon! This provider is not supported for tasking."
+              },
+              "additionalInfo": "{}"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

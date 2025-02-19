@@ -1,0 +1,103 @@
+{
+  "$schema": "http://json-schema.org/draft-06/schema#",
+  "$ref": "#/definitions/StateRecommendationResponse",
+  "definitions": {
+    "StateRecommendationResponse": {
+      "type": "object",
+      "description": "Response object containing a list of recommendation objects",
+      "properties": {
+        "status": {
+          "enum": [ "PROCESSED", "PROCESSING", "HEADER_SCHEMA_VALIDATION_ERROR",
+            "PAYLOAD_SCHEMA_VALIDATION_ERROR", "PROCESSING_ERROR"],
+          "description": "Indicates the status of the processing request."
+        },
+        "rsoStates": {
+          "type": "array",
+          "description": "List of RSO state recommendation objects",
+          "items": {
+            "$ref": "#/definitions/RsoState"
+          }
+        },
+        "errors": {
+          "type": "string",
+          "description": "Errors encountered in processing"
+        }
+      },
+      "required": [ "status" ]
+    },
+    "RsoState": {
+      "type": "object",
+      "description": "RSO State Recommendation object",
+      "properties": {
+        "rsoId": {
+          "type": "string",
+          "description": "ID of object - NORAD ID or UCT UUID"
+        },
+        "uct": {
+          "type": "boolean",
+          "description": "Indicator if the object was a UCT object (true) or NORAD object (false "
+        },
+        "scoreProvider": {
+          "type": "string",
+          "description": "Indicator of the provider of the score"
+        },
+        "scoredStates": {
+          "type": "array",
+          "description": "List of scored RSO states in recommendation order",
+          "items": {
+            "$ref": "#/definitions/ScoredState"
+          }
+        }
+      },
+      "required": [ "rsoId", "uct", "scoreProvider", "scoredStates"]
+    },
+    "ScoredState": {
+      "type": "object",
+      "description": "Scored state information for an RSO",
+      "properties": {
+        "stateId": {
+          "type": "string",
+          "description": "ID of the recommended state of the object"
+        },
+        "source": {
+          "type": "string",
+          "description": "Soure of state"
+        },
+        "stateRanking": {
+          "type": "number",
+          "description": "Rank of state compared to other states in the scoredStates"
+        },
+        "score": {
+          "type": "number",
+          "description": "Calculated score of the state by the scoreProvider"
+        },
+        "type": {
+          "enum": [ "ELSET" ],
+          "description": "Type of state of the object"
+        },
+        "state": {
+          "$ref": "#/definitions/TLE"
+        }
+      },
+      "required": [ "stateId", "source", "stateRanking", "score", "type", "state"]
+    },
+    "TLE": {
+      "type": "object",
+      "description": "Recommendation object",
+      "properties": {
+        "line1": {
+          "type": "string",
+          "description": "TLE line1"
+        },
+        "line2": {
+          "type": "string",
+          "description": "TLE line2"
+        }
+      },
+      "required": [
+        "line1",
+        "line2"
+      ]
+    }
+  }
+}

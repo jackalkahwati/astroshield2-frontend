@@ -1,0 +1,29 @@
+{
+  "messageId": "a47c5d8f-3e2b-4f5a-9825-7ac8f11e2345",
+  "messageTime": "2024-12-06T12:34:56Z",
+  "messageVersion": "0.1.0",
+  "subsystem": "ss5",
+  "dataProvider": "GTC",
+  "dataType": "ss5.detection.event",
+  "dataVersion": "0.1.0",
+  "traceability": {
+    "internal": [
+      {
+        "dataType": "ss0.data.launch-detection",
+        "messageId": "<parent_message_uuid>"
+      },
+      {
+        "dataType": "ss0.sensor.heartbeat",
+        "messageId": "<parent_message_uuid>"
+      }
+    ],
+    "external": [
+      {
+        "resourceLink": "https://<data_source_UDL_URL>",
+        "parameters": {
+          "queryParameter": "<URL_query_parameter>"
+        }
+      }
+    ]
+  }
+}

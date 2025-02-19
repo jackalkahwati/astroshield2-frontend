@@ -1,0 +1,13 @@
+{
+	"objectId": "Track-0001",
+    "source": "aero-trackformer",
+    "dataSource": "Cloudstone",
+    "isAuthoritative": true,
+    "udlTrackId": "d4be1f08-9c0d-4ef7-970f-658cdd565697",
+    "observationType": "EOObservation",
+    "observationIds": ["c78b1f4c-d8e4-46e4-b39b-8e4ba07377a7",
+                      "0b29c4ab-da60-4f9d-aa59-73b8211d1323",
+                      "49d3179b-c2a5-4247-87cc-80cceea02ba8"],
+    "numObs": 3,
+    "dataMode": "REAL"
+}

@@ -1,0 +1,10 @@
+{
+    "timeHeartbeat": "2024-12-10T06:00:00.000Z",
+    "idSensor": "My_UDL_idSensor_Num",
+    "status": "online",
+    "eo": {
+        "sunlit": false,
+        "overcastRatio": 0.1
+    },
+    "description": "Sensor Heartbeat Example!"
+}

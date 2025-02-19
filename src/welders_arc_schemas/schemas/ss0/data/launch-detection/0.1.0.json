@@ -1,0 +1,68 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "$ref": "#/definitions/LaunchDetection",
+    "definitions": {
+        "LaunchDetection": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "launchSite": {
+                    "type": "string"
+                },
+                "latitude": {
+                    "type": "number"
+                },
+                "longitude": {
+                    "type": "number"
+                },
+                "liftoffAt": {
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "bearing": {
+                    "type": "number"
+                },
+                "phenomenology": {
+                    "type": "string"
+                },
+                "simDetails": {
+                    "$ref": "#/definitions/SimDetails"
+                }
+            },
+            "required": [
+                "launchSite",
+                "latitude",
+                "longitude",
+                "liftoffAt",
+                "phenomenology"
+            ],
+            "title": "LaunchDetection"
+        },
+        "SimDetails": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "satNo": {
+                    "type": "number"
+                },
+                "epoch": {
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "inclination": {
+                    "type": "number"
+                },
+                "altitude": {
+                    "type": "number"
+                },
+                "udlElsetId": {
+                    "type": "string",
+                    "format": "uuid"
+                }
+            },
+            "required": [
+            ],
+            "title": "SimDetails"
+        }
+    }
+}

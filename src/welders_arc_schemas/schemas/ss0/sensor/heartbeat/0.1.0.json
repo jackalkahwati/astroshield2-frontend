@@ -1,0 +1,68 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "$ref": "#/definitions/HeartbeatStatus",
+    "definitions": {
+        "HeartbeatStatus": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "uuid": {
+                    "type": "string"
+                },
+                "time": {
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "idSensor": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "weather": {
+                    "$ref": "#/definitions/Weather"
+                },
+                "mobileSensor": {
+                    "$ref": "#/definitions/MobileSensor"
+                },
+                "description": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "idSensor",
+                "status",
+                "time",
+                "uuid"
+            ],
+            "title": "HeartbeatStatus"
+        },
+        "MobileSensor": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "tle": {
+                    "type": "string"
+                }
+            },
+            "required": [
+            ],
+            "title": "MobileSensor"
+        },
+        "Weather": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "sunlit": {
+                    "type": "boolean"
+                },
+                "overcastRatio": {
+                    "type": "number"
+                }
+            },
+            "required": [
+            ],
+            "title": "Weather"
+        }
+    }
+}

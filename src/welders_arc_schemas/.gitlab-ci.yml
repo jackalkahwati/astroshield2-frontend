@@ -1,0 +1,18 @@
+variables:
+  PIP_DISABLE_PIP_VERSION_CHECK: "1"
+
+image: python:3.11
+
+stages:     
+  - test
+
+test-job:   
+  stage: test    
+  script:
+    - echo "Running schema validation tests..."
+    - pip install -r requirements.txt
+    - pytest
+  only:
+    - merge_requests
+    - main
+    - devops

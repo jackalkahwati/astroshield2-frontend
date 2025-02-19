@@ -1,0 +1,76 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "$ref": "#/definitions/launchWindow",
+    "definitions": {
+        "launchWindow": {
+            "type": "object",
+            "additionalProperties": true,
+            "properties": {
+                "processTime": {
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "phenomenology": {
+                    "type": "string"
+                },
+                "eventId": {
+                    "type": "string"
+                },
+                "locationInfo": {
+                    "$ref": "#/definitions/LocationInfo"
+                },
+                "timeFrame": {
+                    "$ref": "#/definitions/TimeFrame"
+                }
+            },
+            "required": [
+                "eventId",
+                "locationInfo",
+                "phenomenology",
+                "processTime",
+                "timeFrame"
+            ],
+            "title": "launchWindow"
+        },
+        "LocationInfo": {
+            "type": "object",
+            "additionalProperties": true,
+            "properties": {
+                "launchSite": {
+                    "type": "string"
+                },
+                "latitude": {
+                    "type": "integer"
+                },
+                "longitude": {
+                    "type": "integer"
+                }
+            },
+            "required": [
+                "latitude",
+                "launchSite",
+                "longitude"
+            ],
+            "title": "LocationInfo"
+        },
+        "TimeFrame": {
+            "type": "object",
+            "additionalProperties": true,
+            "properties": {
+                "launchWindowStart": {
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "launchWindowEnd": {
+                    "type": "string",
+                    "format": "date-time"
+                }
+            },
+            "required": [
+                "launchWindowEnd",
+                "launchWindowStart"
+            ],
+            "title": "TimeFrame"
+        }
+    }
+}

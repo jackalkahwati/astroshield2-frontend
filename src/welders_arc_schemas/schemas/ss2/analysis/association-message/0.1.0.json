@@ -1,0 +1,50 @@
+{
+    "$id": "http://json-schema.org/draft-06/schema#",
+    "$ref": "#/definitions/AssociationMessage",
+    "definitions": {
+        "AssociationMessage": {
+            "type": "object",
+            "properties": {
+            "objectId": {
+              "type": "string", 
+              "description": "Welders' Arc ID"
+            },
+            "source": {
+              "type": "string", 
+              "description": "Source of the data."},
+            "dataMode": {
+              "enum": ["EXERCISE","REAL", "SIMULATED","TEST"]
+                },
+            "parentId": {
+              "type": "string", 
+                "description": "Welders' Arc ID for single object in many-to-one correlation (e.g. obs to TRACK), higher-level object for one-to-one correlation (e.g. state to OBJECT)"
+            },
+            "childrenId": {
+              "type": "array", 
+                "minItems": 1,
+                "items": {
+                  "type": "string"
+                }
+            },
+            "associationType": {
+              "enum": ["PARENT-CHILD","EVENT-TAG","DEDUPLICATION","CORRELATION"],
+              "description": "Type of Association, used for filtering. Types:\nPARENT-CHILD: PARENT is composed of CHILD objects\nEVENT-TAG: Children are a part of Parent event\nDEDUPLICATION: Children are lower-quality estimates of Parent\nASSOCIATION: Children have been correlated to Parent"
+            },
+            "confidence": {
+              "type": "number", 
+                "minmum": 0,
+                "maximum": 1, 
+                "description": "Confidence in association, scale of 0.0 to 1.0."
+            },
+            "method": {
+              "type": "string",
+              "description": "Short description of method used."
+                      },
+            "descriptor": {
+              "type": "string",
+              "description": "Longer annotation for general use."}
+            },
+            "required":["objectId","source", "dataMode","parentId","childrenId","associationType","confidence"]
+            }
+        }
+    }

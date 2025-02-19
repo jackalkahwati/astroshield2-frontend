@@ -82,3 +82,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Security
+.env
+*.keystore
+*.truststore
+*.jks

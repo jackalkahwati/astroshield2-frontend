@@ -1,0 +1,44 @@
+﻿Topic,Implemented,Traceability Parent,Description
+test-environment.ss0,Yes,No,Test environment topic
+test-environment.ss1,Yes,No,Test environment topic
+test-environment.ss2,Yes,No,Test environment topic
+test-environment.ss3,Yes,No,Test environment topic
+test-environment.ss4,Yes,No,Test environment topic
+test-environment.ss5,Yes,No,Test environment topic
+test-environment.ss6,Yes,No,Test environment topic
+ss0.data.weather.contrails,Yes,No,
+ss0.data.weather.reflectivity,Yes,No,
+ss0.data.weather.turbulence,Yes,No,
+ss0.data.weather.vtec,Yes,No,
+ss0.data.weather.windshear,Yes,No,
+ss0.data.launch-detection,Yes,No,"Launch detection messages (seismic, infrasound, overhead imagery, etc.)"
+ss0.launch-prediction.launch-window,Yes,No,"Social media initial (un-cued) launch windows
+Refined launch windows by image/SAR analysis
+Weather go/no-go assessment"
+ss0.sensor.heartbeat,Yes,No,Sensor heartbeat and status message
+ss2.analysis.association-message,Yes,Yes,"A proposed link between two data objects, with some probability associated"
+ss2.analysis.score-message,Yes,Yes,"A proposed quality metric for a data object, particularly state vectors and elsets"
+ss2.data.candidate-object,Yes,Yes,Proposed catalog objects based on UCT or other data
+ss2.data.elset.sgp4,Yes,Yes,Two-line SGP4 elementsets associated to some RSO
+ss2.data.elset.sgp4-xp,Yes,Yes,Two-line SGP4-XP element sets associated to some RSO
+ss2.data.ephemeris,Yes,Yes,Collection of state vectors associated to a single RSO
+ss2.data.observation-track,Yes,Yes,Collection of observations associated to a single RSO
+ss2.data.orbit-determination,Yes,Yes,Descriptive data for how a linked state vector or elset was generated
+ss2.data.resident-space-object,Yes,Yes,"A single orbiting object with associated parameters (mass, area, etc)"
+ss2.data.state-vector,Yes,Yes,"position, velocity, time structure for the location of an RSO at some time"
+ss2.requests.generic-request,Yes,Yes,Topic to request specific toolchains or tools be run (e.g. propagate a given state to some set of times))
+ss2.responses.generic-response,Yes,Yes,"Topic for responses to requests, tied directly to the original request message"
+ss2.service.events, Yes, TBD, Generic event class for logging service processes
+ss2.service.heartbeat, Yes, No, Service heartbeat and status message
+ss3.command.change-request,TBD,Yes,C2 to task sensors for search and acquisition
+ss5.launch-prediction.coplaner-assessment,Yes,Yes,Coplaner assessment of potential launch vehicle windows against blue asssets
+ss5.launch.prediction,Yes,No,Space launch prediction alerts
+ss5.launch.detection,Yes,No,Space launch detection alerts
+ss5.launch.nominal,Yes,No,Space launch nominals
+ss5.launch.trajectory,Yes,No,Space launch vehicle trajectory prediction
+ss5.service.heartbeat,Yes,No,SS5 services heartbeats
+ss5.launch.asat-assessment,Yes,No,Asat assessment on predicted and detected space launches
+ss5.launch.weather-check,Yes,No,Go/No-go assessments for space launches based on weather
+ss5.reentry.prediction,Yes,No,Object reentry predictions
+ss6.response-recommendation.launch, In-Progress, No, Response recommendations related to launch events
+ss6.response-recommendation.on-orbit, In-Progress, No, Response recommendations related to on-orbit threats/concerns

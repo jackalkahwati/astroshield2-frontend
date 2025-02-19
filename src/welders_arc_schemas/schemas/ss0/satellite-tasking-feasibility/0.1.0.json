@@ -1,0 +1,168 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "data": {
+      "type": "object",
+      "properties": {
+        "submitFeasibilityRequest": {
+          "type": "object",
+          "properties": {
+            "errors": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "feasibilityRequest": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": { "type": "string", "format": "uuid" },
+                  "name": { "type": "string" },
+                  "description": { "type": "string" },
+                  "status": { "type": "string" },
+                  "startDate": { "type": "string", "format": "date-time" },
+                  "endDate": { "type": "string", "format": "date-time" },
+                  "recurringStart": {
+                    "type": ["string", "null"],
+                    "format": "date-time"
+                  },
+                  "recurringEnd": {
+                    "type": ["string", "null"],
+                    "format": "date-time"
+                  },
+                  "requestType": { "type": "string" },
+                  "recurringType": { "type": ["string", "null"] },
+                  "cadenceType": { "type": ["string", "null"] },
+                  "buffer": { "type": ["string", "null"] },
+                  "customRecurrence": {
+                    "type": "array",
+                    "items": { "type": "string" }
+                  },
+                  "isRapidAccess": { "type": "boolean" },
+                  "sensorType": {
+                    "type": "array",
+                    "items": { "type": "string" }
+                  },
+                  "aoi": {
+                    "type": "object",
+                    "properties": {
+                      "type": { "type": "string" },
+                      "features": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "type": { "type": "string" },
+                            "geometry": {
+                              "type": "object",
+                              "properties": {
+                                "type": { "type": "string" },
+                                "coordinates": {
+                                  "type": "array",
+                                  "items": { "type": "number" }
+                                }
+                              }
+                            },
+                            "properties": { "type": "object" }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "solarElevationAngleMin": { "type": "number" },
+                  "solarElevationAngleMax": { "type": "number" },
+                  "maxCloudCoveragePct": { "type": "number" },
+                  "aisResolutionMinCm": { "type": ["number", "null"] },
+                  "aisResolutionMaxCm": { "type": ["number", "null"] },
+                  "eoResolutionMinCm": { "type": "number" },
+                  "eoResolutionMaxCm": { "type": "number" },
+                  "hsiResolutionMinCm": { "type": "number" },
+                  "hsiResolutionMaxCm": { "type": "number" },
+                  "rfResolutionMinCm": { "type": ["number", "null"] },
+                  "rfResolutionMaxCm": { "type": ["number", "null"] },
+                  "sarResolutionMinCm": { "type": "number" },
+                  "sarResolutionMaxCm": { "type": "number" },
+                  "watchbox": { "type": ["string", "null"] },
+                  "archiveSearch": { "type": ["string", "null"] },
+                  "latestFeasibilityResults": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "created": { "type": "string", "format": "date-time" },
+                        "modified": { "type": "string", "format": "date-time" },
+                        "id": { "type": "string", "format": "uuid" },
+                        "feasibilityRequestId": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "recommended": { "type": "boolean" },
+                        "collectionBatch": { "type": "string" },
+                        "confidence": { "type": "string" },
+                        "confidenceScore": { "type": "number" },
+                        "totalOpportunities": { "type": "number" },
+                        "likelyOpportunities": { "type": "number" },
+                        "estimatedPrice": { "type": "string" },
+                        "minOna": { "type": "number" },
+                        "maxOna": { "type": "number" },
+                        "maxCloudCoverage": { "type": "number" },
+                        "minCloudCoverage": { "type": "number" },
+                        "avgCloudCoverage": { "type": "number" },
+                        "stdCloudCoverage": { "type": "number" },
+                        "historicalAvgCloudCoverage": { "type": "string" },
+                        "timeCollected": {
+                          "type": ["string", "null"],
+                          "format": "date-time"
+                        },
+                        "sensorType": {
+                          "type": "array",
+                          "items": { "type": "string" }
+                        },
+                        "estimatedDeliveryTime": {
+                          "type": "string",
+                          "format": "date"
+                        },
+                        "estimatedAcquisitionTime": {
+                          "type": "string",
+                          "format": "date"
+                        },
+                        "provider": {
+                          "type": "object",
+                          "properties": {
+                            "created": {
+                              "type": "string",
+                              "format": "date-time"
+                            },
+                            "modified": {
+                              "type": "string",
+                              "format": "date-time"
+                            },
+                            "id": { "type": "string", "format": "uuid" },
+                            "name": { "type": "string" },
+                            "active": { "type": "boolean" },
+                            "constellationName": { "type": "string" }
+                          }
+                        },
+                        "taskability": {
+                          "type": "object",
+                          "properties": {
+                            "isTaskable": { "type": "boolean" },
+                            "nonTaskableReason": { "type": "string" }
+                          }
+                        },
+                        "additionalInfo": { "type": "string" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

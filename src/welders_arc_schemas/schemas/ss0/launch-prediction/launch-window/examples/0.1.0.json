@@ -1,0 +1,14 @@
+{
+    "processTime": "2024-12-11T06:00:00.000Z",
+    "phenomenology": "social_media",
+    "eventId": "123-098-OUY-POI",
+    "locationInfo": {
+        "launchSite": "redSpacePort",
+        "latitude": 54,
+        "longitude": -129
+    },
+    "timeFrame": {
+        "launchWindowStart": "2024-12-11T06:00:00.000Z",
+        "launchWindowEnd": "2024-12-12T06:00:00.000Z"
+    }
+}

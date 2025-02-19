@@ -1,0 +1,14 @@
+{
+    "uuid": "asdf-qwer-123-456",
+    "time": "2024-12-10T06:00:00.000Z",
+    "idSensor": "My_UDL_idSensor_Num",
+    "status": "online",
+    "weather": {
+        "sunlit": false,
+        "overcastRatio": 0.1
+    },
+    "mobileSensor": {
+        "tle": "1 NNNNNU NNNNNAAA NNNNN.NNNNNNNN +.NNNNNNNN +NNNNN-N +NNNNN-N N NNNNN\n2 NNNNN NNN.NNNN NNN.NNNN NNNNNNN NNN.NNNN NNN.NNNN NN.NNNNNNNNNNNNNN"
+    },
+    "description": "Sensor Heartbeat Example!"
+}

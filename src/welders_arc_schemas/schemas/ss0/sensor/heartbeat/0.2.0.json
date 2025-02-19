@@ -1,0 +1,49 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "$ref": "#/definitions/HeartbeatStatus",
+    "definitions": {
+        "HeartbeatStatus": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "timeHeartbeat": {
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "idSensor": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "eo": {
+                    "$ref": "#/definitions/eo"
+                },
+                "description": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "idSensor",
+                "status",
+                "timeHeartbeat"
+            ],
+            "title": "HeartbeatStatus"
+        },
+        "eo": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "sunlit": {
+                    "type": "boolean"
+                },
+                "overcastRatio": {
+                    "type": "number"
+                }
+            },
+            "required": [
+            ],
+            "title": "eo"
+        }
+    }
+}

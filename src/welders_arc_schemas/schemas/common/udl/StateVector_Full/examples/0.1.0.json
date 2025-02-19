@@ -1,0 +1,22 @@
+{
+    "idStateVector":  "00000000-0000-0000-0000-000000000000",
+    "classificationMarking": "U",
+    "epoch": "2018-01-01T16:00:00.123456Z",
+    "idOnOrbit": "ONORBIT-ID",
+    "satNo": 12,
+    "origObjectId": "ORIGOBJECT-ID",
+    "xpos": -1118.577381,
+    "ypos": 3026.231084,
+    "zpos": 6167.831808,
+    "xvel": -4.25242784,
+    "yvel": 5.291107434,
+    "zvel": -3.356493869,
+    "cov": [ 1.1, 2.2, 3.3, 4.4, 5.5, 6.6, 7.7, 8.8, 9.9, 10.10, 11.11, 12.12, 13.13, 14.14, 15.15, 16.16, 17.17, 18.18, 19.19, 20.20, 21.21 ],
+    "posUnc": 0.333399744452,
+    "velUnc": 0.000004,
+    "source": "taplab",
+    "dataMode": "REAL",
+    "createdAt": "2018-01-01T16:00:00.123456Z",
+    "createdBy": "system.taplab",
+    "origNetwork": "TAPNET"
+}

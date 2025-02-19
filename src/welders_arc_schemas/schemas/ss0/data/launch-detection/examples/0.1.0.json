@@ -1,0 +1,15 @@
+{
+    "launchSite": "Xichang Satellite Launch Center",
+    "latitude": 28.246017,
+    "longitude": 102.026556,
+    "liftoffAt": "2025-01-07T17:39:05Z",
+    "bearing": 113.63850015702938,
+    "phenomenology": "sim",
+    "simDetails": {
+        "satNo": 42945,
+        "epoch": "2024-12-10T14:04:53.257728Z",
+        "inclination": 34.9956,
+        "altitude": 573.5699999999997,
+        "udlElsetId": "2c33e9c2-0f7d-47f9-bdfa-2b774ec1ddd7"
+    }
+}

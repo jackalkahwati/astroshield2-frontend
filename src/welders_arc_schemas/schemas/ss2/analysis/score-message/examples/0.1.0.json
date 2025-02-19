@@ -1,0 +1,9 @@
+{
+  
+    "objectId": "scoreMessage-0001",
+    "source": "OBE",
+    "dataMode": "TEST",
+    "parentId": "elset-0003",
+    "score": 0.8,
+    "method": "OBE_elset_quality"
+  }

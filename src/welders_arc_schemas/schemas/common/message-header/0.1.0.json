@@ -1,0 +1,85 @@
+{
+  "$schema": "http://json-schema.org/draft-06/schema#",
+  "type": "object",
+  "properties": {
+    "messageId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "UUID to uniquely identify the message."
+    },
+    "messageTime": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp of when the message occurred."
+    },
+    "messageVersion": {
+      "type": "string",
+      "description": "Indicates the message header schema version."
+    },
+    "subsystem": {
+      "type": "string",
+      "description": "Subsystem that produced the message, e.g., ss0, ss1, etc."
+    },
+    "dataProvider": {
+      "type": "string",
+      "description": "The provider or component within the subsystem that produced the message, e.g., ss5 component x."
+    },
+    "dataType": {
+      "type": "string",
+      "description": "Indicates the payload type or topic name, e.g., 'ss5.launch-detection.launch.v1'."
+    },
+    "dataVersion": {
+      "type": "string",
+      "description": "Indicates the payload schema version."
+    },
+    "customProperties": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Additional custom properties serve as the metadata for the payload."
+    },
+    "traceability": {
+      "type": "object",
+      "description": "Traceability information linking to parent resources that help produce the message",
+      "properties": {
+        "internal": {
+          "type": "array",
+          "description": "Array of internal traceability information",
+          "items": {
+            "type": "object",
+            "properties": {
+              "dataType": {
+                "type": "string",
+                "description": "Type of the parent message that contributes to the current message data."
+              },
+              "messageId": {
+                "type": "string",
+                "description": "ID of the parent message that contributes to the current message data."
+              }
+            },
+            "required": []
+          }
+        },
+        "external": {
+          "type": "array",
+          "description": "Array of external traceability information",
+          "items": {
+            "type": "object",
+            "properties": {
+              "resourceLink": {
+                "type": "string",
+                "description": "Link to the parent external resource that contributes to the current message data."
+              },
+              "parameters": {
+                "type": "object",
+                "additionalProperties": true,
+                "description": "Additional parameters associated with the external resource."
+              }
+            },
+            "required": []
+          }
+        }
+      }
+    }
+  },
+  "required": ["messageId", "messageTime", "messageVersion", "subsystem", "dataProvider", "dataType", "dataVersion"]
+}

@@ -1,0 +1,10 @@
+{
+  
+    "objectId": "associationMessage-0001",
+    "source": "iSEE",
+    "dataMode": "TEST",
+    "parentId": "candidateObject-0003",
+    "childrenId": ["candidateObject-0005"],
+    "confidence": 0.8,
+    "associationType": "DEDUPLICATION"
+  }

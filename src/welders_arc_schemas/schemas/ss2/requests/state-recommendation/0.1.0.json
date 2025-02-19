@@ -1,0 +1,39 @@
+{
+  "$schema": "http://json-schema.org/draft-06/schema#",
+  "$ref": "#/definitions/StateRecommendationRequest",
+  "definitions": {
+    "StateRecommendationRequest": {
+      "type": "object",
+      "description": "Request object containing a list of RSOs and additional settings for which state recommendation will be performed",
+      "properties": {
+        "responseVersion": {
+          "type": "string",
+          "description": "Indicates the schema version of the response message."
+        },
+        "rsos": {
+          "type": "array",
+          "description": "List of RSO objects that state recommendation will be generated for",
+          "items": {
+            "$ref": "#/definitions/RsoRequestObject"
+          }
+        }
+      },
+      "required": [
+        "rsos", "responseVersion"
+      ]
+    },
+    "RsoRequestObject": {
+      "type": "object",
+      "description": "Request object for which state recommendation will be performed",
+      "properties": {
+        "rsoId": {
+          "type": "string",
+          "description": "ID of object - NORAD ID or UTC UUID"
+        }
+      },
+      "required": [
+        "rsoId"
+      ]
+    }
+  }
+}

@@ -1,0 +1,25 @@
+.vscode/
+.idea/
+.python-version
+.DS_Store
+# Pipfile*
+
+### Python
+
+# byte-compiled
+__pycache__/
+*.py[cod]
+*$py.class
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# unit test / coverage reports
+htmlcov/
+.pytest_cache/
+
+# virtual environments
+.venv/
+venv/

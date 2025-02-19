@@ -1,0 +1,40 @@
+{
+    "$id": "http://json-schema.org/draft-06/schema#",
+    "$ref": "#/definitions/AssociationMessage",
+    "definitions": {
+        "AssociationMessage": {
+            "properties": {
+            "objectId": {
+                  "type": "string", 
+                  "description": "Welders' Arc ID for the score object"
+                },
+            "source": {"type": "string", "description": "Source of the data."},
+            "dataMode": {
+              "enum": ["EXERCISE","REAL", "SIMULATED","TEST"]},
+            "parentId": {
+              "type": "string", 
+              "description": "Welders' Arc ID for the object scored"},
+            "score": {
+              "type": "number",
+              "description": "Numeric value for score. Default scale is 0 to 1, with 1 being best. Alternate methods can be defined via lowScore and highScore fields"
+            },
+            "lowScore": {
+              "type": "number",
+                "description": "Worst score provided by method, used to define which score is optimal."
+            },
+            "highScore": {
+              "type": "number",
+              "description": "Best score provided by method, used to define which score is optimal."
+            },
+            "method": {
+              "type": "string",
+              "description": "Short description of method used."
+            },
+            "descriptor": {
+              "type": "string",
+              "description": "Longer annotation for general use."}
+            },
+            "required":["objectId","source","dataMode","parentId","score","method"]
+            }
+        }
+    }

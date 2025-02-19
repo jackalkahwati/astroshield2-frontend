@@ -1,0 +1,81 @@
+{
+"$id": "http://json-schema.org/draft-06/schema#",
+"$ref": "#/definitions/ObservationTrack",
+"definitions": {
+    "ObservationTrack": {
+        "type": "object",
+        "properties": {
+            "objectId": {
+                "type": "string", 
+                "description": "Welders' Arc ID."
+                },
+            "udlTrackId": {
+                "type": "string", 
+                "description": "trackId in the UDL"
+                },
+            "source": {
+                "type": "string", 
+                "description": "Source of the association."
+                },
+            "dataSource": {
+                "type": "string", 
+                "description": "Original source of the observations."
+                },
+            "dataMode": {
+                "enum": ["EXERCISE","REAL", "SIMULATED","TEST"]
+                },
+            "idSensor": {
+                "type": "string", 
+                "description": "Id of the sensor generating the track."
+            },
+            "observationType": {
+                "type": "string", 
+                "description": "UDL endpoint from which to retrieve obs"
+                },
+            "origObjectId": {
+                "type": "string", 
+                "description": "Id of object in source catalog, or UCT"
+                },
+            "satNo": {
+                "type": "integer", 
+                "description": "NORAD Sat ID of object."
+                },
+            "startTime": {
+                "type": "string",
+                "format": "date-time", 
+                "description": "Time of first observation"
+                },
+            "endTime": {
+                "type": "string",
+                "format": "date-time", 
+                "description": "Time of final observation"
+                },
+            "observationIds": {
+                "type": "array", 
+                "minItems": 1, 
+                "items": {
+                    "type": "string"
+                    }, 
+                "description": "UDL UIDs of observations."
+                },
+            "numObs": {
+                "type": "integer", 
+                "minimum": 1,
+                "description": "Number of Observations in the Track"
+                },
+            "isAuthoritative": {
+                "type": "boolean",
+                "description": "True if association comes from original data provider, false if secondary"
+            },
+            "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "For secondary associations, a percentage confidence in the association"
+                }
+            },
+        "required":["objectId","source","observationIds","observationType","dataMode", "isAuthoritative"]
+        }
+    }
+   
+}
