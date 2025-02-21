@@ -1,0 +1,137 @@
+{
+    "case_001": {
+        "description": "Standard reentry from LEO",
+        "notes": {
+            "altitude": "400km initial altitude",
+            "velocity": "Orbital velocity -7.8 km/s"
+        },
+        "initial_state": {
+            "position": {
+                "x": 6771000.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "velocity": {
+                "vx": -7.8,
+                "vy": 0.0,
+                "vz": 0.0
+            }
+        },
+        "actual_impact": {
+            "lat": 28.5,
+            "lon": -80.5,
+            "time": 1200.0
+        },
+        "max_distance_error": 100.0,
+        "max_time_error": 60.0,
+        "units": {
+            "time": "seconds from initial state",
+            "distance_error": "kilometers",
+            "time_error": "seconds"
+        }
+    },
+    "case_002": {
+        "description": "High inclination reentry",
+        "notes": {
+            "altitude": "400km initial altitude",
+            "trajectory": "45 degree inclination"
+        },
+        "initial_state": {
+            "position": {
+                "x": 4785000.0,
+                "y": 4785000.0,
+                "z": 0.0
+            },
+            "velocity": {
+                "vx": -5.5,
+                "vy": -5.5,
+                "vz": 0.0
+            }
+        },
+        "actual_impact": {
+            "lat": 45.0,
+            "lon": 45.0,
+            "time": 1500.0
+        },
+        "max_distance_error": 150.0,
+        "max_time_error": 90.0
+    },
+    "case_003": {
+        "description": "Steep reentry angle",
+        "initial_state": {
+            "position": {
+                "x": 6771000.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "velocity": {
+                "vx": -7.0,
+                "vy": 0.0,
+                "vz": -3.5
+            }
+        },
+        "actual_impact": {
+            "lat": 0.0,
+            "lon": 0.0,
+            "time": 900.0
+        },
+        "max_distance_error": 80.0,
+        "max_time_error": 45.0
+    },
+    "case_004": {
+        "description": "Shallow reentry with breakup",
+        "initial_state": {
+            "position": {
+                "x": 6771000.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "velocity": {
+                "vx": -7.8,
+                "vy": 0.5,
+                "vz": -0.5
+            }
+        },
+        "actual_impact": {
+            "lat": -5.0,
+            "lon": 15.0,
+            "time": 1800.0
+        },
+        "max_distance_error": 200.0,
+        "max_time_error": 120.0,
+        "breakup_parameters": {
+            "altitude": 60000.0,
+            "units": "meters"
+        }
+    },
+    "case_005": {
+        "description": "High wind conditions",
+        "initial_state": {
+            "position": {
+                "x": 6771000.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "velocity": {
+                "vx": -7.5,
+                "vy": 0.0,
+                "vz": -1.0
+            }
+        },
+        "actual_impact": {
+            "lat": 10.0,
+            "lon": -5.0,
+            "time": 1500.0
+        },
+        "max_distance_error": 180.0,
+        "max_time_error": 100.0,
+        "environmental_conditions": {
+            "wind_speed": 50.0,
+            "wind_direction": 270.0,
+            "units": {
+                "wind_speed": "meters_per_second",
+                "wind_direction": "degrees"
+            }
+        }
+    }
+} 
