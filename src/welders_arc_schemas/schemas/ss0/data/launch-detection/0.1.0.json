@@ -19,14 +19,15 @@
                     "type": "string",
                     "format": "date-time"
                 },
-                "bearing": {
-                    "type": "number"
+                "eventId": {
+                    "type": "string",
+                    "format": "uuid"
                 },
-                "phenomenology": {
-                    "type": "string"
-                },
-                "simDetails": {
-                    "$ref": "#/definitions/SimDetails"
+                "nominals": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/NominalElset"
+                    }
                 }
             },
             "required": [
@@ -34,35 +35,53 @@
                 "latitude",
                 "longitude",
                 "liftoffAt",
-                "phenomenology"
+                "eventId"
             ],
             "title": "LaunchDetection"
         },
-        "SimDetails": {
+        "NominalElset": {
             "type": "object",
             "additionalProperties": false,
             "properties": {
-                "satNo": {
-                    "type": "number"
+                "idElset": {
+                    "type": "string",
+                    "format": "uuid"
+                },
+                "classificationMarking": {
+                    "type": "string"
                 },
                 "epoch": {
                     "type": "string",
                     "format": "date-time"
                 },
-                "inclination": {
-                    "type": "number"
+                "line1": {
+                    "type": "string"
                 },
-                "altitude": {
-                    "type": "number"
+                "line2": {
+                    "type": "string"
                 },
-                "udlElsetId": {
+                "createdAt": {
                     "type": "string",
-                    "format": "uuid"
+                    "format": "date-time"
+                },
+                "source": {
+                    "type": "string"
+                },
+                "dataMode": {
+                    "type": "string"
                 }
             },
             "required": [
+                "idElset",
+                "classificationMarking",
+                "epoch",
+                "line1",
+                "line2",
+                "createdAt",
+                "source",
+                "dataMode"
             ],
-            "title": "SimDetails"
+            "title": "NominalElset"
         }
     }
 }
