@@ -17,6 +17,7 @@ kill_port 8000
 # Start backend
 echo "Starting backend server..."
 cd backend
+source venv/bin/activate
 python -m uvicorn app.main:app --reload --port 8000 &
 cd ..
 
@@ -25,7 +26,7 @@ sleep 2
 
 # Start frontend
 echo "Starting frontend server..."
-cd frontend
+cd v0
 npm run dev &
 cd ..
 

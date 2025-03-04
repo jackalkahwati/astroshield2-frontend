@@ -14,7 +14,7 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar"
 import { ModeToggle } from "@/components/mode-toggle"
-import { BarChart2, List, Satellite, TrendingUp, Shield, Activity, Settings } from "lucide-react"
+import { BarChart2, List, Satellite, TrendingUp, Shield, Activity, Settings, Navigation } from "lucide-react"
 
 const menuItems = [
   {
@@ -42,6 +42,11 @@ const menuItems = [
     text: "Maneuvers",
     icon: Shield,
     path: "/maneuvers",
+  },
+  {
+    text: "Trajectory Analysis",
+    icon: Navigation,
+    path: "/trajectory",
   },
   {
     text: "Analytics",

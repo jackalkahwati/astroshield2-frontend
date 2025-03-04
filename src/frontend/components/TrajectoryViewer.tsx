@@ -16,8 +16,8 @@ import {
     FormControlLabel
 } from '@mui/material';
 
-// Replace with your Mapbox token
-mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_TOKEN || '';
+// Use the environment variable for the Mapbox token
+mapboxgl.accessToken = process.env.MAPBOX_TOKEN || '';
 
 const MapContainer = styled(Box)(({ theme }) => ({
     height: '600px',

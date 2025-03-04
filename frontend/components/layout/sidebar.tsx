@@ -18,7 +18,8 @@ import {
   Satellite,
   AlertCircle,
   BarChart3,
-  Gauge
+  Gauge,
+  Navigation
 } from "lucide-react"
 
 interface SidebarProps extends React.HTMLAttributes<HTMLElement> {
@@ -50,6 +51,11 @@ const routes = [
     label: "Maneuvers",
     icon: Rocket,
     href: "/maneuvers",
+  },
+  {
+    label: "Trajectory Analysis",
+    icon: Navigation,
+    href: "/trajectory",
   },
   {
     label: "Analytics",
