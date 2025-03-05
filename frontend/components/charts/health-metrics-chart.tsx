@@ -1,12 +1,11 @@
 "use client"
 
 import { useState } from "react"
-import { Bar, Line, Pie, Radar, Doughnut } from "react-chartjs-2"
+import { Line, Pie, Doughnut, PolarArea } from "react-chartjs-2"
 import {
   Chart as ChartJS,
   CategoryScale,
   LinearScale,
-  BarElement,
   PointElement,
   LineElement,
   ArcElement,
@@ -22,7 +21,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 ChartJS.register(
   CategoryScale, 
   LinearScale, 
-  BarElement, 
   PointElement, 
   LineElement, 
   ArcElement,
@@ -33,65 +31,59 @@ ChartJS.register(
   Filler
 )
 
-type ChartType = "bar" | "line" | "pie" | "radar" | "doughnut"
+type ChartType = "line" | "pie" | "doughnut" | "polar"
 
-export function ActivityChart() {
-  const [chartType, setChartType] = useState<ChartType>("bar")
+export function HealthMetricsChart() {
+  const [chartType, setChartType] = useState<ChartType>("doughnut")
   
-  // Common data for all chart types
-  const labels = ["Mon", "Tue", "Wed", "Thu", "Fri"]
-  const values = [1, 4, 2, 5, 3]
+  // Health metrics data
+  const labels = ["System Uptime", "Response Time", "Error Rate", "CPU Usage", "Memory Usage"]
+  const values = [98, 95, 97, 85, 90]
   
-  // Bar and Line chart data
-  const timeSeriesData = {
+  // Line chart data
+  const lineData = {
     labels,
     datasets: [
       {
-        label: "Alerts",
+        label: "Current (%)",
         data: values,
-        backgroundColor: "rgba(255,99,132,0.6)",
-        borderColor: "rgba(255,99,132,1)",
-        borderWidth: 1,
-        fill: chartType === "line" ? "origin" : undefined,
+        borderColor: "rgba(75, 192, 192, 1)",
+        backgroundColor: "rgba(75, 192, 192, 0.2)",
+        fill: true,
+        tension: 0.4,
       },
+      {
+        label: "Previous (%)",
+        data: [96, 92, 95, 88, 93],
+        borderColor: "rgba(153, 102, 255, 1)",
+        backgroundColor: "rgba(153, 102, 255, 0.2)",
+        fill: true,
+        tension: 0.4,
+      }
     ],
   }
   
-  // Pie and Doughnut chart data
-  const pieData = {
+  // Pie, Doughnut, and Polar Area chart data
+  const circularData = {
     labels,
     datasets: [
       {
-        label: "Alerts",
+        label: "Health Metrics (%)",
         data: values,
         backgroundColor: [
-          "rgba(255, 99, 132, 0.6)",
-          "rgba(54, 162, 235, 0.6)",
-          "rgba(255, 206, 86, 0.6)",
           "rgba(75, 192, 192, 0.6)",
+          "rgba(54, 162, 235, 0.6)",
           "rgba(153, 102, 255, 0.6)",
+          "rgba(255, 206, 86, 0.6)",
+          "rgba(255, 99, 132, 0.6)",
         ],
         borderColor: [
-          "rgba(255, 99, 132, 1)",
-          "rgba(54, 162, 235, 1)",
-          "rgba(255, 206, 86, 1)",
           "rgba(75, 192, 192, 1)",
+          "rgba(54, 162, 235, 1)",
           "rgba(153, 102, 255, 1)",
+          "rgba(255, 206, 86, 1)",
+          "rgba(255, 99, 132, 1)",
         ],
-        borderWidth: 1,
-      },
-    ],
-  }
-  
-  // Radar chart data
-  const radarData = {
-    labels,
-    datasets: [
-      {
-        label: "Alerts",
-        data: values,
-        backgroundColor: "rgba(255, 99, 132, 0.2)",
-        borderColor: "rgba(255, 99, 132, 1)",
         borderWidth: 1,
       },
     ],
@@ -107,7 +99,7 @@ export function ActivityChart() {
       },
       title: {
         display: true,
-        text: "System Activity",
+        text: "System Health Metrics",
       },
     },
   }
@@ -115,18 +107,16 @@ export function ActivityChart() {
   // Render the appropriate chart based on the selected type
   const renderChart = () => {
     switch (chartType) {
-      case "bar":
-        return <Bar data={timeSeriesData} options={options} />
       case "line":
-        return <Line data={timeSeriesData} options={options} />
+        return <Line data={lineData} options={options} />
       case "pie":
-        return <Pie data={pieData} options={options} />
-      case "radar":
-        return <Radar data={radarData} options={options} />
+        return <Pie data={circularData} options={options} />
       case "doughnut":
-        return <Doughnut data={pieData} options={options} />
+        return <Doughnut data={circularData} options={options} />
+      case "polar":
+        return <PolarArea data={circularData} options={options} />
       default:
-        return <Bar data={timeSeriesData} options={options} />
+        return <Doughnut data={circularData} options={options} />
     }
   }
 
@@ -138,11 +128,10 @@ export function ActivityChart() {
             <SelectValue placeholder="Select chart type" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="bar">Bar Chart</SelectItem>
             <SelectItem value="line">Line Chart</SelectItem>
             <SelectItem value="pie">Pie Chart</SelectItem>
-            <SelectItem value="radar">Radar Chart</SelectItem>
             <SelectItem value="doughnut">Doughnut Chart</SelectItem>
+            <SelectItem value="polar">Polar Area</SelectItem>
           </SelectContent>
         </Select>
       </div>

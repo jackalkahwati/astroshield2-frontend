@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import { ActivityChart } from "@/components/charts/activity-chart"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { SatelliteIcon, Activity, AlertTriangle, Shield } from "lucide-react"
@@ -7,6 +8,9 @@ import { Badge } from "@/components/ui/badge"
 import { formatDate } from "@/lib/utils/date"
 
 export default function DashboardPage() {
+  const [isLoaded, setIsLoaded] = useState(false)
+  
+  // Sample data
   const satellites = [
     { id: "SAT-001", status: "Active", lastSeen: new Date() },
     { id: "SAT-002", status: "Maintenance", lastSeen: new Date() },
@@ -17,8 +21,27 @@ export default function DashboardPage() {
     { id: 2, message: "New Satellite Launched", type: "info", timestamp: new Date() },
   ]
 
+  useEffect(() => {
+    // Set loaded after a short delay to ensure all resources are available
+    const timer = setTimeout(() => {
+      setIsLoaded(true)
+    }, 500)
+    
+    return () => clearTimeout(timer)
+  }, [])
+
+  if (!isLoaded) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center">
+        <div className="text-center">
+          <p className="text-xl font-semibold">Loading dashboard...</p>
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <div className="space-y-6">
+    <div className="container mx-auto p-6 space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">Dashboard</h1>
         <Badge variant="outline" className="text-sm">
@@ -27,7 +50,7 @@ export default function DashboardPage() {
       </div>
 
       {/* System Overview */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Satellites</CardTitle>
@@ -74,7 +97,7 @@ export default function DashboardPage() {
             Alert frequency over the past week
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="h-[300px]">
           <ActivityChart />
         </CardContent>
       </Card>

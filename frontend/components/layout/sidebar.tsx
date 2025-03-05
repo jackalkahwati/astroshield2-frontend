@@ -76,14 +76,13 @@ export function Sidebar({ className, ...props }: SidebarProps) {
   return (
     <aside
       className={cn(
-        "relative z-50 border-r bg-background transition-all duration-300",
+        "h-screen sticky top-0 z-40 border-r border-border bg-background transition-all duration-300",
         isOpen ? "w-64" : "w-16",
         className
       )}
-      style={{ height: "calc(100vh - 3.5rem)" }}
       {...props}
     >
-      <div className="flex h-14 items-center justify-between px-4">
+      <div className="flex h-16 items-center justify-between px-4 border-b">
         <div className={cn("flex items-center gap-x-2", !isOpen && "justify-center w-full")}>
           <Shield className="h-8 w-8 text-primary" />
           {isOpen && <span className="text-xl font-bold">AstroShield</span>}
@@ -93,6 +92,7 @@ export function Sidebar({ className, ...props }: SidebarProps) {
           variant="ghost"
           size="icon"
           className={cn("h-8 w-8", !isOpen && "hidden")}
+          aria-label="Close sidebar"
         >
           <ChevronLeft className="h-4 w-4" />
         </Button>
@@ -101,11 +101,12 @@ export function Sidebar({ className, ...props }: SidebarProps) {
           variant="ghost"
           size="icon"
           className={cn("h-8 w-8", isOpen && "hidden")}
+          aria-label="Open sidebar"
         >
           <ChevronRight className="h-4 w-4" />
         </Button>
       </div>
-      <ScrollArea className="flex-1">
+      <ScrollArea className="h-[calc(100vh-4rem)]">
         <nav className="space-y-2 p-4">
           {routes.map((route) => (
             <Link
