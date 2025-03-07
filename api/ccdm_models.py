@@ -149,3 +149,53 @@ class ThermalSignature(BaseModel):
     temporal_variations: List[Dict[str, Any]]
     anomalies: List[Dict[str, Any]]
     confidence_level: float
+
+class CCDMViolator(BaseModel):
+    """Model for CCDM violator list entries"""
+    time_utc: datetime
+    object_id: str
+    common_name: str
+    country: str
+    object_type: str
+    priority: int
+    violation_type: str = Field(description="Type of CCDM violation")
+    violation_details: Optional[Dict[str, Any]] = None
+    reported: bool = False
+    
+class CCDMViolatorList(BaseModel):
+    """Model for CCDM violator list"""
+    violators: List[CCDMViolator]
+    last_updated: datetime
+    total_count: int
+    critical_count: int = Field(description="Count of priority 5 violations")
+    high_count: int = Field(description="Count of priority 6 violations")
+    medium_count: int = Field(description="Count of priority 7 violations")
+    low_count: int = Field(description="Count of priority 8+ violations")
+
+class AntiCCDMIndicator(BaseModel):
+    """Model for Anti-CCDM indicators that help distinguish between actual maneuvers and environmental effects"""
+    object_id: str
+    timestamp: datetime
+    indicator_type: str = Field(description="Type of anti-CCDM indicator (e.g., 'drag', 'solar_radiation')")
+    confidence_level: float = Field(ge=0.0, le=1.0, description="Confidence level of this indicator")
+    environmental_factor: str = Field(description="Environmental factor causing the behavior (e.g., 'atmospheric_drag', 'solar_activity')")
+    expected_deviation: Dict[str, float] = Field(description="Expected deviation due to environmental factors")
+    actual_deviation: Dict[str, float] = Field(description="Actual observed deviation")
+    is_environmental: bool = Field(description="Whether the behavior is likely environmental rather than intentional")
+    details: Optional[Dict[str, Any]] = None
+    metadata: Optional[Dict[str, Any]] = None
+
+class DragAnalysis(BaseModel):
+    """Model for drag analysis results specifically for V-LEO objects"""
+    object_id: str
+    timestamp: datetime
+    norad_id: Optional[str] = None
+    tle_epoch: Optional[datetime] = None
+    drag_coefficient: float
+    atmospheric_density: float
+    predicted_position_deviation: List[float]
+    actual_position_deviation: List[float]
+    is_anomalous: bool = Field(description="Whether the drag effect is outside expected parameters")
+    confidence_level: float = Field(ge=0.0, le=1.0)
+    forecast: Optional[Dict[str, Any]] = Field(description="Forecast for future drag effects (24h, 48h, 72h)")
+    metadata: Optional[Dict[str, Any]] = None
