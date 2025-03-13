@@ -13,6 +13,12 @@ The repository is organized into the following main components:
 - **ui/**: User interface components for visualization and interaction
 - **tools/**: Utility scripts and development tools
 
+## Repository Management
+
+This repository uses Git LFS (Large File Storage) to efficiently manage large files such as models and binary data. For details on working with Git LFS, see [GIT_LFS_GUIDE.md](GIT_LFS_GUIDE.md).
+
+For information on repository cleanup and restructuring, see [REPOSITORY_CLEANUP.md](REPOSITORY_CLEANUP.md).
+
 ## Core Architecture
 
 AstroShield implements a subsystem-based architecture as defined in the SDA specifications. The system consists of the following subsystems:
