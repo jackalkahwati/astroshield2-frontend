@@ -1,0 +1,2344 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Unified Data Library Services API",
+    "version": "1.30.0 Daiquiri",
+    "description": "Unified Data Library Services OpenAPI v3 documentation.",
+    "termsOfService": "storefront/storefront/appConfig/useragreement.html",
+    "contact": {
+      "name": "Sage Andorka, Deputy, Cross-Mission Ground",
+      "email": "unifieddatalibrary@bluestaq.com"
+    }
+  },
+  "tags": [
+    {
+      "name": "Earth Orientation Parameters",
+      "description": "This service provides operations for manipulation and querying of earth orientation parameter (EOP) data. Earth Orientation Parameters (EOP) are produced by the IERS (International Earth Rotation and Reference Systems Service). Earth Orientation Parameters describe the irregularities of the earth's rotation. Technically, they are the parameters which provide the rotation of the ITRS (International Terrestrial Reference System) to the ICRS (International Celestial Reference System) as a function of time. Universal time -- Universal time (UT1) is the time of the earth clock, which performs one revolution in about 24h. It is practically proportional to the sidereal time. The excess revolution time is called length of day (LOD). Coordinates of the pole -- x and y are the coordinates of the Celestial Ephemeris Pole (CEP) relative to the IRP, the IERS Reference Pole. The CEP differs from the instantaneous rotation axis by quasi-diurnal terms with amplitudes under 0.01\" (see Seidelmann, 1982). The x-axis is in the direction of the ITRF zero-meridian; the y-axis is in the direction 90 degrees West longitude. Celestial pole offsets -- Celestial pole offsets are described in the IAU Precession and Nutation models. The observed differences with respect to the conventional celestial pole position defined by the models are monitored and reported by the IERS. IERS Bulletins A and B provide current information on the Earth's orientation in the IERS Reference System. This includes Universal Time, coordinates of the terrestrial pole, and celestial pole offsets. Bulletin A gives an advanced solution updated weekly; the standard solution is given monthly in Bulletin B. Fields suffixed with ''B'' are Bulletin B values. All solutions are continuous within their respective uncertainties. Bulletin A is issued by the IERS Rapid Service/Prediction Centre at the U.S. Naval Observatory, Washington, DC and Bulletin B is issued by the IERS Earth Orientation Centre at the Paris Observatory. IERS Bulletin A reports the latest determinations for polar motion, UT1-UTC, and nutation offsets at daily intervals based on a combination of contributed analysis results using data from Very Long Baseline Interferometry (VLBI), Satellite Laser Ranging (SLR), Global Positioning System (GPS) satellites, and Lunar Laser Ranging (LLR). Predictions for variations a year into the future are also provided. Meteorological predictions of variations in Atmospheric Angular Momentum (AAM) are used to aid in the prediction of near-term UT1-UTC changes. This publication is prepared by the IERS Rapid Service/Prediction Center."
+    }
+  ],
+  "externalDocs": {
+    "url": "udl/openapi.json"
+  },
+  "servers": [
+    {
+      "url": "https://unifieddatalibrary.com"
+    }
+  ],
+  "paths": {
+    "/udl/eop": {
+      "get": {
+        "description": "Service operation to dynamically query data by a variety of query parameters not specified in this API documentation. See the queryhelp operation (/udl/&lt;datatype&gt;/queryhelp) for more details on valid/required query parameter information.",
+        "tags": [
+          "Earth Orientation Parameters"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Eop_Abridged"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "406": {
+            "description": "MediaType Not Accepted by Request Headers"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "parameters": [
+          {
+            "name": "eopDate",
+            "description": "Effective date/time for the EOP values in ISO8601 UTC format. The values could be current or predicted. (YYYY-MM-DDTHH:MM:SS.sssZ)",
+            "required": true,
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            },
+            "in": "query"
+          }
+        ]
+      },
+      "post": {
+        "description": "Service operation to take a single EOP Record as a POST body and ingest into the database. A specific role is required to perform this service operation. Please contact the UDL team for assistance.",
+        "tags": [
+          "Earth Orientation Parameters"
+        ],
+        "requestBody": {
+          "description": "JSON representation of one EOP.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Eop_Ingest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "415": {
+            "description": "MediaType Unsupported"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/udl/eop/{id}": {
+      "delete": {
+        "description": "Service operation to delete an EOP Record specified by the passed ID path parameter. Note, delete operations do not remove data from historical or publish/subscribe stores. A specific role is required to perform this service operation. Please contact the UDL team for assistance.",
+        "tags": [
+          "Earth Orientation Parameters"
+        ],
+        "parameters": [
+          {
+            "description": "The ID of the EOP to delete.",
+            "required": true,
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "404": {
+            "description": "Item Not Found"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "get": {
+        "description": "Service operation to get a single EOP record by its unique ID passed as a path parameter.",
+        "tags": [
+          "Earth Orientation Parameters"
+        ],
+        "parameters": [
+          {
+            "description": "The ID of the EOP to retrieve.",
+            "required": true,
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Eop_Full"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "404": {
+            "description": "Item Not Found"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "406": {
+            "description": "MediaType Not Accepted by Request Headers"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "put": {
+        "description": "Service operation to update a single EOP Record. A specific role is required to perform this service operation. Please contact the UDL team for assistance.",
+        "tags": [
+          "Earth Orientation Parameters"
+        ],
+        "parameters": [
+          {
+            "description": "The ID of the EOP to update.",
+            "required": true,
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Eop_Ingest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "404": {
+            "description": "Item Not Found"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "415": {
+            "description": "MediaType Unsupported"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/udl/eop/count": {
+      "get": {
+        "description": "Service operation to return the count of records satisfying the specified query parameters. This operation is useful to determine how many records pass a particular query criteria without retrieving large amounts of data. See the queryhelp operation (/udl/&lt;datatype&gt;/queryhelp) for more details on valid/required query parameter information.",
+        "tags": [
+          "Earth Orientation Parameters"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "406": {
+            "description": "MediaType Not Accepted by Request Headers"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "parameters": [
+          {
+            "name": "eopDate",
+            "description": "Effective date/time for the EOP values in ISO8601 UTC format. The values could be current or predicted. (YYYY-MM-DDTHH:MM:SS.sssZ)",
+            "required": true,
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            },
+            "in": "query"
+          }
+        ]
+      }
+    },
+    "/udl/eop/history": {
+      "get": {
+        "description": "Service operation to dynamically query historical data by a variety of query parameters not specified in this API documentation.  See the queryhelp operation (/udl/&lt;datatype&gt;/queryhelp) for more details on valid/required query parameter information.",
+        "tags": [
+          "Earth Orientation Parameters"
+        ],
+        "parameters": [
+          {
+            "description": "optional, fields for retrieval. When omitted, ALL fields are assumed. See the queryhelp operation (/udl/&lt;datatype&gt;/queryhelp) for more details on valid query fields that can be selected.",
+            "required": false,
+            "name": "columns",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "eopDate",
+            "description": "Effective date/time for the EOP values in ISO8601 UTC format. The values could be current or predicted. (YYYY-MM-DDTHH:MM:SS.sssZ)",
+            "required": true,
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            },
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Eop_Full"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "406": {
+            "description": "MediaType Not Accepted by Request Headers"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/udl/eop/history/aodr": {
+      "get": {
+        "description": "Service operation to dynamically query historical data by a variety of query parameters not specified in this API documentation, then write that data to the Secure Content Store.  See the queryhelp operation (/udl/&lt;datatype&gt;/queryhelp) for more details on valid/required query parameter information.",
+        "tags": [
+          "Earth Orientation Parameters"
+        ],
+        "parameters": [
+          {
+            "description": "optional, fields for retrieval. When omitted, ALL fields are assumed. See the queryhelp operation (/udl/&lt;datatype&gt;/queryhelp) for more details on valid query fields that can be selected.",
+            "required": false,
+            "name": "columns",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "optional, notification method for the created file link. When omitted, EMAIL is assumed. Current valid values are: EMAIL, SMS.",
+            "required": false,
+            "name": "notification",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "optional, field delimiter when the created file is not JSON. Must be a single character chosen from this set: (',', ';', ':', '|'). When omitted, \",\" is used. It is strongly encouraged that your field delimiter be a character unlikely to occur within the data.",
+            "required": false,
+            "name": "outputDelimiter",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "optional, output format for the file. When omitted, JSON is assumed. Current valid values are: JSON and CSV.",
+            "required": false,
+            "name": "outputFormat",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "eopDate",
+            "description": "Effective date/time for the EOP values in ISO8601 UTC format. The values could be current or predicted. (YYYY-MM-DDTHH:MM:SS.sssZ)",
+            "required": true,
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            },
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "406": {
+            "description": "MediaType Not Accepted by Request Headers"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/udl/eop/history/count": {
+      "get": {
+        "description": "Service operation to return the count of records satisfying the specified query parameters. This operation is useful to determine how many records pass a particular query criteria without retrieving large amounts of data. See the queryhelp operation (/udl/&lt;datatype&gt;/queryhelp) for more details on valid/required query parameter information.",
+        "tags": [
+          "Earth Orientation Parameters"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "406": {
+            "description": "MediaType Not Accepted by Request Headers"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "parameters": [
+          {
+            "name": "eopDate",
+            "description": "Effective date/time for the EOP values in ISO8601 UTC format. The values could be current or predicted. (YYYY-MM-DDTHH:MM:SS.sssZ)",
+            "required": true,
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            },
+            "in": "query"
+          }
+        ]
+      }
+    },
+    "/udl/eop/queryhelp": {
+      "get": {
+        "description": "Service operation to provide detailed information on available dynamic query parameters for a particular data type.",
+        "tags": [
+          "Earth Orientation Parameters"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "User Unauthorized"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "406": {
+            "description": "MediaType Not Accepted by Request Headers"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/udl/eop/tuple": {
+      "get": {
+        "description": "Service operation to dynamically query data and only return specified columns/fields. Requested columns are specified by the 'columns' query parameter and should be a comma separated list of valid fields for the specified data type. classificationMarking is always returned. See the queryhelp operation (/udl/<datatype>/queryhelp) for more details on valid/required query parameter information. An example URI: /udl/elset/tuple?columns=satNo,period&epoch=>now-5 hours would return the satNo and period of elsets with an epoch greater than 5 hours ago.",
+        "tags": [
+          "Earth Orientation Parameters"
+        ],
+        "parameters": [
+          {
+            "description": "Comma-separated list of valid field names for this data type to be returned in the response. Only the fields specified will be returned as well as the classification marking of the data, if applicable. See the ‘queryhelp’ operation for a complete list of possible fields.",
+            "required": true,
+            "name": "columns",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "eopDate",
+            "description": "Effective date/time for the EOP values in ISO8601 UTC format. The values could be current or predicted. (YYYY-MM-DDTHH:MM:SS.sssZ)",
+            "required": true,
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            },
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Eop_Full"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "406": {
+            "description": "MediaType Not Accepted by Request Headers"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/udl/taiutc": {
+      "get": {
+        "description": "Service operation to dynamically query data by a variety of query parameters not specified in this API documentation. See the queryhelp operation (/udl/&lt;datatype&gt;/queryhelp) for more details on valid/required query parameter information.",
+        "tags": [
+          "Earth Orientation Parameters"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TAIUTC_Abridged"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "406": {
+            "description": "MediaType Not Accepted by Request Headers"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "parameters": [
+          {
+            "name": "adjustmentDate",
+            "description": "Effective date/time for the leap second adjustment. Must be a unique value across all TAIUTC datasets. (YYYY-MM-DDTHH:MM:SS.sssZ)",
+            "required": true,
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            },
+            "in": "query"
+          }
+        ]
+      },
+      "post": {
+        "description": "Service operation to take a single TAIUTC object as a POST body and ingest into the database. A specific role is required to perform this service operation. Please contact the UDL team for assistance.",
+        "tags": [
+          "Earth Orientation Parameters"
+        ],
+        "requestBody": {
+          "description": "JSON representation of one TAIUTC.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TAIUTC_Ingest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "415": {
+            "description": "MediaType Unsupported"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/udl/taiutc/{id}": {
+      "delete": {
+        "description": "Service operation to delete an TAIUTC object specified by the passed ID path parameter. A specific role is required to perform this service operation. Please contact the UDL team for assistance. Note, delete operations do not remove data from historical or publish/subscribe stores.",
+        "tags": [
+          "Earth Orientation Parameters"
+        ],
+        "parameters": [
+          {
+            "description": "The ID of the TAIUTC to delete.",
+            "required": true,
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "404": {
+            "description": "Item Not Found"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "get": {
+        "description": "Service operation to get a single TAIUTC record by its unique ID passed as a path parameter.",
+        "tags": [
+          "Earth Orientation Parameters"
+        ],
+        "parameters": [
+          {
+            "description": "The ID of the TAIUTC to retrieve.",
+            "required": true,
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TAIUTC_Full"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "404": {
+            "description": "Item Not Found"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "406": {
+            "description": "MediaType Not Accepted by Request Headers"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "put": {
+        "description": "Service operation to update a single TAIUTC object. A specific role is required to perform this service operation. Please contact the UDL team for assistance.",
+        "tags": [
+          "Earth Orientation Parameters"
+        ],
+        "parameters": [
+          {
+            "description": "The ID of the TAIUTC to update.",
+            "required": true,
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "JSON representation of one TAIUTC.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TAIUTC_Ingest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "404": {
+            "description": "Item Not Found"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "415": {
+            "description": "MediaType Unsupported"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/udl/taiutc/count": {
+      "get": {
+        "description": "Service operation to return the count of records satisfying the specified query parameters. This operation is useful to determine how many records pass a particular query criteria without retrieving large amounts of data. See the queryhelp operation (/udl/&lt;datatype&gt;/queryhelp) for more details on valid/required query parameter information.",
+        "tags": [
+          "Earth Orientation Parameters"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "406": {
+            "description": "MediaType Not Accepted by Request Headers"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "parameters": [
+          {
+            "name": "adjustmentDate",
+            "description": "Effective date/time for the leap second adjustment. Must be a unique value across all TAIUTC datasets. (YYYY-MM-DDTHH:MM:SS.sssZ)",
+            "required": true,
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            },
+            "in": "query"
+          }
+        ]
+      }
+    },
+    "/udl/taiutc/history": {
+      "get": {
+        "description": "Service operation to dynamically query historical data by a variety of query parameters not specified in this API documentation.  See the queryhelp operation (/udl/&lt;datatype&gt;/queryhelp) for more details on valid/required query parameter information.",
+        "tags": [
+          "Earth Orientation Parameters"
+        ],
+        "parameters": [
+          {
+            "description": "optional, fields for retrieval. When omitted, ALL fields are assumed. See the queryhelp operation (/udl/&lt;datatype&gt;/queryhelp) for more details on valid query fields that can be selected.",
+            "name": "columns",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "adjustmentDate",
+            "description": "Effective date/time for the leap second adjustment. Must be a unique value across all TAIUTC datasets. (YYYY-MM-DDTHH:MM:SS.sssZ)",
+            "required": true,
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            },
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TAIUTC_Full"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "406": {
+            "description": "MediaType Not Accepted by Request Headers"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/udl/taiutc/history/aodr": {
+      "get": {
+        "description": "Service operation to dynamically query historical data by a variety of query parameters not specified in this API documentation, then write that data to the Secure Content Store.  See the queryhelp operation (/udl/&lt;datatype&gt;/queryhelp) for more details on valid/required query parameter information.",
+        "tags": [
+          "Earth Orientation Parameters"
+        ],
+        "parameters": [
+          {
+            "description": "optional, fields for retrieval. When omitted, ALL fields are assumed. See the queryhelp operation (/udl/&lt;datatype&gt;/queryhelp) for more details on valid query fields that can be selected.",
+            "name": "columns",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "optional, notification method for the created file link. When omitted, EMAIL is assumed. Current valid values are: EMAIL, SMS.",
+            "name": "notification",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "optional, field delimiter when the created file is not JSON. Must be a single character chosen from this set: (',', ';', ':', '|'). When omitted, \",\" is used. It is strongly encouraged that your field delimiter be a character unlikely to occur within the data.",
+            "name": "outputDelimiter",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "optional, output format for the file. When omitted, JSON is assumed. Current valid values are: JSON and CSV.",
+            "name": "outputFormat",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "adjustmentDate",
+            "description": "Effective date/time for the leap second adjustment. Must be a unique value across all TAIUTC datasets. (YYYY-MM-DDTHH:MM:SS.sssZ)",
+            "required": true,
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            },
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "406": {
+            "description": "MediaType Not Accepted by Request Headers"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/udl/taiutc/history/count": {
+      "get": {
+        "description": "Service operation to return the count of records satisfying the specified query parameters. This operation is useful to determine how many records pass a particular query criteria without retrieving large amounts of data. See the queryhelp operation (/udl/&lt;datatype&gt;/queryhelp) for more details on valid/required query parameter information.",
+        "tags": [
+          "Earth Orientation Parameters"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "406": {
+            "description": "MediaType Not Accepted by Request Headers"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "parameters": [
+          {
+            "name": "adjustmentDate",
+            "description": "Effective date/time for the leap second adjustment. Must be a unique value across all TAIUTC datasets. (YYYY-MM-DDTHH:MM:SS.sssZ)",
+            "required": true,
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            },
+            "in": "query"
+          }
+        ]
+      }
+    },
+    "/udl/taiutc/queryhelp": {
+      "get": {
+        "description": "Service operation to provide detailed information on available dynamic query parameters for a particular data type.",
+        "tags": [
+          "Earth Orientation Parameters"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "User Unauthorized"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "406": {
+            "description": "MediaType Not Accepted by Request Headers"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/udl/taiutc/tuple": {
+      "get": {
+        "description": "Service operation to dynamically query data and only return specified columns/fields. Requested columns are specified by the 'columns' query parameter and should be a comma separated list of valid fields for the specified data type. classificationMarking is always returned. See the queryhelp operation (/udl/<datatype>/queryhelp) for more details on valid/required query parameter information. An example URI: /udl/elset/tuple?columns=satNo,period&epoch=>now-5 hours would return the satNo and period of elsets with an epoch greater than 5 hours ago.",
+        "tags": [
+          "Earth Orientation Parameters"
+        ],
+        "parameters": [
+          {
+            "description": "Comma-separated list of valid field names for this data type to be returned in the response. Only the fields specified will be returned as well as the classification marking of the data, if applicable. See the ‘queryhelp’ operation for a complete list of possible fields.",
+            "required": true,
+            "name": "columns",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "adjustmentDate",
+            "description": "Effective date/time for the leap second adjustment. Must be a unique value across all TAIUTC datasets. (YYYY-MM-DDTHH:MM:SS.sssZ)",
+            "required": true,
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            },
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TAIUTC_Full"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "406": {
+            "description": "MediaType Not Accepted by Request Headers"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Eop_Abridged": {
+        "description": "Model representation of Earth Orientation Parameters (EOP) produced by the IERS (International Earth Rotation and Reference Systems Service). Earth Orientation Parameters describe the irregularities of the earth's rotation. Technically, they are the parameters which provide the rotation of the ITRS (International Terrestrial Reference System) to the ICRS (International Celestial Reference System) as a function of time.\nUniversal time -- Universal time (UT1) is the time of the earth clock, which performs one revolution in about 24h. It is practically proportional to the sidereal time. The excess revolution time is called length of day (LOD).\nCoordinates of the pole -- x and y are the coordinates of the Celestial Ephemeris Pole (CEP) relative to the IRP, the IERS Reference Pole. The CEP differs from the instantaneous rotation axis by quasi-diurnal terms with amplitudes under 0.01\" (see Seidelmann, 1982). The x-axis is in the direction of the ITRF zero-meridian; the y-axis is in the direction 90 degrees West longitude.\nCelestial pole offsets -- Celestial pole offsets are described in the IAU Precession and Nutation models. The observed differences with respect to the conventional celestial pole position defined by the models are monitored and reported by the IERS.\nIERS Bulletins A and B provide current information on the Earth's orientation in the IERS Reference System.  This includes Universal Time, coordinates of the terrestrial pole, and celestial pole offsets.  Bulletin A gives an advanced solution updated weekly; the standard solution is given monthly in Bulletin B. Fields suffixed with 'B' are Bulletin B values. All solutions are continuous within their respective uncertainties.  Bulletin A is issued by the IERS Rapid Service/Prediction Centre at the U.S. Naval Observatory, Washington, DC and Bulletin B is issued by the IERS Earth Orientation Centre at the Paris Observatory. IERS Bulletin A reports the latest determinations for polar motion, UT1-UTC, and nutation offsets at daily intervals based on a combination of contributed analysis results using data from Very Long Baseline Interferometry (VLBI), Satellite Laser Ranging (SLR), Global Positioning System (GPS) satellites, and Lunar Laser Ranging (LLR). Predictions for variations a year into the future are also provided. Meteorological predictions of variations in Atmospheric Angular Momentum (AAM) are used to aid in the prediction of near-term UT1-UTC changes. This publication is prepared by the IERS Rapid Service/Prediction Center.",
+        "required": [
+          "classificationMarking",
+          "eopDate",
+          "source",
+          "dataMode"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Unique identifier of the record, auto-generated by the system.",
+            "maxLength": 36,
+            "minLength": 1,
+            "type": "string",
+            "example": "EOP-ID"
+          },
+          "classificationMarking": {
+            "description": "Classification marking of the data in IC/CAPCO Portion-marked format.",
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string",
+            "example": "U"
+          },
+          "eopDate": {
+            "format": "date-time",
+            "description": "Effective date/time for the EOP values in ISO8601 UTC format.  The values could be current or predicted.",
+            "type": "string",
+            "example": "2018-01-01T16:00:00.123Z"
+          },
+          "polarMotionState": {
+            "description": "Flag indicating Issued (I), or Predicted (P) for this record's polar motion values.",
+            "maxLength": 1,
+            "enum": [
+              "I",
+              "P"
+            ],
+            "type": "string",
+            "example": "I"
+          },
+          "polarMotionX": {
+            "format": "double",
+            "description": "The Bulletin A X coordinate value of earth polar motion at eopDate. Polar motion of the Earth is the motion of the Earth's rotational axis relative to its crust. This is measured with respect to a reference frame in which the solid Earth is fixed (a so-called Earth-centered, Earth-fixed or ECEF reference frame). Measured in arc seconds.",
+            "type": "number",
+            "example": 0.182987
+          },
+          "polarMotionXUnc": {
+            "format": "double",
+            "description": "Estimated uncertainty/error in polarMotionX value in arc seconds.",
+            "type": "number",
+            "example": 0.000672
+          },
+          "polarMotionY": {
+            "format": "double",
+            "description": "The Bulletin A Y coordinate value of earth polar motion at eopDate. Polar motion of the Earth is the motion of the Earth's rotational axis relative to its crust. This is measured with respect to a reference frame in which the solid Earth is fixed (a so-called Earth-centered, Earth-fixed or ECEF reference frame). Measured in arc seconds.",
+            "type": "number",
+            "example": 0.168775
+          },
+          "polarMotionYUnc": {
+            "format": "double",
+            "description": "Estimated uncertainty/error in polarMotionY value in arc seconds.",
+            "type": "number",
+            "example": 0.000345
+          },
+          "ut1UTCState": {
+            "description": "Flag indicating Issued (I), or Predicted (P) for this record''s Bulletin A UT1-UTC values.",
+            "maxLength": 1,
+            "enum": [
+              "I",
+              "P"
+            ],
+            "type": "string",
+            "example": "I"
+          },
+          "ut1UTC": {
+            "format": "double",
+            "description": "The difference between the Bulletin A UT1 and UTC time scales as of eopDate in seconds.",
+            "type": "number",
+            "example": -0.1251659
+          },
+          "ut1UTCUnc": {
+            "format": "double",
+            "description": "The estimated uncertainty/error in the ut1UTC value in seconds.",
+            "type": "number",
+            "example": 0.0000207
+          },
+          "lod": {
+            "format": "double",
+            "description": "Bulletin A length of day or LOD in milliseconds. Universal time (UT1) is the time of the earth clock, which performs one revolution in about 24h. It is practically proportional to the sidereal time. The excess revolution time is called length of day (LOD).",
+            "type": "number",
+            "example": 1.8335
+          },
+          "lodUnc": {
+            "format": "double",
+            "description": "The estimated uncertainty/error in the lod value in seconds.",
+            "type": "number",
+            "example": 0.0201
+          },
+          "nutationState": {
+            "description": "Flag indicating Issued (I), or Predicted (P) for this record's nutation values (dPSI and dEpsilon).",
+            "maxLength": 1,
+            "enum": [
+              "I",
+              "P"
+            ],
+            "type": "string",
+            "example": "I"
+          },
+          "dPSI": {
+            "format": "double",
+            "description": "The Bulletin A offset in longitude dDy1980 with respect to the IAU 1976 Theory of Precession and the IAU 1980 Theory of Nutation, measured in milliseconds of arc. Note: dPSI is not used when this record represents IAU 2000 data.",
+            "type": "number",
+            "example": -10.437
+          },
+          "dPSIUnc": {
+            "format": "double",
+            "description": "The estimated uncertainty/error in the dPSI value in milliseconds of arc.",
+            "type": "number",
+            "example": 0.507
+          },
+          "dEpsilon": {
+            "format": "double",
+            "description": "The Bulletin A offset in obliquity dDe1980 with respect to the IAU 1976 Theory of Precession and the IAU 1980 Theory of Nutation, measured in milliseconds of arc. Note: dEpsilon is not used when this record represents IAU 2000 data.",
+            "type": "number",
+            "example": -0.917
+          },
+          "dEpsilonUnc": {
+            "format": "double",
+            "description": "The estimated uncertainty/error in the dEpsilon value in milliseconds of arc.",
+            "type": "number",
+            "example": 0.165
+          },
+          "dX": {
+            "format": "double",
+            "description": "The Bulletin A celestial pole offset along x-axis with respect to the IAU 2000A Theory of Precession and Nutation, measured in milliseconds of arc. Note: dX is not used when this record represents IAU 1980 data.",
+            "type": "number",
+            "example": -0.086
+          },
+          "dXUnc": {
+            "format": "double",
+            "description": "The estimated uncertainty/error in the Bulletin A dX value, in milliseconds of arc.",
+            "type": "number",
+            "example": 0.202
+          },
+          "dY": {
+            "format": "double",
+            "description": "The Bulletin A celestial pole offset along y-axis with respect to the IAU 2000A Theory of Precession and Nutation, measured in milliseconds of arc. Note: dY is not used when this record represents IAU 1980 data.",
+            "type": "number",
+            "example": 0.13
+          },
+          "dYUnc": {
+            "format": "double",
+            "description": "The estimated uncertainty/error in the Bulletin A dY value, in milliseconds of arc.",
+            "type": "number",
+            "example": 0.165
+          },
+          "polarMotionXB": {
+            "format": "double",
+            "description": "Bulletin B X coordinate value of earth polar motion at eopDate. Polar motion of the Earth is the motion of the Earth's rotational axis relative to its crust. This is measured with respect to a reference frame in which the solid Earth is fixed (a so-called Earth-centered, Earth-fixed or ECEF reference frame). Measured in arc seconds.",
+            "type": "number",
+            "example": 0.1824
+          },
+          "polarMotionYB": {
+            "format": "double",
+            "description": "Bulletin B Y coordinate value of earth polar motion at eopDate. Polar motion of the Earth is the motion of the Earth's rotational axis relative to its crust. This is measured with respect to a reference frame in which the solid Earth is fixed (a so-called Earth-centered, Earth-fixed or ECEF reference frame). Measured in arc seconds.",
+            "type": "number",
+            "example": 0.1679
+          },
+          "ut1UTCB": {
+            "format": "double",
+            "description": "The Bulletin B difference between the UT1 and UTC time scales as of eopDate in seconds.",
+            "type": "number",
+            "example": -0.1253
+          },
+          "dPSIB": {
+            "format": "double",
+            "description": "The Bulletin B offset in longitude dDy1980 with respect to the IAU 1976 Theory of Precession and the IAU 1980 Theory of Nutation, measured in milliseconds of arc. Note: dPSIB is not used when this record represents IAU 2000 data.",
+            "type": "number",
+            "example": -9.9
+          },
+          "dEpsilonB": {
+            "format": "double",
+            "description": "The Bulletin B offset in obliquity dDe1980 with respect to the IAU 1976 Theory of Precession and the IAU 1980 Theory of Nutation, measured in milliseconds of arc. Note: dEpsilonB is not used when this record represents IAU 2000 data.",
+            "type": "number",
+            "example": -1.7
+          },
+          "dXB": {
+            "format": "double",
+            "description": "The Bulletin B celestial pole offset along the X-axis with respect to the IAU 2000A Theory of Precession and Nutation, measured in milliseconds of arc. Note: dXB is not used when this record represents IAU 1980 data.",
+            "type": "number",
+            "example": 0.129
+          },
+          "dYB": {
+            "format": "double",
+            "description": "The Bulletin B celestial pole offset along the Y-axis with respect to the IAU 2000A Theory of Precession and Nutation, measured in milliseconds of arc. Note: dYB is not used when this record represents IAU 1980 data.",
+            "type": "number",
+            "example": -0.653
+          },
+          "precessionNutationStd": {
+            "description": "The IAU Theory of Precession and Theory of Nutation applied to the data in this record. IAU1980 records employ the IAU 1976 Theory of Precession and IAU 1980 Theory of Nutation, and IAU2000 records employ the IAU 2000A Theory of Precession and Nutation.",
+            "maxLength": 10,
+            "type": "string",
+            "example": "IAU1980"
+          },
+          "rawFileURI": {
+            "description": "Optional URI location in the document repository of the raw file parsed by the system to produce this record. To download the raw file, prepend https://udl-hostname/scs/download?id= to this value.",
+            "maxLength": 256,
+            "type": "string",
+            "example": "Example URI"
+          },
+          "source": {
+            "description": "Source of the data.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string",
+            "example": "Bluestaq"
+          },
+          "origin": {
+            "description": "Originating system or organization which produced the data, if different from the source. The origin may be different than the source if the source was a mediating system which forwarded the data on behalf of the origin system. If null, the source may be assumed to be the origin.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "THIRD_PARTY_DATASOURCE"
+          },
+          "dataMode": {
+            "description": "Indicator of whether the data is EXERCISE, REAL, SIMULATED, or TEST data:\n\nEXERCISE:&nbsp;Data pertaining to a government or military exercise. The data may include both real and simulated data.\n\nREAL:&nbsp;Data collected or produced that pertains to real-world objects, events, and analysis.\n\nSIMULATED:&nbsp;Synthetic data generated by a model to mimic real-world datasets.\n\nTEST:&nbsp;Specific datasets used to evaluate compliance with specifications and requirements, and for validating technical, functional, and performance characteristics.\n\n",
+            "maxLength": 32,
+            "minLength": 1,
+            "enum": [
+              "REAL",
+              "TEST",
+              "SIMULATED",
+              "EXERCISE"
+            ],
+            "type": "string",
+            "example": "TEST"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "description": "Time the row was created in the database, auto-populated by the system.",
+            "type": "string",
+            "readOnly": true,
+            "example": "2018-01-01T16:00:00.123Z"
+          },
+          "createdBy": {
+            "description": "Application user who created the row in the database, auto-populated by the system.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string",
+            "readOnly": true,
+            "example": "some.user"
+          },
+          "origNetwork": {
+            "description": "The originating source network on which this record was created, auto-populated by the system.",
+            "maxLength": 32,
+            "type": "string",
+            "readOnly": true,
+            "example": "ORIG"
+          }
+        }
+      },
+      "Eop_Full": {
+        "description": "Model representation of Earth Orientation Parameters (EOP) produced by the IERS (International Earth Rotation and Reference Systems Service). Earth Orientation Parameters describe the irregularities of the earth's rotation. Technically, they are the parameters which provide the rotation of the ITRS (International Terrestrial Reference System) to the ICRS (International Celestial Reference System) as a function of time.\nUniversal time -- Universal time (UT1) is the time of the earth clock, which performs one revolution in about 24h. It is practically proportional to the sidereal time. The excess revolution time is called length of day (LOD).\nCoordinates of the pole -- x and y are the coordinates of the Celestial Ephemeris Pole (CEP) relative to the IRP, the IERS Reference Pole. The CEP differs from the instantaneous rotation axis by quasi-diurnal terms with amplitudes under 0.01\" (see Seidelmann, 1982). The x-axis is in the direction of the ITRF zero-meridian; the y-axis is in the direction 90 degrees West longitude.\nCelestial pole offsets -- Celestial pole offsets are described in the IAU Precession and Nutation models. The observed differences with respect to the conventional celestial pole position defined by the models are monitored and reported by the IERS.\nIERS Bulletins A and B provide current information on the Earth's orientation in the IERS Reference System.  This includes Universal Time, coordinates of the terrestrial pole, and celestial pole offsets.  Bulletin A gives an advanced solution updated weekly; the standard solution is given monthly in Bulletin B. Fields suffixed with 'B' are Bulletin B values. All solutions are continuous within their respective uncertainties.  Bulletin A is issued by the IERS Rapid Service/Prediction Centre at the U.S. Naval Observatory, Washington, DC and Bulletin B is issued by the IERS Earth Orientation Centre at the Paris Observatory. IERS Bulletin A reports the latest determinations for polar motion, UT1-UTC, and nutation offsets at daily intervals based on a combination of contributed analysis results using data from Very Long Baseline Interferometry (VLBI), Satellite Laser Ranging (SLR), Global Positioning System (GPS) satellites, and Lunar Laser Ranging (LLR). Predictions for variations a year into the future are also provided. Meteorological predictions of variations in Atmospheric Angular Momentum (AAM) are used to aid in the prediction of near-term UT1-UTC changes. This publication is prepared by the IERS Rapid Service/Prediction Center.",
+        "required": [
+          "classificationMarking",
+          "eopDate",
+          "source",
+          "dataMode"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Unique identifier of the record, auto-generated by the system.",
+            "maxLength": 36,
+            "minLength": 1,
+            "type": "string",
+            "example": "EOP-ID"
+          },
+          "classificationMarking": {
+            "description": "Classification marking of the data in IC/CAPCO Portion-marked format.",
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string",
+            "example": "U"
+          },
+          "eopDate": {
+            "format": "date-time",
+            "description": "Effective date/time for the EOP values in ISO8601 UTC format.  The values could be current or predicted.",
+            "type": "string",
+            "example": "2018-01-01T16:00:00.123Z"
+          },
+          "polarMotionState": {
+            "description": "Flag indicating Issued (I), or Predicted (P) for this record's polar motion values.",
+            "maxLength": 1,
+            "enum": [
+              "I",
+              "P"
+            ],
+            "type": "string",
+            "example": "I"
+          },
+          "polarMotionX": {
+            "format": "double",
+            "description": "The Bulletin A X coordinate value of earth polar motion at eopDate. Polar motion of the Earth is the motion of the Earth's rotational axis relative to its crust. This is measured with respect to a reference frame in which the solid Earth is fixed (a so-called Earth-centered, Earth-fixed or ECEF reference frame). Measured in arc seconds.",
+            "type": "number",
+            "example": 0.182987
+          },
+          "polarMotionXUnc": {
+            "format": "double",
+            "description": "Estimated uncertainty/error in polarMotionX value in arc seconds.",
+            "type": "number",
+            "example": 0.000672
+          },
+          "polarMotionY": {
+            "format": "double",
+            "description": "The Bulletin A Y coordinate value of earth polar motion at eopDate. Polar motion of the Earth is the motion of the Earth's rotational axis relative to its crust. This is measured with respect to a reference frame in which the solid Earth is fixed (a so-called Earth-centered, Earth-fixed or ECEF reference frame). Measured in arc seconds.",
+            "type": "number",
+            "example": 0.168775
+          },
+          "polarMotionYUnc": {
+            "format": "double",
+            "description": "Estimated uncertainty/error in polarMotionY value in arc seconds.",
+            "type": "number",
+            "example": 0.000345
+          },
+          "ut1UTCState": {
+            "description": "Flag indicating Issued (I), or Predicted (P) for this record''s Bulletin A UT1-UTC values.",
+            "maxLength": 1,
+            "enum": [
+              "I",
+              "P"
+            ],
+            "type": "string",
+            "example": "I"
+          },
+          "ut1UTC": {
+            "format": "double",
+            "description": "The difference between the Bulletin A UT1 and UTC time scales as of eopDate in seconds.",
+            "type": "number",
+            "example": -0.1251659
+          },
+          "ut1UTCUnc": {
+            "format": "double",
+            "description": "The estimated uncertainty/error in the ut1UTC value in seconds.",
+            "type": "number",
+            "example": 0.0000207
+          },
+          "lod": {
+            "format": "double",
+            "description": "Bulletin A length of day or LOD in milliseconds. Universal time (UT1) is the time of the earth clock, which performs one revolution in about 24h. It is practically proportional to the sidereal time. The excess revolution time is called length of day (LOD).",
+            "type": "number",
+            "example": 1.8335
+          },
+          "lodUnc": {
+            "format": "double",
+            "description": "The estimated uncertainty/error in the lod value in seconds.",
+            "type": "number",
+            "example": 0.0201
+          },
+          "nutationState": {
+            "description": "Flag indicating Issued (I), or Predicted (P) for this record's nutation values (dPSI and dEpsilon).",
+            "maxLength": 1,
+            "enum": [
+              "I",
+              "P"
+            ],
+            "type": "string",
+            "example": "I"
+          },
+          "dPSI": {
+            "format": "double",
+            "description": "The Bulletin A offset in longitude dDy1980 with respect to the IAU 1976 Theory of Precession and the IAU 1980 Theory of Nutation, measured in milliseconds of arc. Note: dPSI is not used when this record represents IAU 2000 data.",
+            "type": "number",
+            "example": -10.437
+          },
+          "dPSIUnc": {
+            "format": "double",
+            "description": "The estimated uncertainty/error in the dPSI value in milliseconds of arc.",
+            "type": "number",
+            "example": 0.507
+          },
+          "dEpsilon": {
+            "format": "double",
+            "description": "The Bulletin A offset in obliquity dDe1980 with respect to the IAU 1976 Theory of Precession and the IAU 1980 Theory of Nutation, measured in milliseconds of arc. Note: dEpsilon is not used when this record represents IAU 2000 data.",
+            "type": "number",
+            "example": -0.917
+          },
+          "dEpsilonUnc": {
+            "format": "double",
+            "description": "The estimated uncertainty/error in the dEpsilon value in milliseconds of arc.",
+            "type": "number",
+            "example": 0.165
+          },
+          "dX": {
+            "format": "double",
+            "description": "The Bulletin A celestial pole offset along x-axis with respect to the IAU 2000A Theory of Precession and Nutation, measured in milliseconds of arc. Note: dX is not used when this record represents IAU 1980 data.",
+            "type": "number",
+            "example": -0.086
+          },
+          "dXUnc": {
+            "format": "double",
+            "description": "The estimated uncertainty/error in the Bulletin A dX value, in milliseconds of arc.",
+            "type": "number",
+            "example": 0.202
+          },
+          "dY": {
+            "format": "double",
+            "description": "The Bulletin A celestial pole offset along y-axis with respect to the IAU 2000A Theory of Precession and Nutation, measured in milliseconds of arc. Note: dY is not used when this record represents IAU 1980 data.",
+            "type": "number",
+            "example": 0.13
+          },
+          "dYUnc": {
+            "format": "double",
+            "description": "The estimated uncertainty/error in the Bulletin A dY value, in milliseconds of arc.",
+            "type": "number",
+            "example": 0.165
+          },
+          "polarMotionXB": {
+            "format": "double",
+            "description": "Bulletin B X coordinate value of earth polar motion at eopDate. Polar motion of the Earth is the motion of the Earth's rotational axis relative to its crust. This is measured with respect to a reference frame in which the solid Earth is fixed (a so-called Earth-centered, Earth-fixed or ECEF reference frame). Measured in arc seconds.",
+            "type": "number",
+            "example": 0.1824
+          },
+          "polarMotionYB": {
+            "format": "double",
+            "description": "Bulletin B Y coordinate value of earth polar motion at eopDate. Polar motion of the Earth is the motion of the Earth's rotational axis relative to its crust. This is measured with respect to a reference frame in which the solid Earth is fixed (a so-called Earth-centered, Earth-fixed or ECEF reference frame). Measured in arc seconds.",
+            "type": "number",
+            "example": 0.1679
+          },
+          "ut1UTCB": {
+            "format": "double",
+            "description": "The Bulletin B difference between the UT1 and UTC time scales as of eopDate in seconds.",
+            "type": "number",
+            "example": -0.1253
+          },
+          "dPSIB": {
+            "format": "double",
+            "description": "The Bulletin B offset in longitude dDy1980 with respect to the IAU 1976 Theory of Precession and the IAU 1980 Theory of Nutation, measured in milliseconds of arc. Note: dPSIB is not used when this record represents IAU 2000 data.",
+            "type": "number",
+            "example": -9.9
+          },
+          "dEpsilonB": {
+            "format": "double",
+            "description": "The Bulletin B offset in obliquity dDe1980 with respect to the IAU 1976 Theory of Precession and the IAU 1980 Theory of Nutation, measured in milliseconds of arc. Note: dEpsilonB is not used when this record represents IAU 2000 data.",
+            "type": "number",
+            "example": -1.7
+          },
+          "dXB": {
+            "format": "double",
+            "description": "The Bulletin B celestial pole offset along the X-axis with respect to the IAU 2000A Theory of Precession and Nutation, measured in milliseconds of arc. Note: dXB is not used when this record represents IAU 1980 data.",
+            "type": "number",
+            "example": 0.129
+          },
+          "dYB": {
+            "format": "double",
+            "description": "The Bulletin B celestial pole offset along the Y-axis with respect to the IAU 2000A Theory of Precession and Nutation, measured in milliseconds of arc. Note: dYB is not used when this record represents IAU 1980 data.",
+            "type": "number",
+            "example": -0.653
+          },
+          "precessionNutationStd": {
+            "description": "The IAU Theory of Precession and Theory of Nutation applied to the data in this record. IAU1980 records employ the IAU 1976 Theory of Precession and IAU 1980 Theory of Nutation, and IAU2000 records employ the IAU 2000A Theory of Precession and Nutation.",
+            "maxLength": 10,
+            "type": "string",
+            "example": "IAU1980"
+          },
+          "rawFileURI": {
+            "description": "Optional URI location in the document repository of the raw file parsed by the system to produce this record. To download the raw file, prepend https://udl-hostname/scs/download?id= to this value.",
+            "maxLength": 256,
+            "type": "string",
+            "example": "Example URI"
+          },
+          "source": {
+            "description": "Source of the data.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string",
+            "example": "Bluestaq"
+          },
+          "origin": {
+            "description": "Originating system or organization which produced the data, if different from the source. The origin may be different than the source if the source was a mediating system which forwarded the data on behalf of the origin system. If null, the source may be assumed to be the origin.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "THIRD_PARTY_DATASOURCE"
+          },
+          "dataMode": {
+            "description": "Indicator of whether the data is EXERCISE, REAL, SIMULATED, or TEST data:\n\nEXERCISE:&nbsp;Data pertaining to a government or military exercise. The data may include both real and simulated data.\n\nREAL:&nbsp;Data collected or produced that pertains to real-world objects, events, and analysis.\n\nSIMULATED:&nbsp;Synthetic data generated by a model to mimic real-world datasets.\n\nTEST:&nbsp;Specific datasets used to evaluate compliance with specifications and requirements, and for validating technical, functional, and performance characteristics.\n\n",
+            "maxLength": 32,
+            "minLength": 1,
+            "enum": [
+              "REAL",
+              "TEST",
+              "SIMULATED",
+              "EXERCISE"
+            ],
+            "type": "string",
+            "example": "TEST"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "description": "Time the row was created in the database, auto-populated by the system.",
+            "type": "string",
+            "readOnly": true,
+            "example": "2018-01-01T16:00:00.123Z"
+          },
+          "createdBy": {
+            "description": "Application user who created the row in the database, auto-populated by the system.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string",
+            "readOnly": true,
+            "example": "some.user"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "description": "Time the row was last updated in the database, auto-populated by the system.",
+            "type": "string",
+            "readOnly": true,
+            "example": "2018-01-01T16:00:00.123Z"
+          },
+          "updatedBy": {
+            "description": "Application user who updated the row in the database, auto-populated by the system.",
+            "maxLength": 64,
+            "type": "string",
+            "readOnly": true,
+            "example": "some.user"
+          },
+          "origNetwork": {
+            "description": "The originating source network on which this record was created, auto-populated by the system.",
+            "maxLength": 32,
+            "type": "string",
+            "readOnly": true,
+            "example": "ORIG"
+          }
+        }
+      },
+      "Eop_Ingest": {
+        "description": "Model representation of Earth Orientation Parameters (EOP) produced by the IERS (International Earth Rotation and Reference Systems Service). Earth Orientation Parameters describe the irregularities of the earth's rotation. Technically, they are the parameters which provide the rotation of the ITRS (International Terrestrial Reference System) to the ICRS (International Celestial Reference System) as a function of time.\nUniversal time -- Universal time (UT1) is the time of the earth clock, which performs one revolution in about 24h. It is practically proportional to the sidereal time. The excess revolution time is called length of day (LOD).\nCoordinates of the pole -- x and y are the coordinates of the Celestial Ephemeris Pole (CEP) relative to the IRP, the IERS Reference Pole. The CEP differs from the instantaneous rotation axis by quasi-diurnal terms with amplitudes under 0.01\" (see Seidelmann, 1982). The x-axis is in the direction of the ITRF zero-meridian; the y-axis is in the direction 90 degrees West longitude.\nCelestial pole offsets -- Celestial pole offsets are described in the IAU Precession and Nutation models. The observed differences with respect to the conventional celestial pole position defined by the models are monitored and reported by the IERS.\nIERS Bulletins A and B provide current information on the Earth's orientation in the IERS Reference System.  This includes Universal Time, coordinates of the terrestrial pole, and celestial pole offsets.  Bulletin A gives an advanced solution updated weekly; the standard solution is given monthly in Bulletin B. Fields suffixed with 'B' are Bulletin B values. All solutions are continuous within their respective uncertainties.  Bulletin A is issued by the IERS Rapid Service/Prediction Centre at the U.S. Naval Observatory, Washington, DC and Bulletin B is issued by the IERS Earth Orientation Centre at the Paris Observatory. IERS Bulletin A reports the latest determinations for polar motion, UT1-UTC, and nutation offsets at daily intervals based on a combination of contributed analysis results using data from Very Long Baseline Interferometry (VLBI), Satellite Laser Ranging (SLR), Global Positioning System (GPS) satellites, and Lunar Laser Ranging (LLR). Predictions for variations a year into the future are also provided. Meteorological predictions of variations in Atmospheric Angular Momentum (AAM) are used to aid in the prediction of near-term UT1-UTC changes. This publication is prepared by the IERS Rapid Service/Prediction Center.",
+        "required": [
+          "classificationMarking",
+          "eopDate",
+          "source",
+          "dataMode"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Unique identifier of the record, auto-generated by the system.",
+            "maxLength": 36,
+            "minLength": 1,
+            "type": "string",
+            "example": "EOP-ID"
+          },
+          "classificationMarking": {
+            "description": "Classification marking of the data in IC/CAPCO Portion-marked format.",
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string",
+            "example": "U"
+          },
+          "eopDate": {
+            "format": "date-time",
+            "description": "Effective date/time for the EOP values in ISO8601 UTC format.  The values could be current or predicted.",
+            "type": "string",
+            "example": "2018-01-01T16:00:00.123Z"
+          },
+          "polarMotionState": {
+            "description": "Flag indicating Issued (I), or Predicted (P) for this record's polar motion values.",
+            "maxLength": 1,
+            "enum": [
+              "I",
+              "P"
+            ],
+            "type": "string",
+            "example": "I"
+          },
+          "polarMotionX": {
+            "format": "double",
+            "description": "The Bulletin A X coordinate value of earth polar motion at eopDate. Polar motion of the Earth is the motion of the Earth's rotational axis relative to its crust. This is measured with respect to a reference frame in which the solid Earth is fixed (a so-called Earth-centered, Earth-fixed or ECEF reference frame). Measured in arc seconds.",
+            "type": "number",
+            "example": 0.182987
+          },
+          "polarMotionXUnc": {
+            "format": "double",
+            "description": "Estimated uncertainty/error in polarMotionX value in arc seconds.",
+            "type": "number",
+            "example": 0.000672
+          },
+          "polarMotionY": {
+            "format": "double",
+            "description": "The Bulletin A Y coordinate value of earth polar motion at eopDate. Polar motion of the Earth is the motion of the Earth's rotational axis relative to its crust. This is measured with respect to a reference frame in which the solid Earth is fixed (a so-called Earth-centered, Earth-fixed or ECEF reference frame). Measured in arc seconds.",
+            "type": "number",
+            "example": 0.168775
+          },
+          "polarMotionYUnc": {
+            "format": "double",
+            "description": "Estimated uncertainty/error in polarMotionY value in arc seconds.",
+            "type": "number",
+            "example": 0.000345
+          },
+          "ut1UTCState": {
+            "description": "Flag indicating Issued (I), or Predicted (P) for this record''s Bulletin A UT1-UTC values.",
+            "maxLength": 1,
+            "enum": [
+              "I",
+              "P"
+            ],
+            "type": "string",
+            "example": "I"
+          },
+          "ut1UTC": {
+            "format": "double",
+            "description": "The difference between the Bulletin A UT1 and UTC time scales as of eopDate in seconds.",
+            "type": "number",
+            "example": -0.1251659
+          },
+          "ut1UTCUnc": {
+            "format": "double",
+            "description": "The estimated uncertainty/error in the ut1UTC value in seconds.",
+            "type": "number",
+            "example": 0.0000207
+          },
+          "lod": {
+            "format": "double",
+            "description": "Bulletin A length of day or LOD in milliseconds. Universal time (UT1) is the time of the earth clock, which performs one revolution in about 24h. It is practically proportional to the sidereal time. The excess revolution time is called length of day (LOD).",
+            "type": "number",
+            "example": 1.8335
+          },
+          "lodUnc": {
+            "format": "double",
+            "description": "The estimated uncertainty/error in the lod value in seconds.",
+            "type": "number",
+            "example": 0.0201
+          },
+          "nutationState": {
+            "description": "Flag indicating Issued (I), or Predicted (P) for this record's nutation values (dPSI and dEpsilon).",
+            "maxLength": 1,
+            "enum": [
+              "I",
+              "P"
+            ],
+            "type": "string",
+            "example": "I"
+          },
+          "dPSI": {
+            "format": "double",
+            "description": "The Bulletin A offset in longitude dDy1980 with respect to the IAU 1976 Theory of Precession and the IAU 1980 Theory of Nutation, measured in milliseconds of arc. Note: dPSI is not used when this record represents IAU 2000 data.",
+            "type": "number",
+            "example": -10.437
+          },
+          "dPSIUnc": {
+            "format": "double",
+            "description": "The estimated uncertainty/error in the dPSI value in milliseconds of arc.",
+            "type": "number",
+            "example": 0.507
+          },
+          "dEpsilon": {
+            "format": "double",
+            "description": "The Bulletin A offset in obliquity dDe1980 with respect to the IAU 1976 Theory of Precession and the IAU 1980 Theory of Nutation, measured in milliseconds of arc. Note: dEpsilon is not used when this record represents IAU 2000 data.",
+            "type": "number",
+            "example": -0.917
+          },
+          "dEpsilonUnc": {
+            "format": "double",
+            "description": "The estimated uncertainty/error in the dEpsilon value in milliseconds of arc.",
+            "type": "number",
+            "example": 0.165
+          },
+          "dX": {
+            "format": "double",
+            "description": "The Bulletin A celestial pole offset along x-axis with respect to the IAU 2000A Theory of Precession and Nutation, measured in milliseconds of arc. Note: dX is not used when this record represents IAU 1980 data.",
+            "type": "number",
+            "example": -0.086
+          },
+          "dXUnc": {
+            "format": "double",
+            "description": "The estimated uncertainty/error in the Bulletin A dX value, in milliseconds of arc.",
+            "type": "number",
+            "example": 0.202
+          },
+          "dY": {
+            "format": "double",
+            "description": "The Bulletin A celestial pole offset along y-axis with respect to the IAU 2000A Theory of Precession and Nutation, measured in milliseconds of arc. Note: dY is not used when this record represents IAU 1980 data.",
+            "type": "number",
+            "example": 0.13
+          },
+          "dYUnc": {
+            "format": "double",
+            "description": "The estimated uncertainty/error in the Bulletin A dY value, in milliseconds of arc.",
+            "type": "number",
+            "example": 0.165
+          },
+          "polarMotionXB": {
+            "format": "double",
+            "description": "Bulletin B X coordinate value of earth polar motion at eopDate. Polar motion of the Earth is the motion of the Earth's rotational axis relative to its crust. This is measured with respect to a reference frame in which the solid Earth is fixed (a so-called Earth-centered, Earth-fixed or ECEF reference frame). Measured in arc seconds.",
+            "type": "number",
+            "example": 0.1824
+          },
+          "polarMotionYB": {
+            "format": "double",
+            "description": "Bulletin B Y coordinate value of earth polar motion at eopDate. Polar motion of the Earth is the motion of the Earth's rotational axis relative to its crust. This is measured with respect to a reference frame in which the solid Earth is fixed (a so-called Earth-centered, Earth-fixed or ECEF reference frame). Measured in arc seconds.",
+            "type": "number",
+            "example": 0.1679
+          },
+          "ut1UTCB": {
+            "format": "double",
+            "description": "The Bulletin B difference between the UT1 and UTC time scales as of eopDate in seconds.",
+            "type": "number",
+            "example": -0.1253
+          },
+          "dPSIB": {
+            "format": "double",
+            "description": "The Bulletin B offset in longitude dDy1980 with respect to the IAU 1976 Theory of Precession and the IAU 1980 Theory of Nutation, measured in milliseconds of arc. Note: dPSIB is not used when this record represents IAU 2000 data.",
+            "type": "number",
+            "example": -9.9
+          },
+          "dEpsilonB": {
+            "format": "double",
+            "description": "The Bulletin B offset in obliquity dDe1980 with respect to the IAU 1976 Theory of Precession and the IAU 1980 Theory of Nutation, measured in milliseconds of arc. Note: dEpsilonB is not used when this record represents IAU 2000 data.",
+            "type": "number",
+            "example": -1.7
+          },
+          "dXB": {
+            "format": "double",
+            "description": "The Bulletin B celestial pole offset along the X-axis with respect to the IAU 2000A Theory of Precession and Nutation, measured in milliseconds of arc. Note: dXB is not used when this record represents IAU 1980 data.",
+            "type": "number",
+            "example": 0.129
+          },
+          "dYB": {
+            "format": "double",
+            "description": "The Bulletin B celestial pole offset along the Y-axis with respect to the IAU 2000A Theory of Precession and Nutation, measured in milliseconds of arc. Note: dYB is not used when this record represents IAU 1980 data.",
+            "type": "number",
+            "example": -0.653
+          },
+          "precessionNutationStd": {
+            "description": "The IAU Theory of Precession and Theory of Nutation applied to the data in this record. IAU1980 records employ the IAU 1976 Theory of Precession and IAU 1980 Theory of Nutation, and IAU2000 records employ the IAU 2000A Theory of Precession and Nutation.",
+            "maxLength": 10,
+            "type": "string",
+            "example": "IAU1980"
+          },
+          "rawFileURI": {
+            "description": "Optional URI location in the document repository of the raw file parsed by the system to produce this record. To download the raw file, prepend https://udl-hostname/scs/download?id= to this value.",
+            "maxLength": 256,
+            "type": "string",
+            "example": "Example URI"
+          },
+          "source": {
+            "description": "Source of the data.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string",
+            "example": "Bluestaq"
+          },
+          "origin": {
+            "description": "Originating system or organization which produced the data, if different from the source. The origin may be different than the source if the source was a mediating system which forwarded the data on behalf of the origin system. If null, the source may be assumed to be the origin.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "THIRD_PARTY_DATASOURCE"
+          },
+          "dataMode": {
+            "description": "Indicator of whether the data is EXERCISE, REAL, SIMULATED, or TEST data:\n\nEXERCISE:&nbsp;Data pertaining to a government or military exercise. The data may include both real and simulated data.\n\nREAL:&nbsp;Data collected or produced that pertains to real-world objects, events, and analysis.\n\nSIMULATED:&nbsp;Synthetic data generated by a model to mimic real-world datasets.\n\nTEST:&nbsp;Specific datasets used to evaluate compliance with specifications and requirements, and for validating technical, functional, and performance characteristics.\n\n",
+            "maxLength": 32,
+            "minLength": 1,
+            "enum": [
+              "REAL",
+              "TEST",
+              "SIMULATED",
+              "EXERCISE"
+            ],
+            "type": "string",
+            "example": "TEST"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "description": "Time the row was created in the database, auto-populated by the system.",
+            "type": "string",
+            "readOnly": true,
+            "example": "2018-01-01T16:00:00.123Z"
+          },
+          "createdBy": {
+            "description": "Application user who created the row in the database, auto-populated by the system.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string",
+            "readOnly": true,
+            "example": "some.user"
+          },
+          "origNetwork": {
+            "description": "The originating source network on which this record was created, auto-populated by the system.",
+            "maxLength": 32,
+            "type": "string",
+            "readOnly": true,
+            "example": "ORIG"
+          }
+        }
+      },
+      "TAIUTC_Abridged": {
+        "description": "International Atomic Time (TAI) is a statistical atomic time scale based on a large number of clocks operating at standards laboratories around the world that is maintained by the Bureau International des Poids et Mesures; its unit interval is exactly one SI second at sea level. The origin of TAI is such that UT1-TAI is approximately 0 (zero) on January 1, 1958. TAI is not adjusted for leap seconds. \nCoordinated Universal Time (UTC) is defined by the CCIR Recommendation 460-4 (1986). It differs from TAI by the total number of leap seconds, so that UT1-UTC stays smaller than 0.9s in absolute value.   The decision to introduce a leap second in UTC is the responsibility of the International Earth Rotation Service (IERS). According to the CCIR Recommendation, first preference is given to the opportunities at the end of December and June, and second preference to those at the end of March and September. Since the system was introduced in 1972, only dates in June and December have been used.  TAI is expressed in terms of UTC by the relation TAI = UTC + dAT, where  dAT is the total algebraic sum of leap seconds.\nThe first leap second was introduced on June 30, 1972. The historical list of leap seconds can be found in this table.",
+        "required": [
+          "classificationMarking",
+          "adjustmentDate",
+          "source",
+          "dataMode"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Unique identifier of the record, auto-generated by the system.",
+            "maxLength": 36,
+            "minLength": 1,
+            "type": "string",
+            "example": "TAIUTC-ID"
+          },
+          "classificationMarking": {
+            "description": "Classification marking of the data in IC/CAPCO Portion-marked format.",
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string",
+            "example": "U"
+          },
+          "adjustmentDate": {
+            "format": "date-time",
+            "description": "Effective date/time for the leap second adjustment.",
+            "type": "string",
+            "example": "2017-01-01T00:00:00.123Z"
+          },
+          "taiUTC": {
+            "format": "double",
+            "description": "Total/cumulative offset between TAI and UTC time as of adjustmentDate, in seconds.",
+            "type": "number",
+            "example": 1.422818
+          },
+          "multiplicationFactor": {
+            "format": "double",
+            "description": "Multiplication factor of the leap second adjustment.",
+            "type": "number",
+            "example": 0.001296
+          },
+          "rawFileURI": {
+            "description": "Optional URI location in the document repository of the raw file parsed by the system to produce this record. To download the raw file, prepend https://udl-hostname/scs/download?id= to this value.",
+            "maxLength": 256,
+            "type": "string",
+            "example": "/TAI/2019/01/22/4318471007562436-tai-utc.dat"
+          },
+          "source": {
+            "description": "Source of the data.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string",
+            "example": "Bluestaq"
+          },
+          "origin": {
+            "description": "Originating system or organization which produced the data, if different from the source. The origin may be different than the source if the source was a mediating system which forwarded the data on behalf of the origin system. If null, the source may be assumed to be the origin.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "THIRD_PARTY_DATASOURCE"
+          },
+          "origNetwork": {
+            "description": "The originating source network on which this record was created, auto-populated by the system.",
+            "maxLength": 32,
+            "minLength": 1,
+            "type": "string",
+            "readOnly": true,
+            "example": "ORIG"
+          },
+          "dataMode": {
+            "description": "Indicator of whether the data is EXERCISE, REAL, SIMULATED, or TEST data:\n\nEXERCISE:&nbsp;Data pertaining to a government or military exercise. The data may include both real and simulated data.\n\nREAL:&nbsp;Data collected or produced that pertains to real-world objects, events, and analysis.\n\nSIMULATED:&nbsp;Synthetic data generated by a model to mimic real-world datasets.\n\nTEST:&nbsp;Specific datasets used to evaluate compliance with specifications and requirements, and for validating technical, functional, and performance characteristics.\n\n",
+            "maxLength": 32,
+            "minLength": 1,
+            "enum": [
+              "REAL",
+              "TEST",
+              "SIMULATED",
+              "EXERCISE"
+            ],
+            "type": "string",
+            "example": "TEST"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "description": "Time the row was created in the database, auto-populated by the system.",
+            "type": "string",
+            "readOnly": true,
+            "example": "2018-01-01T16:00:00.123Z"
+          },
+          "createdBy": {
+            "description": "Application user who created the row in the database, auto-populated by the system.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string",
+            "readOnly": true,
+            "example": "some.user"
+          }
+        }
+      },
+      "TAIUTC_Full": {
+        "description": "International Atomic Time (TAI) is a statistical atomic time scale based on a large number of clocks operating at standards laboratories around the world that is maintained by the Bureau International des Poids et Mesures; its unit interval is exactly one SI second at sea level. The origin of TAI is such that UT1-TAI is approximately 0 (zero) on January 1, 1958. TAI is not adjusted for leap seconds. \nCoordinated Universal Time (UTC) is defined by the CCIR Recommendation 460-4 (1986). It differs from TAI by the total number of leap seconds, so that UT1-UTC stays smaller than 0.9s in absolute value.   The decision to introduce a leap second in UTC is the responsibility of the International Earth Rotation Service (IERS). According to the CCIR Recommendation, first preference is given to the opportunities at the end of December and June, and second preference to those at the end of March and September. Since the system was introduced in 1972, only dates in June and December have been used.  TAI is expressed in terms of UTC by the relation TAI = UTC + dAT, where  dAT is the total algebraic sum of leap seconds.\nThe first leap second was introduced on June 30, 1972. The historical list of leap seconds can be found in this table.",
+        "required": [
+          "classificationMarking",
+          "adjustmentDate",
+          "source",
+          "dataMode"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Unique identifier of the record, auto-generated by the system.",
+            "maxLength": 36,
+            "minLength": 1,
+            "type": "string",
+            "example": "TAIUTC-ID"
+          },
+          "classificationMarking": {
+            "description": "Classification marking of the data in IC/CAPCO Portion-marked format.",
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string",
+            "example": "U"
+          },
+          "adjustmentDate": {
+            "format": "date-time",
+            "description": "Effective date/time for the leap second adjustment.",
+            "type": "string",
+            "example": "2017-01-01T00:00:00.123Z"
+          },
+          "taiUTC": {
+            "format": "double",
+            "description": "Total/cumulative offset between TAI and UTC time as of adjustmentDate, in seconds.",
+            "type": "number",
+            "example": 1.422818
+          },
+          "multiplicationFactor": {
+            "format": "double",
+            "description": "Multiplication factor of the leap second adjustment.",
+            "type": "number",
+            "example": 0.001296
+          },
+          "rawFileURI": {
+            "description": "Optional URI location in the document repository of the raw file parsed by the system to produce this record. To download the raw file, prepend https://udl-hostname/scs/download?id= to this value.",
+            "maxLength": 256,
+            "type": "string",
+            "example": "/TAI/2019/01/22/4318471007562436-tai-utc.dat"
+          },
+          "source": {
+            "description": "Source of the data.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string",
+            "example": "Bluestaq"
+          },
+          "origin": {
+            "description": "Originating system or organization which produced the data, if different from the source. The origin may be different than the source if the source was a mediating system which forwarded the data on behalf of the origin system. If null, the source may be assumed to be the origin.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "THIRD_PARTY_DATASOURCE"
+          },
+          "origNetwork": {
+            "description": "The originating source network on which this record was created, auto-populated by the system.",
+            "maxLength": 32,
+            "minLength": 1,
+            "type": "string",
+            "readOnly": true,
+            "example": "ORIG"
+          },
+          "dataMode": {
+            "description": "Indicator of whether the data is EXERCISE, REAL, SIMULATED, or TEST data:\n\nEXERCISE:&nbsp;Data pertaining to a government or military exercise. The data may include both real and simulated data.\n\nREAL:&nbsp;Data collected or produced that pertains to real-world objects, events, and analysis.\n\nSIMULATED:&nbsp;Synthetic data generated by a model to mimic real-world datasets.\n\nTEST:&nbsp;Specific datasets used to evaluate compliance with specifications and requirements, and for validating technical, functional, and performance characteristics.\n\n",
+            "maxLength": 32,
+            "minLength": 1,
+            "enum": [
+              "REAL",
+              "TEST",
+              "SIMULATED",
+              "EXERCISE"
+            ],
+            "type": "string",
+            "example": "TEST"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "description": "Time the row was created in the database, auto-populated by the system.",
+            "type": "string",
+            "readOnly": true,
+            "example": "2018-01-01T16:00:00.123Z"
+          },
+          "createdBy": {
+            "description": "Application user who created the row in the database, auto-populated by the system.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string",
+            "readOnly": true,
+            "example": "some.user"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "description": "Time the row was last updated in the database, auto-populated by the system.",
+            "type": "string",
+            "readOnly": true,
+            "example": "2018-01-01T16:00:00.123Z"
+          },
+          "updatedBy": {
+            "description": "Application user who updated the row in the database, auto-populated by the system.",
+            "maxLength": 64,
+            "type": "string",
+            "readOnly": true,
+            "example": "some.user"
+          }
+        }
+      },
+      "TAIUTC_Ingest": {
+        "description": "International Atomic Time (TAI) is a statistical atomic time scale based on a large number of clocks operating at standards laboratories around the world that is maintained by the Bureau International des Poids et Mesures; its unit interval is exactly one SI second at sea level. The origin of TAI is such that UT1-TAI is approximately 0 (zero) on January 1, 1958. TAI is not adjusted for leap seconds. \nCoordinated Universal Time (UTC) is defined by the CCIR Recommendation 460-4 (1986). It differs from TAI by the total number of leap seconds, so that UT1-UTC stays smaller than 0.9s in absolute value.   The decision to introduce a leap second in UTC is the responsibility of the International Earth Rotation Service (IERS). According to the CCIR Recommendation, first preference is given to the opportunities at the end of December and June, and second preference to those at the end of March and September. Since the system was introduced in 1972, only dates in June and December have been used.  TAI is expressed in terms of UTC by the relation TAI = UTC + dAT, where  dAT is the total algebraic sum of leap seconds.\nThe first leap second was introduced on June 30, 1972. The historical list of leap seconds can be found in this table.",
+        "required": [
+          "classificationMarking",
+          "adjustmentDate",
+          "source",
+          "dataMode"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Unique identifier of the record, auto-generated by the system.",
+            "maxLength": 36,
+            "minLength": 1,
+            "type": "string",
+            "example": "TAIUTC-ID"
+          },
+          "classificationMarking": {
+            "description": "Classification marking of the data in IC/CAPCO Portion-marked format.",
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string",
+            "example": "U"
+          },
+          "adjustmentDate": {
+            "format": "date-time",
+            "description": "Effective date/time for the leap second adjustment.",
+            "type": "string",
+            "example": "2017-01-01T00:00:00.123Z"
+          },
+          "taiUTC": {
+            "format": "double",
+            "description": "Total/cumulative offset between TAI and UTC time as of adjustmentDate, in seconds.",
+            "type": "number",
+            "example": 1.422818
+          },
+          "multiplicationFactor": {
+            "format": "double",
+            "description": "Multiplication factor of the leap second adjustment.",
+            "type": "number",
+            "example": 0.001296
+          },
+          "rawFileURI": {
+            "description": "Optional URI location in the document repository of the raw file parsed by the system to produce this record. To download the raw file, prepend https://udl-hostname/scs/download?id= to this value.",
+            "maxLength": 256,
+            "type": "string",
+            "example": "/TAI/2019/01/22/4318471007562436-tai-utc.dat"
+          },
+          "source": {
+            "description": "Source of the data.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string",
+            "example": "Bluestaq"
+          },
+          "origin": {
+            "description": "Originating system or organization which produced the data, if different from the source. The origin may be different than the source if the source was a mediating system which forwarded the data on behalf of the origin system. If null, the source may be assumed to be the origin.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "THIRD_PARTY_DATASOURCE"
+          },
+          "origNetwork": {
+            "description": "The originating source network on which this record was created, auto-populated by the system.",
+            "maxLength": 32,
+            "minLength": 1,
+            "type": "string",
+            "readOnly": true,
+            "example": "ORIG"
+          },
+          "dataMode": {
+            "description": "Indicator of whether the data is EXERCISE, REAL, SIMULATED, or TEST data:\n\nEXERCISE:&nbsp;Data pertaining to a government or military exercise. The data may include both real and simulated data.\n\nREAL:&nbsp;Data collected or produced that pertains to real-world objects, events, and analysis.\n\nSIMULATED:&nbsp;Synthetic data generated by a model to mimic real-world datasets.\n\nTEST:&nbsp;Specific datasets used to evaluate compliance with specifications and requirements, and for validating technical, functional, and performance characteristics.\n\n",
+            "maxLength": 32,
+            "minLength": 1,
+            "enum": [
+              "REAL",
+              "TEST",
+              "SIMULATED",
+              "EXERCISE"
+            ],
+            "type": "string",
+            "example": "TEST"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "description": "Time the row was created in the database, auto-populated by the system.",
+            "type": "string",
+            "readOnly": true,
+            "example": "2018-01-01T16:00:00.123Z"
+          },
+          "createdBy": {
+            "description": "Application user who created the row in the database, auto-populated by the system.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string",
+            "readOnly": true,
+            "example": "some.user"
+          }
+        }
+      }
+    }
+  }
+}

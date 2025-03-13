@@ -1,0 +1,188 @@
+Speaker 1  00:00
+For weather applications. So I look forward to collaborating with folks, and we could run pretty much any application on our platform as well. So thank you.
+
+Speaker 2  00:10
+Thank you. Awesome. Anybody else online? Okay, so again, I can't I think this just kind of highlights. Can't stress enough how much like there's just incredible talent in the room. Talent in the room, so leverage that to invest your ability. There's a lot out there. You just saw a quick introduction from just a handful of folks. There's a lot more that aren't here, that aren't represented, that y'all can lean on as well, too. So with that, I do want to just take a few minutes now for any questions that you all may have also. We didn't mention it for people who are maybe new. Our lab space is right around the wall here. It's a first come first serve. You just grab the desk and you can sit down wherever you meet. So if you do need the dual monitor of hubs, so you'll have to deal with that, but that's available any questions from anybody in the room or online at all related to anything FDA tab lab, I
+
+Speaker 3  01:12
+so, you know, I a little bit different area of expertise from many of the people In the room. And so I guess what I'm most curious about is, how can I potentially get in contact with operators so that I can maybe do some task analysis or work with them? Is that a possibility? Who do I talk to to kind of flesh out something for the next three months so that I can have something to show and talk about. When you say you want
+
+Speaker 2  01:47
+to speak with system operators talking about, like, subsystem leads that we talked about here.
+
+Speaker 3  01:52
+No, I mean, like the literal end user of, like, whoever is, yeah, yeah.
+
+Speaker 2  01:56
+So we help facilitate some of those. So I think you're in a bit of a unique situation. It sounds like certainly. So I would encourage, obviously, we could have following conversation, and with major pond included in that too, so we can discuss, kind of where those connections are, and really, like, make sure we're aligned. And you've got something going that you want to do, but takes a village to get it done. So we need al skills.
+
+Speaker 4  02:13
+Hey, Carlin, do you have a specific set of operators in mind? Are you thinking like mail, SATCOM or missile warning or what do you have a specific community in mind? No, I don't.
+
+Speaker 3  02:27
+I think what I would love to do is speak with, you know, whoever's, whoever you guys are targeting for. You know some of these systems that you're working on, and just be able to do some task analysis with them. So, yeah, I don't have a specific unity or group that I'm looking for.
+
+Speaker 4  02:53
+Okay, thanks, Carly. And I think having follow on conversations with major Allen when he returns here pretty soon would be really good. I don't personally have a ton of connections to the NSDC, except for what I've made in the last you know, I'm pretty new to the lab, and so I made a few connections in the last few weeks. But beyond that, I'm not terribly helpful in that. But Major Allen is the man. So
+
+Unknown Speaker  03:22
+awesome. Thank you the
+
+Unknown Speaker  03:25
+questions.
+
+Unknown Speaker  03:33
+Thanks, Roger.
+
+Speaker 5  03:34
+Hopefully I'll ask questions that everybody else has too, especially the new folks. I don't know anything about this, so it sounds really exciting, but like, how do, how do we get involved? I know, you know, there's an expectation to be here on site. I would assume I'd want to make connection with the subsystem leads to organize, kind of, when I would want to be here, who I'd want to talk to do I want to be here every week, maybe just talk more about that, as well as kind of what this preparation for the demo is going to look like, and what we should be thinking about, everything about the program that you haven't already
+
+Speaker 2  04:05
+covered, yeah, so that's a lot, and it'll take some time, right? There's a lot of information, so I won't be able to give it to you, and I know I'm going to forget stuff. I think your most direct line of contact kind of into, like the lab itself, is going to be your subsystem, right? They're kind of going to be the one that really help point you in directions. They kind of serve as a Nexus, connects you with other folks who are working similar problems, people that be good to work with. But again, I'm going to hark on it. I mean, it's what you put into it, right? So you there's going to be slow periods, right, where you come in and they're just like me and Alex, or like a couple of us hanging out in the lab type of a thing, right? But there's busy times too, where it's older than this around and having those engagements. So you can come in and you can sit down at your desk and you can just answer your emails and do your job, but I would highly encourage reaching out. Like, always go up and talk to people, people, especially from like, engineers, right as we're building stuff and we're designing these things, like, we like to talk about what we're doing, if there's a common interest in and all, they kind of see what your methodology and approaches. So please share those conversations. Cindy, if you get something you'd like
+
+Speaker 6  05:01
+to add, yes, the subsystems actually meet every week online. Sometimes they're here in the office, and we do have our weekly meetings that we check in with our leads once you get introduced. Usually, I'm not sure we're all meeting here after this, are we subsystem?
+
+Speaker 2  05:19
+Do it? Okay? Yeah, we'll start through some of that stuff. Yeah. So we have a few subs assemblies here and reps, so we at least, we're going to try to after this, this Q A want to connect you all with other folks in your subs, even if your lead isn't here, just the other teams that are there. So you all can get a name and a face put together. And
+
+Speaker 6  05:36
+I would suggest getting your information to Dan as soon as possible, then you can get you up onto rocket chat, which is the main communication end, and the subsystem leads there, usually post the links and when the meetings are on a weekly basis, and that'll get you help, get you integrated. And you can come in, anybody's looking to come to the subsistence meetings that they see that they have something to offer, or they need something, information and whatnot, but they're all there, and you can join the chat the appropriate channels. From that perspective, rocket
+
+Speaker 2  06:08
+chat is the main communication platform that we use. So getting on boarded to that the fastest, as you all ramp up to a lot of it'll be kind of an online engagement to a certain degree, and then you'll start to get a cadence for what your team does, or how people are kind of operating here in the lab. Every cohort looks different. I do, again, want to just strive like the more in person engagement we get, the more you all can commit to being here, the better. It's going to be all around for everybody as well, too. So, and then there's other engagement forums, right as we have kind of these open sessions that are just here in the Innovation Hub, as we have expert talks that are happening right as these touch points that are really find those meaningful connections. Dan,
+
+Speaker 7  06:42
+so for the people here in house, after we wrap things up, you're new, or if you're existing and just want to refresh, we can kind of get together around a TV in the back and walk through some of what's available, and then, as you talk through and see what we've got. Also give us an idea of what your stuff is and how you might fit in, and we might be able to help recommend someone. I
+
+Speaker 2  07:11
+do want to encourage you all to just to grab lab staff and give us updates, as like, if you're here and you're like, hey, quick 10 minutes, Roger, let me get with you and talk to you about what I've been doing, or if you see me around, right? It's always good for us to hear it's incredible. Like, the information sharing is a challenge for us. It's incredibly difficult. I get this question all the time from like, SSC folks, because I work for them a lot, and they're like, hey, what's what is everyone doing at the tap Lab? I'm like, there's like, 70 of us. Man, like, what do you really expect in that other thing? Right? But as you give me those updates, and I can kind of have those answers and make sure I can highlight those things, but that goes for everybody in the lab. Right? There's a lot of interest on what this place is doing. And this place is doing and what we're developing. So the more that you find successful ways to share that out with people, to kind of help, kind of expand that and echo what you're saying, the better off it's going to be. So again, engagement is really just what you want it to be. Hope that answered your question without cool other questions. There's
+
+Speaker 8  08:00
+not enough context. Can you explain that SDA is what that acronym is, and that is part of Space Force.
+
+Speaker 2  08:09
+No question. What we did? You all have questions, right? Things will change, and you'll like, bounce. It's a lot of information. So I realize, like, probably just in receive mode right now, as those questions and you guys have time to kind of critically think about this and reflect think about this and reflect back on everything you've heard today, see how things move with the lab, reach out. That's all I can really. More concise, you're not alone in any of this. If you're confused or unsure about something, chances are there's probably a handful of other folks who are too, and we've probably heard those questions before. So again, don't feel like you're isolated. Don't feel like there needs to be any questions like shorter solve all those and find ways to connect you and serve as kind. Serve as kind of this point to help make these meaningful networks and connections amongst the organization. But that's really what we're here for. That's huge value what this lab has to offer. So there are no other questions. We can major prime unless you wanted to step in and do anything else we could do a subsystem lead breakout, or at least break up the subsystems.
+
+Speaker 4  09:03
+I have a very practical question that I got. Can
+
+Speaker 8  09:09
+you just make this like a LinkedIn post just one paragraph, explain that we're we've developed a battle management platform through the Space Defense Agency, which is part of Space Force. Do you hear me? Don't say now part of US Space Force, just say SDA and Space Force, don't put SDA cohort five to say that we've been working with SDA tap lab to develop battle management. Blood for them fit together, but also tie this to missile defense a good point. A
+
+Speaker 2  10:20
+lot of this is just like wrapping your head around what's happening if there's a lot happening, trying to get a true understanding for that, and seeing like where you fit in the puzzle. To take
+
+Speaker 8  10:33
+some time. Why do you say we built it? Y'all have questions. Just remove that part and remove all of the bold collaboration. Collaboration. Just say if you're looking for missile defense, and then go into this. This is a reply to his LinkedIn post out there when they're available. Other questions. Just instead of saying we've been working with SDA tap lab to say that we've been working with the Space Development Agency and Space Force to develop a battle management platform.
+
+Speaker 4  11:39
+Sure. Yeah, that's a great question, and I meant to make an announcement about that earlier, and I appreciate the question. So the criteria for that are, number one, do you abide by the expectations and use agreements, etc, of the lab? Two, are you developing something that is of military deference to demonstrate that. Three, you know, is it something that we can that creates, well, right? There's an integration piece to it that integrates with what the other does it give data and receive data and play well with UDL and that kind of thing. And then there's also a piece of just like, how, how relevant is it, kind of compared to what other folks are doing, or, you know, like, there's a there's a priority of need. And I think we kind of laid some of that out in the priorities of the problem statements website. So those are, those are really the main ones. And as far as the process of awarding things, I'm still working with major Allen to kind of get the handoff on that. So for those of you who are interested in in the awards for cohort five, don't worry. We're we're looking at those right now, and I've got a pretty good list. I'm not ready to announce them yet, until I get a little bit more handoff from so I'm really hoping to have something ready to announce, at least a list of winners, hopefully early next week. So stay tuned.
+
+Speaker 2  13:19
+Does that answer your question, yeah, looks like we're good other questions. Oh, yeah. So our contracting vehicle mechanism is a global data marketplace, so please start getting familiar with that. Make accounts of that. Ask people about that, and your subsystem leads can kind of help point you in the right direction. Is there anything specific, Alex, outside of that you want to mention? I Yeah, the account setup, it's always the onboarding that takes longer than it ever should. Not you everybody else, you're perfect. Don't worry.
+
+Speaker 9  13:53
+Hi. I Hi. It Johnson, again, I have one more question. Last time they set up all new COVID in rocket chat, all new subsystem groups are those stay the same, then between cohort five to cohort six, or are they going to change? They will stay the same. Okay,
+
+Unknown Speaker  14:17
+we got a question online.
+
+Speaker 7  14:19
+What are the best ways to know which companies are working on which problem statements?
+
+Speaker 2  14:24
+Yeah. So again, as I said, we have some challenges for sharing information on subsystem leads. You are going to be a great resource for that, but we can certainly it's just going to be through engagement and collaboration. Dan, so wiki, dot SDA, tablab.com,
+
+Speaker 7  14:42
+there's a company directory type of page, I think I stood it up, yeah, yesterday. So go there, put your company name in there. If you know what subsystem or what skill sets you have, put them on that once I get you certs and all that. So
+
+Speaker 2  15:02
+we are standing up our internal wiki dot more of the better communication tool. So it sounds like Dan has an answer for us. There other questions.
+
+Speaker 5  15:20
+Okay, another general question, why does it do that to me? So after this cohort, what's the next step for folks? Are you gonna? Do we just reapply to cohort seven? Tour eight? You guys get sick of seeing us? Do we just fade into the background? Like, what's, what's the long play?
+
+Speaker 2  15:38
+So a lot of that is up. So you're independent, like, what you decide to do. We most of time, I can tell you, people continue on to the next cohort. You just reapply to the next one. Kind of continue working the same one. As we talked earlier, we're in these three months sprints or cycles for cohorts, right? And so as you go from one semester one cohort to the next cohort, right? It'll, um, you kind of carry forward that plan. So that's why I always say plan long term and kind of build it out from there, right? Because realistically, like, we're not addressing any new problems necessarily, right? We're kind of addressing old problems that have been around to see integration piece that is more challenging. So you can work on kind of your exquisite or apply, like a soda model to what you're developing. Maybe that's what you do for the first three months, and then you focus on the integration in the second cohort, or your follow on cohort, you see that type of model a lot, right? And there's kind of these incremental improvements to your algorithms or your approach or your methodology throughout each one. I mean, for anybody, again, from like a development standpoint, like that first push to build and develop things goes real quick, and then it's kind of refinement over time that you can start to work on through the iterative and the follow on cohorts as well, too well. But again, I would just highly encourage communicate with your subsystem leads regularly, communicate with lab staff regularly, because they're going to tell you if you're moving in the right direction or if you need to tweak and kind of readjust and pivot along the way as well. Right? Just the things we're always looking for is adding value to what we're trying to do with the FDA Kill Chain, Wilder zarq, and ensure that you are making actual progress along the way. Like, we don't like to see someone you do really hard one cohort, and then you're just gonna, I'm gonna coast for like, three cohorts and make no progress. Like, that's not type of thing that we really look for, either.
+
+Speaker 4  17:07
+Hey, David, if I could jump in there too. So new, of course, the end goal for any of these tools that we develop is to get them in the hands of operators. So once we get a real, sort of operationally relevant prototype in a lab environment, then we can start pushing on how to transition that to either an operator, like an ops four, where someone can take advantage of that data, or into some stitch two parts of some systems together that weren't talking to each other before. So those are really the goals. And so I think from the tap lab perspective, if you make something that works great, we want to keep you around. As long as you're you're willing to stay around, and we can provide incentives to keep you here, to make those things work in in for the Space Force, right? So that's kind of the idea. And then, you know, that's the tap lab perspective. From your perspective, you may want to stick around so that you can get opportunities for other things like SBIRs and more funding from other parts of the space innovation sphere that that might fit well with lab goals, right? So there's, there's a couple, you know, hopefully aligning incentives and objectives. There is the ecosystem we're trying to build over,
+
+Speaker 2  18:34
+yeah, a lot of it, I mean, a lot of folks, I think you just say for the networking benefits. I mean smaller, small to mid sized companies benefit a lot from it. Maybe not like, I mean, the torches, maybe torches, maybe not. They've got their own connection that are kind of out there and stuff still, but there is a lot of value that's still within it. So people kind of maintain that still. So if it's a value for you to be here, and it's a value for us to have you here, we would love to see that continue. Other questions.
+
+Speaker 10  19:02
+I will question regarding the presentation in conference such as Amos conference, do I need to be approved if I want to present a call to work? And the second question is, is there any special session in Amos 2025, or essay, tenant, when
+
+Speaker 2  19:26
+you say present Amos, are you talking about something that your company has developed? Are we talking about we were referencing earlier with potentially doing something around the IFT six lunch,
+
+Speaker 10  19:36
+I just talking about our work in SA tender. Quote five, or example, do I need to be approved? Yes.
+
+Speaker 2  19:45
+So your work in the tap lab, right? Is your, your company's I read essentially, right? So we don't own any of it. Is your IP. That's how it's meant to stay and how it's meant to be maintained. So it's really up to yours organization, whatever your approval process is. But from an SD, tap lab perspective, that's that's your work, and that's your you own it. So, no, there isn't anything here. I don't know what your question was about a special session for Amos 25 I'm not sure that was in reference to if you're asking something specific.
+
+Speaker 4  20:10
+So I know major Allen is planning to be part of as a session at EMAS and be on the panel. Maybe that is that what you were thinking of Peter? Yes,
+
+Speaker 10  20:22
+I just wonder, is there any special session related to estate terminal and something like that? We Yeah, I'm
+
+Speaker 4  20:34
+not sure what exactly major Allen has put together, but I know he's a he's on a panel, so I I'm not sure anything beyond that at this moment.
+
+Unknown Speaker  20:43
+Okay, thank you. I can
+
+Speaker 11  20:45
+step in as well. So Amos has many different sessions. There's actually companies here that have people for taking his chairs in different sessions. They have reached out some people recommending that you apply. One of them that comes to mind that could be very useful is AI and ML, or SDA. That's been a big focus of the lab. I think that's a great one that a lot of people fall into. So Peter, maybe that's the best one that you can aim for. But again, there's the general SDA, one cislunar SDA. There's a full spectrum. There
+
+Speaker 2  21:20
+are a few conferences. Al is probably the most prominent ones that just really aligned very well with the work that's being done here. And if you go there, even completely separate from the tap lab, you're going to see a lot of folks from the tap lab, or representation there as a highly military attended one as well, too. So you're gonna see a lot of Space Force folks. A lot of the names that we talk about on our org charts are going to be at Amos too, right? That's just kind of that thing. So I don't know. It's not like official, official to SCA tap lab, but there's certainly engagement with this team and the people in this building and the Amos conference, like they interplay with each other a lot.
+
+Speaker 12  21:52
+Okay, David, can I speak up? Yes. You hear me? Yep. This is Joseph and Gershom. I'm with the Maui economic development board. So our group is the one that puts on the Amos conference. So I just ran that question by one of the conference personnel. So they said there's not a specific session for SDA tap lab, specifically like you just mentioned me, John will be session chair for a single session. So if you submit your abstract, you can put a comment that you're part of the tap lab, and then they might like group a bunch of those together, if it makes sense, but definitely, just apply to whichever session you think makes the most sense. Since pretty much all the sessions will be applicable for the tap lab, I can take any more specific questions from that or pass them on.
+
+Speaker 4  22:43
+So sorry, I had no idea that me DB ran the AMS conference, so I learned something today amazing.
+
+Unknown Speaker  22:50
+So that's on me for not making that more clear.
+
+Speaker 4  22:53
+No worries that there's so much information to learn in this group. So thank you again.
+
+Speaker 2  22:58
+Just the point to how much talent is in the people on these calls and in this room, right? I mean, there's other conferences too. Department of Air Force has their data analytics AI forum that's coming up, like, in two months, space symposiums on Seattle here, there's a lot of we go on, right? Not to mention, like, there's a ton that, like MIT and everybody else throws around all the time. So we certainly try to promote when we're going to those so folks know, at least like when there might be a group of us going, or if it's individuals going, so we can all get together if we are going to be in the same place. But if the conference is your interest, by all means, I would say, start talking to folks about it.
+
+Speaker 12  23:33
+And we, our team, will be at the Space Symposium. We go there every year. We have a Hawaii booth. So you're welcome to stop by and kind of talk to us there as well.
+
+Unknown Speaker  23:43
+Other questions.
+
+Speaker 2  23:51
+All right. I just want to talk about demo day a little bit, just so folks know what the so the ending, kind of Capstone, culmination of all the work for our three month sprints is Demo Day, which is a point where we invite everybody that we possibly know within the SDA community here and in the space community to come into the lab. They sit here in these seats, they get a round of presentations, and then we open it up to an expo style where they get to walk freely from station to station, as you all are around there presenting with your laptops and at your workstations, right? So it's really kind of a huge point. I think it offers a lot of benefit for companies to be able to get in front of customers, or potential customers, to be able to promote and kind of market what their tools are. It's always, we want to always try to highlight demo focus, right? So don't just be PowerPoint deep. Try to show development that you actually built, and try to show what it actually running on your laptops. People come through, but there'll be a lot of prep work as we get up to that. And I think we started about halfway through this cohort, we'll start looking at prepping for it realistically, like kind of talking with you and figuring out who's going to be doing what. But that is ultimately what we're working towards at the end of a cohort, again, I would stress don't don't focus, don't think your goal is to get to Demo Day and finish. I mean, maybe that is your goal. But I would say, look broader than that, and look towards the capability you're developing, how that's going to carry forward and add value again to what we're trying to deliver. The end of the day, this lab exists to provide capabilities that are missing within the space organizations. How can we do that? So focus on that larger goal and take advantage of all the benefits that come along the way, one last call for questions or comments from anybody in the room or online.
+
+Unknown Speaker  25:30
+April 6, I don't know. It's something we've done. I'd rather made that up. Nicole ish, we'll figure it out. I'll let you on.
+
+Speaker 2  25:41
+Well hey, with that, I do want to break and connect subsystems together. So subsystem, I guess you just find a spot in the room. Anybody for subsystem zero, doing observation sensors. Alex is right over there. You all can get with him. Subsystem one, target model, database work and data handling. Cindy, you want to take the poll for that one. And then we got Patrick over here for state estimation, UCT processing. Subsystem two, folks. Subsystem three. Do we have anybody in house? System? Command and control? Circle up around, I'm sorry, sir, go up around Aaron subsystem four, ccbm, folks over here with Fernando, please. Subsystem five, hostility. You have anyone? There you go, Greg, Dr Provost and Rebecca. All get together, and then subsystem six, I don't know if we have a response recommendation individual y'all can come see me. I suppose. With that, I think that is going to conclude our official activities for this orientation and kick off major pond. Did you want to take those awards before we break out into our teams?
+
+Speaker 4  26:52
+No, thanks everybody. I'm really excited about this cohort. That's all I got.
+
+Speaker 2  26:57
+Yeah, excellent. So please communicate, communicate, collaborate, work with folks. It's what you put into it. We're going to get out of it. Engagement is the key to this being successful. 1600 at Red Lake down the road. If you don't know where it's at,
+
+Speaker 4  27:09
+it's a brewery. Thank you. Dan, yeah, both social, Yep, cool. Here, good here. They also have lots of non alcoholic beverages, and they also have
+
+Speaker 2  27:19
+food. It's quite good. All right, y'all, thank you very much. Look forward to working with you all, and Hope you have a Good COVID. Thanks. You.
+
+
+Transcribed by https://otter.ai

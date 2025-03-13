@@ -1,0 +1,25 @@
+Speaker 1  0:00  
+If you're trying to do cross tag and correlation as our base, well,
+
+Speaker 2  0:08  
+gosh, that question will never get answered. So first order, you should trust us government's catalog, right? That should be the foundation. But where there is absent information, you have to go to other places, right? So I don't know where the game is at. Should I should? No, no, so, and here's where things get interesting, right? Like six, seven years ago, maybe a little bit more, there was, like a lot of general officers had, there's only one catalog. Only had one catalog. And in fact, you look at SPD three verbiage on what DoD is provided to Department of Commerce in a marine doesn't talk let's talk about this only one capital. Let's talk about the smart way to process the movers, the smart way to process ucts. At any given time, I'm going to have multiple hypotheses right around at any given time, I'm going to have multiple states for the same object that are going to be good for different time durations. If I want to be able to find something reliably 10 days later, I'm going to use a different kind of fit and scan and something that's rapidly maneuvering. I want to get a Cal and filter solutions. It may be complete crap two hours later, this one would be great. Next 10 minutes, right? So this idea of one catalog, there's a lot of footnotes to that, right? And it's not only that the object what the object population is, it's how we represent those states dynamic, right? Is it really important I know where this is 15 minutes from now, or is it really important that I be able to get it again in a week? And guess what? I'm going to be pulling a different to me, right? I'm going to be pulling using a different state based upon those different needs, so the public catalog is largely optimized around a 72 hour debate. And again, that goes back to ESP vectors being optimized for safety of flight and the 72 hour time period to provide notice emergency list, even to Russia and China. Right? That, hey, your things get ready. Can be getting ready to hit this other thing. So the accuracy is actually optimized for like a plus 72 hour time period. And again, that's the EGP bidding process.
+
+Speaker 1  2:54  
+Laws inside one of the first parts of the Law Act analysis is this innovation process. Protect analysis, and with that right, plus, I think there is a problem. First, Mr. Mayor, if I would then do a proportionality analysis on tax, a bit, my view, I think the OSD,
+
+Unknown Speaker  3:18  
+the registration,
+
+Speaker 1  3:22  
+are there other sources, like ICU filings or SEC filings for the R spectrum, where we can discriminate fails from that perspective, that we can look at, or is there a source that you is it capped well enough to kind of propel that problem or solution that problem? Yeah, so
+
+Speaker 2  3:46  
+back up a couple of couple of days here, first for the US public catalog to identify, you know the common name data field that means the name of the data field. They have to have an open source to be able to do that right. And again, the last five years, there's been an explosion of object, a object they used to never, didn't used to have these multiple payload launches like we do now from China. In some cases it's right under our nose, like the stuff during 2022 China has identified by me, and we just haven't updated. So I point you to there. Yeah, passive RF environment. There's so much hasn't been excluded. And if you can figure out the ITU database, you know, good work. So, yeah, it is confusing, right? Like, I go there occasionally. I'm like, Wow, there's so much good stuff here and now trying to figure out how to use it. I'm like, No, I can't do this right now. I do think that's when, you know, having the RF properties of actively admitted objects and identifying those that are not compliant with filings. Somebody ought to be systematically doing that, and I it's just happenstance today that I see, but I think those the ICU databases are very i
+
+Speaker 2  5:23  
+The European Space Agency discus catalog has some additional identifying information that is not in the US catalog. They should not give out a house unless you release a member state citizen looks like they're they pretty freely give out accounts for that now, discus web, yeah, those are the big ones, I guess.
+
+Speaker 3  5:55  
+So for debris fields. Debris fields, together is any form obviously has covariance bounds. And that's any track that's larger covariance bounds. I
+
+Transcribed by https://otter.ai

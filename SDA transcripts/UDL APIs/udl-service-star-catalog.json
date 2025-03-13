@@ -1,0 +1,1604 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Unified Data Library Services API",
+    "version": "1.30.0 Daiquiri",
+    "description": "Unified Data Library Services OpenAPI v3 documentation.",
+    "termsOfService": "storefront/storefront/appConfig/useragreement.html",
+    "contact": {
+      "name": "Sage Andorka, Deputy, Cross-Mission Ground",
+      "email": "unifieddatalibrary@bluestaq.com"
+    }
+  },
+  "tags": [
+    {
+      "name": "Star Catalog",
+      "description": "These services provide operations for posting and querying Star Catalog data. The Star Catalog model is a representation of astronomical data and photometric data for stars. Astronomical data includes positional information, proper motions, parallaxes and their respective uncertainties. Photometric data contains optical and near-infrared magnitudes, and their uncertainties across multiple bandpasses. Note: Multiple source catalogs may contribute to a single record."
+    }
+  ],
+  "externalDocs": {
+    "url": "udl/openapi.json"
+  },
+  "servers": [
+    {
+      "url": "https://unifieddatalibrary.com"
+    }
+  ],
+  "paths": {
+    "/filedrop/udl-starcatalog": {
+      "post": {
+        "tags": [
+          "Star Catalog"
+        ],
+        "description": "Service operation to take multiple StarCatalog records as a POST body and ingest into the database. This operation is intended to be used for automated feeds into UDL. A specific role is required to perform this service operation. Please contact the UDL team for assistance.\n",
+        "operationId": "filedrop_udl_starcatalog_post_id",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/StarCatalog_Ingest"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Accepted"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/udl/starcatalog": {
+      "get": {
+        "description": "Service operation to dynamically query data by a variety of query parameters not specified in this API documentation. See the queryhelp operation (/udl/&lt;datatype&gt;/queryhelp) for more details on valid/required query parameter information.",
+        "tags": [
+          "Star Catalog"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/StarCatalog_Abridged"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "406": {
+            "description": "MediaType Not Accepted by Request Headers"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "parameters": [
+          {
+            "name": "dec",
+            "description": "(One or more of fields 'dec, ra' are required.) Barycentric declination of the source in International Celestial Reference System (ICRS) at the reference epoch, in degrees.",
+            "required": false,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            },
+            "in": "query"
+          },
+          {
+            "name": "ra",
+            "description": "(One or more of fields 'dec, ra' are required.) Barycentric right ascension of the source in the International Celestial Reference System (ICRS) frame at the reference epoch, in degrees.",
+            "required": false,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            },
+            "in": "query"
+          }
+        ]
+      },
+      "post": {
+        "description": "Service operation to take a single StarCatalog record as a POST body and ingest into the database. A specific role is required to perform this service operation. Please contact the UDL team for assistance.",
+        "tags": [
+          "Star Catalog"
+        ],
+        "requestBody": {
+          "description": "JSON representation of one StarCatalog.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StarCatalog_Ingest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "415": {
+            "description": "MediaType Unsupported"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/udl/starcatalog/{id}": {
+      "delete": {
+        "description": "Service operation to delete a dataset specified by the passed ID path parameter. A specific role is required to perform this service operation. Please contact the UDL team for assistance.",
+        "tags": [
+          "Star Catalog"
+        ],
+        "parameters": [
+          {
+            "description": "The ID of the dataset to delete.",
+            "required": true,
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "404": {
+            "description": "Item Not Found"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "get": {
+        "description": "Service operation to get a single StarCatalog record by its unique ID passed as a path parameter.",
+        "tags": [
+          "Star Catalog"
+        ],
+        "parameters": [
+          {
+            "description": "The ID of the star catalog dataset to retrieve.",
+            "required": true,
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StarCatalog_Full"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "404": {
+            "description": "Item Not Found"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "406": {
+            "description": "MediaType Not Accepted by Request Headers"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "put": {
+        "description": "Service operation to update a single starcatalog record. A specific role is required to perform this service operation. Please contact the UDL team for assistance.",
+        "tags": [
+          "Star Catalog"
+        ],
+        "parameters": [
+          {
+            "description": "The ID of the starcatalog record to update.",
+            "required": true,
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "JSON UDL representation of the Crew record to update.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StarCatalog_Ingest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "404": {
+            "description": "Item Not Found"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "415": {
+            "description": "MediaType Unsupported"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/udl/starcatalog/count": {
+      "get": {
+        "description": "Service operation to return the count of records satisfying the specified query parameters. This operation is useful to determine how many records pass a particular query criteria without retrieving large amounts of data. See the queryhelp operation (/udl/&lt;datatype&gt;/queryhelp) for more details on valid/required query parameter information.",
+        "tags": [
+          "Star Catalog"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "406": {
+            "description": "MediaType Not Accepted by Request Headers"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "parameters": [
+          {
+            "name": "dec",
+            "description": "(One or more of fields 'dec, ra' are required.) Barycentric declination of the source in International Celestial Reference System (ICRS) at the reference epoch, in degrees.",
+            "required": false,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            },
+            "in": "query"
+          },
+          {
+            "name": "ra",
+            "description": "(One or more of fields 'dec, ra' are required.) Barycentric right ascension of the source in the International Celestial Reference System (ICRS) frame at the reference epoch, in degrees.",
+            "required": false,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            },
+            "in": "query"
+          }
+        ]
+      }
+    },
+    "/udl/starcatalog/createBulk": {
+      "post": {
+        "description": "Service operation intended for initial integration only, to take a list of StarCatalog records as a POST body and ingest into the database. This operation is not intended to be used for automated feeds into UDL. Data providers should contact the UDL team for specific role assignments and for instructions on setting up a permanent feed through an alternate mechanism.",
+        "tags": [
+          "Star Catalog"
+        ],
+        "requestBody": {
+          "description": "JSON array of Star Catalog entities.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/StarCatalog_Ingest"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "415": {
+            "description": "MediaType Unsupported"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/udl/starcatalog/history/aodr": {
+      "get": {
+        "description": "Service operation to dynamically query historical data by a variety of query parameters not specified in this API documentation, then write that data to the Secure Content Store.  See the queryhelp operation (/udl/&lt;datatype&gt;/queryhelp) for more details on valid/required query parameter information.",
+        "tags": [
+          "Star Catalog"
+        ],
+        "parameters": [
+          {
+            "description": "optional, fields for retrieval. When omitted, ALL fields are assumed. See the queryhelp operation (/udl/&lt;datatype&gt;/queryhelp) for more details on valid query fields that can be selected.",
+            "name": "columns",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "optional, notification method for the created file link. When omitted, EMAIL is assumed. Current valid values are: EMAIL, SMS.",
+            "name": "notification",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "optional, field delimiter when the created file is not JSON. Must be a single character chosen from this set: (',', ';', ':', '|'). When omitted, \",\" is used. It is strongly encouraged that your field delimiter be a character unlikely to occur within the data.",
+            "name": "outputDelimiter",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "optional, output format for the file. When omitted, JSON is assumed. Current valid values are: JSON and CSV.",
+            "name": "outputFormat",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "dec",
+            "description": "(One or more of fields 'dec, ra' are required.) Barycentric declination of the source in International Celestial Reference System (ICRS) at the reference epoch, in degrees.",
+            "required": false,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            },
+            "in": "query"
+          },
+          {
+            "name": "ra",
+            "description": "(One or more of fields 'dec, ra' are required.) Barycentric right ascension of the source in the International Celestial Reference System (ICRS) frame at the reference epoch, in degrees.",
+            "required": false,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            },
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "406": {
+            "description": "MediaType Not Accepted by Request Headers"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/udl/starcatalog/queryhelp": {
+      "get": {
+        "description": "Service operation to provide detailed information on available dynamic query parameters for a particular data type.",
+        "tags": [
+          "Star Catalog"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "User Unauthorized"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "406": {
+            "description": "MediaType Not Accepted by Request Headers"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/udl/starcatalog/tuple": {
+      "get": {
+        "description": "Service operation to dynamically query data and only return specified columns/fields. Requested columns are specified by the 'columns' query parameter and should be a comma separated list of valid fields for the specified data type. classificationMarking is always returned. See the queryhelp operation (/udl/<datatype>/queryhelp) for more details on valid/required query parameter information. An example URI: /udl/elset/tuple?columns=satNo,period&epoch=>now-5 hours would return the satNo and period of elsets with an epoch greater than 5 hours ago.",
+        "tags": [
+          "Star Catalog"
+        ],
+        "parameters": [
+          {
+            "description": "Comma-separated list of valid field names for this data type to be returned in the response. Only the fields specified will be returned as well as the classification marking of the data, if applicable. See the ‘queryhelp’ operation for a complete list of possible fields.",
+            "required": true,
+            "name": "columns",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "dec",
+            "description": "(One or more of fields 'dec, ra' are required.) Barycentric declination of the source in International Celestial Reference System (ICRS) at the reference epoch, in degrees.",
+            "required": false,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            },
+            "in": "query"
+          },
+          {
+            "name": "ra",
+            "description": "(One or more of fields 'dec, ra' are required.) Barycentric right ascension of the source in the International Celestial Reference System (ICRS) frame at the reference epoch, in degrees.",
+            "required": false,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            },
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/StarCatalog_Full"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "406": {
+            "description": "MediaType Not Accepted by Request Headers"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "StarCatalog_Abridged": {
+        "description": "The star catalog provides the position, proper motion, parallax, and photometric magnitudes at various bandpasses of a star.",
+        "required": [
+          "classificationMarking",
+          "csId",
+          "ra",
+          "dec",
+          "astrometryOrigin",
+          "starEpoch",
+          "source",
+          "dataMode"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Unique identifier of the record, auto-generated by the system.",
+            "maxLength": 36,
+            "minLength": 1,
+            "type": "string",
+            "example": "STAR-CAT-DATASET-ID"
+          },
+          "classificationMarking": {
+            "description": "Classification marking of the data in IC/CAPCO Portion-marked format.",
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string",
+            "example": "U"
+          },
+          "csId": {
+            "format": "int64",
+            "description": "The ID of this object in the specific catalog associated with this record.",
+            "type": "integer",
+            "example": 12345
+          },
+          "gncCatId": {
+            "format": "int32",
+            "description": "The ID of this object in the Guidance and Navagation Control (GNC) Catalog.",
+            "type": "integer",
+            "example": 12345
+          },
+          "gaiadr3CatId": {
+            "format": "int64",
+            "description": "The ID of this object in the Gaia DR3 Catalog.",
+            "type": "integer",
+            "example": 89012345678901
+          },
+          "hipCatId": {
+            "format": "int32",
+            "description": "The ID of this object in the Hipparcos Catalog.",
+            "type": "integer",
+            "example": 12345
+          },
+          "catVersion": {
+            "description": "The version of the catalog associated with this object.",
+            "type": "string",
+            "example": "1.23"
+          },
+          "ra": {
+            "format": "double",
+            "description": "Barycentric right ascension of the source in the International Celestial Reference System (ICRS) frame at the reference epoch, in degrees.",
+            "type": "number",
+            "example": 14.43
+          },
+          "raUnc": {
+            "format": "double",
+            "description": "Uncertainty of the right ascension of the source, in milliarcseconds, at the reference epoch.",
+            "type": "number",
+            "example": 509.466
+          },
+          "dec": {
+            "format": "double",
+            "description": "Barycentric declination of the source in International Celestial Reference System (ICRS) at the reference epoch, in degrees.",
+            "type": "number",
+            "example": 21.8
+          },
+          "decUnc": {
+            "format": "double",
+            "description": "Uncertainty of the declination of the source, in milliarcseconds, at the reference epoch.",
+            "type": "number",
+            "example": 40.996
+          },
+          "posUncFlag": {
+            "description": "Flag indicating that the position uncertainty in either ra or dec is greater than 100 milliarcseconds.",
+            "type": "boolean",
+            "example": false
+          },
+          "parallax": {
+            "format": "double",
+            "description": "Absolute stellar parallax of the source, in milliarcseconds.",
+            "type": "number",
+            "example": -6.8
+          },
+          "parallaxUnc": {
+            "format": "double",
+            "description": "Uncertainty of the stellar parallax, in milliarcseconds.",
+            "type": "number",
+            "example": 82.35
+          },
+          "pmra": {
+            "format": "double",
+            "description": "Proper motion in right ascension of the source, in milliarcseconds/year, at the reference epoch.",
+            "type": "number",
+            "example": 1000.45
+          },
+          "pmraUnc": {
+            "format": "double",
+            "description": "Uncertainty of proper motion in right ascension, in milliarcseconds/year.",
+            "type": "number",
+            "example": 5.6
+          },
+          "pmdec": {
+            "format": "double",
+            "description": "Proper motion in declination of the source, in milliarcseconds/year, at the reference epoch.",
+            "type": "number",
+            "example": -970.1003
+          },
+          "pmdecUnc": {
+            "format": "double",
+            "description": "Uncertainty of proper motion in declination, in milliarcseconds/year.",
+            "type": "number",
+            "example": 1.22
+          },
+          "pmUncFlag": {
+            "description": "Flag indicating that the proper motion uncertainty in either ra or dec is greater than 10 milliarcseconds/year.",
+            "type": "boolean",
+            "example": false
+          },
+          "astrometryOrigin": {
+            "description": "Originating astrometric catalog for this object. Enum: [GAIADR3, HIPPARCOS, USNOBSC].",
+            "maxLength": 16,
+            "minLength": 1,
+            "enum": [
+              "GAIADR3",
+              "HIPPARCOS",
+              "USNOBSC"
+            ],
+            "type": "string",
+            "example": "GAIADR3"
+          },
+          "starEpoch": {
+            "format": "double",
+            "description": "Reference epoch to which the astrometric source parameters are referred, expressed as Julian Year in Barycentric Coordinate Time (TCB).",
+            "type": "number",
+            "example": 2016
+          },
+          "gmag": {
+            "format": "double",
+            "description": "Gaia DR3 optical photometric G-band magnitude in the Vega scale.",
+            "type": "number",
+            "example": 0.0046
+          },
+          "gmagUnc": {
+            "format": "double",
+            "description": "Gaia DR3 optical photometric G-band magnitude uncertainty in the Vega scale.",
+            "type": "number",
+            "example": 0.00292
+          },
+          "bpmag": {
+            "format": "double",
+            "description": "Gaia DR3 optical photometric Bp-band magnitude in the Vega scale.",
+            "type": "number",
+            "example": 0.04559
+          },
+          "bpmagUnc": {
+            "format": "double",
+            "description": "Gaia DR3 optical Bp-band magnitude uncertainty in the Vega scale.",
+            "type": "number",
+            "example": 0.2227
+          },
+          "rpmag": {
+            "format": "double",
+            "description": "Gaia DR3 optical Rp-band magnitude in the Vega scale.",
+            "type": "number",
+            "example": 8.0047
+          },
+          "rpmagUnc": {
+            "format": "double",
+            "description": "Gaia DR3 optical photometric Rp-band magnitude uncertainty in the Vega scale.",
+            "type": "number",
+            "example": 1.233
+          },
+          "jmag": {
+            "format": "double",
+            "description": "Two Micron All Sky Survey (2MASS) Point Source Catalog (PSC) near-infrared photometric J-band magnitude in the Vega scale.",
+            "type": "number",
+            "example": 9.515
+          },
+          "jmagUnc": {
+            "format": "double",
+            "description": "Two Micron All Sky Survey (2MASS) Point Source Catalog (PSC) near-infrared photometric J-band magnitude uncertainty in the Vega scale.",
+            "type": "number",
+            "example": 7.559
+          },
+          "kmag": {
+            "format": "double",
+            "description": "Two Micron All Sky Survey (2MASS) Point Source Catalog (PSC) near-infrared photometric K-band magnitude in the Vega scale.",
+            "type": "number",
+            "example": 13.545
+          },
+          "kmagUnc": {
+            "format": "double",
+            "description": "Two Micron All Sky Survey (2MASS) Point Source Catalog (PSC) near-infrared photometric K-band magnitude uncertainty in the Vega scale.",
+            "type": "number",
+            "example": 0.052
+          },
+          "hmag": {
+            "format": "double",
+            "description": "Two Micron All Sky Survey (2MASS) Point Source Catalog (PSC) near-infrared photometric H-band magnitude in the Vega scale.",
+            "type": "number",
+            "example": 12.126
+          },
+          "hmagUnc": {
+            "format": "double",
+            "description": "Two Micron All Sky Survey (2MASS) Point Source Catalog (PSC) near-infrared photometric H-band magnitude uncertainty in the Vega scale.",
+            "type": "number",
+            "example": 5.722
+          },
+          "varFlag": {
+            "description": "Flag indicating that the source exhibits variable magnitude.",
+            "type": "boolean",
+            "example": true
+          },
+          "multFlag": {
+            "description": "Flag indicating that this is a multiple object source.",
+            "type": "boolean",
+            "example": true
+          },
+          "neighborId": {
+            "format": "int32",
+            "description": "The catalog ID of the nearest neighbor to this source.",
+            "type": "integer",
+            "example": 2456
+          },
+          "neighborFlag": {
+            "description": "Flag indicating that the nearest catalog neighbor is closer than 4.6 arcseconds.",
+            "type": "boolean",
+            "example": false
+          },
+          "neighborDistance": {
+            "format": "double",
+            "description": "Distance between source and nearest neighbor, in arcseconds.",
+            "type": "number",
+            "example": 201.406
+          },
+          "shiftFlag": {
+            "description": "Flag indicating that the photocentric shift is greater than 50 milliarcseconds.",
+            "type": "boolean",
+            "example": false
+          },
+          "shift": {
+            "format": "double",
+            "description": "Photocentric shift caused by neighbors, in arcseconds.",
+            "type": "number",
+            "example": 4.548
+          },
+          "createdAt": {
+            "format": "date-time",
+            "description": "Time the row was created in the database, auto-populated by the system.",
+            "type": "string",
+            "readOnly": true,
+            "example": "2018-01-01T16:00:00.123Z"
+          },
+          "createdBy": {
+            "description": "Application user who created the row in the database, auto-populated by the system.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string",
+            "readOnly": true,
+            "example": "some.user"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "description": "Time the row was updated in the database.",
+            "type": "string",
+            "readOnly": true,
+            "example": "2018-01-01T16:00:00.123Z"
+          },
+          "updatedBy": {
+            "description": "Application user who updated the row in the database.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string",
+            "readOnly": true,
+            "example": "some.user"
+          },
+          "source": {
+            "description": "Source of the data.",
+            "maxLength": 36,
+            "minLength": 1,
+            "type": "string",
+            "example": "Bluestaq"
+          },
+          "origin": {
+            "description": "Originating system or organization which produced the data, if different from the source. The origin may be different than the source if the source was a mediating system which forwarded the data on behalf of the origin system. If null, the source may be assumed to be the origin.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "THIRD_PARTY_DATASOURCE"
+          },
+          "origNetwork": {
+            "description": "The originating source network on which this record was created, auto-populated by the system.",
+            "maxLength": 4,
+            "type": "string",
+            "readOnly": true,
+            "example": "ORIG"
+          },
+          "dataMode": {
+            "description": "Indicator of whether the data is EXERCISE, REAL, SIMULATED, or TEST data:\n\nEXERCISE:&nbsp;Data pertaining to a government or military exercise. The data may include both real and simulated data.\n\nREAL:&nbsp;Data collected or produced that pertains to real-world objects, events, and analysis.\n\nSIMULATED:&nbsp;Synthetic data generated by a model to mimic real-world datasets.\n\nTEST:&nbsp;Specific datasets used to evaluate compliance with specifications and requirements, and for validating technical, functional, and performance characteristics.\n\n",
+            "maxLength": 32,
+            "minLength": 1,
+            "enum": [
+              "REAL",
+              "TEST",
+              "SIMULATED",
+              "EXERCISE"
+            ],
+            "type": "string",
+            "example": "TEST"
+          }
+        }
+      },
+      "StarCatalog_Full": {
+        "description": "The star catalog provides the position, proper motion, parallax, and photometric magnitudes at various bandpasses of a star.",
+        "required": [
+          "classificationMarking",
+          "csId",
+          "ra",
+          "dec",
+          "astrometryOrigin",
+          "starEpoch",
+          "source",
+          "dataMode"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Unique identifier of the record, auto-generated by the system.",
+            "maxLength": 36,
+            "minLength": 1,
+            "type": "string",
+            "example": "STAR-CAT-DATASET-ID"
+          },
+          "classificationMarking": {
+            "description": "Classification marking of the data in IC/CAPCO Portion-marked format.",
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string",
+            "example": "U"
+          },
+          "csId": {
+            "format": "int64",
+            "description": "The ID of this object in the specific catalog associated with this record.",
+            "type": "integer",
+            "example": 12345
+          },
+          "gncCatId": {
+            "format": "int32",
+            "description": "The ID of this object in the Guidance and Navagation Control (GNC) Catalog.",
+            "type": "integer",
+            "example": 12345
+          },
+          "gaiadr3CatId": {
+            "format": "int64",
+            "description": "The ID of this object in the Gaia DR3 Catalog.",
+            "type": "integer",
+            "example": 89012345678901
+          },
+          "hipCatId": {
+            "format": "int32",
+            "description": "The ID of this object in the Hipparcos Catalog.",
+            "type": "integer",
+            "example": 12345
+          },
+          "catVersion": {
+            "description": "The version of the catalog associated with this object.",
+            "type": "string",
+            "example": "1.23"
+          },
+          "ra": {
+            "format": "double",
+            "description": "Barycentric right ascension of the source in the International Celestial Reference System (ICRS) frame at the reference epoch, in degrees.",
+            "type": "number",
+            "example": 14.43
+          },
+          "raUnc": {
+            "format": "double",
+            "description": "Uncertainty of the right ascension of the source, in milliarcseconds, at the reference epoch.",
+            "type": "number",
+            "example": 509.466
+          },
+          "dec": {
+            "format": "double",
+            "description": "Barycentric declination of the source in International Celestial Reference System (ICRS) at the reference epoch, in degrees.",
+            "type": "number",
+            "example": 21.8
+          },
+          "decUnc": {
+            "format": "double",
+            "description": "Uncertainty of the declination of the source, in milliarcseconds, at the reference epoch.",
+            "type": "number",
+            "example": 40.996
+          },
+          "posUncFlag": {
+            "description": "Flag indicating that the position uncertainty in either ra or dec is greater than 100 milliarcseconds.",
+            "type": "boolean",
+            "example": false
+          },
+          "parallax": {
+            "format": "double",
+            "description": "Absolute stellar parallax of the source, in milliarcseconds.",
+            "type": "number",
+            "example": -6.8
+          },
+          "parallaxUnc": {
+            "format": "double",
+            "description": "Uncertainty of the stellar parallax, in milliarcseconds.",
+            "type": "number",
+            "example": 82.35
+          },
+          "pmra": {
+            "format": "double",
+            "description": "Proper motion in right ascension of the source, in milliarcseconds/year, at the reference epoch.",
+            "type": "number",
+            "example": 1000.45
+          },
+          "pmraUnc": {
+            "format": "double",
+            "description": "Uncertainty of proper motion in right ascension, in milliarcseconds/year.",
+            "type": "number",
+            "example": 5.6
+          },
+          "pmdec": {
+            "format": "double",
+            "description": "Proper motion in declination of the source, in milliarcseconds/year, at the reference epoch.",
+            "type": "number",
+            "example": -970.1003
+          },
+          "pmdecUnc": {
+            "format": "double",
+            "description": "Uncertainty of proper motion in declination, in milliarcseconds/year.",
+            "type": "number",
+            "example": 1.22
+          },
+          "pmUncFlag": {
+            "description": "Flag indicating that the proper motion uncertainty in either ra or dec is greater than 10 milliarcseconds/year.",
+            "type": "boolean",
+            "example": false
+          },
+          "astrometryOrigin": {
+            "description": "Originating astrometric catalog for this object. Enum: [GAIADR3, HIPPARCOS, USNOBSC].",
+            "maxLength": 16,
+            "minLength": 1,
+            "enum": [
+              "GAIADR3",
+              "HIPPARCOS",
+              "USNOBSC"
+            ],
+            "type": "string",
+            "example": "GAIADR3"
+          },
+          "starEpoch": {
+            "format": "double",
+            "description": "Reference epoch to which the astrometric source parameters are referred, expressed as Julian Year in Barycentric Coordinate Time (TCB).",
+            "type": "number",
+            "example": 2016
+          },
+          "gmag": {
+            "format": "double",
+            "description": "Gaia DR3 optical photometric G-band magnitude in the Vega scale.",
+            "type": "number",
+            "example": 0.0046
+          },
+          "gmagUnc": {
+            "format": "double",
+            "description": "Gaia DR3 optical photometric G-band magnitude uncertainty in the Vega scale.",
+            "type": "number",
+            "example": 0.00292
+          },
+          "bpmag": {
+            "format": "double",
+            "description": "Gaia DR3 optical photometric Bp-band magnitude in the Vega scale.",
+            "type": "number",
+            "example": 0.04559
+          },
+          "bpmagUnc": {
+            "format": "double",
+            "description": "Gaia DR3 optical Bp-band magnitude uncertainty in the Vega scale.",
+            "type": "number",
+            "example": 0.2227
+          },
+          "rpmag": {
+            "format": "double",
+            "description": "Gaia DR3 optical Rp-band magnitude in the Vega scale.",
+            "type": "number",
+            "example": 8.0047
+          },
+          "rpmagUnc": {
+            "format": "double",
+            "description": "Gaia DR3 optical photometric Rp-band magnitude uncertainty in the Vega scale.",
+            "type": "number",
+            "example": 1.233
+          },
+          "jmag": {
+            "format": "double",
+            "description": "Two Micron All Sky Survey (2MASS) Point Source Catalog (PSC) near-infrared photometric J-band magnitude in the Vega scale.",
+            "type": "number",
+            "example": 9.515
+          },
+          "jmagUnc": {
+            "format": "double",
+            "description": "Two Micron All Sky Survey (2MASS) Point Source Catalog (PSC) near-infrared photometric J-band magnitude uncertainty in the Vega scale.",
+            "type": "number",
+            "example": 7.559
+          },
+          "kmag": {
+            "format": "double",
+            "description": "Two Micron All Sky Survey (2MASS) Point Source Catalog (PSC) near-infrared photometric K-band magnitude in the Vega scale.",
+            "type": "number",
+            "example": 13.545
+          },
+          "kmagUnc": {
+            "format": "double",
+            "description": "Two Micron All Sky Survey (2MASS) Point Source Catalog (PSC) near-infrared photometric K-band magnitude uncertainty in the Vega scale.",
+            "type": "number",
+            "example": 0.052
+          },
+          "hmag": {
+            "format": "double",
+            "description": "Two Micron All Sky Survey (2MASS) Point Source Catalog (PSC) near-infrared photometric H-band magnitude in the Vega scale.",
+            "type": "number",
+            "example": 12.126
+          },
+          "hmagUnc": {
+            "format": "double",
+            "description": "Two Micron All Sky Survey (2MASS) Point Source Catalog (PSC) near-infrared photometric H-band magnitude uncertainty in the Vega scale.",
+            "type": "number",
+            "example": 5.722
+          },
+          "varFlag": {
+            "description": "Flag indicating that the source exhibits variable magnitude.",
+            "type": "boolean",
+            "example": true
+          },
+          "multFlag": {
+            "description": "Flag indicating that this is a multiple object source.",
+            "type": "boolean",
+            "example": true
+          },
+          "neighborId": {
+            "format": "int32",
+            "description": "The catalog ID of the nearest neighbor to this source.",
+            "type": "integer",
+            "example": 2456
+          },
+          "neighborFlag": {
+            "description": "Flag indicating that the nearest catalog neighbor is closer than 4.6 arcseconds.",
+            "type": "boolean",
+            "example": false
+          },
+          "neighborDistance": {
+            "format": "double",
+            "description": "Distance between source and nearest neighbor, in arcseconds.",
+            "type": "number",
+            "example": 201.406
+          },
+          "shiftFlag": {
+            "description": "Flag indicating that the photocentric shift is greater than 50 milliarcseconds.",
+            "type": "boolean",
+            "example": false
+          },
+          "shift": {
+            "format": "double",
+            "description": "Photocentric shift caused by neighbors, in arcseconds.",
+            "type": "number",
+            "example": 4.548
+          },
+          "createdAt": {
+            "format": "date-time",
+            "description": "Time the row was created in the database, auto-populated by the system.",
+            "type": "string",
+            "readOnly": true,
+            "example": "2018-01-01T16:00:00.123Z"
+          },
+          "createdBy": {
+            "description": "Application user who created the row in the database, auto-populated by the system.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string",
+            "readOnly": true,
+            "example": "some.user"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "description": "Time the row was updated in the database.",
+            "type": "string",
+            "readOnly": true,
+            "example": "2018-01-01T16:00:00.123Z"
+          },
+          "updatedBy": {
+            "description": "Application user who updated the row in the database.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string",
+            "readOnly": true,
+            "example": "some.user"
+          },
+          "source": {
+            "description": "Source of the data.",
+            "maxLength": 36,
+            "minLength": 1,
+            "type": "string",
+            "example": "Bluestaq"
+          },
+          "origin": {
+            "description": "Originating system or organization which produced the data, if different from the source. The origin may be different than the source if the source was a mediating system which forwarded the data on behalf of the origin system. If null, the source may be assumed to be the origin.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "THIRD_PARTY_DATASOURCE"
+          },
+          "origNetwork": {
+            "description": "The originating source network on which this record was created, auto-populated by the system.",
+            "maxLength": 4,
+            "type": "string",
+            "readOnly": true,
+            "example": "ORIG"
+          },
+          "dataMode": {
+            "description": "Indicator of whether the data is EXERCISE, REAL, SIMULATED, or TEST data:\n\nEXERCISE:&nbsp;Data pertaining to a government or military exercise. The data may include both real and simulated data.\n\nREAL:&nbsp;Data collected or produced that pertains to real-world objects, events, and analysis.\n\nSIMULATED:&nbsp;Synthetic data generated by a model to mimic real-world datasets.\n\nTEST:&nbsp;Specific datasets used to evaluate compliance with specifications and requirements, and for validating technical, functional, and performance characteristics.\n\n",
+            "maxLength": 32,
+            "minLength": 1,
+            "enum": [
+              "REAL",
+              "TEST",
+              "SIMULATED",
+              "EXERCISE"
+            ],
+            "type": "string",
+            "example": "TEST"
+          }
+        }
+      },
+      "StarCatalog_Ingest": {
+        "description": "The star catalog provides the position, proper motion, parallax, and photometric magnitudes at various bandpasses of a star.",
+        "required": [
+          "classificationMarking",
+          "csId",
+          "ra",
+          "dec",
+          "astrometryOrigin",
+          "starEpoch",
+          "source",
+          "dataMode"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Unique identifier of the record, auto-generated by the system.",
+            "maxLength": 36,
+            "minLength": 1,
+            "type": "string",
+            "example": "STAR-CAT-DATASET-ID"
+          },
+          "classificationMarking": {
+            "description": "Classification marking of the data in IC/CAPCO Portion-marked format.",
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string",
+            "example": "U"
+          },
+          "csId": {
+            "format": "int64",
+            "description": "The ID of this object in the specific catalog associated with this record.",
+            "type": "integer",
+            "example": 12345
+          },
+          "gncCatId": {
+            "format": "int32",
+            "description": "The ID of this object in the Guidance and Navagation Control (GNC) Catalog.",
+            "type": "integer",
+            "example": 12345
+          },
+          "gaiadr3CatId": {
+            "format": "int64",
+            "description": "The ID of this object in the Gaia DR3 Catalog.",
+            "type": "integer",
+            "example": 89012345678901
+          },
+          "hipCatId": {
+            "format": "int32",
+            "description": "The ID of this object in the Hipparcos Catalog.",
+            "type": "integer",
+            "example": 12345
+          },
+          "catVersion": {
+            "description": "The version of the catalog associated with this object.",
+            "type": "string",
+            "example": "1.23"
+          },
+          "ra": {
+            "format": "double",
+            "description": "Barycentric right ascension of the source in the International Celestial Reference System (ICRS) frame at the reference epoch, in degrees.",
+            "type": "number",
+            "example": 14.43
+          },
+          "raUnc": {
+            "format": "double",
+            "description": "Uncertainty of the right ascension of the source, in milliarcseconds, at the reference epoch.",
+            "type": "number",
+            "example": 509.466
+          },
+          "dec": {
+            "format": "double",
+            "description": "Barycentric declination of the source in International Celestial Reference System (ICRS) at the reference epoch, in degrees.",
+            "type": "number",
+            "example": 21.8
+          },
+          "decUnc": {
+            "format": "double",
+            "description": "Uncertainty of the declination of the source, in milliarcseconds, at the reference epoch.",
+            "type": "number",
+            "example": 40.996
+          },
+          "posUncFlag": {
+            "description": "Flag indicating that the position uncertainty in either ra or dec is greater than 100 milliarcseconds.",
+            "type": "boolean",
+            "example": false
+          },
+          "parallax": {
+            "format": "double",
+            "description": "Absolute stellar parallax of the source, in milliarcseconds.",
+            "type": "number",
+            "example": -6.8
+          },
+          "parallaxUnc": {
+            "format": "double",
+            "description": "Uncertainty of the stellar parallax, in milliarcseconds.",
+            "type": "number",
+            "example": 82.35
+          },
+          "pmra": {
+            "format": "double",
+            "description": "Proper motion in right ascension of the source, in milliarcseconds/year, at the reference epoch.",
+            "type": "number",
+            "example": 1000.45
+          },
+          "pmraUnc": {
+            "format": "double",
+            "description": "Uncertainty of proper motion in right ascension, in milliarcseconds/year.",
+            "type": "number",
+            "example": 5.6
+          },
+          "pmdec": {
+            "format": "double",
+            "description": "Proper motion in declination of the source, in milliarcseconds/year, at the reference epoch.",
+            "type": "number",
+            "example": -970.1003
+          },
+          "pmdecUnc": {
+            "format": "double",
+            "description": "Uncertainty of proper motion in declination, in milliarcseconds/year.",
+            "type": "number",
+            "example": 1.22
+          },
+          "pmUncFlag": {
+            "description": "Flag indicating that the proper motion uncertainty in either ra or dec is greater than 10 milliarcseconds/year.",
+            "type": "boolean",
+            "example": false
+          },
+          "astrometryOrigin": {
+            "description": "Originating astrometric catalog for this object. Enum: [GAIADR3, HIPPARCOS, USNOBSC].",
+            "maxLength": 16,
+            "minLength": 1,
+            "enum": [
+              "GAIADR3",
+              "HIPPARCOS",
+              "USNOBSC"
+            ],
+            "type": "string",
+            "example": "GAIADR3"
+          },
+          "starEpoch": {
+            "format": "double",
+            "description": "Reference epoch to which the astrometric source parameters are referred, expressed as Julian Year in Barycentric Coordinate Time (TCB).",
+            "type": "number",
+            "example": 2016
+          },
+          "gmag": {
+            "format": "double",
+            "description": "Gaia DR3 optical photometric G-band magnitude in the Vega scale.",
+            "type": "number",
+            "example": 0.0046
+          },
+          "gmagUnc": {
+            "format": "double",
+            "description": "Gaia DR3 optical photometric G-band magnitude uncertainty in the Vega scale.",
+            "type": "number",
+            "example": 0.00292
+          },
+          "bpmag": {
+            "format": "double",
+            "description": "Gaia DR3 optical photometric Bp-band magnitude in the Vega scale.",
+            "type": "number",
+            "example": 0.04559
+          },
+          "bpmagUnc": {
+            "format": "double",
+            "description": "Gaia DR3 optical Bp-band magnitude uncertainty in the Vega scale.",
+            "type": "number",
+            "example": 0.2227
+          },
+          "rpmag": {
+            "format": "double",
+            "description": "Gaia DR3 optical Rp-band magnitude in the Vega scale.",
+            "type": "number",
+            "example": 8.0047
+          },
+          "rpmagUnc": {
+            "format": "double",
+            "description": "Gaia DR3 optical photometric Rp-band magnitude uncertainty in the Vega scale.",
+            "type": "number",
+            "example": 1.233
+          },
+          "jmag": {
+            "format": "double",
+            "description": "Two Micron All Sky Survey (2MASS) Point Source Catalog (PSC) near-infrared photometric J-band magnitude in the Vega scale.",
+            "type": "number",
+            "example": 9.515
+          },
+          "jmagUnc": {
+            "format": "double",
+            "description": "Two Micron All Sky Survey (2MASS) Point Source Catalog (PSC) near-infrared photometric J-band magnitude uncertainty in the Vega scale.",
+            "type": "number",
+            "example": 7.559
+          },
+          "kmag": {
+            "format": "double",
+            "description": "Two Micron All Sky Survey (2MASS) Point Source Catalog (PSC) near-infrared photometric K-band magnitude in the Vega scale.",
+            "type": "number",
+            "example": 13.545
+          },
+          "kmagUnc": {
+            "format": "double",
+            "description": "Two Micron All Sky Survey (2MASS) Point Source Catalog (PSC) near-infrared photometric K-band magnitude uncertainty in the Vega scale.",
+            "type": "number",
+            "example": 0.052
+          },
+          "hmag": {
+            "format": "double",
+            "description": "Two Micron All Sky Survey (2MASS) Point Source Catalog (PSC) near-infrared photometric H-band magnitude in the Vega scale.",
+            "type": "number",
+            "example": 12.126
+          },
+          "hmagUnc": {
+            "format": "double",
+            "description": "Two Micron All Sky Survey (2MASS) Point Source Catalog (PSC) near-infrared photometric H-band magnitude uncertainty in the Vega scale.",
+            "type": "number",
+            "example": 5.722
+          },
+          "varFlag": {
+            "description": "Flag indicating that the source exhibits variable magnitude.",
+            "type": "boolean",
+            "example": true
+          },
+          "multFlag": {
+            "description": "Flag indicating that this is a multiple object source.",
+            "type": "boolean",
+            "example": true
+          },
+          "neighborId": {
+            "format": "int32",
+            "description": "The catalog ID of the nearest neighbor to this source.",
+            "type": "integer",
+            "example": 2456
+          },
+          "neighborFlag": {
+            "description": "Flag indicating that the nearest catalog neighbor is closer than 4.6 arcseconds.",
+            "type": "boolean",
+            "example": false
+          },
+          "neighborDistance": {
+            "format": "double",
+            "description": "Distance between source and nearest neighbor, in arcseconds.",
+            "type": "number",
+            "example": 201.406
+          },
+          "shiftFlag": {
+            "description": "Flag indicating that the photocentric shift is greater than 50 milliarcseconds.",
+            "type": "boolean",
+            "example": false
+          },
+          "shift": {
+            "format": "double",
+            "description": "Photocentric shift caused by neighbors, in arcseconds.",
+            "type": "number",
+            "example": 4.548
+          },
+          "createdAt": {
+            "format": "date-time",
+            "description": "Time the row was created in the database, auto-populated by the system.",
+            "type": "string",
+            "readOnly": true,
+            "example": "2018-01-01T16:00:00.123Z"
+          },
+          "createdBy": {
+            "description": "Application user who created the row in the database, auto-populated by the system.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string",
+            "readOnly": true,
+            "example": "some.user"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "description": "Time the row was updated in the database.",
+            "type": "string",
+            "readOnly": true,
+            "example": "2018-01-01T16:00:00.123Z"
+          },
+          "updatedBy": {
+            "description": "Application user who updated the row in the database.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string",
+            "readOnly": true,
+            "example": "some.user"
+          },
+          "source": {
+            "description": "Source of the data.",
+            "maxLength": 36,
+            "minLength": 1,
+            "type": "string",
+            "example": "Bluestaq"
+          },
+          "origin": {
+            "description": "Originating system or organization which produced the data, if different from the source. The origin may be different than the source if the source was a mediating system which forwarded the data on behalf of the origin system. If null, the source may be assumed to be the origin.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "THIRD_PARTY_DATASOURCE"
+          },
+          "origNetwork": {
+            "description": "The originating source network on which this record was created, auto-populated by the system.",
+            "maxLength": 4,
+            "type": "string",
+            "readOnly": true,
+            "example": "ORIG"
+          },
+          "dataMode": {
+            "description": "Indicator of whether the data is EXERCISE, REAL, SIMULATED, or TEST data:\n\nEXERCISE:&nbsp;Data pertaining to a government or military exercise. The data may include both real and simulated data.\n\nREAL:&nbsp;Data collected or produced that pertains to real-world objects, events, and analysis.\n\nSIMULATED:&nbsp;Synthetic data generated by a model to mimic real-world datasets.\n\nTEST:&nbsp;Specific datasets used to evaluate compliance with specifications and requirements, and for validating technical, functional, and performance characteristics.\n\n",
+            "maxLength": 32,
+            "minLength": 1,
+            "enum": [
+              "REAL",
+              "TEST",
+              "SIMULATED",
+              "EXERCISE"
+            ],
+            "type": "string",
+            "example": "TEST"
+          }
+        }
+      }
+    }
+  }
+}

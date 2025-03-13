@@ -1,0 +1,185 @@
+Speaker 1  00:00
+I occasion, is, is there any process to determine the subsystem of a new topic
+
+Speaker 2  00:12
+to select? Yeah, I apologize I'm not the one to answer that.
+
+Speaker 3  00:16
+If you have, if you've identified a capability that that could go into the TMDB, and that's in subsystem one,
+
+Speaker 2  00:25
+with the new capability that you're, you know, gathering and processing data on.
+
+Speaker 1  00:31
+Yeah, Peter, I might have to have you reference or ask David kernbach, he might know the other subsystems more than I do to see where your specific capability fits in, okay? Or you can ask in the rocket chat, general chat, see if anybody else has ideas. But I think starting with David might be your best bet. Good. Thank you. Of course, you I am uploading some documents onto the rocket chat. You who don't have access to the sheets yet, we don't have any complaints about the way we're keeping track of the development work. I think these sheets were the best way to keep track of who was doing what, and you guys can update it as we go or as we go. I And then I don't, I did not memorize every single person's name to their company, so I will start off with just asking questions based off the sheet. And then for the new companies, we'll make new ones and go from there. Anybody from IR team? Yeah.
+
+Unknown Speaker  02:11
+First of all, ESL in production, is there any changes?
+
+Unknown Speaker  02:16
+No nothing big.
+
+Speaker 2  02:19
+I need to chat with some of the other guys to see I know one direction we're going. I'm going to continue kind of doing the robustness thing on the surface. That's already in there, but we might be doing some other stuff as well, and so I'll have to get that back to you guys. Okay, sounds good.
+
+Unknown Speaker  02:35
+I'll take some notes in the meantime. I
+
+Unknown Speaker  02:43
+anybody with quasar,
+
+Unknown Speaker  02:58
+dollar Yankee?
+
+Speaker 3  03:00
+Oh, hey, Fernando is ready. Updates. I think just before the demo day, we had that one indicator integrated. It looked like when I was talking to you there, Fernando looked like there were some NAS in that column. Just let me know if that, if something about that seemed to be our fault, figure that out. But beyond that, really, we're going to shift gears anyway, right, and switch over to the message bus. So that's really the immediate next step, as I see it. Cool. Sounds good.
+
+Unknown Speaker  03:41
+George was the launch vehicle, launch site correlation?
+
+Speaker 3  03:44
+Correct? Yes, right. Okay, no, you're good. You good?
+
+Speaker 1  03:48
+Okay, yeah, we'll see kind of what the priority is. Yeah, we are moving to the message bus. So I'll get back to you with what the kind of the status of that is, if it's your fault, or if it's anybody's fault, maybe just there's no data at the moment. Yay, right. Got it cool? Al Tamira, yeah, I'm here.
+
+Speaker 2  04:12
+Yeah, go for it. Oh, good. Okay, my microphone didn't work last time I tried to use
+
+Speaker 1  04:20
+any changes? No, I think, I mean, I guess looking at, I was like, eight minutes late, so I don't know what I missed, but I'm looking at
+
+Speaker 2  04:33
+integration ready or square requirements. I guess the requirements changed, our status, I guess. I don't know if that's true or not, but
+
+Speaker 1  04:49
+I'm assuming you guys have not done any message bus integration work done yet, right? We haven't integrated yet, but you have the same algorithms from last cohort, yes, so I think you guys will probably remain in integration, and you guys can start testing out in the test environment topics, okay? And we'll provide you guys with the schemas. Or if you look at the sprint cohort, sprint plan, cohort sheet, these schemas live here. I guess I wouldn't benefit from looking at this, I currently have a branch made, but that should be merged into the whole directory soon. And it's just this basic layout, what the schema looks like for us. And if you're not familiar with schemas, Alex put a very good tutorial up on this. So don't, you know, don't think that's gonna be the hardest thing in the world. It's relatively easy, straightforward, and I'm here for you guys. If you guys didn't need any clarifications or help or testing, take a look at that.
+
+Speaker 4  05:55
+Can you Fernando? Can you post that on the that link on the rocket chat?
+
+Unknown Speaker  06:01
+Yes.
+
+Speaker 1  06:06
+I'll do it in teams to try to help with a PDF, but there's some permissions going on through the team, so I couldn't do it. I'll email it afterwards. I cool. Miss, pay, hey, Fernando, hey, yeah, so we're still in integration phase. Right before demo day, we were wrapping up reformatting our output responses from API. Sounds like we're going to start working towards getting integrating with the message bus. So I think integration is good for us right now. Cool. Sounds good. Thank you. Space protocol, once, going twice. I don't hear anything. Tara, no, nothing either. Al is the engineering forgot pronounce that right?
+
+Speaker 5  07:21
+Yeah, I'm not sure if it's supposed to be I say Al is. But it might be Alicia. How the French say it. It's the city where Caesar fought Western. Guitar, X, yeah. Lance, are you on? Sorry, trying to look to the people. Okay. Do you want to do the update on where so we are? And end of sprint, we were just locally running things. We are actively researching how to expose it, versus just on my laptop lines. If you want to speak to
+
+Speaker 2  07:56
+that, yes, I think Dan this afternoon. And give me some corners just to pose the question in the infrastructure room. So I'm trying to nail down the minimum requirements. We need to get an AWS instance stood up. So hopefully we'll have that finalized tomorrow, which point we can start pushing our code out to run and then eventually push out to the new message bus. Okay,
+
+Speaker 1  08:21
+cool. You can post or you can publish from your individual computers. You just have to get your IPS white listed. So if there's like some waiting process, you can kind of test out your code and your publishing within your personal computers or or computers, not necessarily just the AWS.
+
+Speaker 2  08:38
+And we just need the IP white listed. Do we need any other certs for anything,
+
+Speaker 1  08:45
+just the IPS, and you can ask them, there's any other security things involved, but I'm pretty sure that's it. I didn't know that. Okay. That's great. Thank you, yeah, of course. Thank you, slingshot.
+
+Speaker 6  09:02
+Hello. We are going to be working on integration. I think mostly we've been focused on getting that spun up internally, like opening everything to push to the Kafka message bus, but I'm ready to start pushing to the test topic, so hopefully doing that next week. Cool.
+
+Unknown Speaker  09:20
+Glenn, to hear
+
+Speaker 1  09:26
+there is also wiki with all the links the test topics that I will add to the rocket chat after this.
+
+Unknown Speaker  09:38
+Thanks. I
+
+Unknown Speaker  09:46
+this is bahaus. Does he pronounce that? BDI
+
+Unknown Speaker  10:01
+started, right?
+
+Speaker 4  10:08
+Yeah, hey, Fernando, Hey, Jack, yeah, I think we're moving us to integration. I talked to Dan. He sent me a document on Kafka, and we've been integrating that piece. But I think there's still, he said that there's tools from the subsystem leads that we could use to do our testing. So I don't know. Is that what you were kind of showing on, on, on GitLab,
+
+Speaker 1  10:37
+yeah, so the schemas is kind of important, important, not, not necessarily too much. You can bypass the verification of the schemas when you're checking them. But the other one that was important was, yeah, Jesse's examples of how to create the Publish and subscription Python scripts. If you're doing this in another language or environment, I might not be able to help, but Jesse Bo they're kind of the go to people for that. So if you haven't seen this, I would take a look at it and then ask me questions once you once you get
+
+Speaker 4  11:25
+there. So where is that? Exactly that's under
+
+Speaker 1  11:32
+that is under Jesse's repo tools in the SDA tablet get Lab, which is linked in the PDF that I put in the rocket jet, Okay,
+
+Speaker 4  11:42
+got it. Thanks. Al ticket, cool.
+
+Unknown Speaker  11:59
+Sweet. Is advanced space here.
+
+Unknown Speaker  12:15
+You're nothing, pulsar,
+
+Speaker 7  12:21
+Ellen, I I
+
+Unknown Speaker  12:32
+can't hear you if you're still on
+
+Unknown Speaker  12:41
+Okay, millennial,
+
+Speaker 2  12:46
+hey, this is Curtis. We need to work on integrating with the message bus next. We have the UN registry indicator ready, and then others are still in development, but we're looking to do the message bus next,
+
+Speaker 1  13:04
+sweet answer here, same as the mentor of Jack, take a peek at the at the she's the for the links that provided for the schemas and the Kafka message scripts. So you guys can start there. Oh, there's also the tutorial probably should actually start there, how to get going with everything.
+
+Unknown Speaker  13:35
+Raft, you
+
+Speaker 8  13:48
+Hey, Emily, yeah, so we're doing a little bit of work on our algorithm, kind of just working with those upstream for better input output, and implementing some suggestions from last cohort and doing some testing that being said, or we would like to really focus on integration for this cohort, specifically with the message message bus. But yeah, still need to go through the introductions and get a better grasp on it all. Sounds good. I
+
+Speaker 1  14:30
+this map. Thank you, Peter, we've been working on the EU password for this code. We try to make create an authentication algorithm. For for protected patternable Life violations, such as imaging maneuvers. So I remember that I showed you, and the pace, for example, case the last quote Demo Day. So we try to working on that. So I hope that we can contribute to CCDM. Okay, cool. That would be, yeah, this. Now we'll talk afterwards to see what specific lines, too. Okay, thank you. Yep, and then SAS.
+
+Speaker 2  15:29
+Okay, so this needs to be updated, but we've got, like, indicator 1328, 23 that are in development that we're able to demonstrate. I think the focus is moving those into integration and tests to get them into the bus and stuff like that. So that's one of the things we're going to be focusing on the score, as well as putting some new things in development, like a Summary Score methodology or the indicators.
+
+Unknown Speaker  15:57
+Oh, sounds good. You said 1323, and 28
+
+Speaker 2  16:03
+Yeah, I got them up here, 2823 and 13. Okay, cool. I'm updating the tab now. So awesome
+
+Speaker 1  16:13
+thing, I appreciate it. Sounds good. All right, so that's everybody on the board. You're new to the cohort. Can you just raise your hand in here? I'll just start picking you guys up one
+
+Unknown Speaker  16:42
+by one. Thank Nicole. Go ahead.
+
+Speaker 9  16:43
+Hey, so this is Nicole wall from BA Systems. We are new to the cohort. I think we are technically going to be in subsystem five, but we're planning to hopefully leverage data from subsystem four, from CCDM to feed into an algorithm that will be technically, again, living in subsystem five. So trying to just stay in the loop. What you guys have available. We're working right now with Dan, getting our access to the environment, and then we'll start taking a look at getting access to Kafka and reading the different data types so that we can make sure we're tweaking our algorithm to use those data types that are available. Yeah, excited to get working with everyone.
+
+Speaker 1  17:34
+Thank you, Nicole and welcome. Don't see Doug. He was the other new company from Martian sky, Eric,
+
+Speaker 10  17:45
+Eric, we've got a satellite component interpretation machine might be applicable to some of these topics. If there is expert, if you have thoughts where things from problem 16 lists that would apply to sounds like,
+
+Speaker 1  18:11
+okay, um, off the top of my head, not at the moment, but we can meet up afterwards or some time, to really flesh down what you guys have and how we can match that to the rest of the subsystem. Yeah, sounds
+
+Speaker 10  18:22
+good. I only just got access to the SDA taplap stuff, so when you go through the chat, kind of get myself oriented. Okay. Sounds good.
+
+Unknown Speaker  18:31
+Yeah. Let me know if you need anything. Anybody else, I
+
+Speaker 1  18:43
+cool. We got about three minutes left. Is there any other outstanding questions? You guys have comments? All right, I did a good job then. So, yeah, take a peek at the PDF again, for those don't have access, I'll send it to via email and then, yeah, get going on the message post integration and have fun. Thanks, guys.
+
+Unknown Speaker  19:12
+Have a good one. Thanks. Fernando, you
+
+
+Transcribed by https://otter.ai

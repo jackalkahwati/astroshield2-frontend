@@ -1,0 +1,679 @@
+Unknown Speaker  0:04  
+Hello. Can you guys hear me? Yep, all good, yep.
+
+Unknown Speaker  0:17  
+Let's wait for a couple minutes. Do
+
+Speaker 1  0:40  
+Thank you. Oh. Okay, let's, let's do this. I will share my screen, and I'll quickly go over any updates, and then we will go to the flow of events according to the well USA or Kafka bus, and we'll and we will update that table for better understanding of Kafka and what your capabilities are and how you're connected. So let us do this. Alex, you have mic availability?
+
+Unknown Speaker  2:06  
+Alex of math large, want to check maybe not.
+
+Speaker 1  2:15  
+We're working on it. Okay, so here's my screen. I'm so
+
+Speaker 1  2:23  
+let's quickly go over all teams here, smooth island here, yeah, tech seven right, or see
+
+Unknown Speaker  2:34  
+you with tech seven is, is on
+
+Unknown Speaker  2:39  
+right. See Boulder, Greg,
+
+Unknown Speaker  2:42  
+yeah, I'm here. Jubilee,
+
+Unknown Speaker  2:45  
+plant labs,
+
+Unknown Speaker  2:52  
+millennial, software,
+
+Unknown Speaker  2:58  
+pharma, yeah, promote here.
+
+Speaker 1  3:02  
+Here. IRT is here? Hello, house here, present, edge, core, not here. Space map, Yep, here, here, here, begin, throw, maybe not. GMV, 10, one,
+
+Unknown Speaker  3:28  
+Al Tamara
+
+Unknown Speaker  3:34  
+give an update, not here, space,
+
+Unknown Speaker  3:36  
+yes, scales here,
+
+Speaker 1  3:40  
+at large here, x analytics, orcas, not here, point Pro,
+
+Unknown Speaker  3:49  
+here, and the
+
+Speaker 1  3:51  
+FNN here, stopler, hanky, yes, hello, grandes,
+
+Unknown Speaker  3:57  
+tech or light up. Light six, Star drive, yeah, here,
+
+Speaker 1  4:07  
+space app, here, Jesse can space,
+
+Unknown Speaker  4:16  
+ASTRA Ultra, here, EA systems, here, here, red cast, okay,
+
+Speaker 1  4:31  
+cool. Anybody has any updates or any concerns so far, I
+
+Speaker 2  4:44  
+I can give my update if you want, great. Tell me promote. So I
+
+Speaker 3  4:50  
+tested my algorithms on this specific launch. Is not ISA is the IFT ad, and some of the algorithm worked well for the pre launch and for detection part. I mean, one of the algorithm didn't work properly. So I found some of the issues. Sometimes I use some manual trigger to verify and all detection part was perfect, and there was some issue in the automation, so I have to fix it. And one of the major issue, and I found, is that the we are generating lot of data, so it's filling the entire computer. So I need to figure out how to handle that data is also imported. I don't want to delete them. So I will find a right strategy, like maybe save on the cloud or something else. So I need to change my architecture and but overall, actually, I was able to detect something, some signature and some evidence that launch happened. So that's my update for entire week.
+
+Speaker 1  5:54  
+Great. Thank you. Thank you. Promote these, these launches and even in space monitoring opportunities, for example, the ISS launch, resupply launch that happened a few days ago, are great opportunities for us to use and demonstrate our capabilities on real data. So wherever it's possible and whenever you have some outputs, don't be shy. Just post them on launch checks or not, launch exercises, test exercises, rocket chat group for everybody's encouragement and know what you're doing. Yeah, thank you. Yeah. Kieran,
+
+Speaker 4  6:39  
+yeah. I can give a pretty quick update. So we, I just talked with Dan today with a so we managed to get our IP addresses fixed down for the GMV tools, and we've just now got credit, just today, just like one minute ago, got credentials now for the message bus. So I hope next week I can start to play around with listening, subscribing, and maybe at least publishing a heartbeat or try to publish something. Uh, let's see how that goes. So only next week we have some good progress.
+
+Unknown Speaker  7:09  
+Thank you, Kieran, that's great news. Uh, Greg,
+
+Unknown Speaker  7:17  
+hey, Jubilee. Um,
+
+Speaker 5  7:19  
+so I guess to your point, also for the launch exercises. So I was hoping to reach out to people to set up the time for doing like a post analysis. I know that's sort of outside this meeting, which is when I put a quick plug in there. I did put like a Google poll, sorry, not a Google poll, but a win to meet poll, long time ago on the launch exercises page. I don't think many people filled it out. So I am trying to figure out, like, what's a convenient time for people? It might unfortunately just be like, here's the time. We'll see is how many people we can get. But then moving on to what I've been working on. So captured the is, sorry, the starship if T launch yesterday, I'm trying to go back and see if we can actually capture the explosion when they've lost control of it nine minutes after the launch. That might be out of the field of view. It might not that'd be interesting to see if we can capture that also captured the launch out of French Guiana early in the morning yesterday, so that was a foreign launch detection notice that there are some issues with some of the image processing that I'm doing, so I'm going to fix that. And also on my backlog is the varying calculation that I know Matthew has been waiting for for a long time, so definitely want to get that to the cohort.
+
+Unknown Speaker  8:46  
+That's it nice. Thank Thank you. Greg,
+
+Speaker 1  8:59  
+Okay, anybody else? Jeff from astral Ultra,
+
+Speaker 6  9:07  
+yeah. So we've got an initial framework listening in on Kafka. We were able to record all the traffic going through for progress, all the way through to the docking exercise, so that that was really helpful for our game theory designers over at UCCS.
+
+Speaker 1  9:25  
+Okay, and Astra altra is working on intent estimation,
+
+Speaker 6  9:31  
+yes, specifically we're looking at Leo co orbital threats. So the maneuvering from progress to the ISS was really helpful.
+
+Speaker 1  9:43  
+Okay, and where did you get the data from to inform your algorithms?
+
+Speaker 6  9:49  
+So we were listening in on all Kafka topics during that time, as well as pulling from the UDL on a regular polling basis. Okay?
+
+Unknown Speaker  10:01  
+There are
+
+Speaker 1  10:04  
+weekly cohort wide sessions that if you believe, or if you want to give an overview of your technology, and any demos like that, they're always there. And I don't have seen like 20 people attend those so you can sign up on that. If you don't know where to find it, let me know there's a sign up sheet on the Google spreadsheet that we use and and that's where all of that information is. That's the Cisco wide Google Spreadsheet.
+
+Speaker 6  10:41  
+Fantastic. I do have a question, are we so with the advent of the wiki, are we still going with the sheets, or are we switching over to the wiki?
+
+Speaker 2  10:49  
+Is that in flux? It is in flux. Okay, separately,
+
+Speaker 1  10:55  
+we want to get rid of all Excel spreadsheets and have all the data on wiki, but it's an ongoing process. Thank you. Jeff, any other updates? Okay, going once, twice and thrice.
+
+Unknown Speaker  11:20  
+So
+
+Speaker 1  11:22  
+we are working on this last week, and we want to have this as updated as possible, and it also help understand the flow on Kafka. The last time we went from top to bottom, this time hoping to go from bottom to up. They can throw is not here, start drive Jack. How could you How do I make this stay there all the time? You guys know. How do I make this header
+
+Unknown Speaker  12:01  
+format? I think it's data. Maybe it's under Data.
+
+Unknown Speaker  12:12  
+Freeze Payne, somewhere
+
+Unknown Speaker  12:16  
+else, okay?
+
+Unknown Speaker  12:25  
+Good of you. Oh, never mind. That's Google
+
+Unknown Speaker  12:29  
+right there. Yeah,
+
+Unknown Speaker  12:31  
+nice. Thank you. Okay,
+
+Speaker 1  12:36  
+so re entry, Star drive. It's a topic name SS five.re, entry, dot prediction. Jack, do you want to tell us how your algorithm works and what are the updates on all of these columns?
+
+Speaker 7  12:58  
+So, yeah, I kind of subscribe to the topic. So I got the launch prediction, launch coplanar assessment, the TM DB comparisons, environmental factors, anomaly detection and the service heartbeat. Right now my issue is I talked to Greg about this is that we connected the instance to the SSH, we prepared all the deployment files, but we need sudo access. But then Greg told us that we could do passwordless sudo as a group user, so I'm going to try that and see if that can get us on jammed.
+
+Speaker 1  13:40  
+Okay, so you're doing two types of re entry prediction. One is for when the launch happens, and then the second one is for objects orbiting in space that lower in altitude and and show an indication of re entry. So you do a re entry prediction on those as well. Correct and for the second one, for orbits, orbital objects, what's your input figure?
+
+Unknown Speaker  14:16  
+TMDB, yeah.
+
+Speaker 1  14:23  
+So you're constantly monitoring TMDB. How often are you doing this prediction?
+
+Speaker 7  14:31  
+I think I've set it right now to where it's just manual so you can click it, so that way I'm not like polluting the Kafka bus, but I could set it at whatever interval we want to have it.
+
+Unknown Speaker  14:46  
+Okay, okay,
+
+Speaker 1  14:50  
+yeah, some metrics there would be beneficial, like figuring out how much data or false positives are we getting, where to set the threshold so that we have a balanced and high confidence re entry predictions, so that would be good, and maybe speaking with DFN people to figure out how much data is too much data or what is too Little? Would be beneficial? Are you doing? Also, UDL integration for this topic, it's already integrated, or it is a process, it's already integrated. And whenever you manually run it, it automatically pushes data, I'm guessing, yeah, right.
+
+Speaker 1  15:48  
+Okay, and so your outputs probably will go to SS six and running manually, but can be automated
+
+Unknown Speaker  16:03  
+for any frequency. Okay, yeah, yes,
+
+Speaker 1  16:09  
+maybe in the next step is that automation, automatically running it every few minutes or hours. So that's would be the next step. Ben,
+
+Unknown Speaker  16:21  
+are you asking about the topic name?
+
+Speaker 1  16:23  
+So I'm asking about all the others, maybe for orbit arbital objects re entry. We
+
+Speaker 2  16:34  
+were just subscribing to IRT. So whenever they publish, like the launch so that that is like
+
+Speaker 1  16:43  
+launch vehicle re entry. So this is about satellites and harvest re entry,
+
+Unknown Speaker  16:53  
+I don't know. Yeah, so remember, they publish something to the launch trajectory topic. IRT, okay, yeah. IRT. Okay,
+
+Speaker 1  17:04  
+okay, so having maybe conversations with millennial software about, would TMDb be better for this service, for the launch one, IRT is definitely the one to listen to, but so maybe millennial software team, because they're maintaining the TMDb or some other teams, would be beneficial, okay? But right now it's just running as one service for launch vehicles, right?
+
+Unknown Speaker  17:37  
+Yeah, okay, Kevin's so guidance.
+
+Speaker 1  17:46  
+So stop blur. Hanky Randy, do you have any inputs?
+
+Speaker 8  17:52  
+Not really. As you know, we're kind of passive in this Subsystem for now, probably at least a couple weeks before we're doing stuff relative to this Subsystem, but I can say that, yeah, we are on the message bus for other other capabilities, and also we just got our credentials to publish on UDL, so we may be using those For when we apply that algorithm that we did here to real data for this Subsystem, okay, I think that's about all. I have to Okay, add as names.
+
+Unknown Speaker  18:38  
+Do you have a UDL account? Me, yes, okay, thank you.
+
+Speaker 1  18:50  
+X, analytics is not here. DFN and then max. Do you have any puts on as West prediction ranking?
+
+Speaker 9  19:01  
+Yeah, I think, I don't know if anyone from Arclight six sprout technologies is on, they would be a little more up to date on that for us. But I think right now, I think they were getting to subscribe, and I don't think they are up on they're doing that portion in our collaboration for getting up on the message bus, which I don't think is up yet, but I think they still might be working on processing that needs to happen before they would publish to the message bus. So nothing for now.
+
+Speaker 1  19:36  
+Okay, and this is a three team collaborative effort. Yes, okay, great. 10, one,
+
+Unknown Speaker  19:53  
+yeah. So
+
+Speaker 10  19:56  
+we'll send you the list of the Yeah, the topics that we want to do. And then, yeah, where we can, we'll get access, hopefully get access to BBA data too. And then probably work with the CCDM for the input or
+
+Unknown Speaker  20:11  
+and you did get credentials straight for Kafka.
+
+Speaker 10  20:16  
+I don't know if we have credentials yet, but we just create, yeah, we just created our own internal Kafka message bus broker to simulate everything, but we'll do that this upcoming week.
+
+Speaker 1  20:29  
+Reach out to Dan, Dan public or Greg debiro, okay for credentials, and we'll we'll discuss more to create a topic. And input trigger is CCDM indicators and CMDB probably we should be two different things.
+
+Speaker 2  20:55  
+Monroe, Al,
+
+Unknown Speaker  21:14  
+okay, next, ASTRA Ultra,
+
+Speaker 6  21:19  
+yeah, so some of this is still in flux, but what I imagine is our SS, four dot indicators, dot maneuvers detected, would be what we trigger off of eventually, and the existing SS, PES was intent assessment is where I imagine we'll be recording. Al,
+
+Speaker 1  21:46  
+this is the topic. There is a topic called this. I'm forgetting Yes,
+
+Unknown Speaker  21:52  
+yes, yep, and
+
+Speaker 1  21:58  
+you are not pushing yet to that topic, but that's where you intend to push correct. And do you have UDL account for years? Yeah, and you're not pushing yet, no. And the input data is spas,
+
+Speaker 6  22:19  
+maneuvers detected, so SS four dot indicators, dot maneuvers, dash detected.
+
+Speaker 1  22:32  
+Correct this centr and and then you probably go to TMDb
+
+Speaker 6  22:40  
+that's in flux. TMDb is definitely probably going to be in there, also getting stuff in the UDL, listening in on other Kafka topics as needed. Okay,
+
+Speaker 1  22:51  
+great. Thank you. And the output surely going to SS six, yeah. Okay, nice. Take everyone through us, not here. Start drive state vector, uncertainty, yes, uncertainty estimation,
+
+Speaker 7  23:10  
+I think it's a UDL is a trigger and TMDb is a comparison service for the trajectory analysis.
+
+Speaker 1  23:24  
+Let's go through so is it, which topic will you push this just to? Or we need to create a topic for this. Maybe you can also tell us a little bit about what you what the service
+
+Speaker 7  24:02  
+does so we received the UDL data, and we compare the trajectories against the data and the TMDB, and then we analyze the deviations between the actual and reference trajectories, and then we integrate it with environmental factors to determine if the deviations are due to environmental effects or intentional maneuvers. And then we publish the results to the DND TMDb comparisons, the anti CCDM indicators and the environmental
+
+Unknown Speaker  24:31  
+factors tough got.
+
+Unknown Speaker  24:35  
+So this is really a maneuver detection service. I
+
+Speaker 7  24:47  
+see exactly, yeah, it is, we detect maneuvers, but we also determine if the changes of the maneuvers are are due to environmental factors, or if they're
+
+Unknown Speaker  25:06  
+actual maneuvers, okay,
+
+Speaker 1  25:12  
+then I would also ask the question if, if this Topic would come under SS five or SS three
+
+Unknown Speaker  25:23  
+or SS four,
+
+Speaker 1  25:26  
+something to look into and talk to other Subsystem leads. Yeah, thank you. If there's any intent related things or hostility related things that are in here that you're also adding to your message, then SSI would be a good place. And then I would ask, like, would you want to, like, split those messages into two, where you detect a maneuver and then you also assess intent or perform some other hostility assessment? Then the second message would go to SSI.
+
+Unknown Speaker  26:05  
+Okay, follow up. Okay,
+
+Unknown Speaker  26:08  
+okay, thank you. Where do I put this? I
+
+Unknown Speaker  26:26  
+The Grappler.
+
+Unknown Speaker  26:29  
+Is anybody from Millennial software here?
+
+Speaker 2  26:37  
+Okay, map large, I don't know if he has mic access, okay? Scout space,
+
+Speaker 11  26:53  
+yeah, I'm here. We are sending out our results on Kafka every hour now,
+
+Unknown Speaker  27:03  
+okay, and this is the topic,
+
+Speaker 11  27:06  
+yeah, there's a.rf at the end of it. The rest is correct. I think
+
+Speaker 1  27:13  
+one hour you're sending us just to Kafka, yes, Udi status, I have
+
+Speaker 11  27:21  
+UDL access. I'm not pushing anything to the UDL, okay? And, yeah, it's automatically running, so no trigger. Yep, that looks good.
+
+Speaker 1  27:35  
+And I think everybody there's like a push to also send messages to UDL. And there might already be some schemas available on UDL for the type of data that you're generating. So and that looking at what is what schemas are available would all should also inform the schema on Kafka. So we want to, like, align with UDL schemas already there, and if there are any new animals can add to that, starting, yeah,
+
+Speaker 11  28:08  
+great. Do you know if anyone has the schemas, or you want me to start digging for it?
+
+Speaker 1  28:15  
+Anybody online knows where the schemas are or what the schemas are for PES west on UDL. I'm
+
+Speaker 4  28:22  
+not sure if they have any actually, I can have a look.
+
+Unknown Speaker  28:25  
+Okay,
+
+Speaker 1  28:27  
+yeah, please post on the link or what you see for pesver schemas on UDL, on the SSI rocket chat, that would be wonderful.
+
+Speaker 6  28:41  
+They make it really easy to download the open API spec for everything,
+
+Unknown Speaker  28:48  
+okay, to
+
+Speaker 1  28:49  
+get the schemas, or to get data from UDL for all the schemas. Okay, yes, if you can share that Jeff on rocket chat, that would be great. Yeah, I'll drop that. I'll link there. Thank you. And and this, what data are you using? TMDB?
+
+Speaker 11  29:10  
+Yes, TMDB, but that's a manual. The only automatic I have is space track to get the TLS. What
+
+Unknown Speaker  29:20  
+do you mean?
+
+Unknown Speaker  29:22  
+TMDb is manual.
+
+Speaker 11  29:25  
+I'm getting the RF information from like Quasar sat up there, but I haven't, I mean, it's changed a bit, so I haven't figured out a way to automatically do it. Okay, I've just manually inserted that RF information occasionally. So, yeah, I'd like to set that up to an automatic access. Is it on the Kafka data bus now, uh TMD region? Yeah,
+
+Speaker 1  29:51  
+I am not 100% sure. Uh, millennial software is maintaining that. So, uh, talking to Andrew Z or Anthony Mayo would be good in that respect. And there have been some discussions about using changes in or generating a trigger every time TMDb is changed. And my thinking was, instead of depending on how much that how big that database is, I think they're like, API access to that. So every time you're about to run an analysis, quite a TMDb for any changes for that data would be good, if that's possible. So, yeah, that would be good, because they're changing it all the time with new data, so, so that would be beneficial,
+
+Unknown Speaker  30:47  
+right? Okay, yeah, I'll send a message to them.
+
+Speaker 1  30:51  
+Kieran, sssfi.as, well as.kk
+
+Speaker 4  30:58  
+dot, KKV, exactly, yeah. 30 minutes, yep, I think that's still the same, still 30 minutes, still not on Kafka yet, but it's in progress, more in progress than it was last week.
+
+Unknown Speaker  31:11  
+You have, you have credentials,
+
+Speaker 4  31:13  
+yes, we just got out today. Yes, UDL. Yes, we have UDL accounts. I don't know if we're going to UDL push, because we have a lot of data, so right now, it will be no we can evaluate that later, I guess. But I was just, I was just checking the UDL API, and I'm not seeing anything specific that may be used for PES ways, but they do have a notification field which is a bit more free form than anything else. For example, it's how, it's how the JCO share their HR list. They have a notification type that's just JCO dash, HR dash satellites, and then within that you can, they can make their own data maybe, maybe we could get a new notification type that's pays wise, or something like that, but we could that can be discussed outside of
+
+Speaker 1  32:06  
+this. Thank you. Max sent a message for Jack that somebody is looking for maneuver detections, and also about TMDB. You're interested. Okay, so Karen, like put TMDb here now,
+
+Speaker 4  32:27  
+yeah, I think so it's currently, it's currently still UDL, but we would eventually like to be integrated with the TMDB, at least for the list of red and blue objects, and that also talies, if they're available through TMD, which I think they are,
+
+Speaker 1  32:42  
+yes, okay, okay, that's, that's what I hear about. TMDB, thank you.
+
+Unknown Speaker  32:49  
+Space map, yeah,
+
+Speaker 12  32:53  
+sending message. Edition new and the convention, as I already informed you to the limitation of data size. We are sending the message in separate chunk, each smaller than one megabyte by markdown, yeah,
+
+Speaker 1  33:14  
+Max. Do you have any input on that? I think before they didn't have like, a size limit on the messages, and then suddenly there was a change, right Peter, before you were able to send the full message, and suddenly you were not able to send the full message in one one question.
+
+Speaker 12  33:32  
+Yeah, that's right. So we had to change the code.
+
+Unknown Speaker  33:36  
+Okay, yeah, I
+
+Speaker 1  33:38  
+will, yeah. I will ask Dan and Greg about it, see if there was any change, and then try to figure out because you're not sending messages very frequently. You're sending once every eight hours.
+
+Unknown Speaker  33:53  
+Yes, definitely. So,
+
+Speaker 1  33:59  
+so you have Kafka topics? Do you have UDL accounts? Account, yeah, we have, and are you pushing these outputs to you?
+
+Speaker 12  34:08  
+Yeah, we are in the middle of UDL onboarding process for both your passwords and the conjunction assessment, and we already finished with the UDL test account, we are starting to with the service account. Maybe it takes a few more days we can finish onboarding for your pass.
+
+Unknown Speaker  34:38  
+Okay, yes, and the inputs are kmdb,
+
+Speaker 12  34:41  
+yeah, that's right, kmdb and the and UBL USA and I also heard that Iranian software starting to publish their catalog edition and satellite to camera specification update. So I we're working, we will be working on that we subscribe their database and we which can trigger our service update maybe.
+
+Unknown Speaker  35:17  
+Okay, yes,
+
+Speaker 1  35:21  
+that's very good. Thank you. So space app RF launch detection,
+
+Unknown Speaker  35:30  
+right? Yes,
+
+Speaker 1  35:35  
+so that's the topic, and your sensors are still going up, so you're not yet pushing any messages, Okay,
+
+Speaker 1  35:50  
+this one, so is that still three to three weeks? Is still the timeline? Yeah, okay,
+
+Speaker 13  35:57  
+so hopefully by the end of next week, um, but we don't have just launch detection, and so that was my question, is that there's also the booster detection and its re entry?
+
+Speaker 1  36:09  
+Okay, booster re entry prediction. Oh, okay, so this is for the Gunther, but I'll add one for you. Okay, maybe this was yours. I don't they're doing booster reentry. I don't think so. Or maybe I'll just
+
+Speaker 13  36:33  
+so, yeah, we aren't doing a prediction, per se. We're doing we can detect that the booster de orbited, and then the booster actually arrived at the site. It's re entry to the to the launch site or its recovery site.
+
+Unknown Speaker  36:52  
+Okay, so I
+
+Unknown Speaker  37:09  
+so once the
+
+Speaker 13  37:11  
+one is booster the orbit, meaning that it's separate, the separation, if you want to, so boost your separation. Do okay,
+
+Speaker 13  37:29  
+then you have it re entry prediction, but that's really the arrival at its it's not its launch site, but it's where it's right, where it's going to end up arriving. So we can detect that it's actually now on the ground.
+
+Speaker 1  37:55  
+So it's more like once the separation happens, you track that correct to where it returns back to ground,
+
+Speaker 13  38:04  
+yes, and then identify that it's basically
+
+Unknown Speaker  38:10  
+no longer Okay. Okay, so we'll
+
+Unknown Speaker  38:19  
+have to create a topic.
+
+Speaker 13  38:23  
+Exactly. I've been looking at the topics and right there's
+
+Unknown Speaker  38:29  
+booster suppression.
+
+Speaker 1  38:33  
+Oh, okay, I'll have to think a little bit more about how to separate other topics and hold it back to you. Okay?
+
+Speaker 13  38:40  
+And the first one will be the launch detection, so that's fine.
+
+Speaker 1  38:44  
+Okay, so and you do? You have a Kafka comment? No,
+
+Unknown Speaker  38:50  
+but I'll take care of getting that. I
+
+Unknown Speaker  39:03  
+Okay, thank you.
+
+Speaker 14  39:08  
+Jack. Ba, yeah, I just wanted to make sure that we're also tracking bas efforts on the sheet, so we're working on sort of a hostility assessment, focusing sort of on space debris, I think, but also doing sort of multi factor scoring, just pulling in various data types that we are currently identifying. So yeah, we we have a UDL account. We're working on getting the ability to push to UDL, so that was going to be our primary output. And in parallel, we're also working on getting Kafka access. So I think we have accounts, but our internal firewall is giving us a headache. So,
+
+Speaker 1  40:03  
+okay, so just be a 50.
+
+Unknown Speaker  40:14  
+Everybody should also had a contact. We feel this government, the Bulgarian transition to this
+
+Speaker 1  40:28  
+democracy. So this is like in space, and the hostility is also in space. Hostility.
+
+Speaker 14  40:43  
+Yeah. I mean, I'm not sure between intent assessment and in space monitoring, which one it would fall exactly,
+
+Unknown Speaker  40:54  
+yeah, maybe intent assessment,
+
+Speaker 1  40:57  
+yes. So there are some topics I posted all the topics that we created on the SSI rocket chat. So please, if anybody doesn't have a topic or wants me to create a topic for you, just check all the topics that are already there and please message me and tell me if you need a topic, or if if you have some questions about what topics you should fall under so Kafka, yes, yes, you don't. You're not sending messages. Yes. DL, you do have an account. And are you? Are you pushing any of these messages already to you. Do not yet, no,
+
+Unknown Speaker  41:43  
+no, not yet.
+
+Speaker 1  41:48  
+And what's the source of input? May input triggers for these
+
+Speaker 14  41:52  
+I think right now, we're planning to pull the CCDM indicators and TMDb data
+
+Unknown Speaker  42:03  
+for both of
+
+Speaker 14  42:05  
+them so far, yes, but Also on the hunt for more sources. So,
+
+Unknown Speaker  42:20  
+okay,
+
+Speaker 1  42:22  
+and believe this would be SS six,
+
+Speaker 14  42:28  
+yeah, I think Nicole, we also had someone from SS three that was potentially going to pull
+
+Speaker 15  42:34  
+our output, yeah, SS three, the Lockheed guys, as as the next flow piece, they're going to use our output as an input.
+
+Speaker 1  42:51  
+And what are they planning to do with that information
+
+Speaker 15  42:56  
+based on the kind of high priority objects they're going to send taskings for collection.
+
+Unknown Speaker  43:04  
+Oh, SS three is the CTR team? Yeah.
+
+Speaker 1  43:15  
+Some some questions are still there about what the flow should be like, because some were thinking intent assessments should go to SS six. It All. It all depends on the timing. If there's like, a big gap between what you output and Subsystem six doing response recommendation, then maybe directly sending it to CTR team, where they can take immediate action and queue some available sensors. Or if SS six can immediately take in that information and respond or provide a response to it with the recommendation, then that could be the input to CTR teams, whether it's Lockheed or lados. So still under discussion how that flow should happen. Do you agree with that?
+
+Unknown Speaker  44:11  
+Max, yeah, yeah. I
+
+Speaker 9  44:17  
+think we're still under discussion figuring out who's going to pick up some of those tasking things.
+
+Unknown Speaker  44:22  
+But I think, yeah, just
+
+Speaker 9  44:26  
+try to stay neutral for now, because we're trying to see like some of that really just needs to be automatic. That really wouldn't need to be bubbled up to someone to see in a response recommendation. But other times, there's going to have to be a human factor in deciding if something needs further, like assessment, which would go in task sensors. So I think we're still trying to figure that out. Like you said,
+
+Speaker 2  44:53  
+Thank you. Yep. Okay, so
+
+Speaker 1  44:59  
+any other teams here from Booz Allen, plan labs want to provide an input on any of these. Do you have any updates to empty spots here?
+
+Unknown Speaker  45:17  
+Plan labs, tech seven?
+
+Unknown Speaker  45:20  
+Do you have Kafka connection already?
+
+Unknown Speaker  45:24  
+Yeah, this is Joshua with tech
+
+Speaker 16  45:26  
+seven, so we are working with an internal Kafka just to build out our solution. And I mentioned, I think a couple weeks ago, we're re architecting some things so that's taking a bit longer than initially expected. So we're, yeah, we're working with an internal instance, but have not yet received any credentials to connect to the SDA Kafka bus. Okay, Kent,
+
+Speaker 1  45:55  
+please reach out to Dan or Greg to get those access. And the Kafka that we currently have is also a playing field, even though, if you do some exercises now and then, you can play around on it, unless there's like, launch happening and we're like, actively monitoring it, I don't see any issue with sending out, like test messages on it. Okay. And if there's anywhere anybody has a problem, they'll, they'll post on rocket chat. But I think it here, you're good to play on it. Verma, so you have Kafka, you do have Kafka, this Kafka topic, you have a UDL account,
+
+Speaker 3  46:51  
+but I'm not pushing anything. So next week, this will be my priority. I will do it.
+
+Unknown Speaker  46:57  
+Okay, nice. Thank you.
+
+Unknown Speaker  47:01  
+The same for this. Can is anybody from can here, nobody from head cast is also here, nobody from Millennial.
+
+Speaker 1  47:18  
+They can first, not care, Chris, you're here. You are sending to the Kafka topic.
+
+Unknown Speaker  47:29  
+Get that USA.
+
+Unknown Speaker  47:35  
+Start, drive, trajectory, prediction,
+
+Speaker 7  47:42  
+depth, sorry, yeah. I just stepped away for a second. Could you repeat questions?
+
+Speaker 1  47:47  
+So for launch trajectory prediction, you do have a Kafka account? I don't Yeah. Are you pushing the messages here yet? Yeah,
+
+Speaker 7  47:59  
+input trigger is going to be the UDL, and then we're going to be publishing to the SS five launch trajectory.
+
+Speaker 1  48:09  
+Okay, do you also need, like, what on UDL is your launch? We're just looking
+
+Unknown Speaker  48:17  
+at radar.
+
+Speaker 1  48:21  
+Okay, so this is if you see any vehicle already taken off, then you take the previous measurements and try to predict where it's going. Yeah.
+
+Unknown Speaker  48:41  
+You also need a launch detection as a trigger.
+
+Unknown Speaker  48:45  
+That's probably a good idea.
+
+Speaker 1  48:51  
+Currently, the flow is that when we detect a launch, when there are two things that are happening, when we predict a launch, we think it is beneficial to have a launch trajectory predicted ahead of a launch and then after we detect a launch. Also, we believe having continuous updates to that launch trajectory would be important for da sat assessment. Do
+
+Unknown Speaker  49:24  
+to be able to do both.
+
+Speaker 1  49:27  
+And have you pushed any messages yet? Or like to tragic No,
+
+Speaker 7  49:31  
+because we're still like not online yet, but hopefully I can get that done today, and then we should be able to start pushing stuff. Thank you.
+
+Speaker 1  49:42  
+And Matthew, are you pushing any messages to the launch ASAP? Assessment topic. This is basically launch as was
+
+Speaker 17  49:53  
+not yet. So I just I confirmed that the GPU works. I'm gonna go and start programming my Wes calculator. I've been talking to max about that, and so I'm also still working on automating my other stuff, and so we're going to need to have some conversations to figure out the triggers. So I tested it on Verma, but it's not the strongest trigger, but that's we can talk about that more in our meeting after that's the high level overview.
+
+Unknown Speaker  50:21  
+Okay, thank you. And
+
+Speaker 1  50:26  
+when pro re entry prediction, I probably asked you already discussed in Ben, you don't have a UDL or you do
+
+Unknown Speaker  50:37  
+No not yet.
+
+Speaker 1  50:41  
+I Okay. So, so there's the RF booster, D orbit and landing monitoring.
+
+Unknown Speaker  50:50  
+Yeah, I see it ASAP, right? So, do we do
+
+Speaker 1  51:03  
+just after launch or even before launch? We predict where it's going to separate and where it's going to land? So do we want to have two services, one before launch and one after launch? MJ,
+
+Speaker 13  51:17  
+I'll check on this side. Okay, okay, yeah, I'm not sure about the prediction. Okay, okay, yeah,
+
+Speaker 1  51:25  
+maybe in the next week or so, if you have we could have like, a one on one, that would be great to talk more about this. Okay, okay, I want to give back eight or seven minutes of your time if anybody has any questions at this point like, this will be a work in progress, and we continue to update it. And I think this will, like also inform some of the back end Kafka development and figuring and all like lead to some discussions. So this is all very beneficial, and thank you for providing input. Anybody have any last minute questions or concerns, any barriers? I have one input or one announcement, by the way, you probably already have this email for midpoint check, there are some required status updates at that time, and midpoint check is another check box item for awards at the end of the cohort. So please make sure that you have all those updates ready for and you attend the midpoint, check on the 17th. I believe you can attend in person, if you're available there, or you can attend remotely and provide the inputs. And if there are no more questions, then I will let you go. Hope you have a good weekend, everybody. Thank you so much.
+
+Unknown Speaker  53:01  
+Thank you, thank you.
+
+Unknown Speaker  53:02  
+Thank you. Thank you. Take care, Guys. You Guys.
+
+Transcribed by https://otter.ai
