@@ -1,0 +1,2815 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Unified Data Library Services API",
+    "version": "1.30.0 Daiquiri",
+    "description": "Unified Data Library Services OpenAPI v3 documentation.",
+    "termsOfService": "storefront/storefront/appConfig/useragreement.html",
+    "contact": {
+      "name": "Sage Andorka, Deputy, Cross-Mission Ground",
+      "email": "unifieddatalibrary@bluestaq.com"
+    }
+  },
+  "tags": [
+    {
+      "name": "Crew",
+      "description": "These services provide operations for posting and querying crew data. Crew data contains information about its members and their assignments."
+    }
+  ],
+  "externalDocs": {
+    "url": "udl/openapi.json"
+  },
+  "servers": [
+    {
+      "url": "https://unifieddatalibrary.com"
+    }
+  ],
+  "paths": {
+    "/filedrop/udl-crew": {
+      "post": {
+        "tags": [
+          "Crew"
+        ],
+        "description": "Service operation to take multiple Crew objects as a POST body and ingest into the database. This operation is intended to be used for automated feeds into UDL. A specific role is required to perform this service operation. Please contact the UDL team for assistance.\n",
+        "operationId": "filedrop_udl_crew_post_id",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Crew_Ingest"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Accepted"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/udl/crew": {
+      "get": {
+        "description": "Service operation to dynamically query data by a variety of query parameters not specified in this API documentation. See the queryhelp operation (/udl/&lt;datatype&gt;/queryhelp) for more details on valid/required query parameter information.",
+        "tags": [
+          "Crew"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Crew_Abridged"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "406": {
+            "description": "MediaType Not Accepted by Request Headers"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "parameters": []
+      },
+      "post": {
+        "description": "Service operation to take a single Crew object as a POST body and ingest into the database. A specific role is required to perform this service operation. Please contact the UDL team for assistance.",
+        "tags": [
+          "Crew"
+        ],
+        "requestBody": {
+          "description": "JSON representation of one Crew.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Crew_Ingest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "415": {
+            "description": "MediaType Unsupported"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/udl/crew/{id}": {
+      "get": {
+        "description": "Service operation to get a single Crew record by its unique ID passed as a path parameter.",
+        "tags": [
+          "Crew"
+        ],
+        "parameters": [
+          {
+            "description": "The ID of the crew record to retrieve.",
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Crew_Full"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "404": {
+            "description": "Item Not Found"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "406": {
+            "description": "MediaType Not Accepted by Request Headers"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "put": {
+        "description": "Service operation to update a single Crew record. A specific role is required to perform this service operation. Please contact the UDL team for assistance.",
+        "tags": [
+          "Crew"
+        ],
+        "parameters": [
+          {
+            "description": "The ID of the Crew record to update.",
+            "required": true,
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "JSON UDL representation of the Crew record to update.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Crew_Ingest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "404": {
+            "description": "Item Not Found"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "415": {
+            "description": "MediaType Unsupported"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/udl/crew/count": {
+      "get": {
+        "description": "Service operation to return the count of records satisfying the specified query parameters. This operation is useful to determine how many records pass a particular query criteria without retrieving large amounts of data. See the queryhelp operation (/udl/&lt;datatype&gt;/queryhelp) for more details on valid/required query parameter information.",
+        "tags": [
+          "Crew"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "406": {
+            "description": "MediaType Not Accepted by Request Headers"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "parameters": []
+      }
+    },
+    "/udl/crew/queryhelp": {
+      "get": {
+        "description": "Service operation to provide detailed information on available dynamic query parameters for a particular data type.",
+        "tags": [
+          "Crew"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "User Unauthorized"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "406": {
+            "description": "MediaType Not Accepted by Request Headers"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/udl/crew/tuple": {
+      "get": {
+        "description": "Service operation to dynamically query data and only return specified columns/fields. Requested columns are specified by the 'columns' query parameter and should be a comma separated list of valid fields for the specified data type. classificationMarking is always returned. See the queryhelp operation (/udl/<datatype>/queryhelp) for more details on valid/required query parameter information. An example URI: /udl/elset/tuple?columns=satNo,period&epoch=>now-5 hours would return the satNo and period of elsets with an epoch greater than 5 hours ago.",
+        "tags": [
+          "Crew"
+        ],
+        "parameters": [
+          {
+            "description": "Comma-separated list of valid field names for this data type to be returned in the response. Only the fields specified will be returned as well as the classification marking of the data, if applicable. See the ‘queryhelp’ operation for a complete list of possible fields.",
+            "required": true,
+            "name": "columns",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Crew_Full"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "406": {
+            "description": "MediaType Not Accepted by Request Headers"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Crew_Abridged": {
+        "description": "Crew Services.",
+        "required": [
+          "classificationMarking",
+          "origCrewId",
+          "source",
+          "dataMode"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Unique identifier of the record, auto-generated by the system.",
+            "maxLength": 36,
+            "minLength": 1,
+            "type": "string",
+            "example": "bdad6945-c9e4-b829-f7be-1ad075541921"
+          },
+          "classificationMarking": {
+            "description": "Classification marking of the data in IC/CAPCO Portion-marked format.",
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string",
+            "example": "U"
+          },
+          "origCrewId": {
+            "description": "Unique identifier of the formed crew provided by the originating source. Provided for systems that require tracking of an internal system generated ID.",
+            "maxLength": 36,
+            "minLength": 1,
+            "type": "string",
+            "example": "JHJDHjhuu929o92"
+          },
+          "crewName": {
+            "description": "Name of the formed crew.",
+            "maxLength": 36,
+            "type": "string",
+            "example": "falcon"
+          },
+          "status": {
+            "description": "Crew status (e.g. NEEDCREW, ASSIGNED, APPROVED, NOTIFIED, PARTIAL, UNKNOWN, etc.).",
+            "maxLength": 64,
+            "type": "string",
+            "example": "APPROVED"
+          },
+          "idSortie": {
+            "description": "Unique identifier of the Aircraft Sortie associated with this crew record.",
+            "maxLength": 36,
+            "type": "string",
+            "example": "4ef3d1e8-ab08-ab70-498f-edc479734e5c"
+          },
+          "missionId": {
+            "description": "The mission ID the crew is supporting according to the source system.",
+            "maxLength": 36,
+            "type": "string",
+            "example": "AJM123456123"
+          },
+          "missionAlias": {
+            "description": "User-defined alias designation for the mission.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "PACIFIC DEPLOY / CHAP 3 MOVEMENT"
+          },
+          "crewSource": {
+            "description": "The military component that comprises the crew (e.g., ACTIVE, RESERVE, GUARD, MIXED, UNKNOWN, etc.).",
+            "maxLength": 16,
+            "type": "string",
+            "example": "ACTIVE"
+          },
+          "crewRole": {
+            "description": "The crew's role on the mission (e.g., DEADHEAD, MEDICAL, PRIMARY).",
+            "maxLength": 8,
+            "type": "string",
+            "example": "DEADHEAD"
+          },
+          "crewType": {
+            "description": "The type of crew required to meet mission objectives (e.g., AIRDROP, AIRLAND, AIR REFUELING, etc.).",
+            "maxLength": 32,
+            "type": "string",
+            "example": "AIRLAND"
+          },
+          "personnelType": {
+            "description": "The type of personnel that comprises the crew (e.g., AIRCREW, MEDCREW, etc.).",
+            "maxLength": 16,
+            "type": "string",
+            "example": "AIRCREW"
+          },
+          "stageName": {
+            "description": "Stage name for the crew.  A stage is a pool of crews supporting a given operation plan.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "Falcon Squadron"
+          },
+          "crewWing": {
+            "description": "The wing the crew serves.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "60AMW"
+          },
+          "crewSquadron": {
+            "description": "The squadron the crew serves.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "21AS"
+          },
+          "maleOfficerQty": {
+            "format": "int32",
+            "description": "The number of male officer crew members.",
+            "type": "integer",
+            "example": 1
+          },
+          "femaleOfficerQty": {
+            "format": "int32",
+            "description": "The number of female officer crew members.",
+            "type": "integer",
+            "example": 1
+          },
+          "maleEnlistedQty": {
+            "format": "int32",
+            "description": "The number of male enlisted crew members.",
+            "type": "integer",
+            "example": 3
+          },
+          "femaleEnlistedQty": {
+            "format": "int32",
+            "description": "The number of female enlisted crew members.",
+            "type": "integer",
+            "example": 2
+          },
+          "commanderId": {
+            "description": "Unique identifier of the crew commander assigned by the originating source.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "763a1c1e8d2f3c16af825a11e3f1f579"
+          },
+          "commanderName": {
+            "description": "The name of the crew commander.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "John Doe"
+          },
+          "commanderLast4SSN": {
+            "description": "Last four digits of the crew commander's social security number.",
+            "maxLength": 4,
+            "type": "string",
+            "example": "1234"
+          },
+          "legalAlertTime": {
+            "format": "date-time",
+            "description": "Time the crew is legal for alert, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2022-01-01T16:00:00.123Z"
+          },
+          "legalBravoTime": {
+            "format": "date-time",
+            "description": "Time the crew is legally authorized or scheduled to remain on standby for duty, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2022-01-01T16:00:00.123Z"
+          },
+          "alertedTime": {
+            "format": "date-time",
+            "description": "Time the crew was alerted, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2022-01-01T16:00:00.123Z"
+          },
+          "lastAlertTime": {
+            "format": "date-time",
+            "description": "The last time the crew can be alerted, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-01-01T16:00:00.123Z"
+          },
+          "alertType": {
+            "description": "Type of alert for the crew (e.g., ALPHA for maximum readiness, BRAVO for standby, etc.).",
+            "maxLength": 20,
+            "type": "string",
+            "example": "ALPHA"
+          },
+          "pickupTime": {
+            "format": "date-time",
+            "description": "Time the crew will be picked up from lodging, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-01-01T16:00:00.123Z"
+          },
+          "returnTime": {
+            "format": "date-time",
+            "description": "Scheduled return time, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2022-01-01T16:00:00.123Z"
+          },
+          "adjReturnTime": {
+            "format": "date-time",
+            "description": "Adjusted return time, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-01-01T16:00:00.123Z"
+          },
+          "adjReturnTimeApprover": {
+            "description": "Last name of the adjusted return time approver.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "Smith"
+          },
+          "preRestStart": {
+            "format": "date-time",
+            "description": "Start time of the crew rest period before the mission, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-01-01T16:00:00.123Z"
+          },
+          "preRestApplied": {
+            "description": "Flag indicating whether pre-mission crew rest is applied to the first sortie of a crew's task.",
+            "type": "boolean",
+            "example": false
+          },
+          "postRestEnd": {
+            "format": "date-time",
+            "description": "End time of the crew rest period after the mission, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-01-02T16:00:00.123Z"
+          },
+          "postRestApplied": {
+            "description": "Flag indicating whether post-mission crew rest is applied to the last sortie of a crew's task.",
+            "type": "boolean",
+            "example": false
+          },
+          "postRestOffset": {
+            "description": "The scheduled delay or adjustment in the start time of a crew's rest period after a mission, expressed as +/-HH:MM.",
+            "maxLength": 6,
+            "type": "string",
+            "example": "+05:00"
+          },
+          "stageTime": {
+            "format": "date-time",
+            "description": "Time the crew entered the stage, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-01-01T16:00:00.123Z"
+          },
+          "stage1Qual": {
+            "description": "The stage 1 qualifications the crew must have for a mission, such as having basic knowledge of crew operations and aircraft systems.",
+            "maxLength": 8,
+            "type": "string",
+            "example": "1AXXX"
+          },
+          "stage2Qual": {
+            "description": "The stage 2 qualifications the crew must have for a mission, such as completion of advanced mission-specific training.",
+            "maxLength": 8,
+            "type": "string",
+            "example": "2AXXX"
+          },
+          "stage3Qual": {
+            "description": "The stage 3 qualifications the crew must have for a mission, such as full mission-ready certification and the capability of leading complex operations.",
+            "maxLength": 8,
+            "type": "string",
+            "example": "3AXXX"
+          },
+          "crewHome": {
+            "description": "Flag indicating whether this crew task takes the crew home and out of the stage.",
+            "type": "boolean",
+            "example": false
+          },
+          "linkedTask": {
+            "description": "Flag indicating whether this crew is part of a linked flying task.",
+            "type": "boolean",
+            "example": false
+          },
+          "initStartTime": {
+            "format": "date-time",
+            "description": "Initial start time of the crew's linked task that was delinked due to mission closure, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-01-01T16:00:00.123Z"
+          },
+          "currentICAO": {
+            "description": "The International Civil Aviation Organization (ICAO) code of the airfield at which the crew is currently located.",
+            "maxLength": 4,
+            "type": "string",
+            "example": "KCOS"
+          },
+          "idSiteCurrent": {
+            "description": "Unique identifier of the Site at which the crew is currently located. This ID can be used to obtain additional information on a Site using the 'get by ID' operation (e.g. /udl/site/{id}). For example, the Site object with idSite = abc would be queried as /udl/site/abc.",
+            "maxLength": 36,
+            "type": "string",
+            "example": "b677cf3b-d44d-450e-8b8f-d23f997f8778"
+          },
+          "fltAuthNum": {
+            "description": "Authorization number used on the flight order.",
+            "maxLength": 8,
+            "type": "string",
+            "example": "KT001"
+          },
+          "reqQualCode": {
+            "description": "Array of qualification codes required for this crew (e.g., AL for Aircraft Leader, CS for Combat Systems Operator, etc.).",
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "AL",
+              "CS"
+            ]
+          },
+          "assignedQualCode": {
+            "description": "Array of qualification codes assigned to this crew (e.g., AL for Aircraft Leader, CS for Combat Systems Operator, etc.).",
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "AL",
+              "CS"
+            ]
+          },
+          "transportReq": {
+            "description": "Flag indicating that one or more crew members requires transportation to the departure location.",
+            "type": "boolean",
+            "example": true
+          },
+          "crewRMS": {
+            "description": "The resource management system managing and reporting data on this crew.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "ARMS"
+          },
+          "crewUnit": {
+            "description": "The crew's squadron as identified in its resource management system. If the crew is composed of members from multiple units, then the Crew Commander's unit should be indicated as the crew unit.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "00016ALSQ"
+          },
+          "fdpEligType": {
+            "description": "Crew Flight Duty Period (FDP) eligibility type.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "A"
+          },
+          "fdpType": {
+            "description": "Flight Duty Period (FDP) type.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "A"
+          },
+          "tripKit": {
+            "description": "Identifies the trip kit needed by the crew. A trip kit contains charts, regulations, maps, etc. carried by the crew during missions.",
+            "maxLength": 16,
+            "type": "string",
+            "example": "TK-1234"
+          },
+          "aircraftMDS": {
+            "description": "The aircraft Model Design Series designation assigned for this crew.",
+            "maxLength": 36,
+            "type": "string",
+            "example": "C017A"
+          },
+          "armsCrewUnit": {
+            "description": "The crew's Aviation Resource Management System (ARMS) unit.  If multiple units exist, use the Aircraft Commander's Unit.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "00016ALSQ"
+          },
+          "crewMembers": {
+            "description": "CrewMembers Collection.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CrewMembers_Abridged"
+            }
+          },
+          "createdAt": {
+            "format": "date-time",
+            "description": "Time the row was created in the database, auto-populated by the system.",
+            "type": "string",
+            "readOnly": true,
+            "example": "2022-01-01T16:00:00.123Z"
+          },
+          "createdBy": {
+            "description": "Application user who created the row in the database, auto-populated by the system.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string",
+            "readOnly": true,
+            "example": "some.user"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "description": "Time the row was updated in the database, auto-populated by the system.",
+            "type": "string",
+            "readOnly": true,
+            "example": "2022-01-01T16:00:00.123Z"
+          },
+          "updatedBy": {
+            "description": "Application user who updated the row in the database, auto-populated by the system.",
+            "maxLength": 64,
+            "type": "string",
+            "readOnly": true,
+            "example": "some.user"
+          },
+          "sourceDL": {
+            "description": "The source data library from which this record was received. This could be a remote or tactical UDL or another data library. If null, the record should be assumed to have originated from the primary Enterprise UDL.",
+            "maxLength": 64,
+            "type": "string",
+            "readOnly": true,
+            "example": "AXE"
+          },
+          "source": {
+            "description": "Source of the data.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string",
+            "example": "Bluestaq"
+          },
+          "origin": {
+            "description": "Originating system or organization which produced the data, if different from the source. The origin may be different than the source if the source was a mediating system which forwarded the data on behalf of the origin system. If null, the source may be assumed to be the origin.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "THIRD_PARTY_DATASOURCE"
+          },
+          "origNetwork": {
+            "description": "The originating source network on which this record was created, auto-populated by the system.",
+            "maxLength": 32,
+            "type": "string",
+            "readOnly": true,
+            "example": "OPS1"
+          },
+          "dataMode": {
+            "description": "Indicator of whether the data is EXERCISE, REAL, SIMULATED, or TEST data:\n\nEXERCISE:&nbsp;Data pertaining to a government or military exercise. The data may include both real and simulated data.\n\nREAL:&nbsp;Data collected or produced that pertains to real-world objects, events, and analysis.\n\nSIMULATED:&nbsp;Synthetic data generated by a model to mimic real-world datasets.\n\nTEST:&nbsp;Specific datasets used to evaluate compliance with specifications and requirements, and for validating technical, functional, and performance characteristics.\n\n",
+            "maxLength": 32,
+            "minLength": 1,
+            "enum": [
+              "REAL",
+              "TEST",
+              "SIMULATED",
+              "EXERCISE"
+            ],
+            "type": "string",
+            "example": "TEST"
+          }
+        }
+      },
+      "Crew_Full": {
+        "description": "Crew Services.",
+        "required": [
+          "classificationMarking",
+          "origCrewId",
+          "source",
+          "dataMode"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Unique identifier of the record, auto-generated by the system.",
+            "maxLength": 36,
+            "minLength": 1,
+            "type": "string",
+            "example": "bdad6945-c9e4-b829-f7be-1ad075541921"
+          },
+          "classificationMarking": {
+            "description": "Classification marking of the data in IC/CAPCO Portion-marked format.",
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string",
+            "example": "U"
+          },
+          "origCrewId": {
+            "description": "Unique identifier of the formed crew provided by the originating source. Provided for systems that require tracking of an internal system generated ID.",
+            "maxLength": 36,
+            "minLength": 1,
+            "type": "string",
+            "example": "JHJDHjhuu929o92"
+          },
+          "crewName": {
+            "description": "Name of the formed crew.",
+            "maxLength": 36,
+            "type": "string",
+            "example": "falcon"
+          },
+          "status": {
+            "description": "Crew status (e.g. NEEDCREW, ASSIGNED, APPROVED, NOTIFIED, PARTIAL, UNKNOWN, etc.).",
+            "maxLength": 64,
+            "type": "string",
+            "example": "APPROVED"
+          },
+          "idSortie": {
+            "description": "Unique identifier of the Aircraft Sortie associated with this crew record.",
+            "maxLength": 36,
+            "type": "string",
+            "example": "4ef3d1e8-ab08-ab70-498f-edc479734e5c"
+          },
+          "missionId": {
+            "description": "The mission ID the crew is supporting according to the source system.",
+            "maxLength": 36,
+            "type": "string",
+            "example": "AJM123456123"
+          },
+          "missionAlias": {
+            "description": "User-defined alias designation for the mission.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "PACIFIC DEPLOY / CHAP 3 MOVEMENT"
+          },
+          "crewSource": {
+            "description": "The military component that comprises the crew (e.g., ACTIVE, RESERVE, GUARD, MIXED, UNKNOWN, etc.).",
+            "maxLength": 16,
+            "type": "string",
+            "example": "ACTIVE"
+          },
+          "crewRole": {
+            "description": "The crew's role on the mission (e.g., DEADHEAD, MEDICAL, PRIMARY).",
+            "maxLength": 8,
+            "type": "string",
+            "example": "DEADHEAD"
+          },
+          "crewType": {
+            "description": "The type of crew required to meet mission objectives (e.g., AIRDROP, AIRLAND, AIR REFUELING, etc.).",
+            "maxLength": 32,
+            "type": "string",
+            "example": "AIRLAND"
+          },
+          "personnelType": {
+            "description": "The type of personnel that comprises the crew (e.g., AIRCREW, MEDCREW, etc.).",
+            "maxLength": 16,
+            "type": "string",
+            "example": "AIRCREW"
+          },
+          "stageName": {
+            "description": "Stage name for the crew.  A stage is a pool of crews supporting a given operation plan.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "Falcon Squadron"
+          },
+          "crewWing": {
+            "description": "The wing the crew serves.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "60AMW"
+          },
+          "crewSquadron": {
+            "description": "The squadron the crew serves.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "21AS"
+          },
+          "maleOfficerQty": {
+            "format": "int32",
+            "description": "The number of male officer crew members.",
+            "type": "integer",
+            "example": 1
+          },
+          "femaleOfficerQty": {
+            "format": "int32",
+            "description": "The number of female officer crew members.",
+            "type": "integer",
+            "example": 1
+          },
+          "maleEnlistedQty": {
+            "format": "int32",
+            "description": "The number of male enlisted crew members.",
+            "type": "integer",
+            "example": 3
+          },
+          "femaleEnlistedQty": {
+            "format": "int32",
+            "description": "The number of female enlisted crew members.",
+            "type": "integer",
+            "example": 2
+          },
+          "commanderId": {
+            "description": "Unique identifier of the crew commander assigned by the originating source.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "763a1c1e8d2f3c16af825a11e3f1f579"
+          },
+          "commanderName": {
+            "description": "The name of the crew commander.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "John Doe"
+          },
+          "commanderLast4SSN": {
+            "description": "Last four digits of the crew commander's social security number.",
+            "maxLength": 4,
+            "type": "string",
+            "example": "1234"
+          },
+          "legalAlertTime": {
+            "format": "date-time",
+            "description": "Time the crew is legal for alert, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2022-01-01T16:00:00.123Z"
+          },
+          "legalBravoTime": {
+            "format": "date-time",
+            "description": "Time the crew is legally authorized or scheduled to remain on standby for duty, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2022-01-01T16:00:00.123Z"
+          },
+          "alertedTime": {
+            "format": "date-time",
+            "description": "Time the crew was alerted, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2022-01-01T16:00:00.123Z"
+          },
+          "lastAlertTime": {
+            "format": "date-time",
+            "description": "The last time the crew can be alerted, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-01-01T16:00:00.123Z"
+          },
+          "alertType": {
+            "description": "Type of alert for the crew (e.g., ALPHA for maximum readiness, BRAVO for standby, etc.).",
+            "maxLength": 20,
+            "type": "string",
+            "example": "ALPHA"
+          },
+          "pickupTime": {
+            "format": "date-time",
+            "description": "Time the crew will be picked up from lodging, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-01-01T16:00:00.123Z"
+          },
+          "returnTime": {
+            "format": "date-time",
+            "description": "Scheduled return time, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2022-01-01T16:00:00.123Z"
+          },
+          "adjReturnTime": {
+            "format": "date-time",
+            "description": "Adjusted return time, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-01-01T16:00:00.123Z"
+          },
+          "adjReturnTimeApprover": {
+            "description": "Last name of the adjusted return time approver.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "Smith"
+          },
+          "preRestStart": {
+            "format": "date-time",
+            "description": "Start time of the crew rest period before the mission, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-01-01T16:00:00.123Z"
+          },
+          "preRestApplied": {
+            "description": "Flag indicating whether pre-mission crew rest is applied to the first sortie of a crew's task.",
+            "type": "boolean",
+            "example": false
+          },
+          "postRestEnd": {
+            "format": "date-time",
+            "description": "End time of the crew rest period after the mission, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-01-02T16:00:00.123Z"
+          },
+          "postRestApplied": {
+            "description": "Flag indicating whether post-mission crew rest is applied to the last sortie of a crew's task.",
+            "type": "boolean",
+            "example": false
+          },
+          "postRestOffset": {
+            "description": "The scheduled delay or adjustment in the start time of a crew's rest period after a mission, expressed as +/-HH:MM.",
+            "maxLength": 6,
+            "type": "string",
+            "example": "+05:00"
+          },
+          "stageTime": {
+            "format": "date-time",
+            "description": "Time the crew entered the stage, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-01-01T16:00:00.123Z"
+          },
+          "stage1Qual": {
+            "description": "The stage 1 qualifications the crew must have for a mission, such as having basic knowledge of crew operations and aircraft systems.",
+            "maxLength": 8,
+            "type": "string",
+            "example": "1AXXX"
+          },
+          "stage2Qual": {
+            "description": "The stage 2 qualifications the crew must have for a mission, such as completion of advanced mission-specific training.",
+            "maxLength": 8,
+            "type": "string",
+            "example": "2AXXX"
+          },
+          "stage3Qual": {
+            "description": "The stage 3 qualifications the crew must have for a mission, such as full mission-ready certification and the capability of leading complex operations.",
+            "maxLength": 8,
+            "type": "string",
+            "example": "3AXXX"
+          },
+          "crewHome": {
+            "description": "Flag indicating whether this crew task takes the crew home and out of the stage.",
+            "type": "boolean",
+            "example": false
+          },
+          "linkedTask": {
+            "description": "Flag indicating whether this crew is part of a linked flying task.",
+            "type": "boolean",
+            "example": false
+          },
+          "initStartTime": {
+            "format": "date-time",
+            "description": "Initial start time of the crew's linked task that was delinked due to mission closure, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-01-01T16:00:00.123Z"
+          },
+          "currentICAO": {
+            "description": "The International Civil Aviation Organization (ICAO) code of the airfield at which the crew is currently located.",
+            "maxLength": 4,
+            "type": "string",
+            "example": "KCOS"
+          },
+          "idSiteCurrent": {
+            "description": "Unique identifier of the Site at which the crew is currently located. This ID can be used to obtain additional information on a Site using the 'get by ID' operation (e.g. /udl/site/{id}). For example, the Site object with idSite = abc would be queried as /udl/site/abc.",
+            "maxLength": 36,
+            "type": "string",
+            "example": "b677cf3b-d44d-450e-8b8f-d23f997f8778"
+          },
+          "fltAuthNum": {
+            "description": "Authorization number used on the flight order.",
+            "maxLength": 8,
+            "type": "string",
+            "example": "KT001"
+          },
+          "reqQualCode": {
+            "description": "Array of qualification codes required for this crew (e.g., AL for Aircraft Leader, CS for Combat Systems Operator, etc.).",
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "AL",
+              "CS"
+            ]
+          },
+          "assignedQualCode": {
+            "description": "Array of qualification codes assigned to this crew (e.g., AL for Aircraft Leader, CS for Combat Systems Operator, etc.).",
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "AL",
+              "CS"
+            ]
+          },
+          "transportReq": {
+            "description": "Flag indicating that one or more crew members requires transportation to the departure location.",
+            "type": "boolean",
+            "example": true
+          },
+          "crewRMS": {
+            "description": "The resource management system managing and reporting data on this crew.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "ARMS"
+          },
+          "crewUnit": {
+            "description": "The crew's squadron as identified in its resource management system. If the crew is composed of members from multiple units, then the Crew Commander's unit should be indicated as the crew unit.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "00016ALSQ"
+          },
+          "fdpEligType": {
+            "description": "Crew Flight Duty Period (FDP) eligibility type.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "A"
+          },
+          "fdpType": {
+            "description": "Flight Duty Period (FDP) type.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "A"
+          },
+          "tripKit": {
+            "description": "Identifies the trip kit needed by the crew. A trip kit contains charts, regulations, maps, etc. carried by the crew during missions.",
+            "maxLength": 16,
+            "type": "string",
+            "example": "TK-1234"
+          },
+          "aircraftMDS": {
+            "description": "The aircraft Model Design Series designation assigned for this crew.",
+            "maxLength": 36,
+            "type": "string",
+            "example": "C017A"
+          },
+          "armsCrewUnit": {
+            "description": "The crew's Aviation Resource Management System (ARMS) unit.  If multiple units exist, use the Aircraft Commander's Unit.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "00016ALSQ"
+          },
+          "crewMembers": {
+            "description": "CrewMembers Collection.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CrewMembers_Full"
+            }
+          },
+          "createdAt": {
+            "format": "date-time",
+            "description": "Time the row was created in the database, auto-populated by the system.",
+            "type": "string",
+            "readOnly": true,
+            "example": "2022-01-01T16:00:00.123Z"
+          },
+          "createdBy": {
+            "description": "Application user who created the row in the database, auto-populated by the system.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string",
+            "readOnly": true,
+            "example": "some.user"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "description": "Time the row was updated in the database, auto-populated by the system.",
+            "type": "string",
+            "readOnly": true,
+            "example": "2022-01-01T16:00:00.123Z"
+          },
+          "updatedBy": {
+            "description": "Application user who updated the row in the database, auto-populated by the system.",
+            "maxLength": 64,
+            "type": "string",
+            "readOnly": true,
+            "example": "some.user"
+          },
+          "sourceDL": {
+            "description": "The source data library from which this record was received. This could be a remote or tactical UDL or another data library. If null, the record should be assumed to have originated from the primary Enterprise UDL.",
+            "maxLength": 64,
+            "type": "string",
+            "readOnly": true,
+            "example": "AXE"
+          },
+          "source": {
+            "description": "Source of the data.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string",
+            "example": "Bluestaq"
+          },
+          "origin": {
+            "description": "Originating system or organization which produced the data, if different from the source. The origin may be different than the source if the source was a mediating system which forwarded the data on behalf of the origin system. If null, the source may be assumed to be the origin.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "THIRD_PARTY_DATASOURCE"
+          },
+          "origNetwork": {
+            "description": "The originating source network on which this record was created, auto-populated by the system.",
+            "maxLength": 32,
+            "type": "string",
+            "readOnly": true,
+            "example": "OPS1"
+          },
+          "dataMode": {
+            "description": "Indicator of whether the data is EXERCISE, REAL, SIMULATED, or TEST data:\n\nEXERCISE:&nbsp;Data pertaining to a government or military exercise. The data may include both real and simulated data.\n\nREAL:&nbsp;Data collected or produced that pertains to real-world objects, events, and analysis.\n\nSIMULATED:&nbsp;Synthetic data generated by a model to mimic real-world datasets.\n\nTEST:&nbsp;Specific datasets used to evaluate compliance with specifications and requirements, and for validating technical, functional, and performance characteristics.\n\n",
+            "maxLength": 32,
+            "minLength": 1,
+            "enum": [
+              "REAL",
+              "TEST",
+              "SIMULATED",
+              "EXERCISE"
+            ],
+            "type": "string",
+            "example": "TEST"
+          }
+        }
+      },
+      "Crew_Ingest": {
+        "description": "Crew Services.",
+        "required": [
+          "classificationMarking",
+          "origCrewId",
+          "source",
+          "dataMode"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Unique identifier of the record, auto-generated by the system.",
+            "maxLength": 36,
+            "minLength": 1,
+            "type": "string",
+            "example": "bdad6945-c9e4-b829-f7be-1ad075541921"
+          },
+          "classificationMarking": {
+            "description": "Classification marking of the data in IC/CAPCO Portion-marked format.",
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string",
+            "example": "U"
+          },
+          "origCrewId": {
+            "description": "Unique identifier of the formed crew provided by the originating source. Provided for systems that require tracking of an internal system generated ID.",
+            "maxLength": 36,
+            "minLength": 1,
+            "type": "string",
+            "example": "JHJDHjhuu929o92"
+          },
+          "crewName": {
+            "description": "Name of the formed crew.",
+            "maxLength": 36,
+            "type": "string",
+            "example": "falcon"
+          },
+          "status": {
+            "description": "Crew status (e.g. NEEDCREW, ASSIGNED, APPROVED, NOTIFIED, PARTIAL, UNKNOWN, etc.).",
+            "maxLength": 64,
+            "type": "string",
+            "example": "APPROVED"
+          },
+          "idSortie": {
+            "description": "Unique identifier of the Aircraft Sortie associated with this crew record.",
+            "maxLength": 36,
+            "type": "string",
+            "example": "4ef3d1e8-ab08-ab70-498f-edc479734e5c"
+          },
+          "missionId": {
+            "description": "The mission ID the crew is supporting according to the source system.",
+            "maxLength": 36,
+            "type": "string",
+            "example": "AJM123456123"
+          },
+          "missionAlias": {
+            "description": "User-defined alias designation for the mission.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "PACIFIC DEPLOY / CHAP 3 MOVEMENT"
+          },
+          "crewSource": {
+            "description": "The military component that comprises the crew (e.g., ACTIVE, RESERVE, GUARD, MIXED, UNKNOWN, etc.).",
+            "maxLength": 16,
+            "type": "string",
+            "example": "ACTIVE"
+          },
+          "crewRole": {
+            "description": "The crew's role on the mission (e.g., DEADHEAD, MEDICAL, PRIMARY).",
+            "maxLength": 8,
+            "type": "string",
+            "example": "DEADHEAD"
+          },
+          "crewType": {
+            "description": "The type of crew required to meet mission objectives (e.g., AIRDROP, AIRLAND, AIR REFUELING, etc.).",
+            "maxLength": 32,
+            "type": "string",
+            "example": "AIRLAND"
+          },
+          "personnelType": {
+            "description": "The type of personnel that comprises the crew (e.g., AIRCREW, MEDCREW, etc.).",
+            "maxLength": 16,
+            "type": "string",
+            "example": "AIRCREW"
+          },
+          "stageName": {
+            "description": "Stage name for the crew.  A stage is a pool of crews supporting a given operation plan.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "Falcon Squadron"
+          },
+          "crewWing": {
+            "description": "The wing the crew serves.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "60AMW"
+          },
+          "crewSquadron": {
+            "description": "The squadron the crew serves.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "21AS"
+          },
+          "maleOfficerQty": {
+            "format": "int32",
+            "description": "The number of male officer crew members.",
+            "type": "integer",
+            "example": 1
+          },
+          "femaleOfficerQty": {
+            "format": "int32",
+            "description": "The number of female officer crew members.",
+            "type": "integer",
+            "example": 1
+          },
+          "maleEnlistedQty": {
+            "format": "int32",
+            "description": "The number of male enlisted crew members.",
+            "type": "integer",
+            "example": 3
+          },
+          "femaleEnlistedQty": {
+            "format": "int32",
+            "description": "The number of female enlisted crew members.",
+            "type": "integer",
+            "example": 2
+          },
+          "commanderId": {
+            "description": "Unique identifier of the crew commander assigned by the originating source.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "763a1c1e8d2f3c16af825a11e3f1f579"
+          },
+          "commanderName": {
+            "description": "The name of the crew commander.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "John Doe"
+          },
+          "commanderLast4SSN": {
+            "description": "Last four digits of the crew commander's social security number.",
+            "maxLength": 4,
+            "type": "string",
+            "example": "1234"
+          },
+          "legalAlertTime": {
+            "format": "date-time",
+            "description": "Time the crew is legal for alert, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2022-01-01T16:00:00.123Z"
+          },
+          "legalBravoTime": {
+            "format": "date-time",
+            "description": "Time the crew is legally authorized or scheduled to remain on standby for duty, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2022-01-01T16:00:00.123Z"
+          },
+          "alertedTime": {
+            "format": "date-time",
+            "description": "Time the crew was alerted, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2022-01-01T16:00:00.123Z"
+          },
+          "lastAlertTime": {
+            "format": "date-time",
+            "description": "The last time the crew can be alerted, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-01-01T16:00:00.123Z"
+          },
+          "alertType": {
+            "description": "Type of alert for the crew (e.g., ALPHA for maximum readiness, BRAVO for standby, etc.).",
+            "maxLength": 20,
+            "type": "string",
+            "example": "ALPHA"
+          },
+          "pickupTime": {
+            "format": "date-time",
+            "description": "Time the crew will be picked up from lodging, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-01-01T16:00:00.123Z"
+          },
+          "returnTime": {
+            "format": "date-time",
+            "description": "Scheduled return time, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2022-01-01T16:00:00.123Z"
+          },
+          "adjReturnTime": {
+            "format": "date-time",
+            "description": "Adjusted return time, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-01-01T16:00:00.123Z"
+          },
+          "adjReturnTimeApprover": {
+            "description": "Last name of the adjusted return time approver.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "Smith"
+          },
+          "preRestStart": {
+            "format": "date-time",
+            "description": "Start time of the crew rest period before the mission, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-01-01T16:00:00.123Z"
+          },
+          "preRestApplied": {
+            "description": "Flag indicating whether pre-mission crew rest is applied to the first sortie of a crew's task.",
+            "type": "boolean",
+            "example": false
+          },
+          "postRestEnd": {
+            "format": "date-time",
+            "description": "End time of the crew rest period after the mission, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-01-02T16:00:00.123Z"
+          },
+          "postRestApplied": {
+            "description": "Flag indicating whether post-mission crew rest is applied to the last sortie of a crew's task.",
+            "type": "boolean",
+            "example": false
+          },
+          "postRestOffset": {
+            "description": "The scheduled delay or adjustment in the start time of a crew's rest period after a mission, expressed as +/-HH:MM.",
+            "maxLength": 6,
+            "type": "string",
+            "example": "+05:00"
+          },
+          "stageTime": {
+            "format": "date-time",
+            "description": "Time the crew entered the stage, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-01-01T16:00:00.123Z"
+          },
+          "stage1Qual": {
+            "description": "The stage 1 qualifications the crew must have for a mission, such as having basic knowledge of crew operations and aircraft systems.",
+            "maxLength": 8,
+            "type": "string",
+            "example": "1AXXX"
+          },
+          "stage2Qual": {
+            "description": "The stage 2 qualifications the crew must have for a mission, such as completion of advanced mission-specific training.",
+            "maxLength": 8,
+            "type": "string",
+            "example": "2AXXX"
+          },
+          "stage3Qual": {
+            "description": "The stage 3 qualifications the crew must have for a mission, such as full mission-ready certification and the capability of leading complex operations.",
+            "maxLength": 8,
+            "type": "string",
+            "example": "3AXXX"
+          },
+          "crewHome": {
+            "description": "Flag indicating whether this crew task takes the crew home and out of the stage.",
+            "type": "boolean",
+            "example": false
+          },
+          "linkedTask": {
+            "description": "Flag indicating whether this crew is part of a linked flying task.",
+            "type": "boolean",
+            "example": false
+          },
+          "initStartTime": {
+            "format": "date-time",
+            "description": "Initial start time of the crew's linked task that was delinked due to mission closure, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-01-01T16:00:00.123Z"
+          },
+          "currentICAO": {
+            "description": "The International Civil Aviation Organization (ICAO) code of the airfield at which the crew is currently located.",
+            "maxLength": 4,
+            "type": "string",
+            "example": "KCOS"
+          },
+          "idSiteCurrent": {
+            "description": "Unique identifier of the Site at which the crew is currently located. This ID can be used to obtain additional information on a Site using the 'get by ID' operation (e.g. /udl/site/{id}). For example, the Site object with idSite = abc would be queried as /udl/site/abc.",
+            "maxLength": 36,
+            "type": "string",
+            "example": "b677cf3b-d44d-450e-8b8f-d23f997f8778"
+          },
+          "fltAuthNum": {
+            "description": "Authorization number used on the flight order.",
+            "maxLength": 8,
+            "type": "string",
+            "example": "KT001"
+          },
+          "reqQualCode": {
+            "description": "Array of qualification codes required for this crew (e.g., AL for Aircraft Leader, CS for Combat Systems Operator, etc.).",
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "AL",
+              "CS"
+            ]
+          },
+          "assignedQualCode": {
+            "description": "Array of qualification codes assigned to this crew (e.g., AL for Aircraft Leader, CS for Combat Systems Operator, etc.).",
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "AL",
+              "CS"
+            ]
+          },
+          "transportReq": {
+            "description": "Flag indicating that one or more crew members requires transportation to the departure location.",
+            "type": "boolean",
+            "example": true
+          },
+          "crewRMS": {
+            "description": "The resource management system managing and reporting data on this crew.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "ARMS"
+          },
+          "crewUnit": {
+            "description": "The crew's squadron as identified in its resource management system. If the crew is composed of members from multiple units, then the Crew Commander's unit should be indicated as the crew unit.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "00016ALSQ"
+          },
+          "fdpEligType": {
+            "description": "Crew Flight Duty Period (FDP) eligibility type.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "A"
+          },
+          "fdpType": {
+            "description": "Flight Duty Period (FDP) type.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "A"
+          },
+          "tripKit": {
+            "description": "Identifies the trip kit needed by the crew. A trip kit contains charts, regulations, maps, etc. carried by the crew during missions.",
+            "maxLength": 16,
+            "type": "string",
+            "example": "TK-1234"
+          },
+          "aircraftMDS": {
+            "description": "The aircraft Model Design Series designation assigned for this crew.",
+            "maxLength": 36,
+            "type": "string",
+            "example": "C017A"
+          },
+          "armsCrewUnit": {
+            "description": "The crew's Aviation Resource Management System (ARMS) unit.  If multiple units exist, use the Aircraft Commander's Unit.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "00016ALSQ"
+          },
+          "crewMembers": {
+            "description": "CrewMembers Collection.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CrewMembers_Ingest"
+            }
+          },
+          "createdAt": {
+            "format": "date-time",
+            "description": "Time the row was created in the database, auto-populated by the system.",
+            "type": "string",
+            "readOnly": true,
+            "example": "2022-01-01T16:00:00.123Z"
+          },
+          "createdBy": {
+            "description": "Application user who created the row in the database, auto-populated by the system.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string",
+            "readOnly": true,
+            "example": "some.user"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "description": "Time the row was updated in the database, auto-populated by the system.",
+            "type": "string",
+            "readOnly": true,
+            "example": "2022-01-01T16:00:00.123Z"
+          },
+          "updatedBy": {
+            "description": "Application user who updated the row in the database, auto-populated by the system.",
+            "maxLength": 64,
+            "type": "string",
+            "readOnly": true,
+            "example": "some.user"
+          },
+          "sourceDL": {
+            "description": "The source data library from which this record was received. This could be a remote or tactical UDL or another data library. If null, the record should be assumed to have originated from the primary Enterprise UDL.",
+            "maxLength": 64,
+            "type": "string",
+            "readOnly": true,
+            "example": "AXE"
+          },
+          "source": {
+            "description": "Source of the data.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string",
+            "example": "Bluestaq"
+          },
+          "origin": {
+            "description": "Originating system or organization which produced the data, if different from the source. The origin may be different than the source if the source was a mediating system which forwarded the data on behalf of the origin system. If null, the source may be assumed to be the origin.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "THIRD_PARTY_DATASOURCE"
+          },
+          "origNetwork": {
+            "description": "The originating source network on which this record was created, auto-populated by the system.",
+            "maxLength": 32,
+            "type": "string",
+            "readOnly": true,
+            "example": "OPS1"
+          },
+          "dataMode": {
+            "description": "Indicator of whether the data is EXERCISE, REAL, SIMULATED, or TEST data:\n\nEXERCISE:&nbsp;Data pertaining to a government or military exercise. The data may include both real and simulated data.\n\nREAL:&nbsp;Data collected or produced that pertains to real-world objects, events, and analysis.\n\nSIMULATED:&nbsp;Synthetic data generated by a model to mimic real-world datasets.\n\nTEST:&nbsp;Specific datasets used to evaluate compliance with specifications and requirements, and for validating technical, functional, and performance characteristics.\n\n",
+            "maxLength": 32,
+            "minLength": 1,
+            "enum": [
+              "REAL",
+              "TEST",
+              "SIMULATED",
+              "EXERCISE"
+            ],
+            "type": "string",
+            "example": "TEST"
+          }
+        }
+      },
+      "CrewMembers_Abridged": {
+        "description": "Schema for Crew Member data.",
+        "type": "object",
+        "properties": {
+          "lastName": {
+            "description": "The last name of the crew member.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "Smith"
+          },
+          "firstName": {
+            "description": "The first name of the crew member.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "Freddie"
+          },
+          "middleInitial": {
+            "description": "The middle initial of the crew member.",
+            "maxLength": 1,
+            "type": "string",
+            "example": "G"
+          },
+          "gender": {
+            "description": "Gender of the crew member.",
+            "maxLength": 1,
+            "type": "string",
+            "example": "F"
+          },
+          "memberId": {
+            "description": "Unique identifier of the crew member assigned by the originating source.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "12345678abc"
+          },
+          "civilian": {
+            "description": "Flag indicating this crew member is a civilian or non-military person.",
+            "type": "boolean",
+            "example": false
+          },
+          "commander": {
+            "description": "Flag indicating this person is the aircraft commander.",
+            "type": "boolean",
+            "example": false
+          },
+          "last4SSN": {
+            "description": "Last four digits of the crew member's social security number.",
+            "maxLength": 4,
+            "type": "string",
+            "example": "1234"
+          },
+          "dodID": {
+            "description": "The crew member's 10-digit DoD ID number.",
+            "maxLength": 10,
+            "type": "string",
+            "example": "0123456789"
+          },
+          "username": {
+            "description": "The Mattermost username of this crew member.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "fgsmith"
+          },
+          "dutyPosition": {
+            "description": "The duty position of the crew member.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "IP"
+          },
+          "crewPosition": {
+            "description": "The crew position of the crew member.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "EP A"
+          },
+          "memberType": {
+            "description": "Amplifying details about the crew member type (e.g. RAVEN, FCC, COMCAM, AIRCREW, MEP, OTHER, etc.).",
+            "maxLength": 32,
+            "type": "string",
+            "example": "AIRCREW"
+          },
+          "branch": {
+            "description": "The military branch assignment of the crew member.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "Air Force"
+          },
+          "rank": {
+            "description": "The rank of the crew member.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "Capt"
+          },
+          "wing": {
+            "description": "The wing the crew member serves.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "60AMW"
+          },
+          "squadron": {
+            "description": "The squadron the crew member serves.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "21AS"
+          },
+          "flySquadron": {
+            "description": "The flying squadron assignment of the crew member.",
+            "maxLength": 256,
+            "type": "string",
+            "example": "141ARS"
+          },
+          "loanedTo": {
+            "description": "The squadron the crew member has been temporarily loaned to.",
+            "maxLength": 256,
+            "type": "string",
+            "example": "Thunderbirds"
+          },
+          "memberSource": {
+            "description": "The military component for the crew member (e.g., ACTIVE, RESERVE, GUARD, UNKNOWN, etc.).",
+            "maxLength": 16,
+            "type": "string",
+            "example": "ACTIVE"
+          },
+          "dutyStatus": {
+            "description": "The current duty status code of this crew member (e.g., AGR for Active Guard and Reserve, IDT for Inactive Duty Training, etc.).",
+            "maxLength": 16,
+            "type": "string",
+            "example": "AGR"
+          },
+          "memberStageName": {
+            "description": "Stage name for the crew member.  A stage is a pool of crews supporting a given operation plan.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "Falcon Squadron"
+          },
+          "rmsMDS": {
+            "description": "The primary aircraft type for the crew member according to the personnel resource management system indicated in the crewRMS field.",
+            "maxLength": 8,
+            "type": "string",
+            "example": "C017A"
+          },
+          "phoneNumber": {
+            "description": "Crew member lodging phone number.",
+            "maxLength": 16,
+            "type": "string",
+            "example": "+14155552671"
+          },
+          "lodging": {
+            "description": "Crew member lodging location.",
+            "maxLength": 128,
+            "type": "string",
+            "example": "Peterson SFB"
+          },
+          "memberTransportReq": {
+            "description": "Flag indicating whether this crew member needs transportation to the departure location.",
+            "type": "boolean",
+            "example": true
+          },
+          "memberPreRestTime": {
+            "format": "date-time",
+            "description": "Start time of this crew member's rest period before the mission, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-01-01T16:00:00.123Z"
+          },
+          "memberLegalAlertTime": {
+            "format": "date-time",
+            "description": "Time this crew member becomes eligible to be alerted for the mission, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-01-01T16:00:00.123Z"
+          },
+          "memberSchedAlertTime": {
+            "format": "date-time",
+            "description": "Time this crew member is scheduled to be alerted for the mission, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-02-26T09:15:00.123Z"
+          },
+          "memberActualAlertTime": {
+            "format": "date-time",
+            "description": "Time this crew member was actually alerted for the mission, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-02-26T09:15:00.123Z"
+          },
+          "memberLastAlertTime": {
+            "format": "date-time",
+            "description": "The latest possible time the crew member can legally be alerted for a task, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-01-01T16:00:00.123Z"
+          },
+          "memberPickupTime": {
+            "format": "date-time",
+            "description": "Time this crew member will be picked up from lodging, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-02-26T10:15:00.123Z"
+          },
+          "showTime": {
+            "format": "date-time",
+            "description": "Time this crew member is required to report for duty before this flight/mission, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-02-26T10:15:00.123Z"
+          },
+          "memberReturnTime": {
+            "format": "date-time",
+            "description": "Scheduled return time for this crew member, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-01-01T16:00:00.123Z"
+          },
+          "memberAdjReturnTime": {
+            "format": "date-time",
+            "description": "Adjusted return time for the crew member, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-01-01T16:00:00.123Z"
+          },
+          "memberAdjReturnTimeApprover": {
+            "description": "Last name of the crew member's adjusted return time approver.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "Smith"
+          },
+          "memberInitStartTime": {
+            "format": "date-time",
+            "description": "Initial start time of the crew member's linked task that was delinked due to mission closure, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-01-01T16:00:00.123Z"
+          },
+          "memberPostRestTime": {
+            "format": "date-time",
+            "description": "End time of this crew member's rest period after the mission, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-01-02T16:00:00.123Z"
+          },
+          "memberPostRestOffset": {
+            "description": "The scheduled delay or adjustment in the start time of a crew member's rest period after a mission, expressed as +/-HH:MM.",
+            "maxLength": 6,
+            "type": "string",
+            "example": "+05:00"
+          },
+          "allSortie": {
+            "description": "Flag indicating this crew member is assigned to all sorties of the crew itinerary.",
+            "type": "boolean",
+            "example": true
+          },
+          "attached": {
+            "description": "Flag indicating whether this crew member is attached to his/her squadron. Crew members that are not attached are considered assigned.",
+            "type": "boolean",
+            "example": true
+          },
+          "funded": {
+            "description": "Flag indicating whether this crew member is funded.",
+            "type": "boolean",
+            "example": true
+          },
+          "approved": {
+            "description": "Flag indicating whether this crew member has been approved for the associated task.",
+            "type": "boolean",
+            "example": true
+          },
+          "notified": {
+            "description": "Flag indicating whether this crew member has been notified of an event.",
+            "type": "boolean",
+            "example": true
+          },
+          "alerted": {
+            "description": "Flag indicating whether this crew member has been alerted of the associated task.",
+            "type": "boolean",
+            "example": true
+          },
+          "emailed": {
+            "description": "Flag indicating whether this crew member has been notified of an event by email.",
+            "type": "boolean",
+            "example": true
+          },
+          "extraTime": {
+            "description": "Flag indicating whether this crew member requires an additional amount of time to report for duty.",
+            "type": "boolean",
+            "example": true
+          },
+          "grounded": {
+            "description": "Flag indicating whether this crew member is grounded (i.e., his/her duties do not include flying).",
+            "type": "boolean",
+            "example": true
+          },
+          "guestStart": {
+            "format": "date-time",
+            "description": "Date when this crew member starts acting as guest help for the squadron, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-01-01T16:00:00.123Z"
+          },
+          "guestStop": {
+            "format": "date-time",
+            "description": "Date when this crew member stops acting as guest help for the squadron, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-01-01T16:00:00.123Z"
+          },
+          "physAvCode": {
+            "description": "Code indicating a crew member's current physical fitness status and whether they are medically cleared to fly (e.g., D for Duties Not Including Flying, E for Physical Overdue, etc.).",
+            "maxLength": 16,
+            "type": "string",
+            "example": "D"
+          },
+          "physAvStatus": {
+            "description": "Code indicating a crew member's physical availabiility status (e.g., DISQUALIFIED, OVERDUE, etc.).",
+            "maxLength": 128,
+            "type": "string",
+            "example": "OVERDUE"
+          },
+          "physDue": {
+            "format": "date-time",
+            "description": "Due date for the crew member's physical, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-01-01T16:00:00.123Z"
+          },
+          "trainingDate": {
+            "format": "date-time",
+            "description": "The date this crew member accomplished physiological or altitude chamber training, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-01-01T16:00:00.123Z"
+          },
+          "lastFltDate": {
+            "format": "date-time",
+            "description": "Date of the last flight for this crew member, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-01-01T16:00:00.123Z"
+          },
+          "fltRecDate": {
+            "format": "date-time",
+            "description": "The date this crew member's records review was completed, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-01-01T16:00:00.123Z"
+          },
+          "fltRecDue": {
+            "format": "date-time",
+            "description": "The date this crew member's records review is due, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-01-01T16:00:00.123Z"
+          },
+          "fltCurrencyExp": {
+            "format": "date-time",
+            "description": "The earliest flying currency expiration date for this crew member, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-01-01T16:00:00.123Z"
+          },
+          "fltCurrencyExpId": {
+            "description": "The training task identifier associated with the flying currency expiration date for this crew member.",
+            "maxLength": 8,
+            "type": "string",
+            "example": "SS05AM"
+          },
+          "gndCurrencyExp": {
+            "format": "date-time",
+            "description": "The earliest ground currency expiration date for this crew member, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-01-01T16:00:00.123Z"
+          },
+          "gndCurrencyExpId": {
+            "description": "The training task identifier associated with the ground currency expiration date for this crew member.",
+            "maxLength": 8,
+            "type": "string",
+            "example": "AH03YM"
+          },
+          "remarkCode": {
+            "description": "Remark code used to designate attributes of this crew member. For more information, contact the provider source.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "ABE33"
+          },
+          "memberRemarks": {
+            "description": "Remarks concerning the crew member.",
+            "maxLength": 512,
+            "type": "string",
+            "example": "Crew member remark"
+          }
+        }
+      },
+      "CrewMembers_Full": {
+        "description": "Schema for Crew Member data.",
+        "type": "object",
+        "properties": {
+          "lastName": {
+            "description": "The last name of the crew member.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "Smith"
+          },
+          "firstName": {
+            "description": "The first name of the crew member.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "Freddie"
+          },
+          "middleInitial": {
+            "description": "The middle initial of the crew member.",
+            "maxLength": 1,
+            "type": "string",
+            "example": "G"
+          },
+          "gender": {
+            "description": "Gender of the crew member.",
+            "maxLength": 1,
+            "type": "string",
+            "example": "F"
+          },
+          "memberId": {
+            "description": "Unique identifier of the crew member assigned by the originating source.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "12345678abc"
+          },
+          "civilian": {
+            "description": "Flag indicating this crew member is a civilian or non-military person.",
+            "type": "boolean",
+            "example": false
+          },
+          "commander": {
+            "description": "Flag indicating this person is the aircraft commander.",
+            "type": "boolean",
+            "example": false
+          },
+          "last4SSN": {
+            "description": "Last four digits of the crew member's social security number.",
+            "maxLength": 4,
+            "type": "string",
+            "example": "1234"
+          },
+          "dodID": {
+            "description": "The crew member's 10-digit DoD ID number.",
+            "maxLength": 10,
+            "type": "string",
+            "example": "0123456789"
+          },
+          "username": {
+            "description": "The Mattermost username of this crew member.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "fgsmith"
+          },
+          "dutyPosition": {
+            "description": "The duty position of the crew member.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "IP"
+          },
+          "crewPosition": {
+            "description": "The crew position of the crew member.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "EP A"
+          },
+          "memberType": {
+            "description": "Amplifying details about the crew member type (e.g. RAVEN, FCC, COMCAM, AIRCREW, MEP, OTHER, etc.).",
+            "maxLength": 32,
+            "type": "string",
+            "example": "AIRCREW"
+          },
+          "branch": {
+            "description": "The military branch assignment of the crew member.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "Air Force"
+          },
+          "rank": {
+            "description": "The rank of the crew member.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "Capt"
+          },
+          "wing": {
+            "description": "The wing the crew member serves.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "60AMW"
+          },
+          "squadron": {
+            "description": "The squadron the crew member serves.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "21AS"
+          },
+          "flySquadron": {
+            "description": "The flying squadron assignment of the crew member.",
+            "maxLength": 256,
+            "type": "string",
+            "example": "141ARS"
+          },
+          "loanedTo": {
+            "description": "The squadron the crew member has been temporarily loaned to.",
+            "maxLength": 256,
+            "type": "string",
+            "example": "Thunderbirds"
+          },
+          "memberSource": {
+            "description": "The military component for the crew member (e.g., ACTIVE, RESERVE, GUARD, UNKNOWN, etc.).",
+            "maxLength": 16,
+            "type": "string",
+            "example": "ACTIVE"
+          },
+          "dutyStatus": {
+            "description": "The current duty status code of this crew member (e.g., AGR for Active Guard and Reserve, IDT for Inactive Duty Training, etc.).",
+            "maxLength": 16,
+            "type": "string",
+            "example": "AGR"
+          },
+          "memberStageName": {
+            "description": "Stage name for the crew member.  A stage is a pool of crews supporting a given operation plan.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "Falcon Squadron"
+          },
+          "rmsMDS": {
+            "description": "The primary aircraft type for the crew member according to the personnel resource management system indicated in the crewRMS field.",
+            "maxLength": 8,
+            "type": "string",
+            "example": "C017A"
+          },
+          "phoneNumber": {
+            "description": "Crew member lodging phone number.",
+            "maxLength": 16,
+            "type": "string",
+            "example": "+14155552671"
+          },
+          "lodging": {
+            "description": "Crew member lodging location.",
+            "maxLength": 128,
+            "type": "string",
+            "example": "Peterson SFB"
+          },
+          "memberTransportReq": {
+            "description": "Flag indicating whether this crew member needs transportation to the departure location.",
+            "type": "boolean",
+            "example": true
+          },
+          "memberPreRestTime": {
+            "format": "date-time",
+            "description": "Start time of this crew member's rest period before the mission, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-01-01T16:00:00.123Z"
+          },
+          "memberLegalAlertTime": {
+            "format": "date-time",
+            "description": "Time this crew member becomes eligible to be alerted for the mission, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-01-01T16:00:00.123Z"
+          },
+          "memberSchedAlertTime": {
+            "format": "date-time",
+            "description": "Time this crew member is scheduled to be alerted for the mission, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-02-26T09:15:00.123Z"
+          },
+          "memberActualAlertTime": {
+            "format": "date-time",
+            "description": "Time this crew member was actually alerted for the mission, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-02-26T09:15:00.123Z"
+          },
+          "memberLastAlertTime": {
+            "format": "date-time",
+            "description": "The latest possible time the crew member can legally be alerted for a task, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-01-01T16:00:00.123Z"
+          },
+          "memberPickupTime": {
+            "format": "date-time",
+            "description": "Time this crew member will be picked up from lodging, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-02-26T10:15:00.123Z"
+          },
+          "showTime": {
+            "format": "date-time",
+            "description": "Time this crew member is required to report for duty before this flight/mission, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-02-26T10:15:00.123Z"
+          },
+          "memberReturnTime": {
+            "format": "date-time",
+            "description": "Scheduled return time for this crew member, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-01-01T16:00:00.123Z"
+          },
+          "memberAdjReturnTime": {
+            "format": "date-time",
+            "description": "Adjusted return time for the crew member, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-01-01T16:00:00.123Z"
+          },
+          "memberAdjReturnTimeApprover": {
+            "description": "Last name of the crew member's adjusted return time approver.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "Smith"
+          },
+          "memberInitStartTime": {
+            "format": "date-time",
+            "description": "Initial start time of the crew member's linked task that was delinked due to mission closure, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-01-01T16:00:00.123Z"
+          },
+          "memberPostRestTime": {
+            "format": "date-time",
+            "description": "End time of this crew member's rest period after the mission, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-01-02T16:00:00.123Z"
+          },
+          "memberPostRestOffset": {
+            "description": "The scheduled delay or adjustment in the start time of a crew member's rest period after a mission, expressed as +/-HH:MM.",
+            "maxLength": 6,
+            "type": "string",
+            "example": "+05:00"
+          },
+          "allSortie": {
+            "description": "Flag indicating this crew member is assigned to all sorties of the crew itinerary.",
+            "type": "boolean",
+            "example": true
+          },
+          "attached": {
+            "description": "Flag indicating whether this crew member is attached to his/her squadron. Crew members that are not attached are considered assigned.",
+            "type": "boolean",
+            "example": true
+          },
+          "funded": {
+            "description": "Flag indicating whether this crew member is funded.",
+            "type": "boolean",
+            "example": true
+          },
+          "approved": {
+            "description": "Flag indicating whether this crew member has been approved for the associated task.",
+            "type": "boolean",
+            "example": true
+          },
+          "notified": {
+            "description": "Flag indicating whether this crew member has been notified of an event.",
+            "type": "boolean",
+            "example": true
+          },
+          "alerted": {
+            "description": "Flag indicating whether this crew member has been alerted of the associated task.",
+            "type": "boolean",
+            "example": true
+          },
+          "emailed": {
+            "description": "Flag indicating whether this crew member has been notified of an event by email.",
+            "type": "boolean",
+            "example": true
+          },
+          "extraTime": {
+            "description": "Flag indicating whether this crew member requires an additional amount of time to report for duty.",
+            "type": "boolean",
+            "example": true
+          },
+          "grounded": {
+            "description": "Flag indicating whether this crew member is grounded (i.e., his/her duties do not include flying).",
+            "type": "boolean",
+            "example": true
+          },
+          "guestStart": {
+            "format": "date-time",
+            "description": "Date when this crew member starts acting as guest help for the squadron, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-01-01T16:00:00.123Z"
+          },
+          "guestStop": {
+            "format": "date-time",
+            "description": "Date when this crew member stops acting as guest help for the squadron, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-01-01T16:00:00.123Z"
+          },
+          "physAvCode": {
+            "description": "Code indicating a crew member's current physical fitness status and whether they are medically cleared to fly (e.g., D for Duties Not Including Flying, E for Physical Overdue, etc.).",
+            "maxLength": 16,
+            "type": "string",
+            "example": "D"
+          },
+          "physAvStatus": {
+            "description": "Code indicating a crew member's physical availabiility status (e.g., DISQUALIFIED, OVERDUE, etc.).",
+            "maxLength": 128,
+            "type": "string",
+            "example": "OVERDUE"
+          },
+          "physDue": {
+            "format": "date-time",
+            "description": "Due date for the crew member's physical, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-01-01T16:00:00.123Z"
+          },
+          "trainingDate": {
+            "format": "date-time",
+            "description": "The date this crew member accomplished physiological or altitude chamber training, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-01-01T16:00:00.123Z"
+          },
+          "lastFltDate": {
+            "format": "date-time",
+            "description": "Date of the last flight for this crew member, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-01-01T16:00:00.123Z"
+          },
+          "fltRecDate": {
+            "format": "date-time",
+            "description": "The date this crew member's records review was completed, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-01-01T16:00:00.123Z"
+          },
+          "fltRecDue": {
+            "format": "date-time",
+            "description": "The date this crew member's records review is due, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-01-01T16:00:00.123Z"
+          },
+          "fltCurrencyExp": {
+            "format": "date-time",
+            "description": "The earliest flying currency expiration date for this crew member, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-01-01T16:00:00.123Z"
+          },
+          "fltCurrencyExpId": {
+            "description": "The training task identifier associated with the flying currency expiration date for this crew member.",
+            "maxLength": 8,
+            "type": "string",
+            "example": "SS05AM"
+          },
+          "gndCurrencyExp": {
+            "format": "date-time",
+            "description": "The earliest ground currency expiration date for this crew member, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-01-01T16:00:00.123Z"
+          },
+          "gndCurrencyExpId": {
+            "description": "The training task identifier associated with the ground currency expiration date for this crew member.",
+            "maxLength": 8,
+            "type": "string",
+            "example": "AH03YM"
+          },
+          "remarkCode": {
+            "description": "Remark code used to designate attributes of this crew member. For more information, contact the provider source.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "ABE33"
+          },
+          "memberRemarks": {
+            "description": "Remarks concerning the crew member.",
+            "maxLength": 512,
+            "type": "string",
+            "example": "Crew member remark"
+          }
+        }
+      },
+      "CrewMembers_Ingest": {
+        "description": "Schema for Crew Member data.",
+        "type": "object",
+        "properties": {
+          "lastName": {
+            "description": "The last name of the crew member.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "Smith"
+          },
+          "firstName": {
+            "description": "The first name of the crew member.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "Freddie"
+          },
+          "middleInitial": {
+            "description": "The middle initial of the crew member.",
+            "maxLength": 1,
+            "type": "string",
+            "example": "G"
+          },
+          "gender": {
+            "description": "Gender of the crew member.",
+            "maxLength": 1,
+            "type": "string",
+            "example": "F"
+          },
+          "memberId": {
+            "description": "Unique identifier of the crew member assigned by the originating source.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "12345678abc"
+          },
+          "civilian": {
+            "description": "Flag indicating this crew member is a civilian or non-military person.",
+            "type": "boolean",
+            "example": false
+          },
+          "commander": {
+            "description": "Flag indicating this person is the aircraft commander.",
+            "type": "boolean",
+            "example": false
+          },
+          "last4SSN": {
+            "description": "Last four digits of the crew member's social security number.",
+            "maxLength": 4,
+            "type": "string",
+            "example": "1234"
+          },
+          "dodID": {
+            "description": "The crew member's 10-digit DoD ID number.",
+            "maxLength": 10,
+            "type": "string",
+            "example": "0123456789"
+          },
+          "username": {
+            "description": "The Mattermost username of this crew member.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "fgsmith"
+          },
+          "dutyPosition": {
+            "description": "The duty position of the crew member.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "IP"
+          },
+          "crewPosition": {
+            "description": "The crew position of the crew member.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "EP A"
+          },
+          "memberType": {
+            "description": "Amplifying details about the crew member type (e.g. RAVEN, FCC, COMCAM, AIRCREW, MEP, OTHER, etc.).",
+            "maxLength": 32,
+            "type": "string",
+            "example": "AIRCREW"
+          },
+          "branch": {
+            "description": "The military branch assignment of the crew member.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "Air Force"
+          },
+          "rank": {
+            "description": "The rank of the crew member.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "Capt"
+          },
+          "wing": {
+            "description": "The wing the crew member serves.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "60AMW"
+          },
+          "squadron": {
+            "description": "The squadron the crew member serves.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "21AS"
+          },
+          "flySquadron": {
+            "description": "The flying squadron assignment of the crew member.",
+            "maxLength": 256,
+            "type": "string",
+            "example": "141ARS"
+          },
+          "loanedTo": {
+            "description": "The squadron the crew member has been temporarily loaned to.",
+            "maxLength": 256,
+            "type": "string",
+            "example": "Thunderbirds"
+          },
+          "memberSource": {
+            "description": "The military component for the crew member (e.g., ACTIVE, RESERVE, GUARD, UNKNOWN, etc.).",
+            "maxLength": 16,
+            "type": "string",
+            "example": "ACTIVE"
+          },
+          "dutyStatus": {
+            "description": "The current duty status code of this crew member (e.g., AGR for Active Guard and Reserve, IDT for Inactive Duty Training, etc.).",
+            "maxLength": 16,
+            "type": "string",
+            "example": "AGR"
+          },
+          "memberStageName": {
+            "description": "Stage name for the crew member.  A stage is a pool of crews supporting a given operation plan.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "Falcon Squadron"
+          },
+          "rmsMDS": {
+            "description": "The primary aircraft type for the crew member according to the personnel resource management system indicated in the crewRMS field.",
+            "maxLength": 8,
+            "type": "string",
+            "example": "C017A"
+          },
+          "phoneNumber": {
+            "description": "Crew member lodging phone number.",
+            "maxLength": 16,
+            "type": "string",
+            "example": "+14155552671"
+          },
+          "lodging": {
+            "description": "Crew member lodging location.",
+            "maxLength": 128,
+            "type": "string",
+            "example": "Peterson SFB"
+          },
+          "memberTransportReq": {
+            "description": "Flag indicating whether this crew member needs transportation to the departure location.",
+            "type": "boolean",
+            "example": true
+          },
+          "memberPreRestTime": {
+            "format": "date-time",
+            "description": "Start time of this crew member's rest period before the mission, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-01-01T16:00:00.123Z"
+          },
+          "memberLegalAlertTime": {
+            "format": "date-time",
+            "description": "Time this crew member becomes eligible to be alerted for the mission, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-01-01T16:00:00.123Z"
+          },
+          "memberSchedAlertTime": {
+            "format": "date-time",
+            "description": "Time this crew member is scheduled to be alerted for the mission, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-02-26T09:15:00.123Z"
+          },
+          "memberActualAlertTime": {
+            "format": "date-time",
+            "description": "Time this crew member was actually alerted for the mission, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-02-26T09:15:00.123Z"
+          },
+          "memberLastAlertTime": {
+            "format": "date-time",
+            "description": "The latest possible time the crew member can legally be alerted for a task, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-01-01T16:00:00.123Z"
+          },
+          "memberPickupTime": {
+            "format": "date-time",
+            "description": "Time this crew member will be picked up from lodging, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-02-26T10:15:00.123Z"
+          },
+          "showTime": {
+            "format": "date-time",
+            "description": "Time this crew member is required to report for duty before this flight/mission, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-02-26T10:15:00.123Z"
+          },
+          "memberReturnTime": {
+            "format": "date-time",
+            "description": "Scheduled return time for this crew member, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-01-01T16:00:00.123Z"
+          },
+          "memberAdjReturnTime": {
+            "format": "date-time",
+            "description": "Adjusted return time for the crew member, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-01-01T16:00:00.123Z"
+          },
+          "memberAdjReturnTimeApprover": {
+            "description": "Last name of the crew member's adjusted return time approver.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "Smith"
+          },
+          "memberInitStartTime": {
+            "format": "date-time",
+            "description": "Initial start time of the crew member's linked task that was delinked due to mission closure, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-01-01T16:00:00.123Z"
+          },
+          "memberPostRestTime": {
+            "format": "date-time",
+            "description": "End time of this crew member's rest period after the mission, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-01-02T16:00:00.123Z"
+          },
+          "memberPostRestOffset": {
+            "description": "The scheduled delay or adjustment in the start time of a crew member's rest period after a mission, expressed as +/-HH:MM.",
+            "maxLength": 6,
+            "type": "string",
+            "example": "+05:00"
+          },
+          "allSortie": {
+            "description": "Flag indicating this crew member is assigned to all sorties of the crew itinerary.",
+            "type": "boolean",
+            "example": true
+          },
+          "attached": {
+            "description": "Flag indicating whether this crew member is attached to his/her squadron. Crew members that are not attached are considered assigned.",
+            "type": "boolean",
+            "example": true
+          },
+          "funded": {
+            "description": "Flag indicating whether this crew member is funded.",
+            "type": "boolean",
+            "example": true
+          },
+          "approved": {
+            "description": "Flag indicating whether this crew member has been approved for the associated task.",
+            "type": "boolean",
+            "example": true
+          },
+          "notified": {
+            "description": "Flag indicating whether this crew member has been notified of an event.",
+            "type": "boolean",
+            "example": true
+          },
+          "alerted": {
+            "description": "Flag indicating whether this crew member has been alerted of the associated task.",
+            "type": "boolean",
+            "example": true
+          },
+          "emailed": {
+            "description": "Flag indicating whether this crew member has been notified of an event by email.",
+            "type": "boolean",
+            "example": true
+          },
+          "extraTime": {
+            "description": "Flag indicating whether this crew member requires an additional amount of time to report for duty.",
+            "type": "boolean",
+            "example": true
+          },
+          "grounded": {
+            "description": "Flag indicating whether this crew member is grounded (i.e., his/her duties do not include flying).",
+            "type": "boolean",
+            "example": true
+          },
+          "guestStart": {
+            "format": "date-time",
+            "description": "Date when this crew member starts acting as guest help for the squadron, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-01-01T16:00:00.123Z"
+          },
+          "guestStop": {
+            "format": "date-time",
+            "description": "Date when this crew member stops acting as guest help for the squadron, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-01-01T16:00:00.123Z"
+          },
+          "physAvCode": {
+            "description": "Code indicating a crew member's current physical fitness status and whether they are medically cleared to fly (e.g., D for Duties Not Including Flying, E for Physical Overdue, etc.).",
+            "maxLength": 16,
+            "type": "string",
+            "example": "D"
+          },
+          "physAvStatus": {
+            "description": "Code indicating a crew member's physical availabiility status (e.g., DISQUALIFIED, OVERDUE, etc.).",
+            "maxLength": 128,
+            "type": "string",
+            "example": "OVERDUE"
+          },
+          "physDue": {
+            "format": "date-time",
+            "description": "Due date for the crew member's physical, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-01-01T16:00:00.123Z"
+          },
+          "trainingDate": {
+            "format": "date-time",
+            "description": "The date this crew member accomplished physiological or altitude chamber training, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-01-01T16:00:00.123Z"
+          },
+          "lastFltDate": {
+            "format": "date-time",
+            "description": "Date of the last flight for this crew member, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-01-01T16:00:00.123Z"
+          },
+          "fltRecDate": {
+            "format": "date-time",
+            "description": "The date this crew member's records review was completed, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-01-01T16:00:00.123Z"
+          },
+          "fltRecDue": {
+            "format": "date-time",
+            "description": "The date this crew member's records review is due, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-01-01T16:00:00.123Z"
+          },
+          "fltCurrencyExp": {
+            "format": "date-time",
+            "description": "The earliest flying currency expiration date for this crew member, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-01-01T16:00:00.123Z"
+          },
+          "fltCurrencyExpId": {
+            "description": "The training task identifier associated with the flying currency expiration date for this crew member.",
+            "maxLength": 8,
+            "type": "string",
+            "example": "SS05AM"
+          },
+          "gndCurrencyExp": {
+            "format": "date-time",
+            "description": "The earliest ground currency expiration date for this crew member, in ISO 8601 UTC format with millisecond precision.",
+            "type": "string",
+            "example": "2024-01-01T16:00:00.123Z"
+          },
+          "gndCurrencyExpId": {
+            "description": "The training task identifier associated with the ground currency expiration date for this crew member.",
+            "maxLength": 8,
+            "type": "string",
+            "example": "AH03YM"
+          },
+          "remarkCode": {
+            "description": "Remark code used to designate attributes of this crew member. For more information, contact the provider source.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "ABE33"
+          },
+          "memberRemarks": {
+            "description": "Remarks concerning the crew member.",
+            "maxLength": 512,
+            "type": "string",
+            "example": "Crew member remark"
+          }
+        }
+      }
+    }
+  }
+}

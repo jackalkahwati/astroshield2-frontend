@@ -1,0 +1,1593 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Unified Data Library Services API",
+    "version": "1.30.0 Daiquiri",
+    "description": "Unified Data Library Services OpenAPI v3 documentation.",
+    "termsOfService": "storefront/storefront/appConfig/useragreement.html",
+    "contact": {
+      "name": "Sage Andorka, Deputy, Cross-Mission Ground",
+      "email": "unifieddatalibrary@bluestaq.com"
+    }
+  },
+  "tags": [
+    {
+      "name": "Beam",
+      "description": "This collection of services provides operations for querying and manipulation of satellite antenna beams, and querying of beam contours and service areas.   Beam contours are the geographic representation of the relative gain levels of beam power off of the maximum gain boresight points.  Similarly, service areas are the geographic footprints of the areas served by a particular beam, and may be made up of multiple service regions.  Well-Known Text (WKT) and GeoJSON formats are used for GIS representation and query support (see https://www.opengeospatial.org/standards/wkt-crs and https://geojson.org/ for more information on these formats)."
+    }
+  ],
+  "externalDocs": {
+    "url": "udl/openapi.json"
+  },
+  "servers": [
+    {
+      "url": "https://unifieddatalibrary.com"
+    }
+  ],
+  "paths": {
+    "/udl/beam": {
+      "get": {
+        "description": "Service operation to dynamically query data by a variety of query parameters not specified in this API documentation. See the queryhelp operation (/udl/&lt;datatype&gt;/queryhelp) for more details on valid/required query parameter information.",
+        "tags": [
+          "Beam"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Beam_Abridged"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "406": {
+            "description": "MediaType Not Accepted by Request Headers"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "parameters": []
+      },
+      "post": {
+        "description": "Service operation to take a single Beam as a POST body and ingest into the database. A specific role is required to perform this service operation. Please contact the UDL team for assistance.",
+        "tags": [
+          "Beam"
+        ],
+        "requestBody": {
+          "description": "JSON representation of one Beam.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Beam_Ingest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "415": {
+            "description": "MediaType Unsupported"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/udl/beam/{id}": {
+      "delete": {
+        "description": "Service operation to delete a Beam object specified by the passed ID path parameter. A specific role is required to perform this service operation. Please contact the UDL team for assistance.",
+        "tags": [
+          "Beam"
+        ],
+        "parameters": [
+          {
+            "description": "The ID of the Beam to delete.",
+            "required": true,
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "404": {
+            "description": "Item Not Found"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "get": {
+        "description": "Service operation to get a single Beam record by its unique ID passed as a path parameter.",
+        "tags": [
+          "Beam"
+        ],
+        "parameters": [
+          {
+            "description": "The ID of the Beam to find.",
+            "required": true,
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Beam_Full"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "404": {
+            "description": "Item Not Found"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "406": {
+            "description": "MediaType Not Accepted by Request Headers"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "put": {
+        "description": "Service operation to update a single Beam. A specific role is required to perform this service operation. Please contact the UDL team for assistance.",
+        "tags": [
+          "Beam"
+        ],
+        "parameters": [
+          {
+            "description": "The ID of the Beam to update.",
+            "required": true,
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "JSON representation of one Beam.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Beam_Ingest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "404": {
+            "description": "Item Not Found"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "415": {
+            "description": "MediaType Unsupported"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/udl/beam/count": {
+      "get": {
+        "description": "Service operation to return the count of records satisfying the specified query parameters. This operation is useful to determine how many records pass a particular query criteria without retrieving large amounts of data. See the queryhelp operation (/udl/&lt;datatype&gt;/queryhelp) for more details on valid/required query parameter information.",
+        "tags": [
+          "Beam"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "406": {
+            "description": "MediaType Not Accepted by Request Headers"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "parameters": []
+      }
+    },
+    "/udl/beam/queryhelp": {
+      "get": {
+        "description": "Service operation to provide detailed information on available dynamic query parameters for a particular data type.",
+        "tags": [
+          "Beam"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "User Unauthorized"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "406": {
+            "description": "MediaType Not Accepted by Request Headers"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/udl/beam/tuple": {
+      "get": {
+        "description": "Service operation to dynamically query data and only return specified columns/fields. Requested columns are specified by the 'columns' query parameter and should be a comma separated list of valid fields for the specified data type. classificationMarking is always returned. See the queryhelp operation (/udl/<datatype>/queryhelp) for more details on valid/required query parameter information. An example URI: /udl/elset/tuple?columns=satNo,period&epoch=>now-5 hours would return the satNo and period of elsets with an epoch greater than 5 hours ago.",
+        "tags": [
+          "Beam"
+        ],
+        "parameters": [
+          {
+            "description": "Comma-separated list of valid field names for this data type to be returned in the response. Only the fields specified will be returned as well as the classification marking of the data, if applicable. See the ‘queryhelp’ operation for a complete list of possible fields.",
+            "required": true,
+            "name": "columns",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Beam_Full"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "406": {
+            "description": "MediaType Not Accepted by Request Headers"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/udl/beamcontour": {
+      "get": {
+        "description": "Service operation to dynamically query data by a variety of query parameters not specified in this API documentation. See the queryhelp operation (/udl/&lt;datatype&gt;/queryhelp) for more details on valid/required query parameter information.",
+        "tags": [
+          "Beam"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BeamContour_Abridged"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "406": {
+            "description": "MediaType Not Accepted by Request Headers"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "parameters": [
+          {
+            "name": "idBeam",
+            "description": "ID of the beam.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "in": "query"
+          }
+        ]
+      },
+      "post": {
+        "description": "Service operation to take a single BeamContour as a POST body and ingest into the database. A specific role is required to perform this service operation. Please contact the UDL team for assistance.",
+        "tags": [
+          "Beam"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BeamContour_Ingest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "415": {
+            "description": "MediaType Unsupported"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/udl/beamcontour/{id}": {
+      "delete": {
+        "description": "Service operation to delete a BeamContour object specified by the passed ID path parameter. A specific role is required to perform this service operation. Please contact the UDL team for assistance.",
+        "tags": [
+          "Beam"
+        ],
+        "parameters": [
+          {
+            "description": "The ID of the BeamContours to delete.",
+            "required": true,
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "404": {
+            "description": "Item Not Found"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "get": {
+        "description": "Service operation to get a single BeamContour by its unique ID passed as a path parameter.",
+        "tags": [
+          "Beam"
+        ],
+        "parameters": [
+          {
+            "description": "The ID of the BeamContour to retrieve.",
+            "required": true,
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BeamContour_Full"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "404": {
+            "description": "Item Not Found"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "406": {
+            "description": "MediaType Not Accepted by Request Headers"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "put": {
+        "description": "Service operation to update a single BeamContour. A specific role is required to perform this service operation. Please contact the UDL team for assistance.",
+        "tags": [
+          "Beam"
+        ],
+        "parameters": [
+          {
+            "description": "The ID of the BeamContour to update.",
+            "required": true,
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "JSON representation of one BeamContours.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BeamContour_Ingest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "404": {
+            "description": "Item Not Found"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "415": {
+            "description": "MediaType Unsupported"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/udl/beamcontour/count": {
+      "get": {
+        "description": "Service operation to return the count of records satisfying the specified query parameters. This operation is useful to determine how many records pass a particular query criteria without retrieving large amounts of data. See the queryhelp operation (/udl/&lt;datatype&gt;/queryhelp) for more details on valid/required query parameter information.",
+        "tags": [
+          "Beam"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "406": {
+            "description": "MediaType Not Accepted by Request Headers"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "parameters": [
+          {
+            "name": "idBeam",
+            "description": "ID of the beam.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "in": "query"
+          }
+        ]
+      }
+    },
+    "/udl/beamcontour/createBulk": {
+      "post": {
+        "description": "Service operation to take a list of BeamContours as a POST body and ingest into the database. This operation is not intended to be used for automated feeds into UDL. Data providers should contact the UDL team for specific role assignments and for instructions on setting up a permanent feed through an alternate mechanism.",
+        "tags": [
+          "Beam"
+        ],
+        "requestBody": {
+          "description": "JSON representation of list of BeamContours.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/BeamContour_Ingest"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "415": {
+            "description": "MediaType Unsupported"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/udl/beamcontour/queryhelp": {
+      "get": {
+        "description": "Service operation to provide detailed information on available dynamic query parameters for a particular data type.",
+        "tags": [
+          "Beam"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "User Unauthorized"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "406": {
+            "description": "MediaType Not Accepted by Request Headers"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/udl/beamcontour/tuple": {
+      "get": {
+        "description": "Service operation to dynamically query data and only return specified columns/fields. Requested columns are specified by the 'columns' query parameter and should be a comma separated list of valid fields for the specified data type. classificationMarking is always returned. See the queryhelp operation (/udl/<datatype>/queryhelp) for more details on valid/required query parameter information. An example URI: /udl/elset/tuple?columns=satNo,period&epoch=>now-5 hours would return the satNo and period of elsets with an epoch greater than 5 hours ago.",
+        "tags": [
+          "Beam"
+        ],
+        "parameters": [
+          {
+            "description": "Comma-separated list of valid field names for this data type to be returned in the response. Only the fields specified will be returned as well as the classification marking of the data, if applicable. See the ‘queryhelp’ operation for a complete list of possible fields.",
+            "required": true,
+            "name": "columns",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "idBeam",
+            "description": "ID of the beam.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BeamContour_Full"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "406": {
+            "description": "MediaType Not Accepted by Request Headers"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Beam_Abridged": {
+        "description": "Describes a satellite antenna beam.",
+        "required": [
+          "classificationMarking",
+          "beamName",
+          "source",
+          "dataMode"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Unique identifier of the record, auto-generated by the system.",
+            "maxLength": 36,
+            "minLength": 1,
+            "type": "string",
+            "example": "BEAM-ID"
+          },
+          "classificationMarking": {
+            "description": "Classification marking of the data in IC/CAPCO Portion-marked format.",
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string",
+            "example": "U"
+          },
+          "beamName": {
+            "description": "The antenna beam ID of the particular beam for this channel.  beamName is not unique across payloads.",
+            "maxLength": 36,
+            "minLength": 1,
+            "type": "string",
+            "example": "BEAMNAME-ID"
+          },
+          "notes": {
+            "description": "Optional notes/comments on this beam.",
+            "maxLength": 1024,
+            "type": "string",
+            "example": "Example notes"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "description": "Time the row was created in the database, auto-populated by the system.",
+            "type": "string",
+            "readOnly": true,
+            "example": "2018-01-01T16:00:00.123Z"
+          },
+          "createdBy": {
+            "description": "Application user who created the row in the database, auto-populated by the system.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string",
+            "readOnly": true,
+            "example": "some.user"
+          },
+          "source": {
+            "description": "Source of the data.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string",
+            "example": "Bluestaq"
+          },
+          "origin": {
+            "description": "Originating system or organization which produced the data, if different from the source. The origin may be different than the source if the source was a mediating system which forwarded the data on behalf of the origin system. If null, the source may be assumed to be the origin.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "THIRD_PARTY_DATASOURCE"
+          },
+          "origNetwork": {
+            "description": "The originating source network on which this record was created, auto-populated by the system.",
+            "maxLength": 32,
+            "minLength": 1,
+            "type": "string",
+            "readOnly": true,
+            "example": "ORIG"
+          },
+          "dataMode": {
+            "description": "Indicator of whether the data is EXERCISE, REAL, SIMULATED, or TEST data:\n\nEXERCISE:&nbsp;Data pertaining to a government or military exercise. The data may include both real and simulated data.\n\nREAL:&nbsp;Data collected or produced that pertains to real-world objects, events, and analysis.\n\nSIMULATED:&nbsp;Synthetic data generated by a model to mimic real-world datasets.\n\nTEST:&nbsp;Specific datasets used to evaluate compliance with specifications and requirements, and for validating technical, functional, and performance characteristics.\n\n",
+            "maxLength": 32,
+            "minLength": 1,
+            "enum": [
+              "REAL",
+              "TEST",
+              "SIMULATED",
+              "EXERCISE"
+            ],
+            "type": "string",
+            "example": "TEST"
+          }
+        }
+      },
+      "Beam_Full": {
+        "description": "Describes a satellite antenna beam.",
+        "required": [
+          "classificationMarking",
+          "beamName",
+          "source",
+          "dataMode"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Unique identifier of the record, auto-generated by the system.",
+            "maxLength": 36,
+            "minLength": 1,
+            "type": "string",
+            "example": "BEAM-ID"
+          },
+          "classificationMarking": {
+            "description": "Classification marking of the data in IC/CAPCO Portion-marked format.",
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string",
+            "example": "U"
+          },
+          "beamName": {
+            "description": "The antenna beam ID of the particular beam for this channel.  beamName is not unique across payloads.",
+            "maxLength": 36,
+            "minLength": 1,
+            "type": "string",
+            "example": "BEAMNAME-ID"
+          },
+          "notes": {
+            "description": "Optional notes/comments on this beam.",
+            "maxLength": 1024,
+            "type": "string",
+            "example": "Example notes"
+          },
+          "beamContours": {
+            "description": "Read-only collection of beamContours, ignored on create/update. These details must be created separately via the /udl/beamcontour operations.",
+            "uniqueItems": true,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BeamContour_Full"
+            },
+            "readOnly": true
+          },
+          "createdAt": {
+            "format": "date-time",
+            "description": "Time the row was created in the database, auto-populated by the system.",
+            "type": "string",
+            "readOnly": true,
+            "example": "2018-01-01T16:00:00.123Z"
+          },
+          "createdBy": {
+            "description": "Application user who created the row in the database, auto-populated by the system.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string",
+            "readOnly": true,
+            "example": "some.user"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "description": "Time the row was updated in the database, auto-populated by the system.",
+            "type": "string",
+            "readOnly": true,
+            "example": "2018-01-01T16:00:00.123Z"
+          },
+          "updatedBy": {
+            "description": "Application user who updated the row in the database, auto-populated by the system.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string",
+            "readOnly": true,
+            "example": "some.user"
+          },
+          "source": {
+            "description": "Source of the data.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string",
+            "example": "Bluestaq"
+          },
+          "origin": {
+            "description": "Originating system or organization which produced the data, if different from the source. The origin may be different than the source if the source was a mediating system which forwarded the data on behalf of the origin system. If null, the source may be assumed to be the origin.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "THIRD_PARTY_DATASOURCE"
+          },
+          "origNetwork": {
+            "description": "The originating source network on which this record was created, auto-populated by the system.",
+            "maxLength": 32,
+            "minLength": 1,
+            "type": "string",
+            "readOnly": true,
+            "example": "ORIG"
+          },
+          "dataMode": {
+            "description": "Indicator of whether the data is EXERCISE, REAL, SIMULATED, or TEST data:\n\nEXERCISE:&nbsp;Data pertaining to a government or military exercise. The data may include both real and simulated data.\n\nREAL:&nbsp;Data collected or produced that pertains to real-world objects, events, and analysis.\n\nSIMULATED:&nbsp;Synthetic data generated by a model to mimic real-world datasets.\n\nTEST:&nbsp;Specific datasets used to evaluate compliance with specifications and requirements, and for validating technical, functional, and performance characteristics.\n\n",
+            "maxLength": 32,
+            "minLength": 1,
+            "enum": [
+              "REAL",
+              "TEST",
+              "SIMULATED",
+              "EXERCISE"
+            ],
+            "type": "string",
+            "example": "TEST"
+          }
+        }
+      },
+      "Beam_Ingest": {
+        "description": "Describes a satellite antenna beam.",
+        "required": [
+          "classificationMarking",
+          "beamName",
+          "source",
+          "dataMode"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Unique identifier of the record, auto-generated by the system.",
+            "maxLength": 36,
+            "minLength": 1,
+            "type": "string",
+            "example": "BEAM-ID"
+          },
+          "classificationMarking": {
+            "description": "Classification marking of the data in IC/CAPCO Portion-marked format.",
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string",
+            "example": "U"
+          },
+          "beamName": {
+            "description": "The antenna beam ID of the particular beam for this channel.  beamName is not unique across payloads.",
+            "maxLength": 36,
+            "minLength": 1,
+            "type": "string",
+            "example": "BEAMNAME-ID"
+          },
+          "notes": {
+            "description": "Optional notes/comments on this beam.",
+            "maxLength": 1024,
+            "type": "string",
+            "example": "Example notes"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "description": "Time the row was created in the database, auto-populated by the system.",
+            "type": "string",
+            "readOnly": true,
+            "example": "2018-01-01T16:00:00.123Z"
+          },
+          "createdBy": {
+            "description": "Application user who created the row in the database, auto-populated by the system.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string",
+            "readOnly": true,
+            "example": "some.user"
+          },
+          "source": {
+            "description": "Source of the data.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string",
+            "example": "Bluestaq"
+          },
+          "origin": {
+            "description": "Originating system or organization which produced the data, if different from the source. The origin may be different than the source if the source was a mediating system which forwarded the data on behalf of the origin system. If null, the source may be assumed to be the origin.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "THIRD_PARTY_DATASOURCE"
+          },
+          "origNetwork": {
+            "description": "The originating source network on which this record was created, auto-populated by the system.",
+            "maxLength": 32,
+            "minLength": 1,
+            "type": "string",
+            "readOnly": true,
+            "example": "ORIG"
+          },
+          "dataMode": {
+            "description": "Indicator of whether the data is EXERCISE, REAL, SIMULATED, or TEST data:\n\nEXERCISE:&nbsp;Data pertaining to a government or military exercise. The data may include both real and simulated data.\n\nREAL:&nbsp;Data collected or produced that pertains to real-world objects, events, and analysis.\n\nSIMULATED:&nbsp;Synthetic data generated by a model to mimic real-world datasets.\n\nTEST:&nbsp;Specific datasets used to evaluate compliance with specifications and requirements, and for validating technical, functional, and performance characteristics.\n\n",
+            "maxLength": 32,
+            "minLength": 1,
+            "enum": [
+              "REAL",
+              "TEST",
+              "SIMULATED",
+              "EXERCISE"
+            ],
+            "type": "string",
+            "example": "TEST"
+          }
+        }
+      },
+      "BeamContour_Abridged": {
+        "description": "Describes the beam contour associated with a beam entity. Beam contours are the geographic representation of the relative gain levels of beam power off of the maximum gain boresight points.",
+        "required": [
+          "classificationMarking",
+          "idBeam",
+          "type",
+          "source",
+          "dataMode"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Unique identifier of the record, auto-generated by the system.",
+            "maxLength": 36,
+            "minLength": 1,
+            "type": "string",
+            "example": "BEAMCONTOUR-ID"
+          },
+          "classificationMarking": {
+            "description": "Classification marking of the data in IC/CAPCO Portion-marked format.",
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string",
+            "example": "U"
+          },
+          "idBeam": {
+            "description": "ID of the beam.",
+            "maxLength": 36,
+            "minLength": 1,
+            "type": "string",
+            "example": "REF-BEAM-ID"
+          },
+          "type": {
+            "description": "The type of object represented in this record (BORESIGHT, CONTOUR, SVC AREA).  Boresight refers to the point of maximum/peak gain, and should not be confused with the 'aim point' of the related beam.  Gain contours are regions of  coverage referenced to the relative gain of the related beam.  Service Areas are composed of one or more service regions, with each region being either discrete point(s) or a continuous contour.",
+            "maxLength": 16,
+            "minLength": 1,
+            "enum": [
+              "BORESIGHT",
+              "CONTOUR",
+              "SVC AREA"
+            ],
+            "type": "string",
+            "example": "BORESIGHT"
+          },
+          "contourIdx": {
+            "format": "int16",
+            "description": "The index number of this contour. The value is required if type = CONTOUR.",
+            "type": "integer",
+            "example": 1
+          },
+          "gain": {
+            "format": "double",
+            "description": "The relative gain level in dB associated with this boresight or contour.  Gain does not apply to service area records. The value is required if type = BORESIGHT or CONTOUR.",
+            "type": "number",
+            "example": 17.1
+          },
+          "regionName": {
+            "description": "The region name within the service area.",
+            "maxLength": 24,
+            "type": "string",
+            "example": "Example region name"
+          },
+          "geographyText": {
+            "description": "Geographical region or polygon (lon/lat pairs), as depicted by the Well-Known Text representation of the geometry/geography, of the image as projected on the ground. WKT reference: https://www.opengeospatial.org/standards/wkt-crs. Ignored if included with a POST or PUT request that also specifies a valid 'area' field.",
+            "type": "string",
+            "example": "POLYGON((67.3291113966927 26.156175339112,67.2580009640721 26.091022064271,67.1795862381682 26.6637992964562,67.2501237475598 26.730115808233,67.3291113966927 26.156175339112))"
+          },
+          "geographyJson": {
+            "description": "Geographical region or polygon (lat/lon pairs), as depicted by the GeoJSON representation of the geometry/geography, of the image as projected on the ground. GeoJSON Reference: https://geojson.org/. Ignored if included with a POST or PUT request that also specifies a valid 'area' or 'atext' field.",
+            "type": "string",
+            "example": "{\"type\":\"Polygon\",\"coordinates\":[ [ [ 67.3291113966927, 26.156175339112 ], [ 67.2580009640721, 26.091022064271 ], [ 67.1795862381682, 26.6637992964562 ], [ 67.2501237475598, 26.730115808233 ], [ 67.3291113966927, 26.156175339112 ] ] ] }"
+          },
+          "geographyType": {
+            "description": "Type of region as projected.",
+            "maxLength": 128,
+            "type": "string",
+            "example": "ST_Polygon"
+          },
+          "geographyNdims": {
+            "format": "int32",
+            "description": "Number of dimensions of the geometry depicted by region.",
+            "type": "integer",
+            "example": 2
+          },
+          "geographySrid": {
+            "format": "int32",
+            "description": "Geographical spatial_ref_sys for region.",
+            "type": "integer",
+            "example": 4326
+          },
+          "createdAt": {
+            "format": "date-time",
+            "description": "Time the row was created in the database, auto-populated by the system, example = 2018-01-01T16:00:00.123Z.",
+            "type": "string",
+            "readOnly": true,
+            "example": "2018-01-01T16:00:00.123Z"
+          },
+          "createdBy": {
+            "description": "Application user who created the row in the database, auto-populated by the system.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string",
+            "readOnly": true,
+            "example": "some.user"
+          },
+          "source": {
+            "description": "Source of the data.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string",
+            "example": "Bluestaq"
+          },
+          "origin": {
+            "description": "Originating system or organization which produced the data, if different from the source. The origin may be different than the source if the source was a mediating system which forwarded the data on behalf of the origin system. If null, the source may be assumed to be the origin.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "THIRD_PARTY_DATASOURCE"
+          },
+          "origNetwork": {
+            "description": "The originating source network on which this record was created, auto-populated by the system.",
+            "maxLength": 32,
+            "minLength": 1,
+            "type": "string",
+            "readOnly": true,
+            "example": "ORIG"
+          },
+          "dataMode": {
+            "description": "Indicator of whether the data is EXERCISE, REAL, SIMULATED, or TEST data:\n\nEXERCISE:&nbsp;Data pertaining to a government or military exercise. The data may include both real and simulated data.\n\nREAL:&nbsp;Data collected or produced that pertains to real-world objects, events, and analysis.\n\nSIMULATED:&nbsp;Synthetic data generated by a model to mimic real-world datasets.\n\nTEST:&nbsp;Specific datasets used to evaluate compliance with specifications and requirements, and for validating technical, functional, and performance characteristics.\n\n",
+            "maxLength": 32,
+            "minLength": 1,
+            "enum": [
+              "REAL",
+              "TEST",
+              "SIMULATED",
+              "EXERCISE"
+            ],
+            "type": "string",
+            "example": "TEST"
+          }
+        }
+      },
+      "BeamContour_Full": {
+        "description": "Describes the beam contour associated with a beam entity. Beam contours are the geographic representation of the relative gain levels of beam power off of the maximum gain boresight points.",
+        "required": [
+          "classificationMarking",
+          "idBeam",
+          "type",
+          "source",
+          "dataMode"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Unique identifier of the record, auto-generated by the system.",
+            "maxLength": 36,
+            "minLength": 1,
+            "type": "string",
+            "example": "BEAMCONTOUR-ID"
+          },
+          "classificationMarking": {
+            "description": "Classification marking of the data in IC/CAPCO Portion-marked format.",
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string",
+            "example": "U"
+          },
+          "idBeam": {
+            "description": "ID of the beam.",
+            "maxLength": 36,
+            "minLength": 1,
+            "type": "string",
+            "example": "REF-BEAM-ID"
+          },
+          "type": {
+            "description": "The type of object represented in this record (BORESIGHT, CONTOUR, SVC AREA).  Boresight refers to the point of maximum/peak gain, and should not be confused with the 'aim point' of the related beam.  Gain contours are regions of  coverage referenced to the relative gain of the related beam.  Service Areas are composed of one or more service regions, with each region being either discrete point(s) or a continuous contour.",
+            "maxLength": 16,
+            "minLength": 1,
+            "enum": [
+              "BORESIGHT",
+              "CONTOUR",
+              "SVC AREA"
+            ],
+            "type": "string",
+            "example": "BORESIGHT"
+          },
+          "contourIdx": {
+            "format": "int16",
+            "description": "The index number of this contour. The value is required if type = CONTOUR.",
+            "type": "integer",
+            "example": 1
+          },
+          "gain": {
+            "format": "double",
+            "description": "The relative gain level in dB associated with this boresight or contour.  Gain does not apply to service area records. The value is required if type = BORESIGHT or CONTOUR.",
+            "type": "number",
+            "example": 17.1
+          },
+          "regionName": {
+            "description": "The region name within the service area.",
+            "maxLength": 24,
+            "type": "string",
+            "example": "Example region name"
+          },
+          "geography": {
+            "description": "GeoJSON or Well Known Text expression of the boresight point, service area point or region, or the gain contour region in geographic longitude, latitude pairs. Boresight and service area point(s) are represented as a 'Point' or 'MultiPoint', service areas and closed gain contours as 'Polygon', and open contours as 'LineString'. This is an optional convenience field only used for create operations. The system will auto-detect the format (Well Known Text or GeoJSON) and populate both geographyText and geographyJson fields appropriately. A create request must contain one of the geography, geographyText, or geographyJson.",
+            "type": "string",
+            "example": "POLYGON((26.156175339112 67.3291113966927,26.0910220642717 67.2580009640721,26.6637992964562 67.1795862381682,26.730115808233 67.2501237475598,26.156175339112 67.3291113966927))"
+          },
+          "geographyText": {
+            "description": "Geographical region or polygon (lon/lat pairs), as depicted by the Well-Known Text representation of the geometry/geography, of the image as projected on the ground. WKT reference: https://www.opengeospatial.org/standards/wkt-crs. Ignored if included with a POST or PUT request that also specifies a valid 'area' field.",
+            "type": "string",
+            "example": "POLYGON((67.3291113966927 26.156175339112,67.2580009640721 26.091022064271,67.1795862381682 26.6637992964562,67.2501237475598 26.730115808233,67.3291113966927 26.156175339112))"
+          },
+          "geographyJson": {
+            "description": "Geographical region or polygon (lat/lon pairs), as depicted by the GeoJSON representation of the geometry/geography, of the image as projected on the ground. GeoJSON Reference: https://geojson.org/. Ignored if included with a POST or PUT request that also specifies a valid 'area' or 'atext' field.",
+            "type": "string",
+            "example": "{\"type\":\"Polygon\",\"coordinates\":[ [ [ 67.3291113966927, 26.156175339112 ], [ 67.2580009640721, 26.091022064271 ], [ 67.1795862381682, 26.6637992964562 ], [ 67.2501237475598, 26.730115808233 ], [ 67.3291113966927, 26.156175339112 ] ] ] }"
+          },
+          "geographyType": {
+            "description": "Type of region as projected.",
+            "maxLength": 128,
+            "type": "string",
+            "example": "ST_Polygon"
+          },
+          "geographyNdims": {
+            "format": "int32",
+            "description": "Number of dimensions of the geometry depicted by region.",
+            "type": "integer",
+            "example": 2
+          },
+          "geographySrid": {
+            "format": "int32",
+            "description": "Geographical spatial_ref_sys for region.",
+            "type": "integer",
+            "example": 4326
+          },
+          "createdAt": {
+            "format": "date-time",
+            "description": "Time the row was created in the database, auto-populated by the system, example = 2018-01-01T16:00:00.123Z.",
+            "type": "string",
+            "readOnly": true,
+            "example": "2018-01-01T16:00:00.123Z"
+          },
+          "createdBy": {
+            "description": "Application user who created the row in the database, auto-populated by the system.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string",
+            "readOnly": true,
+            "example": "some.user"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "description": "Time the row was updated in the database, auto-populated by the system, example = 2018-01-01T16:00:00.123Z.",
+            "type": "string",
+            "readOnly": true,
+            "example": "2018-01-01T16:00:00.123Z"
+          },
+          "updatedBy": {
+            "description": "Application user who updated the row in the database, auto-populated by the system.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string",
+            "readOnly": true,
+            "example": "some.user"
+          },
+          "source": {
+            "description": "Source of the data.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string",
+            "example": "Bluestaq"
+          },
+          "origin": {
+            "description": "Originating system or organization which produced the data, if different from the source. The origin may be different than the source if the source was a mediating system which forwarded the data on behalf of the origin system. If null, the source may be assumed to be the origin.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "THIRD_PARTY_DATASOURCE"
+          },
+          "origNetwork": {
+            "description": "The originating source network on which this record was created, auto-populated by the system.",
+            "maxLength": 32,
+            "minLength": 1,
+            "type": "string",
+            "readOnly": true,
+            "example": "ORIG"
+          },
+          "dataMode": {
+            "description": "Indicator of whether the data is EXERCISE, REAL, SIMULATED, or TEST data:\n\nEXERCISE:&nbsp;Data pertaining to a government or military exercise. The data may include both real and simulated data.\n\nREAL:&nbsp;Data collected or produced that pertains to real-world objects, events, and analysis.\n\nSIMULATED:&nbsp;Synthetic data generated by a model to mimic real-world datasets.\n\nTEST:&nbsp;Specific datasets used to evaluate compliance with specifications and requirements, and for validating technical, functional, and performance characteristics.\n\n",
+            "maxLength": 32,
+            "minLength": 1,
+            "enum": [
+              "REAL",
+              "TEST",
+              "SIMULATED",
+              "EXERCISE"
+            ],
+            "type": "string",
+            "example": "TEST"
+          }
+        }
+      },
+      "BeamContour_Ingest": {
+        "description": "Describes the beam contour associated with a beam entity. Beam contours are the geographic representation of the relative gain levels of beam power off of the maximum gain boresight points.",
+        "required": [
+          "classificationMarking",
+          "idBeam",
+          "type",
+          "source",
+          "dataMode"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Unique identifier of the record, auto-generated by the system.",
+            "maxLength": 36,
+            "minLength": 1,
+            "type": "string",
+            "example": "BEAMCONTOUR-ID"
+          },
+          "classificationMarking": {
+            "description": "Classification marking of the data in IC/CAPCO Portion-marked format.",
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string",
+            "example": "U"
+          },
+          "idBeam": {
+            "description": "ID of the beam.",
+            "maxLength": 36,
+            "minLength": 1,
+            "type": "string",
+            "example": "REF-BEAM-ID"
+          },
+          "type": {
+            "description": "The type of object represented in this record (BORESIGHT, CONTOUR, SVC AREA).  Boresight refers to the point of maximum/peak gain, and should not be confused with the 'aim point' of the related beam.  Gain contours are regions of  coverage referenced to the relative gain of the related beam.  Service Areas are composed of one or more service regions, with each region being either discrete point(s) or a continuous contour.",
+            "maxLength": 16,
+            "minLength": 1,
+            "enum": [
+              "BORESIGHT",
+              "CONTOUR",
+              "SVC AREA"
+            ],
+            "type": "string",
+            "example": "BORESIGHT"
+          },
+          "contourIdx": {
+            "format": "int16",
+            "description": "The index number of this contour. The value is required if type = CONTOUR.",
+            "type": "integer",
+            "example": 1
+          },
+          "gain": {
+            "format": "double",
+            "description": "The relative gain level in dB associated with this boresight or contour.  Gain does not apply to service area records. The value is required if type = BORESIGHT or CONTOUR.",
+            "type": "number",
+            "example": 17.1
+          },
+          "regionName": {
+            "description": "The region name within the service area.",
+            "maxLength": 24,
+            "type": "string",
+            "example": "Example region name"
+          },
+          "geography": {
+            "description": "GeoJSON or Well Known Text expression of the boresight point, service area point or region, or the gain contour region in geographic longitude, latitude pairs. Boresight and service area point(s) are represented as a 'Point' or 'MultiPoint', service areas and closed gain contours as 'Polygon', and open contours as 'LineString'. This is an optional convenience field only used for create operations. The system will auto-detect the format (Well Known Text or GeoJSON) and populate both geographyText and geographyJson fields appropriately. A create request must contain one of the geography, geographyText, or geographyJson.",
+            "type": "string",
+            "example": "POLYGON((26.156175339112 67.3291113966927,26.0910220642717 67.2580009640721,26.6637992964562 67.1795862381682,26.730115808233 67.2501237475598,26.156175339112 67.3291113966927))"
+          },
+          "geographyText": {
+            "description": "Geographical region or polygon (lon/lat pairs), as depicted by the Well-Known Text representation of the geometry/geography, of the image as projected on the ground. WKT reference: https://www.opengeospatial.org/standards/wkt-crs. Ignored if included with a POST or PUT request that also specifies a valid 'area' field.",
+            "type": "string",
+            "example": "POLYGON((67.3291113966927 26.156175339112,67.2580009640721 26.091022064271,67.1795862381682 26.6637992964562,67.2501237475598 26.730115808233,67.3291113966927 26.156175339112))"
+          },
+          "geographyJson": {
+            "description": "Geographical region or polygon (lat/lon pairs), as depicted by the GeoJSON representation of the geometry/geography, of the image as projected on the ground. GeoJSON Reference: https://geojson.org/. Ignored if included with a POST or PUT request that also specifies a valid 'area' or 'atext' field.",
+            "type": "string",
+            "example": "{\"type\":\"Polygon\",\"coordinates\":[ [ [ 67.3291113966927, 26.156175339112 ], [ 67.2580009640721, 26.091022064271 ], [ 67.1795862381682, 26.6637992964562 ], [ 67.2501237475598, 26.730115808233 ], [ 67.3291113966927, 26.156175339112 ] ] ] }"
+          },
+          "geographyType": {
+            "description": "Type of region as projected.",
+            "maxLength": 128,
+            "type": "string",
+            "example": "ST_Polygon"
+          },
+          "geographyNdims": {
+            "format": "int32",
+            "description": "Number of dimensions of the geometry depicted by region.",
+            "type": "integer",
+            "example": 2
+          },
+          "geographySrid": {
+            "format": "int32",
+            "description": "Geographical spatial_ref_sys for region.",
+            "type": "integer",
+            "example": 4326
+          },
+          "createdAt": {
+            "format": "date-time",
+            "description": "Time the row was created in the database, auto-populated by the system, example = 2018-01-01T16:00:00.123Z.",
+            "type": "string",
+            "readOnly": true,
+            "example": "2018-01-01T16:00:00.123Z"
+          },
+          "createdBy": {
+            "description": "Application user who created the row in the database, auto-populated by the system.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string",
+            "readOnly": true,
+            "example": "some.user"
+          },
+          "source": {
+            "description": "Source of the data.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string",
+            "example": "Bluestaq"
+          },
+          "origin": {
+            "description": "Originating system or organization which produced the data, if different from the source. The origin may be different than the source if the source was a mediating system which forwarded the data on behalf of the origin system. If null, the source may be assumed to be the origin.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "THIRD_PARTY_DATASOURCE"
+          },
+          "origNetwork": {
+            "description": "The originating source network on which this record was created, auto-populated by the system.",
+            "maxLength": 32,
+            "minLength": 1,
+            "type": "string",
+            "readOnly": true,
+            "example": "ORIG"
+          },
+          "dataMode": {
+            "description": "Indicator of whether the data is EXERCISE, REAL, SIMULATED, or TEST data:\n\nEXERCISE:&nbsp;Data pertaining to a government or military exercise. The data may include both real and simulated data.\n\nREAL:&nbsp;Data collected or produced that pertains to real-world objects, events, and analysis.\n\nSIMULATED:&nbsp;Synthetic data generated by a model to mimic real-world datasets.\n\nTEST:&nbsp;Specific datasets used to evaluate compliance with specifications and requirements, and for validating technical, functional, and performance characteristics.\n\n",
+            "maxLength": 32,
+            "minLength": 1,
+            "enum": [
+              "REAL",
+              "TEST",
+              "SIMULATED",
+              "EXERCISE"
+            ],
+            "type": "string",
+            "example": "TEST"
+          }
+        }
+      }
+    }
+  }
+}

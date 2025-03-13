@@ -1,0 +1,599 @@
+Unknown Speaker  00:00
+Minute request for the ED Correct?
+
+Speaker 1  00:03
+Yeah, we should be able to put that imagery around the models on that so I'll follow up with the team and see where we're at. Will it be dependent on if these images available? Obviously, yeah.
+
+Unknown Speaker  00:18
+Al, Julie, did you have another thing to say? Yes.
+
+Speaker 2  00:20
+Question from carbon, did you also send Kafka for that detection prediction?
+
+Speaker 3  00:31
+No, we didn't create a prediction. We've been proposal ready.
+
+Speaker 2  00:37
+Okay. Is it possible to send it today, either family or or I can, I can, if you send me the Jason, I can push it on Kafka for you.
+
+Speaker 3  00:54
+Yeah, I'll do my best once we wrap this proposal
+
+Speaker 2  00:58
+up. Okay, sounds good. And I mean, there's also other image providers, and I think having a meeting in the near future would be good between teams that want images to do certain analysis and teams that want to provide images so so keep, keep a lookout for messages in that regard.
+
+Speaker 4  01:28
+Julie, do you know to firm? Sorry to promote request is promote on because
+
+Speaker 5  01:39
+so I think he is. Yeah, actually, I try to get the images from the Airbus for this ISS thing. I got image, but it's a one year old image. And for the next mission, I was able to get approximately one week old. So this is the two images I got for these two missions. But no idea it could be relevant to you or not. But in case, if you need, if you give me the image, I can process it, or I have images which are portal, then you can image it.
+
+Speaker 4  02:09
+Okay, thanks for
+
+Speaker 5  02:15
+some messages. You can see the image if you like it, or if you can disregard the message,
+
+Speaker 4  02:25
+okay, yeah, if it's a year old, I don't know how useful that would be. I guess it could be used as a base point for others to compare looking at the progress if we get something that's updated.
+
+Speaker 5  02:41
+But for the next launch, I will, I think you can use that email for in my algorithm. This is just the emails taken one week ago from the exact launch. And we can, we can assume this is something going on on the launch site. So maybe that will be very useful. In this case, it's pretty old. One year old almost fell last year. So this is the goal I have regarding the business I
+
+Unknown Speaker  03:24
+sorry, I'm just gonna
+
+Speaker 5  03:29
+make that ending. I will actually make it very strong, like how I will definitely use KPIs from the Airbus to get the latest images. Right now, I'm using the free trial, which actually expired experiments on This evening. So, yeah, this is the
+
+Unknown Speaker  03:54
+update. Thanks for
+
+Speaker 4  04:03
+Hi, is anyone able to issue a period of interest? Poi, based on any of those assessments, like the chatter web scraping, imagery indications.
+
+Speaker 3  04:27
+I can do kind of a back of the envelope on but we haven't spent the time to be able to programmatically do that. Okay? Yeah, there's certain indicators that we we know occur at the site,
+
+Unknown Speaker  04:49
+and based off of the high residence we got yesterday, I could, I don't want to fudge too many things, you know.
+
+Speaker 4  04:56
+Yeah, that's a fair enough concern. These exercises are good at identifying, sort of like, what are some of the points to continue to fill in. So for future launches, maybe we can get something like that. That's not a back of the envelope, but understandable at the moment. Corbin, thanks. Yeah, because moving on to the next one, I haven't heard anything from any of the weather teams like Kayhan. Ryan, are you on the call?
+
+Unknown Speaker  05:32
+I've heard anything?
+
+Speaker 2  05:35
+I have an update about Ryan. Both can space as well as earthcast. Or two, Ryan's, maybe more. And I have there was a tenured personnel from can, and the new person is trying to figure out where the algorithms are and how to integrate. And I'll be meeting with him soon to see what their status is, and the podcast has seems to have some of these methods, but I don't think they're properly integrated yet. So I'll also be meeting with them maybe tomorrow to get an update and see if they can do something for that, at least the SpaceX launch.
+
+Speaker 4  06:20
+Okay, so things are in progress for Keihan and earthcast, yeah, but unsure about Silicon
+
+Speaker 2  06:31
+mountain. Maybe earthcast is working with silicon mountain. From my recollection of my message of Earth class people, I across people. Did anybody come from that? Yes, yes, I think, I think they are collaborating with silicon models. I don't know if there are two different technologies or one technology together.
+
+Speaker 4  06:57
+Okay, yeah, they might be building the models and are gas providing the data? Yes, possible. Millennial Tony, I know you're you can't speak at the moment in the chat, so I got your co planner check. I guess. Have you been able to run that ahead of time with launch nominal that Chris burns generated that's probably not going to hold it off for the next five hours. You still have to wait for the rotation. Well, I think,
+
+Speaker 6  07:39
+I think the prediction is before the launch nominal. And I think there's another workflow that runs after the novel.
+
+Speaker 4  07:49
+Okay, thanks Tony for Polish co planner yesterday. Cool. And yeah, Max looks like you're looking at that.
+
+Unknown Speaker  07:57
+Okay, cool.
+
+Speaker 4  08:02
+So we have that artifact somewhere. Sorry, grips anything else
+
+Unknown Speaker  08:09
+I am not ingesting that.
+
+Unknown Speaker  08:10
+Okay.
+
+Speaker 4  08:15
+So again, Katie on from Julie's previous comment, Dan's trying to figure where their stuff is all right, in the co planner check and we got that. Are you guys doing? Complainer?
+
+Unknown Speaker  08:31
+Okay, all right, I still
+
+Unknown Speaker  08:36
+watch nominal. We got a nominal, nominal, at the component,
+
+Speaker 6  08:41
+yeah, yeah. So we have that producing to the SS five launch nominals. Topic, so we generate nominals for simulated launch detections, yeah. And then I'm hooked into the launch SS five launch doc detection topic, and consuming those, and generating a nominal from those detections. So there's a few different message formats flowing through that. So it's a bit messy right now, yeah, but I'm consuming those, and it's, I don't know, I don't know how robust it is right now.
+
+Speaker 4  09:22
+Okay, but yeah, work in progress. Progress is ongoing. That is great. Thanks, Chris. Yeah, for anyone online that didn't hear that, Chris is publishing some launch nominals to the topic on Kafka and ingesting some of the messages as well. So if we get launched alerts, maybe we'll get an updated, rotated launch nominal,
+
+Speaker 7  09:47
+yeah, this is, this is Sheena from, from KMI. I actually had a question for millennial, for those, for the co planner, predictions are those? I'm sorry, this might be a stupid question. Are those being pushed out? As an Al said, because we are, we are, yeah, because we're ingesting the nominal right now for on Kafka, for our algorithm, and I just didn't know if we should also be looking, at least for this purpose, for testing the Kafka and everything, if we should also be looking at the co planar predictions. I
+
+Speaker 4  10:48
+Sorry. Al, still capturing all the stuff in the chat from Tony. Thanks. Tony. Thanks.
+
+Unknown Speaker  11:05
+Gina, did that answer your question?
+
+Speaker 7  11:09
+Oh, well, yes. For right now, yeah, for right now, it did, at least for this launch. Since it's in a few hours, we'll just, I think we're just going to, I think we're just going to, right now, limit our ingest from the nominals.
+
+Unknown Speaker  11:25
+Sounds great, Jubilee. I see you have your hand raised as well,
+
+Speaker 2  11:34
+so that I think big and is also doing planar assessment.
+
+Unknown Speaker  11:40
+Yes, yes.
+
+Speaker 2  11:42
+So we should have had their name, and I believe they're also doing a BA ASAP assessment. I don't know if you already captured that or not,
+
+Unknown Speaker  11:53
+that one's captured. Yes.
+
+Speaker 4  12:01
+Anything else Jubilee, that is all right, yeah, so dig into did you guys get anything so far, or are you guys going to do it once launch occurs,
+
+Speaker 8  12:22
+we're already publishing the results to co planner assessment. Awesome.
+
+Unknown Speaker  12:42
+Do awesome
+
+Unknown Speaker  12:53
+is Matthew Leonard on the line I know necessarily for him.
+
+Speaker 4  13:03
+So I wasn't sure if Aloha autonomy was generating something like a launch Domino, but more the ascent prediction. And they might be Sheena for you. They, I think they're ultimately looking at producing an LSAT, but that so that might be a person you can reach out to.
+
+Speaker 7  13:25
+Okay, yeah, we, I will, do you know if they're, if they're already on Kafka and and pushing out messages on a certain topic,
+
+Unknown Speaker  13:34
+I believe. So
+
+Speaker 2  13:36
+I can answer that he's generating both trajectory predictions based on large nominals as well as T al east, and he is almost or already connected to Kafka, one of those two.
+
+Speaker 7  13:57
+Okay. Does he have a topic name already created or not yet.
+
+Speaker 2  14:02
+So he has for launch prediction. SS, five, dot launch. Dot trajectory. Okay, I've seen that one, and then the other one. I
+
+Speaker 7  14:11
+don't know where he's publishing the other one. Okay, yeah, we can reach out as well. Thank you. Okay, yeah.
+
+Speaker 4  14:18
+So here's the information. Sheena under 13, predict launch trajectory.
+
+Unknown Speaker  14:28
+Thank you. I see it, yep,
+
+Speaker 4  14:30
+okay, going back up. All right, so do you intro? Did you guys do any pre launch ASAP screening as well.
+
+Speaker 8  14:43
+No, it is only once again, yeah, ASAP assessment. Okay, so we are sending to launch ASAP assessment topic.
+
+Speaker 2  15:02
+I if I can jump in there, I saw that some of the ASAP assessment messages were empty. It has
+
+Speaker 4  15:16
+feel free again if you have any other facts to put it here via the UU ID or timestamp associated when it was generated. Also feel free to post that. We can do that after as well. One thing I'm constantly right now is a after exercise assessment, or we can go back to and see what did they hit? Moving on. Star drive Jack, are you on?
+
+Speaker 9  15:42
+Yeah, yeah, I'm here. We are getting an AWS instance set up for us so that way we can connect. So until that's done, we won't be able to publish.
+
+Speaker 4  16:00
+That's all good. Yeah, we're definitely not going to have all the capabilities there, but hopefully watching this can give you ideas about how to work full will work, or how to integrate, what, where it can be integrated. Anyone from White House
+
+Unknown Speaker  16:20
+on, yeah, you're
+
+Speaker 6  16:21
+good, John here. So a bit of an asterisk on that one. We're moving our we just got our Kafka integration for the gist of the launch nominal going, and we're switching that over from test to prod right now. So we're running the pre screen right now. We We missed the initial like automated launch nominal because of some moving parts on this side.
+
+Speaker 4  16:48
+Okay, once you do get launched, do you think you'll have it in time, once we do have launch to send out a UDL launch request? Or yes, this was,
+
+Speaker 6  16:59
+this was, this is a bit of a timing issue here. Before we were trying to get ready for ifd a tomorrow. So we're generally,
+
+Speaker 4  17:09
+yeah, IFC to get pushed. But the ISS is still on for later today, and I
+
+Unknown Speaker  17:22
+should have that pre screen here shortly too.
+
+Speaker 4  17:30
+Does Leno's have their own launch pre screen? Or is this ingesting, like Millennials pre screen?
+
+Speaker 6  17:38
+Oh, we're ingesting the the nominal we're doing the pre screen off with the IR key,
+
+Unknown Speaker  17:45
+nominal, oh, like for access requests or, sorry,
+
+Speaker 6  17:50
+yeah, to perform access or the initial accessibility. See who we got that might have hit it. I
+
+Unknown Speaker  17:57
+see now I got it
+
+Speaker 10  18:01
+well, updates, placebo requirement system that we have
+
+Unknown Speaker  18:14
+some items here,
+
+Unknown Speaker  18:16
+property can
+
+Speaker 4  18:20
+for foreign launch detection. So I don't have coverage on this launch, so I won't be generating GTC Jubilee. Do you guys have any coverage? No planet. Are you guys looking Corbin? Are you guys also looking to detect launch, like, if you have a overflight at the moment,
+
+Speaker 3  18:53
+what do you mean by detect, like, catch it and imagery?
+
+Speaker 4  18:57
+Yeah, I think I put down a question mark. So
+
+Speaker 3  19:06
+it's, it's a possibility for any launch that we could but like, the imaging window needs to be perfect, right? So we'll definitely try the future. I don't think this one because it's, it seems like later in the day, maybe at night, right?
+
+Unknown Speaker  19:25
+Yeah, it's gonna be night
+
+Speaker 3  19:27
+in Russia, yeah, yeah, we don't do any operational imaging at night,
+
+Speaker 4  19:35
+okay, yeah, fair enough, yeah, so we're four and a half hours, assuming that they stick to that window. Promote, are you guys going to have any coverage on launch attack?
+
+Speaker 5  19:49
+Show, actually, I believe for this, I don't have COVID, but I have a camera. So can you change this short description to the launchpad camera? Then I can have, I can give some images from the launchpad IF they are available. So you can make it just and last night, I tested for the previous
+
+Speaker 4  20:13
+launch. Yeah, so possibly I can't remember Tony posted the link from NASA. I don't know if that is of the pad, or if that is the docking, even though the docking is possibly, like, four days out, this must be of the launch site. Tony, do you know?
+
+Speaker 5  20:40
+I think, sorry, I believe they will. They will be YouTube or some live,
+
+Unknown Speaker  20:46
+okay, so of the launch site, yeah, so
+
+Unknown Speaker  20:51
+possibility, if NASA is involved, and
+
+Speaker 5  21:01
+so I can give you the one message, it will contain the picture of the launchpad and also detection, probability, automatic,
+
+Speaker 4  21:14
+spread, All right. Okay. Space.
+
+Unknown Speaker  21:33
+Integrated i
+
+Unknown Speaker  21:44
+You're cutting out a little bit right now.
+
+Unknown Speaker  21:55
+Yeah, you're cutting out. I don't think I can hear you On this end. So
+
+Unknown Speaker  22:04
+Oh, yeah, I
+
+Unknown Speaker  22:48
+does everyone else on the call still have audio?
+
+Speaker 7  22:51
+I have I can hear you, but I cannot do if anyone else is speaking.
+
+Speaker 4  22:54
+All right, I reconnected my audio. That's not working better, yeah, I can't hear you now, okay, yeah, just checking different Wi Fi connections in the lab, sorry. The last thing I was asking is MJ On from
+
+Unknown Speaker  23:14
+space app.
+
+Speaker 2  23:21
+Maybe I can update about them. There are systems. Sensors are being deployed at the moment, and they won't be up for another few weeks. And these are only US based sensors. No current plans to expand them to foreign sites.
+
+Unknown Speaker  23:47
+Okay, thanks, Jubilee, hey. MJ, yeah,
+
+Unknown Speaker  23:54
+you could add it a big, good. Johnson,
+
+Unknown Speaker  23:58
+you covered it so great. I
+
+Unknown Speaker  24:01
+didn't see you were up on the line. Thank you.
+
+Speaker 4  24:06
+Great. So that's everything up to watch. And this is where I'm trying to implement more of the other subsystems, so like the data handling, state estimation. So sent it off to some of the subsystem leads, to see if there was any more inputs. So some of these are blank so far. I think one question that we were talking about last time is, once launch is declared, how do we declare the active objects, like the number, given that there's not going to be a NORAD ID yet, because space track isn't going to publish until possibly 24 hours later. So we had a JCO number that was provided by Tim McLaughlin, so we can possibly use that. So JCO number is up in the top in the information for both the payload and the rocket body, so we couldn't use that, but just thinking about going forward, what's a good way to keep an internal catalog of the object, active object, I guess Tony, is that something that you guys have been discussing internally, that had data handling? I
+
+Unknown Speaker  25:25
+Okay, cool copy that
+
+Speaker 4  25:34
+predict the same trajectory. I believe Matt is integrated. I don't know what I'm right here. Sorry. I came straight from a meeting. On any updates for me? So are you going to be able to provide at a set trajectory on this, or, given that we have pretty limited coverage on the launch protection, really going to get possibly the launch stream. I can do it. So I was going off, and if you can provide me with just one elevation angle during the launch, I can get you the trajectory. We're doing some we're doing some exotic stuff. And so we, I can write about that in the paper for my contribution. It's called trajectory signature analysis. And so we're taking some signatures which aren't quite trajectory information. We're putting them in for the trajectory estimated, giving very sparse measurements. And so I think that would be my contribution of paper. Okay, yeah, we're looking specifically at the ISS resupply. So I'm not gonna have coverage of this. Jubilee is not gonna have coverage of this. It's also hard for me to produce an elevation angle. Mostly, it's going to go straight up for the first couple like first minute, and then turn over. I'll work with it. I'll see what I can do. I need to test it to verify that it works, but I think I can get it done. Okay, so Well, if you if you could update Kafka messaging, I'm integrated. Now I got it to work, so that should be agreed. Now I just need to inbuilt my trigger to make it automatic. I can publish to the data bus. I can send two line elements. I can send trajectory information. I can set send how much fuel the rocket might be burning. We're not including AI right now. We're still working on the traceability. And then I'm talking to max Brown, this is where the work is heading, is to predict the weapons Engagement Zone. So my initial thing is called Walk. It's landed for wine to estimate path. And we want, I'm building on top of that another module to predict the weapon Engagement Zone for subsystem six. We'll just have to see if that's in scope with this paper. Yeah, I think anything's in scope for this paper if it's being contributed to the cohort. We'll talk about the paper more after we go through the rest of the chain here. Okay.
+
+Speaker 7  28:06
+Oh, real quick. What? What? Kafka messaging or topic? Are you posting your two lines to
+
+Speaker 4  28:15
+SS five, dot launch, dot trajectory. Do you need me to put that in the chat for you without making
+
+Speaker 7  28:20
+no if that's the one you are using, I think we already are linking ours to that, pulling from that one.
+
+Speaker 4  28:27
+Okay, so I talked with Jubilee. He wants me to subscribe to one topic and then publish in another topic. And so my scripts are chained together. So just let me know I can listen to multiple topics. I can have multiple scripts running. I just need to configure it. I need to know ahead of time so I can do it. Because there's a there's a few, it gets a little tedious. If you can just tell me where you want me to listen to and where you want me to publish to. I can do it and I can I can make it where it can publish to different topics. I just would need to figure it out a little I need to make it a little more thorough.
+
+Speaker 7  29:01
+Okay, yeah, we'll reach out to you separately. Thank you. Thank you. This is Sheena from canine.
+
+Speaker 4  29:11
+All right, moving on to launch or ASAP and CO pointer threat. So we got millennial, I think they've already said, Yeah, their stuff's going, there's manual, though, but we can still possibly capture that artifact, Tony or Sheena you're looking for Al set, but you, you're pretty much ready to go.
+
+Speaker 7  29:37
+Yes, we are, yeah. So we are integrated on the Kafka bus. I have not updated this spreadsheet so, but we are posting to our topic, which I am on my phone. Rose, can you chime in with the name? I think it's SS four, dot attribution, dot orbital attributes. Rose, if you can confirm that I Yes. So I will, I will follow up and add our, our message, class, name on the topic. Name,
+
+Speaker 4  30:13
+thanks. Jenna Max, how are things going for the response recommendation for ASAP? Scenario, yeah. So we're we have the ability
+
+Speaker 8  30:21
+to listen to messages and then also to publish
+
+Speaker 4  30:26
+to the Kafka message bus, and then, right now, it's just a matter of making sure. I mean, the back end has to be able to handle it. So hopefully by today, we'll be able to handle Millennials messages and have that be automated, hopefully by the launch. But if not, then you know, hopefully future launches will be ready to go. So okay, yeah, understandable expense, yep. All right, ladies, we already heard from you about heard from John launch collects right? I think Alex is in a different meeting. But is there anyone from any of the sensors, subsystem zero?
+
+Speaker 6  31:15
+So for the for this launch, I believe we might have early morning durability on site 5am
+
+Unknown Speaker  31:26
+so I think we're gonna
+
+Unknown Speaker  31:27
+try and go after it,
+
+Unknown Speaker  31:33
+but I think it's going to be pretty
+
+Unknown Speaker  31:35
+tough. It's like, right? Yeah, yeah, exactly.
+
+Unknown Speaker  31:42
+So we'll see, oh, yeah.
+
+Speaker 4  31:47
+So it's gonna be four days on orbit, so hopefully there's possibility for multiple collects. No, our sky is also looking to collect.
+
+Unknown Speaker  31:58
+Yep, this is Jack with our Skype,
+
+Speaker 6  32:02
+we're planning to run autonomous plane scans on it from the nominal so we should be able to collect it. We have a few sites that should have reasonably early access to it, and with the plane scan, I have
+
+Unknown Speaker  32:18
+high hopes that we'll get some data.
+
+Speaker 4  32:22
+Okay. Jack, are you listening to the Kafka bus or so? We do have some.
+
+Speaker 6  32:29
+We are not at the moment our our system is automated through the API we have publicly available. We need to tie it into Kafka, okay, in the data you're generating Jack, is that going to the UDL, or is that being made available somewhere? I don't know if it's pushed to the UDL by default. It's all available through our platform. So you know,
+
+Speaker 4  32:59
+you have an account there, you'll have access to it. I need to check what our constraints are on pushing the Al,
+
+Speaker 6  33:10
+because I know that we don't, by default, push all data there. Okay,
+
+Speaker 4  33:20
+okay, but we can always get that offline to capture some of those artifacts for this exercise, and then going forward, we'll continue to create that
+
+Unknown Speaker  33:33
+anyone from slingshot or cruiser set, nothing heard. Big and Tara, are you guys able to observe this one?
+
+Unknown Speaker  33:51
+No, we cannot do launch from our census. Okay,
+
+Speaker 4  33:55
+how about the on or, well, it's in orbit for a couple of days.
+
+Unknown Speaker  34:10
+Turn on, Alex, are you here?
+
+Speaker 4  34:21
+Did you see from Alex MJ still deploying, how about anyone from arc dynamics? I think they reached out to me on rocket chat, so maybe I'll try to take up with them. I know this meeting is not very convenient for everyone to reach out to. All right, there will be some maneuvers. Well, it's on orbit. So I was hoping the CCDM could notify us when those maneuvers happen, as it probably has to raise or adjust its apogee to dock. So if we get anything from CCDM subsystem on that also, then the conjunction assessment is anyone from subsystem to on? I know Patrick's not on. I
+
+Speaker 7  35:39
+think they are looking. They're still working on conjunction assessment. I don't think don't think they have, I don't think it's done yet to be ready for for this launch. Okay.
+
+Speaker 4  35:54
+Is that Rhea working on that real space?
+
+Speaker 7  35:59
+I cannot remember off the top of my head. Okay.
+
+Speaker 4  36:04
+All right, moving on. PES was assessment Jubilee. I think you were talking about this earlier, so remind me who's doing the PES was assessment.
+
+Speaker 2  36:14
+So there are various companies, and that includes space. Map, space map? Digantara,
+
+Unknown Speaker  36:32
+sorry, was that space map and space map or just
+
+Speaker 2  36:34
+okay? No, just space map. Okay. Digantera, I a scout space, and you're looking for all the different parameters, right, arc, jamming, Eos, best, your Apple or CO plan, or all of them,
+
+Speaker 4  36:56
+yeah, whoever wants to make any assessment on this grande Moto, okay? I don't know
+
+Speaker 2  37:03
+if they want to, but like, these are all the companies, and I think we can reach out to them. Map, large, there's GME millennial software. They just said they're not connected, but we can include their name for future reference. Do
+
+Unknown Speaker  37:46
+I misspell that. I'll fix that
+
+Speaker 2  37:53
+later. Who else that is what I have written. Are you considering intent in a different block or
+
+Speaker 4  38:01
+so? I we could like, yeah, there's parts to the processing chain that you think are missing. We can consider all those.
+
+Speaker 2  38:14
+There is a company that's doing RP or shape based intent estimation. It's 10 months aerospace.
+
+Unknown Speaker  38:30
+Sorry, the topic was intent, RPO,
+
+Speaker 2  38:32
+the topic could be just intent, destination,
+
+Speaker 4  38:40
+and that was 10. One, aerospace
+
+Speaker 2  38:54
+and then startler henky is doing intent assessment. I don't know if they're ready or current state of the algorithms,
+
+Unknown Speaker  39:09
+And then DFM and then,
+
+Speaker 2  39:20
+and sprout tech and Arc Light six together.
+
+Unknown Speaker  39:31
+So essentially arc
+
+Speaker 2  39:33
+Yes, proud technologies and Arc Light six together, they're working as one team. I Okay. And I want to also highlight one caveat here. So our company is doing as well as predictions, and then they have some companies have an additional software that's doing some assessment of like time series and grouping based assessment of the data that they're generating. They're not all the way as intent estimation, but they're like somewhere in between intent estimation and just raw password predictions. Okay, maybe for now, to keep it simple, we can just like, group them under as well as assessment.
+
+Speaker 4  40:41
+Yeah, well, chew on that one to think about how to include it. Just for sake of time I might continue rendezvous assessment time I was hoping. Don't know if state estimation is looking at something like this, if they could provide something. And the docking at the ISS, getting ops, follow up, OBS, this might be something also to bring in CCDM to look at priority requests and then also back through lighthouse for follow up assessments. I have a question, right? Yeah, go ahead, Matt, we need someone to run simulations on the rendezvous, someone I can bring someone, we can start working on those requirement if that's a gap. I can't say it right now, but I can start putting it on the roadmap if that's a gap, if we want to have simulations to compare to measurements for that so we can put it on a state estimator, and that could be interesting. I can't do it right now, but it's something I start trying to think about if it's a necessity. I don't know if it's a necessity or requirement. Like, obviously I don't have any authority to say, like, it's an assessment or a choir event, but it could be interesting to the exercise. Of course, we should follow up with like, read your pond to see, like, does that fit into one of the problem statements for the battle management system? I think it's an interesting aspect on the left.
+
+Speaker 5  42:45
+So let me scroll up. Actually, the screen I want to see the sheet.
+
+Unknown Speaker  42:51
+Sorry, what was that for? Man,
+
+Speaker 5  42:53
+oh, I'm saying I also have one question. Can you scroll up? I want to see one of the missing okay, very top.
+
+Unknown Speaker  43:05
+How far up do you need to go from first?
+
+Speaker 5  43:11
+So you're talking about the spikes, right? Bucha Al and Hamilton. So I actually, I can give you the some kind of indication that launch will happen. If you don't mind, can I share my screen very quickly and close it or or so I can give you this, the indication that there will be the launch using the Google trend. And I can see it's pretty accurate. I haven't integrated with the Kafka, but you can write in your paper. This is just for paper that I I can provide you that.
+
+Unknown Speaker  43:44
+So, okay,
+
+Unknown Speaker  43:47
+yeah, and
+
+Unknown Speaker  43:50
+Google trend,
+
+Unknown Speaker  43:52
+okay, yeah, if we capture that with Google trend, then
+
+Speaker 5  43:55
+Interesting. Yeah, it's actually not a Web Scripting but yeah, I can. I we
+
+Speaker 10  44:00
+can
+
+Speaker 5  44:06
+remove the web scraping. It's literally not a web scraping. It's directly using the Google API, because the world is searching on the Google and Google knows what people are searching for. So it will be completely specific component. I will not use any crawler, I will just see the collect the data from the Google and see,
+
+Unknown Speaker  44:26
+yeah, so you have both the reps,
+
+Speaker 5  44:29
+only the image the chart, either I can generate the, sorry, that was missing, both in together. So this one is the from the data mining. And the first thing I'm just talking about the internet chatter. So internet Chatter is trying sensing that Bucha Al and Hamilton is doing, but I'm using the different approach. So I have a result, and it's actually you can write another you can validate it. So,
+
+Speaker 4  44:59
+yeah, I would say, Go ahead, put another block in here. Promote. Put that note. I think that would be interesting. Sounds like that's different sources than Booz Allen Hamilton, so
+
+Speaker 5  45:15
+yeah, but it will be the very first indication that launch happened. So in the chat I'm sharing the current let me share very quickly. You can see how useful it could be for your paper and for this advice. So look at this. Okay, I just shared it. This is a real, live thing, and it could be very good to indication that launch will happen, and it's a foreign launch with no previous best launch. So this is pretty interesting. Yeah, okay. Can you see your diagram? I just paste it in the chat. So this is the I think I just took during the meeting. It is from the Google trend, name of the mission and estimated time, but it's a very good indicator that needs a foreign so it's also very nice. There's no Kafka message. I will try to generate it. And it's a different than my data mining, different. So it's like a booth in whatever they're doing, but I'm using very different approach, very systematic approach. I mean, I don't have to do a lot of work. Only the Google, if you have access for the Google search, it is possible that you can identify the launch people are talking about it, searching for it. So it's the making a score and everything. So I can, in the future, I can make it very automated way. So it can be the alternative. If the boost is not available, we can
+
+Speaker 4  46:47
+that's interesting. Julie, do you have thoughts from
+
+Unknown Speaker  46:52
+I guess maybe we can talk offline. More about them.
+
+Speaker 4  46:57
+Thank you. I think, for sake of time, I'm sort of quickly going through the rest of this, I want to see some time for the paper, follow up, separation trigger. We get that from CCDF vehicle re entry. Is anyone from point Pro on? Yeah, I'm on. All right. Sorry, was that that's on from point chrome Ben Roth, but, yeah, awesome, Roth, or there's no, it's not broth. Just sorry. Okay, Dad, I'm still have that incorrect way. I'll fix that all right. So are you guys able? We don't know if it's gonna state docked the ISS for a while, or re enter. So that's it's a possible thing that we can look at at this point. I'm not sure if we're gonna get that, but for the starship, IFT launch, we definitely will. So that's something that we can capture and Planet Labs, possibly on vehicle touchdown, if we get precise location. So then maybe that's something that you would be interesting if you connect with Corbin about how precise Are you guys, vehicle re entry to touchdown, to give a window for Planet Labs to confirm that a touchdown or Jack from Star drive or degantara might be an interesting offline discussion. All right. System level stuff. So response, recommendation, Sheena, I'm going to move you out of here now that you're in another row. Max, lotha, I put you in here. We'll see if we get any traceability out of this. That was one thing we're trying to include, Max we had you further down. But if we get any possible recommendations out of this, a lot of them could just be like, do nothing, because this is a civilian launch, and I think that's fine to capture as well, just that we actually produced a response.
+
+Unknown Speaker  49:31
+Yeah, sounds good.
+
+Speaker 4  49:33
+Carly. I know we had to talk earlier, but as we continue to do these exercises, some of the metrics that are being produced, or like an analytical product that sort of shows like, this is what got connected. This is where the message the trace was as we continue to enter it iterate on these. I just think if we do a post exercise assessment on how well we did, and track some of those metrics.
+
+Speaker 7  50:00
+Yeah, that sounds good. A question I had was I noticed you have a column here for timestamps. Where do those get populated from?
+
+Speaker 4  50:11
+So those can get populated from the Kafka messages, so it will also be contained in the event artifacts, but like the timestamp of when the message was published to the Kafka message bus, and then the ID associated with that message or the parent message that produced the next message. Thank you. Did I miss anyone or any capability?
+
+Unknown Speaker  50:42
+Hey, Peter, are you done?
+
+Speaker 8  50:44
+Yeah, I saw the congestion assessment capability from the sheet. So we are working on the conjunction assessment to be are pushing the message kappa bus? Is that relevant to these launch exercise?
+
+Speaker 4  51:03
+Yes, because there will be a conjunction, there will be a docking, so that will be interesting to capture. Peter, okay,
+
+Unknown Speaker  51:15
+sounds great, awesome,
+
+Speaker 4  51:19
+and you're on the Kafka message bus. That's Yes, all right. Anyone else? Anything else I
+
+Speaker 7  51:32
+had a quick question, are you going to set up another meeting during launch time first al to be able to chat together like you did last time
+
+Unknown Speaker  51:44
+we could.
+
+Speaker 4  51:46
+I think today's busy day at the lab. What time is that going to be? 232 30? Yeah, we could do that. I happy to set that up, it's not going to be as exciting because we're not going to get the like t equals zero launch updates. I guess we'll get one from Puma. Well, we're going to miss a lot of the other ones. So that's my only hesitation. Like starship is pretty exciting because you get all the messages coming in triggered off into the launch, but I'll send something out if anyone wants to join. That's fine. Yeah, so that's a good idea. Sheena, anything else?
+
+Speaker 2  52:40
+If I can add here, when you're I may not be available with that meeting, but when you're doing it, in addition to tracking what was detected in timestamps, if someone could, like, write down where the missing pieces are, what? Where is the integration missing? Where are the triggers missing? That would be great for the next question. Thank you.
+
+Speaker 4  53:13
+Great idea. Jubilee, something we'll try put in the assessment. All right, with the last two minutes again, those that are interested in the Amos paper, so I got a lot of input on author info. If you have inputs for the abstract draft, think we're on the third version now. Thanks MJ for renaming them to make them more consistent. There's also the chat. I also posted it there because I know some people still just need to request an account.
+
+Unknown Speaker  54:00
+My name I would like to contribute. Probably,
+
+Speaker 4  54:02
+yeah, so again, the goal is to try to showcase all these capabilities from different companies coming together in a collaborative paper. So it'll be a small contribution from everyone. Initially, I'm thinking like a paragraph in an image, or the launch message that you produced on some of these exercises, as we tell the story about how we pass the information from one place to the other, and so the assessment on that like how well we did, what were some of the gaps that we identify? And we'll continue to do these exercises as well as probably all the way up until September. When, like, our paper will be due in August, if it's accepted. Again, this paper is not meant to steal anyone's thunder, so I do encourage if you want to talk more in depth about your capability to submit another abstract, and we can always reference between the two, like say, Hey, if you're more interested in someone's capability, go see this talk and they'll give more detail. So just a collaborative thing to highlight and give everyone an opportunity to point towards their capabilities. And then if you want to give more detail in this paper and at the US Conference, or anywhere else, we can always link to other references. So just want to provide maximal opportunity to everyone while showcasing that this is a unique collaborative group contributing towards space domain awareness, I guess quickly showing the paper any comments when the paper is coming up, right? So no. MJ, you had a question about the session. So space domain awareness is what we were in last year. I'm going to continue to pitch that one. They could shuffle us around, depending on how they feel. Here are the related topics as well that go in more into detail. Here's the working title, utilizing civilian launches on live exercises for testing a federated protect and defend SDA battle management system. The AbsTract first paragraphs, just more about the SDA tap lab. Second one's going more into detail about while there's arc. The third one covers the exercises that we are doing to test this protective, defense based battle management system. Then there's the summary and further. Keywords. Jubilee made a good suggestion for the keywords to include off the names of the subsystems as keywords. I would like inputs by post business tomorrow so I can submit on Monday without any issues because I have to put in everyone's author information. All right, any further questions? Thanks for sticking around past the half hour.
+
+Speaker 9  57:09
+So Greg, do we just send those that paragraph to you directly, or do we is there a way to input it in the in the wiki?
+
+Speaker 4  57:17
+Yeah, that's good point. Jack, so right now we don't need that paragraph. So this is just the abstract where we just discuss what we tend intend to share in the paper. So we the current task, I guess, to people that are interested in being a part of the paper is review the abstract and make sure that your info is given to provided to me in some fashion, either on the wiki or send me a chat message or an email. So if the paper gets accepted, and I feel like there's a I have high confidence that the paper will be accepted. Then when we go to rank the paper, I'll put a Overleaf. I'll put the paper on Overleaf and give everyone access, and then you put the image and the paragraph in that once we get to that stage. So this stage, review the abstract. If you have comments, edits, questions, send that to me, give me your author info. Okay, sounds great. Alright, Thanks, Jack. Anything else from anyone? Alright, everybody will end it there. I will set out a meeting for the launch time later today so we can watch that, and hopefully we get some good work out of that. Continue to keep your artifacts that you produce from the launches or identify weak points, if your capability did not produce anything that's it's always still important to say it didn't work because of this. We continue to identify those gaps as we go forward and fix them for the other upcoming exercises. Thanks everyone. I'll talk to you all later.
+
+Unknown Speaker  59:13
+Thank you, Greg. You
+
+
+Transcribed by https://otter.ai

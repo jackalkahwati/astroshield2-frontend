@@ -1,0 +1,215 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://astroshield.com/schemas/ss6.threat.assessment.schema.json",
+  "title": "Threat Assessment Message",
+  "description": "Schema for threat assessment messages produced by Subsystem 6",
+  "type": "object",
+  "required": ["header", "payload"],
+  "properties": {
+    "header": {
+      "type": "object",
+      "description": "Message header containing metadata",
+      "required": ["messageId", "timestamp", "source", "messageType", "traceId"],
+      "properties": {
+        "messageId": {
+          "type": "string",
+          "description": "Unique identifier for the message",
+          "format": "uuid"
+        },
+        "timestamp": {
+          "type": "string",
+          "description": "Time when the message was generated",
+          "format": "date-time"
+        },
+        "source": {
+          "type": "string",
+          "description": "System or component that generated the message"
+        },
+        "messageType": {
+          "type": "string",
+          "description": "Type of message",
+          "enum": ["threat.assessment"]
+        },
+        "priority": {
+          "type": "string",
+          "description": "Priority level of the message",
+          "enum": ["LOW", "MEDIUM", "HIGH", "CRITICAL"]
+        },
+        "traceId": {
+          "type": "string",
+          "description": "Trace identifier for tracking message lineage across the system",
+          "format": "uuid"
+        },
+        "parentMessageIds": {
+          "type": "array",
+          "description": "List of message IDs that triggered or contributed to this message",
+          "items": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      }
+    },
+    "payload": {
+      "type": "object",
+      "description": "Message payload containing threat assessment data",
+      "required": ["assessmentId", "objectId", "assessmentTime", "threatLevel", "confidence"],
+      "properties": {
+        "assessmentId": {
+          "type": "string",
+          "description": "Unique identifier for the threat assessment"
+        },
+        "objectId": {
+          "type": "string",
+          "description": "Identifier of the object being assessed"
+        },
+        "assessmentTime": {
+          "type": "string",
+          "description": "Time when the assessment was performed",
+          "format": "date-time"
+        },
+        "threatLevel": {
+          "type": "string",
+          "description": "Overall threat level assessment",
+          "enum": ["NONE", "LOW", "MEDIUM", "HIGH", "CRITICAL"]
+        },
+        "confidence": {
+          "type": "number",
+          "description": "Confidence level in the assessment (0.0 to 1.0)",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "source": {
+          "type": "string",
+          "description": "Source of the assessment (algorithm or system that produced it)",
+          "enum": [
+            "CCDM_ANALYSIS",
+            "CONJUNCTION_ANALYSIS",
+            "CYBER_ANALYSIS",
+            "LAUNCH_ANALYSIS",
+            "MANEUVER_ANALYSIS",
+            "COMPOSITE_ANALYSIS",
+            "OTHER"
+          ]
+        },
+        "description": {
+          "type": "string",
+          "description": "Human-readable description of the threat assessment"
+        },
+        "relatedDetections": {
+          "type": "array",
+          "description": "List of detections that contributed to this assessment",
+          "items": {
+            "type": "object",
+            "required": ["detectionId", "detectionType", "weight"],
+            "properties": {
+              "detectionId": {
+                "type": "string",
+                "description": "Identifier of the related detection"
+              },
+              "detectionType": {
+                "type": "string",
+                "description": "Type of the related detection",
+                "enum": [
+                  "CCDM",
+                  "CONJUNCTION",
+                  "CYBER_THREAT",
+                  "LAUNCH",
+                  "MANEUVER",
+                  "OTHER"
+                ]
+              },
+              "weight": {
+                "type": "number",
+                "description": "Weight of this detection in the overall assessment",
+                "minimum": 0,
+                "maximum": 1
+              }
+            }
+          }
+        },
+        "timeline": {
+          "type": "object",
+          "description": "Timeline information for the threat",
+          "properties": {
+            "firstDetected": {
+              "type": "string",
+              "description": "Time when the threat was first detected",
+              "format": "date-time"
+            },
+            "estimatedTimeToImpact": {
+              "type": "string",
+              "description": "Estimated time until impact or critical point",
+              "format": "duration"
+            },
+            "projectedEvents": {
+              "type": "array",
+              "description": "List of projected future events related to this threat",
+              "items": {
+                "type": "object",
+                "required": ["eventTime", "eventType", "description"],
+                "properties": {
+                  "eventTime": {
+                    "type": "string",
+                    "description": "Projected time of the event",
+                    "format": "date-time"
+                  },
+                  "eventType": {
+                    "type": "string",
+                    "description": "Type of projected event"
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "Description of the projected event"
+                  },
+                  "confidence": {
+                    "type": "number",
+                    "description": "Confidence in this projection",
+                    "minimum": 0,
+                    "maximum": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        "affectedAssets": {
+          "type": "array",
+          "description": "List of assets potentially affected by this threat",
+          "items": {
+            "type": "object",
+            "required": ["assetId", "impactLevel"],
+            "properties": {
+              "assetId": {
+                "type": "string",
+                "description": "Identifier of the affected asset"
+              },
+              "impactLevel": {
+                "type": "string",
+                "description": "Level of impact to this asset",
+                "enum": ["NONE", "LOW", "MEDIUM", "HIGH", "CRITICAL"]
+              },
+              "description": {
+                "type": "string",
+                "description": "Description of potential impact to this asset"
+              }
+            }
+          }
+        },
+        "recommendedActions": {
+          "type": "array",
+          "description": "List of recommended actions based on the threat assessment",
+          "items": {
+            "type": "string",
+            "description": "Recommended action to take"
+          }
+        },
+        "metadata": {
+          "type": "object",
+          "description": "Additional metadata about the threat assessment",
+          "additionalProperties": true
+        }
+      }
+    }
+  }
+} 

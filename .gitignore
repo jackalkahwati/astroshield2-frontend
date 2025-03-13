@@ -64,3 +64,4 @@ Thumbs.db
 kafka_2.13-3.9.0/
 kafka_2.13-3.9.0.tgz
 *.jar
+node_modules

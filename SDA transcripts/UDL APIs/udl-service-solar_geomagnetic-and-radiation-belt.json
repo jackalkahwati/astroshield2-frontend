@@ -1,0 +1,2119 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Unified Data Library Services API",
+    "version": "1.30.0 Daiquiri",
+    "description": "Unified Data Library Services OpenAPI v3 documentation.",
+    "termsOfService": "storefront/storefront/appConfig/useragreement.html",
+    "contact": {
+      "name": "Sage Andorka, Deputy, Cross-Mission Ground",
+      "email": "unifieddatalibrary@bluestaq.com"
+    }
+  },
+  "tags": [
+    {
+      "name": "Solar/Geomagnetic and Radiation Belt",
+      "description": "This service provides operations for manipulation and querying of space weather/solar, geomagnetic, and radiation belt index data."
+    }
+  ],
+  "externalDocs": {
+    "url": "udl/openapi.json"
+  },
+  "servers": [
+    {
+      "url": "https://unifieddatalibrary.com"
+    }
+  ],
+  "paths": {
+    "/filedrop/udl-sgi": {
+      "post": {
+        "tags": [
+          "Solar/Geomagnetic and Radiation Belt"
+        ],
+        "description": "Service operation to take multiple SGI as a POST body and ingest into the database. This operation is intended to be used for automated feeds into UDL. A specific role is required to perform this service operation. Please contact the UDL team for assistance.\n",
+        "operationId": "filedrop_udl_sgi_post_id",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/SGI_Ingest"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Accepted"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/udl/sgi": {
+      "get": {
+        "description": "Service operation to dynamically query data by a variety of query parameters not specified in this API documentation. See the queryhelp operation (/udl/&lt;datatype&gt;/queryhelp) for more details on valid/required query parameter information.",
+        "tags": [
+          "Solar/Geomagnetic and Radiation Belt"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SGI_Abridged"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "406": {
+            "description": "MediaType Not Accepted by Request Headers"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "parameters": [
+          {
+            "name": "effectiveDate",
+            "description": "(One or more of fields 'effectiveDate, sgiDate' are required.) ISO8601 UTC Time the data was received and processed from the source. Typically a source provides solar data for a date window with each transmission including past, present, and future predicted values. (YYYY-MM-DDTHH:MM:SS.sssZ)",
+            "required": false,
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            },
+            "in": "query"
+          },
+          {
+            "name": "sgiDate",
+            "description": "(One or more of fields 'effectiveDate, sgiDate' are required.) ISO8601 UTC Time of the index value. This could be a past, current, or future predicted value. Note: sgiDate defines the start time of the time window for this data record. (YYYY-MM-DDTHH:MM:SS.sssZ)",
+            "required": false,
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            },
+            "in": "query"
+          }
+        ]
+      },
+      "post": {
+        "description": "Service operation to take a single SGI record as a POST body and ingest into the database. A specific role is required to perform this service operation. Please contact the UDL team for assistance.",
+        "tags": [
+          "Solar/Geomagnetic and Radiation Belt"
+        ],
+        "requestBody": {
+          "description": "JSON representation of one SGI record.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SGI_Ingest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "415": {
+            "description": "MediaType Unsupported"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/udl/sgi/{id}": {
+      "delete": {
+        "description": "Service operation to delete a SGI record specified by the passed ID path parameter. A specific role is required to perform this service operation. Please contact the UDL team for assistance.",
+        "tags": [
+          "Solar/Geomagnetic and Radiation Belt"
+        ],
+        "parameters": [
+          {
+            "description": "The ID of the SGI record to delete.",
+            "required": true,
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "404": {
+            "description": "Item Not Found"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "get": {
+        "description": "Service operation to get a single SGI record by its unique ID passed as a path parameter.",
+        "tags": [
+          "Solar/Geomagnetic and Radiation Belt"
+        ],
+        "parameters": [
+          {
+            "description": "The ID of the SGI record to retrieve.",
+            "required": true,
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SGI_Full"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "404": {
+            "description": "Item Not Found"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "406": {
+            "description": "MediaType Not Accepted by Request Headers"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "put": {
+        "description": "Service operation to update a single SGI record. A specific role is required to perform this service operation. Please contact the UDL team for assistance.",
+        "tags": [
+          "Solar/Geomagnetic and Radiation Belt"
+        ],
+        "parameters": [
+          {
+            "description": "The ID of the SGI record to update.",
+            "required": true,
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "JSON representation of one SGI record.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SGI_Ingest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "404": {
+            "description": "Item Not Found"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "415": {
+            "description": "MediaType Unsupported"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/udl/sgi/count": {
+      "get": {
+        "description": "Service operation to return the count of records satisfying the specified query parameters. This operation is useful to determine how many records pass a particular query criteria without retrieving large amounts of data. See the queryhelp operation (/udl/&lt;datatype&gt;/queryhelp) for more details on valid/required query parameter information.",
+        "tags": [
+          "Solar/Geomagnetic and Radiation Belt"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "406": {
+            "description": "MediaType Not Accepted by Request Headers"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "parameters": [
+          {
+            "name": "effectiveDate",
+            "description": "(One or more of fields 'effectiveDate, sgiDate' are required.) ISO8601 UTC Time the data was received and processed from the source. Typically a source provides solar data for a date window with each transmission including past, present, and future predicted values. (YYYY-MM-DDTHH:MM:SS.sssZ)",
+            "required": false,
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            },
+            "in": "query"
+          },
+          {
+            "name": "sgiDate",
+            "description": "(One or more of fields 'effectiveDate, sgiDate' are required.) ISO8601 UTC Time of the index value. This could be a past, current, or future predicted value. Note: sgiDate defines the start time of the time window for this data record. (YYYY-MM-DDTHH:MM:SS.sssZ)",
+            "required": false,
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            },
+            "in": "query"
+          }
+        ]
+      }
+    },
+    "/udl/sgi/createBulk": {
+      "post": {
+        "description": "Service operation intended for initial integration only, to take a list of SGI as a POST body and ingest into the database. This operation is not intended to be used for automated feeds into UDL. Data providers should contact the UDL team for specific role assignments and for instructions on setting up a permanent feed through an alternate mechanism.",
+        "tags": [
+          "Solar/Geomagnetic and Radiation Belt"
+        ],
+        "requestBody": {
+          "description": "JSON array of observations.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/SGI_Ingest"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Success"
+          },
+          "204": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "415": {
+            "description": "MediaType Unsupported"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/udl/sgi/getSGIDataByEffectiveAsOfDate": {
+      "get": {
+        "description": "Service to return matching SGI records as of the effective date.",
+        "tags": [
+          "Solar/Geomagnetic and Radiation Belt"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SGI_Full"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "406": {
+            "description": "MediaType Not Accepted by Request Headers"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "parameters": [
+          {
+            "name": "effectiveDate",
+            "description": "(One or more of fields 'effectiveDate, sgiDate' are required.) ISO8601 UTC Time the data was received and processed from the source. Typically a source provides solar data for a date window with each transmission including past, present, and future predicted values. (YYYY-MM-DDTHH:MM:SS.sssZ)",
+            "required": false,
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            },
+            "in": "query"
+          },
+          {
+            "name": "sgiDate",
+            "description": "(One or more of fields 'effectiveDate, sgiDate' are required.) ISO8601 UTC Time of the index value. This could be a past, current, or future predicted value. Note: sgiDate defines the start time of the time window for this data record. (YYYY-MM-DDTHH:MM:SS.sssZ)",
+            "required": false,
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            },
+            "in": "query"
+          }
+        ]
+      }
+    },
+    "/udl/sgi/history": {
+      "get": {
+        "description": "Service operation to dynamically query historical data by a variety of query parameters not specified in this API documentation.  See the queryhelp operation (/udl/&lt;datatype&gt;/queryhelp) for more details on valid/required query parameter information.",
+        "tags": [
+          "Solar/Geomagnetic and Radiation Belt"
+        ],
+        "parameters": [
+          {
+            "description": "optional, fields for retrieval. When omitted, ALL fields are assumed. See the queryhelp operation (/udl/&lt;datatype&gt;/queryhelp) for more details on valid query fields that can be selected.",
+            "name": "columns",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "effectiveDate",
+            "description": "(One or more of fields 'effectiveDate, sgiDate' are required.) ISO8601 UTC Time the data was received and processed from the source. Typically a source provides solar data for a date window with each transmission including past, present, and future predicted values. (YYYY-MM-DDTHH:MM:SS.sssZ)",
+            "required": false,
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            },
+            "in": "query"
+          },
+          {
+            "name": "sgiDate",
+            "description": "(One or more of fields 'effectiveDate, sgiDate' are required.) ISO8601 UTC Time of the index value. This could be a past, current, or future predicted value. Note: sgiDate defines the start time of the time window for this data record. (YYYY-MM-DDTHH:MM:SS.sssZ)",
+            "required": false,
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            },
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SGI_Full"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "406": {
+            "description": "MediaType Not Accepted by Request Headers"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/udl/sgi/history/aodr": {
+      "get": {
+        "description": "Service operation to dynamically query historical data by a variety of query parameters not specified in this API documentation, then write that data to the Secure Content Store.  See the queryhelp operation (/udl/&lt;datatype&gt;/queryhelp) for more details on valid/required query parameter information.",
+        "tags": [
+          "Solar/Geomagnetic and Radiation Belt"
+        ],
+        "parameters": [
+          {
+            "description": "optional, fields for retrieval. When omitted, ALL fields are assumed. See the queryhelp operation (/udl/&lt;datatype&gt;/queryhelp) for more details on valid query fields that can be selected.",
+            "name": "columns",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "optional, notification method for the created file link. When omitted, EMAIL is assumed. Current valid values are: EMAIL, SMS.",
+            "name": "notification",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "optional, field delimiter when the created file is not JSON. Must be a single character chosen from this set: (',', ';', ':', '|'). When omitted, \",\" is used. It is strongly encouraged that your field delimiter be a character unlikely to occur within the data.",
+            "name": "outputDelimiter",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "optional, output format for the file. When omitted, JSON is assumed. Current valid values are: JSON and CSV.",
+            "name": "outputFormat",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "effectiveDate",
+            "description": "(One or more of fields 'effectiveDate, sgiDate' are required.) ISO8601 UTC Time the data was received and processed from the source. Typically a source provides solar data for a date window with each transmission including past, present, and future predicted values. (YYYY-MM-DDTHH:MM:SS.sssZ)",
+            "required": false,
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            },
+            "in": "query"
+          },
+          {
+            "name": "sgiDate",
+            "description": "(One or more of fields 'effectiveDate, sgiDate' are required.) ISO8601 UTC Time of the index value. This could be a past, current, or future predicted value. Note: sgiDate defines the start time of the time window for this data record. (YYYY-MM-DDTHH:MM:SS.sssZ)",
+            "required": false,
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            },
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "406": {
+            "description": "MediaType Not Accepted by Request Headers"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/udl/sgi/history/count": {
+      "get": {
+        "description": "Service operation to return the count of records satisfying the specified query parameters. This operation is useful to determine how many records pass a particular query criteria without retrieving large amounts of data. See the queryhelp operation (/udl/&lt;datatype&gt;/queryhelp) for more details on valid/required query parameter information.",
+        "tags": [
+          "Solar/Geomagnetic and Radiation Belt"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "406": {
+            "description": "MediaType Not Accepted by Request Headers"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "parameters": [
+          {
+            "name": "effectiveDate",
+            "description": "(One or more of fields 'effectiveDate, sgiDate' are required.) ISO8601 UTC Time the data was received and processed from the source. Typically a source provides solar data for a date window with each transmission including past, present, and future predicted values. (YYYY-MM-DDTHH:MM:SS.sssZ)",
+            "required": false,
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            },
+            "in": "query"
+          },
+          {
+            "name": "sgiDate",
+            "description": "(One or more of fields 'effectiveDate, sgiDate' are required.) ISO8601 UTC Time of the index value. This could be a past, current, or future predicted value. Note: sgiDate defines the start time of the time window for this data record. (YYYY-MM-DDTHH:MM:SS.sssZ)",
+            "required": false,
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            },
+            "in": "query"
+          }
+        ]
+      }
+    },
+    "/udl/sgi/queryhelp": {
+      "get": {
+        "description": "Service operation to provide detailed information on available dynamic query parameters for a particular data type.",
+        "tags": [
+          "Solar/Geomagnetic and Radiation Belt"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "User Unauthorized"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "406": {
+            "description": "MediaType Not Accepted by Request Headers"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/udl/sgi/tuple": {
+      "get": {
+        "description": "Service operation to dynamically query data and only return specified columns/fields. Requested columns are specified by the 'columns' query parameter and should be a comma separated list of valid fields for the specified data type. classificationMarking is always returned. See the queryhelp operation (/udl/<datatype>/queryhelp) for more details on valid/required query parameter information. An example URI: /udl/elset/tuple?columns=satNo,period&epoch=>now-5 hours would return the satNo and period of elsets with an epoch greater than 5 hours ago.",
+        "tags": [
+          "Solar/Geomagnetic and Radiation Belt"
+        ],
+        "parameters": [
+          {
+            "description": "Comma-separated list of valid field names for this data type to be returned in the response. Only the fields specified will be returned as well as the classification marking of the data, if applicable. See the ‘queryhelp’ operation for a complete list of possible fields.",
+            "required": true,
+            "name": "columns",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "effectiveDate",
+            "description": "(One or more of fields 'effectiveDate, sgiDate' are required.) ISO8601 UTC Time the data was received and processed from the source. Typically a source provides solar data for a date window with each transmission including past, present, and future predicted values. (YYYY-MM-DDTHH:MM:SS.sssZ)",
+            "required": false,
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            },
+            "in": "query"
+          },
+          {
+            "name": "sgiDate",
+            "description": "(One or more of fields 'effectiveDate, sgiDate' are required.) ISO8601 UTC Time of the index value. This could be a past, current, or future predicted value. Note: sgiDate defines the start time of the time window for this data record. (YYYY-MM-DDTHH:MM:SS.sssZ)",
+            "required": false,
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            },
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SGI_Full"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "406": {
+            "description": "MediaType Not Accepted by Request Headers"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "SGI_Abridged": {
+        "description": "Model representation of space weather/solar, geomagnetic, and radiation belt indices.",
+        "required": [
+          "classificationMarking",
+          "effectiveDate",
+          "sgiDate",
+          "source",
+          "dataMode"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Unique identifier of the record, auto-generated by the system.",
+            "maxLength": 36,
+            "minLength": 1,
+            "type": "string",
+            "example": "SGI-ID"
+          },
+          "classificationMarking": {
+            "description": "Classification marking of the data in IC/CAPCO Portion-marked format.",
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string",
+            "example": "U"
+          },
+          "effectiveDate": {
+            "format": "date-time",
+            "description": "ISO8601 UTC Time the data was received and processed from the source. Typically a source provides data for a date window with each transmission including past, present, and future predicted values.",
+            "type": "string",
+            "example": "2018-01-01T16:00:00.123Z"
+          },
+          "sgiDate": {
+            "format": "date-time",
+            "description": "ISO8601 UTC Time of the index value. This could be a past, current, or future predicted value. Note: sgiDate defines the start time of the time window for this  data record.",
+            "type": "string",
+            "example": "2018-01-01T16:00:00.123Z"
+          },
+          "type": {
+            "description": "The type of data contained in this record (e.g. HASDM, JBH09, K-Index, PSD-dB, RBI, RFI-SFU, etc).",
+            "maxLength": 32,
+            "type": "string",
+            "example": "JBH09"
+          },
+          "state": {
+            "description": "State indicating Issued (I), Nowcast (N), or Predicted (P) values for this record.",
+            "maxLength": 1,
+            "enum": [
+              "I",
+              "N",
+              "P"
+            ],
+            "type": "string",
+            "example": "I"
+          },
+          "stationName": {
+            "description": "The name/location of the station that collected the geomagnetic data for this record.",
+            "maxLength": 24,
+            "type": "string",
+            "example": "Boulder"
+          },
+          "idSensor": {
+            "description": "Unique identifier of the reporting sensor.",
+            "maxLength": 36,
+            "type": "string",
+            "example": "57c96c97-e076-48af-a068-73ee2cb37e65"
+          },
+          "origSensorId": {
+            "description": "Optional identifier provided by the reporting source to indicate the sensor identifier which produced this data. This may be an internal identifier and not necessarily a valid sensor ID.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "ORIGSENSOR-ID"
+          },
+          "mode": {
+            "format": "int32",
+            "description": "The transmitted DCA mode of the record (1-3).",
+            "type": "integer",
+            "example": 1
+          },
+          "precedence": {
+            "description": "The precedence of data in this record (O = Immediate, P = Priority, R = Routine, Y = Emergency, Z = Flash).",
+            "maxLength": 1,
+            "enum": [
+              "O",
+              "P",
+              "R",
+              "Y",
+              "Z"
+            ],
+            "type": "string",
+            "example": "R"
+          },
+          "coeffDegree": {
+            "description": "Array containing the degree of the temperature coefficients. The coeffDegree and coeffOrder arrays must be the same length.",
+            "type": "array",
+            "items": {
+              "format": "int32",
+              "type": "integer"
+            },
+            "example": [
+              1,
+              2,
+              3
+            ]
+          },
+          "coeffOrder": {
+            "description": "Array containing the order of the temperature coefficients. The coeffDegree and coeffOrder arrays must be the same length.",
+            "type": "array",
+            "items": {
+              "format": "int32",
+              "type": "integer"
+            },
+            "example": [
+              1,
+              2,
+              3
+            ]
+          },
+          "ctce": {
+            "description": "Array containing the cosine spherical-harmonic coefficients for Exospheric temperature (DTC) difference.  Each array element corresponds to the positional index of the coeffDegree and coeffOrder arrays.",
+            "type": "array",
+            "items": {
+              "format": "double",
+              "type": "number"
+            },
+            "example": [
+              1.23,
+              342.3,
+              1.32
+            ]
+          },
+          "stce": {
+            "description": "Array containing the sine spherical-harmonic coefficients for Exospheric temperature (DTC) difference.  Each array element corresponds to the positional index of the coeffDegree and coeffOrder arrays.",
+            "type": "array",
+            "items": {
+              "format": "double",
+              "type": "number"
+            },
+            "example": [
+              1.23,
+              342.3,
+              1.32
+            ]
+          },
+          "ctci": {
+            "description": "Array containing the cosine spherical-harmonic coefficients for Inflection temperature (DTX) difference.  Each array element corresponds to the positional index of the coeffDegree and coeffOrder arrays.",
+            "type": "array",
+            "items": {
+              "format": "double",
+              "type": "number"
+            },
+            "example": [
+              1.23,
+              342.3,
+              1.32
+            ]
+          },
+          "stci": {
+            "description": "Array containing the sine spherical harmonic coefficients for Inflection temperature (DTX) difference.  Each array element corresponds to the positional index of the coeffDegree and coeffOrder arrays.",
+            "type": "array",
+            "items": {
+              "format": "double",
+              "type": "number"
+            },
+            "example": [
+              1.23,
+              342.3,
+              1.32
+            ]
+          },
+          "e10": {
+            "format": "double",
+            "description": "Extreme Ultraviolet (EUV) proxy, E10.7, in x10-22 Watts per meter squared per Hertz, is the integrated solar EUV energy flux at the top of atmosphere and normalized to solar flux units.",
+            "type": "number",
+            "example": 1.23
+          },
+          "e54": {
+            "format": "double",
+            "description": "E54 (E10-Bar), in x10-22 Watts per meter squared per Hertz, uses the past 54-days E10 values to determine the E10 average.",
+            "type": "number",
+            "example": 1.23
+          },
+          "s10": {
+            "format": "double",
+            "description": "Daily S10.7 index for >200 km heating of O by solar chromosphere. 28.4-30.4 nm emissions in x10-22 Watts per meter squared per Hertz.",
+            "type": "number",
+            "example": 1.23
+          },
+          "s54": {
+            "format": "double",
+            "description": "54 day S10.7 index for >200 km heating of O by solar chromosphere. 28.4-30.4 nm emissions in x10-22 Watts per meter squared per Hertz.",
+            "type": "number",
+            "example": 1.23
+          },
+          "m10": {
+            "format": "double",
+            "description": "Daily M10.7 index for 100-110 km heating of O2 by solar photosphere. 160 nm SRC emissions in x10-22 Watts per meter squared per Hertz.",
+            "type": "number",
+            "example": 1.23
+          },
+          "m54": {
+            "format": "double",
+            "description": "54 day M10.7 index for 100-110 km heating of O2 by solar photosphere. 160 nm SRC emissions in x10-22 Watts per meter squared per Hertz.",
+            "type": "number",
+            "example": 1.23
+          },
+          "y10": {
+            "format": "double",
+            "description": "Daily Y10.7 index for 85-90 km heating of N2, O2, H2O, NO by solar coronal. 0.1-0.8 nm and Lya 121 nm emissions in x10-22 Watts per meter squared per Hertz.",
+            "type": "number",
+            "example": 1.23
+          },
+          "y54": {
+            "format": "double",
+            "description": "54 day Y10.7 index for 85-90 km heating of N2, O2, H2O, NO by solar coronal. 0.1-0.8 nm and Lya 121 nm emissions in x10-22 Watts per meter squared per Hertz.",
+            "type": "number",
+            "example": 1.23
+          },
+          "f10": {
+            "format": "double",
+            "description": "Daily solar 10.7 cm radio flux in x10-22 Watts per meter squared per Hertz.",
+            "type": "number",
+            "example": 1.23
+          },
+          "f54": {
+            "format": "double",
+            "description": "54 day solar 10.7 cm radio flux in x10-22 Watts per meter squared per Hertz.",
+            "type": "number",
+            "example": 1.23
+          },
+          "f81": {
+            "format": "double",
+            "description": "81 day solar 10.7 cm radio flux in x10-22 Watts per meter squared per Hertz.",
+            "type": "number",
+            "example": 1.23
+          },
+          "ap": {
+            "format": "double",
+            "description": "Ap is the planetary geomagnetic 2 nT index (00-21 UT) for the timespan specified in apDuration. If apDuration is null, a 3 hour duration should be assumed.",
+            "type": "number",
+            "example": 1.23
+          },
+          "apDuration": {
+            "format": "int32",
+            "description": "The time, in hours, for which the Ap index value is valid. If null, a span of 3 hours is assumed.",
+            "type": "integer",
+            "example": 3
+          },
+          "kIndex": {
+            "format": "int32",
+            "description": "The maximum measured K-Index at the associated station during the kpDuration timespan. The K-Index is a unitless measure (0 - 9) of the deviation in the Earth's magnetic field from normal at the station geographic location, with 0 indicating the absence of geomagnetic disturbance, and 9 indicating the most significant disturbance. If kpDuration is null, a 3 hour duration should be assumed.",
+            "type": "integer",
+            "example": 1
+          },
+          "kp": {
+            "format": "double",
+            "description": "The Planetary K-index (Kp) over the kpDuration timespan. The Kp-Index is the average K-Index for the entire Earth, utilizing a unitless scale (0-9, in incremenets of 1/3), with 0 indicating the absence of geomagnetic disturbance, and 9 indicating the most significant disturbance. If kpDuration is null, a 3 hour duration should be assumed.",
+            "type": "number",
+            "example": 4.66
+          },
+          "kpDuration": {
+            "format": "int32",
+            "description": "The time, in hours, over which the K, Kp, and/or gamma index values are measured.  If null, a span of 3 hours is assumed.",
+            "type": "integer",
+            "example": 3
+          },
+          "gamma": {
+            "format": "int32",
+            "description": "The maximum measured gamma deflection during the kpDuration timespan. If kpDuration is null, a 3 hour duration should be assumed.",
+            "type": "integer",
+            "example": 25
+          },
+          "dst": {
+            "format": "double",
+            "description": "Disturbance Storm Time geomagnetic index in nT.",
+            "type": "number",
+            "example": 1.23
+          },
+          "dtc": {
+            "format": "double",
+            "description": "delta exospheric temperature correction in units of K.",
+            "type": "number",
+            "example": 1.23
+          },
+          "rbRegionCode": {
+            "format": "int32",
+            "description": "Region code for the associated radiation belt index. This is the code associated with the corresponding radiation belt location. See the provider card for reference to specific region code definitions.",
+            "type": "integer",
+            "example": 2
+          },
+          "rbIndex": {
+            "format": "double",
+            "description": "The value of the radiation belt index. This is the ratio of current intensity of a radiation belt to long-term average value. It's long-term average should be close to 1. Depending on the type of belt sensor, this ratio may measure Flux (number of particles / (cm^2 sec energy solid-angle)), dose rate (rad per second), or relative counts of particles per time (counts per second). The index value may also be normalized, the normalization value typically represents an average of the sensor measurements taken within a region over a given time interval. See the normFactor field for the specific normalization factor, if provided.",
+            "type": "number",
+            "example": 1.02947164506
+          },
+          "normFactor": {
+            "format": "double",
+            "description": "The normalization factor that has already been applied to the index value prior to record ingest. Typically used to normalize the index value to a particular interval. Units of the normalization factor may vary depending on the provider of this data (REACH, POES, CEASE3, etc.).",
+            "type": "number",
+            "example": 2.12679e-7
+          },
+          "rbDuration": {
+            "format": "int32",
+            "description": "The timespan over which the associated radiation belt index is factored. If rbDuration is null, a 24 hour duration should be assumed. Note: rbDuration defines the length of the time window for this data record. The time window start time is defined by sgiDate, and the time window end time is defined by sgiDate plus rbDuration.",
+            "type": "integer",
+            "example": 24
+          },
+          "analyzerAttenuation": {
+            "format": "double",
+            "description": "Signal analyzer's input attenuation level, in decibels. Attenuation is a setting on the hardware that measures the power of a signal.",
+            "type": "number",
+            "example": 5.1
+          },
+          "rawFileURI": {
+            "description": "Optional URI location in the document repository of the raw file parsed by the system to produce this record. To download the raw file, prepend https://udl-hostname/scs/download?id= to this value.",
+            "maxLength": 256,
+            "type": "string",
+            "example": "rawFileURI"
+          },
+          "transactionId": {
+            "description": "Optional identifier to track a commercial or marketplace transaction executed to produce this data.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "TRANSACTION-ID"
+          },
+          "source": {
+            "description": "Source of the data.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string",
+            "example": "Bluestaq"
+          },
+          "origin": {
+            "description": "Originating system or organization which produced the data, if different from the source. The origin may be different than the source if the source was a mediating system which forwarded the data on behalf of the origin system. If null, the source may be assumed to be the origin.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "THIRD_PARTY_DATASOURCE"
+          },
+          "origNetwork": {
+            "description": "The originating source network on which this record was created, auto-populated by the system.",
+            "maxLength": 32,
+            "minLength": 1,
+            "type": "string",
+            "readOnly": true,
+            "example": "ORIG"
+          },
+          "dataMode": {
+            "description": "Indicator of whether the data is EXERCISE, REAL, SIMULATED, or TEST data:\n\nEXERCISE:&nbsp;Data pertaining to a government or military exercise. The data may include both real and simulated data.\n\nREAL:&nbsp;Data collected or produced that pertains to real-world objects, events, and analysis.\n\nSIMULATED:&nbsp;Synthetic data generated by a model to mimic real-world datasets.\n\nTEST:&nbsp;Specific datasets used to evaluate compliance with specifications and requirements, and for validating technical, functional, and performance characteristics.\n\n",
+            "maxLength": 32,
+            "minLength": 1,
+            "enum": [
+              "REAL",
+              "TEST",
+              "SIMULATED",
+              "EXERCISE"
+            ],
+            "type": "string",
+            "example": "TEST"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "description": "Time the row was created in the database, auto-populated by the system.",
+            "type": "string",
+            "readOnly": true,
+            "example": "2018-01-01T16:00:00.123Z"
+          },
+          "createdBy": {
+            "description": "Application user who created the row in the database, auto-populated by the system.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string",
+            "readOnly": true,
+            "example": "some.user"
+          }
+        }
+      },
+      "SGI_Full": {
+        "description": "Model representation of space weather/solar, geomagnetic, and radiation belt indices.",
+        "required": [
+          "classificationMarking",
+          "effectiveDate",
+          "sgiDate",
+          "source",
+          "dataMode"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Unique identifier of the record, auto-generated by the system.",
+            "maxLength": 36,
+            "minLength": 1,
+            "type": "string",
+            "example": "SGI-ID"
+          },
+          "classificationMarking": {
+            "description": "Classification marking of the data in IC/CAPCO Portion-marked format.",
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string",
+            "example": "U"
+          },
+          "effectiveDate": {
+            "format": "date-time",
+            "description": "ISO8601 UTC Time the data was received and processed from the source. Typically a source provides data for a date window with each transmission including past, present, and future predicted values.",
+            "type": "string",
+            "example": "2018-01-01T16:00:00.123Z"
+          },
+          "sgiDate": {
+            "format": "date-time",
+            "description": "ISO8601 UTC Time of the index value. This could be a past, current, or future predicted value. Note: sgiDate defines the start time of the time window for this  data record.",
+            "type": "string",
+            "example": "2018-01-01T16:00:00.123Z"
+          },
+          "type": {
+            "description": "The type of data contained in this record (e.g. HASDM, JBH09, K-Index, PSD-dB, RBI, RFI-SFU, etc).",
+            "maxLength": 32,
+            "type": "string",
+            "example": "JBH09"
+          },
+          "state": {
+            "description": "State indicating Issued (I), Nowcast (N), or Predicted (P) values for this record.",
+            "maxLength": 1,
+            "enum": [
+              "I",
+              "N",
+              "P"
+            ],
+            "type": "string",
+            "example": "I"
+          },
+          "stationName": {
+            "description": "The name/location of the station that collected the geomagnetic data for this record.",
+            "maxLength": 24,
+            "type": "string",
+            "example": "Boulder"
+          },
+          "idSensor": {
+            "description": "Unique identifier of the reporting sensor.",
+            "maxLength": 36,
+            "type": "string",
+            "example": "57c96c97-e076-48af-a068-73ee2cb37e65"
+          },
+          "origSensorId": {
+            "description": "Optional identifier provided by the reporting source to indicate the sensor identifier which produced this data. This may be an internal identifier and not necessarily a valid sensor ID.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "ORIGSENSOR-ID"
+          },
+          "mode": {
+            "format": "int32",
+            "description": "The transmitted DCA mode of the record (1-3).",
+            "type": "integer",
+            "example": 1
+          },
+          "precedence": {
+            "description": "The precedence of data in this record (O = Immediate, P = Priority, R = Routine, Y = Emergency, Z = Flash).",
+            "maxLength": 1,
+            "enum": [
+              "O",
+              "P",
+              "R",
+              "Y",
+              "Z"
+            ],
+            "type": "string",
+            "example": "R"
+          },
+          "coeffDegree": {
+            "description": "Array containing the degree of the temperature coefficients. The coeffDegree and coeffOrder arrays must be the same length.",
+            "type": "array",
+            "items": {
+              "format": "int32",
+              "type": "integer"
+            },
+            "example": [
+              1,
+              2,
+              3
+            ]
+          },
+          "coeffOrder": {
+            "description": "Array containing the order of the temperature coefficients. The coeffDegree and coeffOrder arrays must be the same length.",
+            "type": "array",
+            "items": {
+              "format": "int32",
+              "type": "integer"
+            },
+            "example": [
+              1,
+              2,
+              3
+            ]
+          },
+          "ctce": {
+            "description": "Array containing the cosine spherical-harmonic coefficients for Exospheric temperature (DTC) difference.  Each array element corresponds to the positional index of the coeffDegree and coeffOrder arrays.",
+            "type": "array",
+            "items": {
+              "format": "double",
+              "type": "number"
+            },
+            "example": [
+              1.23,
+              342.3,
+              1.32
+            ]
+          },
+          "stce": {
+            "description": "Array containing the sine spherical-harmonic coefficients for Exospheric temperature (DTC) difference.  Each array element corresponds to the positional index of the coeffDegree and coeffOrder arrays.",
+            "type": "array",
+            "items": {
+              "format": "double",
+              "type": "number"
+            },
+            "example": [
+              1.23,
+              342.3,
+              1.32
+            ]
+          },
+          "ctci": {
+            "description": "Array containing the cosine spherical-harmonic coefficients for Inflection temperature (DTX) difference.  Each array element corresponds to the positional index of the coeffDegree and coeffOrder arrays.",
+            "type": "array",
+            "items": {
+              "format": "double",
+              "type": "number"
+            },
+            "example": [
+              1.23,
+              342.3,
+              1.32
+            ]
+          },
+          "stci": {
+            "description": "Array containing the sine spherical harmonic coefficients for Inflection temperature (DTX) difference.  Each array element corresponds to the positional index of the coeffDegree and coeffOrder arrays.",
+            "type": "array",
+            "items": {
+              "format": "double",
+              "type": "number"
+            },
+            "example": [
+              1.23,
+              342.3,
+              1.32
+            ]
+          },
+          "e10": {
+            "format": "double",
+            "description": "Extreme Ultraviolet (EUV) proxy, E10.7, in x10-22 Watts per meter squared per Hertz, is the integrated solar EUV energy flux at the top of atmosphere and normalized to solar flux units.",
+            "type": "number",
+            "example": 1.23
+          },
+          "e54": {
+            "format": "double",
+            "description": "E54 (E10-Bar), in x10-22 Watts per meter squared per Hertz, uses the past 54-days E10 values to determine the E10 average.",
+            "type": "number",
+            "example": 1.23
+          },
+          "s10": {
+            "format": "double",
+            "description": "Daily S10.7 index for >200 km heating of O by solar chromosphere. 28.4-30.4 nm emissions in x10-22 Watts per meter squared per Hertz.",
+            "type": "number",
+            "example": 1.23
+          },
+          "s54": {
+            "format": "double",
+            "description": "54 day S10.7 index for >200 km heating of O by solar chromosphere. 28.4-30.4 nm emissions in x10-22 Watts per meter squared per Hertz.",
+            "type": "number",
+            "example": 1.23
+          },
+          "m10": {
+            "format": "double",
+            "description": "Daily M10.7 index for 100-110 km heating of O2 by solar photosphere. 160 nm SRC emissions in x10-22 Watts per meter squared per Hertz.",
+            "type": "number",
+            "example": 1.23
+          },
+          "m54": {
+            "format": "double",
+            "description": "54 day M10.7 index for 100-110 km heating of O2 by solar photosphere. 160 nm SRC emissions in x10-22 Watts per meter squared per Hertz.",
+            "type": "number",
+            "example": 1.23
+          },
+          "y10": {
+            "format": "double",
+            "description": "Daily Y10.7 index for 85-90 km heating of N2, O2, H2O, NO by solar coronal. 0.1-0.8 nm and Lya 121 nm emissions in x10-22 Watts per meter squared per Hertz.",
+            "type": "number",
+            "example": 1.23
+          },
+          "y54": {
+            "format": "double",
+            "description": "54 day Y10.7 index for 85-90 km heating of N2, O2, H2O, NO by solar coronal. 0.1-0.8 nm and Lya 121 nm emissions in x10-22 Watts per meter squared per Hertz.",
+            "type": "number",
+            "example": 1.23
+          },
+          "f10": {
+            "format": "double",
+            "description": "Daily solar 10.7 cm radio flux in x10-22 Watts per meter squared per Hertz.",
+            "type": "number",
+            "example": 1.23
+          },
+          "f54": {
+            "format": "double",
+            "description": "54 day solar 10.7 cm radio flux in x10-22 Watts per meter squared per Hertz.",
+            "type": "number",
+            "example": 1.23
+          },
+          "f81": {
+            "format": "double",
+            "description": "81 day solar 10.7 cm radio flux in x10-22 Watts per meter squared per Hertz.",
+            "type": "number",
+            "example": 1.23
+          },
+          "ap": {
+            "format": "double",
+            "description": "Ap is the planetary geomagnetic 2 nT index (00-21 UT) for the timespan specified in apDuration. If apDuration is null, a 3 hour duration should be assumed.",
+            "type": "number",
+            "example": 1.23
+          },
+          "apDuration": {
+            "format": "int32",
+            "description": "The time, in hours, for which the Ap index value is valid. If null, a span of 3 hours is assumed.",
+            "type": "integer",
+            "example": 3
+          },
+          "kIndex": {
+            "format": "int32",
+            "description": "The maximum measured K-Index at the associated station during the kpDuration timespan. The K-Index is a unitless measure (0 - 9) of the deviation in the Earth's magnetic field from normal at the station geographic location, with 0 indicating the absence of geomagnetic disturbance, and 9 indicating the most significant disturbance. If kpDuration is null, a 3 hour duration should be assumed.",
+            "type": "integer",
+            "example": 1
+          },
+          "kp": {
+            "format": "double",
+            "description": "The Planetary K-index (Kp) over the kpDuration timespan. The Kp-Index is the average K-Index for the entire Earth, utilizing a unitless scale (0-9, in incremenets of 1/3), with 0 indicating the absence of geomagnetic disturbance, and 9 indicating the most significant disturbance. If kpDuration is null, a 3 hour duration should be assumed.",
+            "type": "number",
+            "example": 4.66
+          },
+          "kpDuration": {
+            "format": "int32",
+            "description": "The time, in hours, over which the K, Kp, and/or gamma index values are measured.  If null, a span of 3 hours is assumed.",
+            "type": "integer",
+            "example": 3
+          },
+          "gamma": {
+            "format": "int32",
+            "description": "The maximum measured gamma deflection during the kpDuration timespan. If kpDuration is null, a 3 hour duration should be assumed.",
+            "type": "integer",
+            "example": 25
+          },
+          "dst": {
+            "format": "double",
+            "description": "Disturbance Storm Time geomagnetic index in nT.",
+            "type": "number",
+            "example": 1.23
+          },
+          "dtc": {
+            "format": "double",
+            "description": "delta exospheric temperature correction in units of K.",
+            "type": "number",
+            "example": 1.23
+          },
+          "rbRegionCode": {
+            "format": "int32",
+            "description": "Region code for the associated radiation belt index. This is the code associated with the corresponding radiation belt location. See the provider card for reference to specific region code definitions.",
+            "type": "integer",
+            "example": 2
+          },
+          "rbIndex": {
+            "format": "double",
+            "description": "The value of the radiation belt index. This is the ratio of current intensity of a radiation belt to long-term average value. It's long-term average should be close to 1. Depending on the type of belt sensor, this ratio may measure Flux (number of particles / (cm^2 sec energy solid-angle)), dose rate (rad per second), or relative counts of particles per time (counts per second). The index value may also be normalized, the normalization value typically represents an average of the sensor measurements taken within a region over a given time interval. See the normFactor field for the specific normalization factor, if provided.",
+            "type": "number",
+            "example": 1.02947164506
+          },
+          "normFactor": {
+            "format": "double",
+            "description": "The normalization factor that has already been applied to the index value prior to record ingest. Typically used to normalize the index value to a particular interval. Units of the normalization factor may vary depending on the provider of this data (REACH, POES, CEASE3, etc.).",
+            "type": "number",
+            "example": 2.12679e-7
+          },
+          "rbDuration": {
+            "format": "int32",
+            "description": "The timespan over which the associated radiation belt index is factored. If rbDuration is null, a 24 hour duration should be assumed. Note: rbDuration defines the length of the time window for this data record. The time window start time is defined by sgiDate, and the time window end time is defined by sgiDate plus rbDuration.",
+            "type": "integer",
+            "example": 24
+          },
+          "analyzerAttenuation": {
+            "format": "double",
+            "description": "Signal analyzer's input attenuation level, in decibels. Attenuation is a setting on the hardware that measures the power of a signal.",
+            "type": "number",
+            "example": 5.1
+          },
+          "observedBaseline": {
+            "description": "Observed baseline values of the frequencies specified in the frequencies field, in solar flux units. The baseline values will be used to help detect abnormal readings from the sun that might indicate a flare or other solar activity.",
+            "type": "array",
+            "items": {
+              "format": "int32",
+              "type": "integer"
+            },
+            "example": [
+              15,
+              32,
+              25,
+              134,
+              0,
+              6,
+              19,
+              8
+            ]
+          },
+          "frequencies": {
+            "description": "Array of individual power spectral density (PSD) frequencies of the signal, in megahertz. This array should correspond with the same-sized array of powers.",
+            "type": "array",
+            "items": {
+              "format": "double",
+              "type": "number"
+            },
+            "example": [
+              25,
+              25.125,
+              25.25,
+              25.375,
+              25.5,
+              25.625,
+              25.75,
+              25.875
+            ]
+          },
+          "powers": {
+            "description": "Array of individual power spectral density (PSD) powers of the signal, in watts. This array should correspond with the same-sized array of frequencies.",
+            "type": "array",
+            "items": {
+              "format": "double",
+              "type": "number"
+            },
+            "example": [
+              67.1,
+              65.2,
+              68.1,
+              74.3,
+              68.1,
+              96.4,
+              97.3,
+              68.1
+            ]
+          },
+          "rawFileURI": {
+            "description": "Optional URI location in the document repository of the raw file parsed by the system to produce this record. To download the raw file, prepend https://udl-hostname/scs/download?id= to this value.",
+            "maxLength": 256,
+            "type": "string",
+            "example": "rawFileURI"
+          },
+          "transactionId": {
+            "description": "Optional identifier to track a commercial or marketplace transaction executed to produce this data.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "TRANSACTION-ID"
+          },
+          "tags": {
+            "description": "Optional array of provider/source specific tags for this data, where each element is no longer than 32 characters, used for implementing data owner conditional access controls to restrict access to the data. Should be left null by data providers unless conditional access controls are coordinated with the UDL team.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "PROVIDER_TAG1",
+              "PROVIDER_TAG2"
+            ]
+          },
+          "source": {
+            "description": "Source of the data.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string",
+            "example": "Bluestaq"
+          },
+          "origin": {
+            "description": "Originating system or organization which produced the data, if different from the source. The origin may be different than the source if the source was a mediating system which forwarded the data on behalf of the origin system. If null, the source may be assumed to be the origin.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "THIRD_PARTY_DATASOURCE"
+          },
+          "origNetwork": {
+            "description": "The originating source network on which this record was created, auto-populated by the system.",
+            "maxLength": 32,
+            "minLength": 1,
+            "type": "string",
+            "readOnly": true,
+            "example": "ORIG"
+          },
+          "dataMode": {
+            "description": "Indicator of whether the data is EXERCISE, REAL, SIMULATED, or TEST data:\n\nEXERCISE:&nbsp;Data pertaining to a government or military exercise. The data may include both real and simulated data.\n\nREAL:&nbsp;Data collected or produced that pertains to real-world objects, events, and analysis.\n\nSIMULATED:&nbsp;Synthetic data generated by a model to mimic real-world datasets.\n\nTEST:&nbsp;Specific datasets used to evaluate compliance with specifications and requirements, and for validating technical, functional, and performance characteristics.\n\n",
+            "maxLength": 32,
+            "minLength": 1,
+            "enum": [
+              "REAL",
+              "TEST",
+              "SIMULATED",
+              "EXERCISE"
+            ],
+            "type": "string",
+            "example": "TEST"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "description": "Time the row was created in the database, auto-populated by the system.",
+            "type": "string",
+            "readOnly": true,
+            "example": "2018-01-01T16:00:00.123Z"
+          },
+          "createdBy": {
+            "description": "Application user who created the row in the database, auto-populated by the system.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string",
+            "readOnly": true,
+            "example": "some.user"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "description": "Time the row was last updated in the database, auto-populated by the system.",
+            "type": "string",
+            "readOnly": true,
+            "example": "2018-01-01T16:00:00.123Z"
+          },
+          "updatedBy": {
+            "description": "Application user who updated the row in the database, auto-populated by the system.",
+            "maxLength": 64,
+            "type": "string",
+            "readOnly": true,
+            "example": "some.user"
+          }
+        }
+      },
+      "SGI_Ingest": {
+        "description": "Model representation of space weather/solar, geomagnetic, and radiation belt indices.",
+        "required": [
+          "classificationMarking",
+          "effectiveDate",
+          "sgiDate",
+          "source",
+          "dataMode"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Unique identifier of the record, auto-generated by the system.",
+            "maxLength": 36,
+            "minLength": 1,
+            "type": "string",
+            "example": "SGI-ID"
+          },
+          "classificationMarking": {
+            "description": "Classification marking of the data in IC/CAPCO Portion-marked format.",
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string",
+            "example": "U"
+          },
+          "effectiveDate": {
+            "format": "date-time",
+            "description": "ISO8601 UTC Time the data was received and processed from the source. Typically a source provides data for a date window with each transmission including past, present, and future predicted values.",
+            "type": "string",
+            "example": "2018-01-01T16:00:00.123Z"
+          },
+          "sgiDate": {
+            "format": "date-time",
+            "description": "ISO8601 UTC Time of the index value. This could be a past, current, or future predicted value. Note: sgiDate defines the start time of the time window for this  data record.",
+            "type": "string",
+            "example": "2018-01-01T16:00:00.123Z"
+          },
+          "type": {
+            "description": "The type of data contained in this record (e.g. HASDM, JBH09, K-Index, PSD-dB, RBI, RFI-SFU, etc).",
+            "maxLength": 32,
+            "type": "string",
+            "example": "JBH09"
+          },
+          "state": {
+            "description": "State indicating Issued (I), Nowcast (N), or Predicted (P) values for this record.",
+            "maxLength": 1,
+            "enum": [
+              "I",
+              "N",
+              "P"
+            ],
+            "type": "string",
+            "example": "I"
+          },
+          "stationName": {
+            "description": "The name/location of the station that collected the geomagnetic data for this record.",
+            "maxLength": 24,
+            "type": "string",
+            "example": "Boulder"
+          },
+          "idSensor": {
+            "description": "Unique identifier of the reporting sensor.",
+            "maxLength": 36,
+            "type": "string",
+            "example": "57c96c97-e076-48af-a068-73ee2cb37e65"
+          },
+          "origSensorId": {
+            "description": "Optional identifier provided by the reporting source to indicate the sensor identifier which produced this data. This may be an internal identifier and not necessarily a valid sensor ID.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "ORIGSENSOR-ID"
+          },
+          "mode": {
+            "format": "int32",
+            "description": "The transmitted DCA mode of the record (1-3).",
+            "type": "integer",
+            "example": 1
+          },
+          "precedence": {
+            "description": "The precedence of data in this record (O = Immediate, P = Priority, R = Routine, Y = Emergency, Z = Flash).",
+            "maxLength": 1,
+            "enum": [
+              "O",
+              "P",
+              "R",
+              "Y",
+              "Z"
+            ],
+            "type": "string",
+            "example": "R"
+          },
+          "coeffDegree": {
+            "description": "Array containing the degree of the temperature coefficients. The coeffDegree and coeffOrder arrays must be the same length.",
+            "type": "array",
+            "items": {
+              "format": "int32",
+              "type": "integer"
+            },
+            "example": [
+              1,
+              2,
+              3
+            ]
+          },
+          "coeffOrder": {
+            "description": "Array containing the order of the temperature coefficients. The coeffDegree and coeffOrder arrays must be the same length.",
+            "type": "array",
+            "items": {
+              "format": "int32",
+              "type": "integer"
+            },
+            "example": [
+              1,
+              2,
+              3
+            ]
+          },
+          "ctce": {
+            "description": "Array containing the cosine spherical-harmonic coefficients for Exospheric temperature (DTC) difference.  Each array element corresponds to the positional index of the coeffDegree and coeffOrder arrays.",
+            "type": "array",
+            "items": {
+              "format": "double",
+              "type": "number"
+            },
+            "example": [
+              1.23,
+              342.3,
+              1.32
+            ]
+          },
+          "stce": {
+            "description": "Array containing the sine spherical-harmonic coefficients for Exospheric temperature (DTC) difference.  Each array element corresponds to the positional index of the coeffDegree and coeffOrder arrays.",
+            "type": "array",
+            "items": {
+              "format": "double",
+              "type": "number"
+            },
+            "example": [
+              1.23,
+              342.3,
+              1.32
+            ]
+          },
+          "ctci": {
+            "description": "Array containing the cosine spherical-harmonic coefficients for Inflection temperature (DTX) difference.  Each array element corresponds to the positional index of the coeffDegree and coeffOrder arrays.",
+            "type": "array",
+            "items": {
+              "format": "double",
+              "type": "number"
+            },
+            "example": [
+              1.23,
+              342.3,
+              1.32
+            ]
+          },
+          "stci": {
+            "description": "Array containing the sine spherical harmonic coefficients for Inflection temperature (DTX) difference.  Each array element corresponds to the positional index of the coeffDegree and coeffOrder arrays.",
+            "type": "array",
+            "items": {
+              "format": "double",
+              "type": "number"
+            },
+            "example": [
+              1.23,
+              342.3,
+              1.32
+            ]
+          },
+          "e10": {
+            "format": "double",
+            "description": "Extreme Ultraviolet (EUV) proxy, E10.7, in x10-22 Watts per meter squared per Hertz, is the integrated solar EUV energy flux at the top of atmosphere and normalized to solar flux units.",
+            "type": "number",
+            "example": 1.23
+          },
+          "e54": {
+            "format": "double",
+            "description": "E54 (E10-Bar), in x10-22 Watts per meter squared per Hertz, uses the past 54-days E10 values to determine the E10 average.",
+            "type": "number",
+            "example": 1.23
+          },
+          "s10": {
+            "format": "double",
+            "description": "Daily S10.7 index for >200 km heating of O by solar chromosphere. 28.4-30.4 nm emissions in x10-22 Watts per meter squared per Hertz.",
+            "type": "number",
+            "example": 1.23
+          },
+          "s54": {
+            "format": "double",
+            "description": "54 day S10.7 index for >200 km heating of O by solar chromosphere. 28.4-30.4 nm emissions in x10-22 Watts per meter squared per Hertz.",
+            "type": "number",
+            "example": 1.23
+          },
+          "m10": {
+            "format": "double",
+            "description": "Daily M10.7 index for 100-110 km heating of O2 by solar photosphere. 160 nm SRC emissions in x10-22 Watts per meter squared per Hertz.",
+            "type": "number",
+            "example": 1.23
+          },
+          "m54": {
+            "format": "double",
+            "description": "54 day M10.7 index for 100-110 km heating of O2 by solar photosphere. 160 nm SRC emissions in x10-22 Watts per meter squared per Hertz.",
+            "type": "number",
+            "example": 1.23
+          },
+          "y10": {
+            "format": "double",
+            "description": "Daily Y10.7 index for 85-90 km heating of N2, O2, H2O, NO by solar coronal. 0.1-0.8 nm and Lya 121 nm emissions in x10-22 Watts per meter squared per Hertz.",
+            "type": "number",
+            "example": 1.23
+          },
+          "y54": {
+            "format": "double",
+            "description": "54 day Y10.7 index for 85-90 km heating of N2, O2, H2O, NO by solar coronal. 0.1-0.8 nm and Lya 121 nm emissions in x10-22 Watts per meter squared per Hertz.",
+            "type": "number",
+            "example": 1.23
+          },
+          "f10": {
+            "format": "double",
+            "description": "Daily solar 10.7 cm radio flux in x10-22 Watts per meter squared per Hertz.",
+            "type": "number",
+            "example": 1.23
+          },
+          "f54": {
+            "format": "double",
+            "description": "54 day solar 10.7 cm radio flux in x10-22 Watts per meter squared per Hertz.",
+            "type": "number",
+            "example": 1.23
+          },
+          "f81": {
+            "format": "double",
+            "description": "81 day solar 10.7 cm radio flux in x10-22 Watts per meter squared per Hertz.",
+            "type": "number",
+            "example": 1.23
+          },
+          "ap": {
+            "format": "double",
+            "description": "Ap is the planetary geomagnetic 2 nT index (00-21 UT) for the timespan specified in apDuration. If apDuration is null, a 3 hour duration should be assumed.",
+            "type": "number",
+            "example": 1.23
+          },
+          "apDuration": {
+            "format": "int32",
+            "description": "The time, in hours, for which the Ap index value is valid. If null, a span of 3 hours is assumed.",
+            "type": "integer",
+            "example": 3
+          },
+          "kIndex": {
+            "format": "int32",
+            "description": "The maximum measured K-Index at the associated station during the kpDuration timespan. The K-Index is a unitless measure (0 - 9) of the deviation in the Earth's magnetic field from normal at the station geographic location, with 0 indicating the absence of geomagnetic disturbance, and 9 indicating the most significant disturbance. If kpDuration is null, a 3 hour duration should be assumed.",
+            "type": "integer",
+            "example": 1
+          },
+          "kp": {
+            "format": "double",
+            "description": "The Planetary K-index (Kp) over the kpDuration timespan. The Kp-Index is the average K-Index for the entire Earth, utilizing a unitless scale (0-9, in incremenets of 1/3), with 0 indicating the absence of geomagnetic disturbance, and 9 indicating the most significant disturbance. If kpDuration is null, a 3 hour duration should be assumed.",
+            "type": "number",
+            "example": 4.66
+          },
+          "kpDuration": {
+            "format": "int32",
+            "description": "The time, in hours, over which the K, Kp, and/or gamma index values are measured.  If null, a span of 3 hours is assumed.",
+            "type": "integer",
+            "example": 3
+          },
+          "gamma": {
+            "format": "int32",
+            "description": "The maximum measured gamma deflection during the kpDuration timespan. If kpDuration is null, a 3 hour duration should be assumed.",
+            "type": "integer",
+            "example": 25
+          },
+          "dst": {
+            "format": "double",
+            "description": "Disturbance Storm Time geomagnetic index in nT.",
+            "type": "number",
+            "example": 1.23
+          },
+          "dtc": {
+            "format": "double",
+            "description": "delta exospheric temperature correction in units of K.",
+            "type": "number",
+            "example": 1.23
+          },
+          "rbRegionCode": {
+            "format": "int32",
+            "description": "Region code for the associated radiation belt index. This is the code associated with the corresponding radiation belt location. See the provider card for reference to specific region code definitions.",
+            "type": "integer",
+            "example": 2
+          },
+          "rbIndex": {
+            "format": "double",
+            "description": "The value of the radiation belt index. This is the ratio of current intensity of a radiation belt to long-term average value. It's long-term average should be close to 1. Depending on the type of belt sensor, this ratio may measure Flux (number of particles / (cm^2 sec energy solid-angle)), dose rate (rad per second), or relative counts of particles per time (counts per second). The index value may also be normalized, the normalization value typically represents an average of the sensor measurements taken within a region over a given time interval. See the normFactor field for the specific normalization factor, if provided.",
+            "type": "number",
+            "example": 1.02947164506
+          },
+          "normFactor": {
+            "format": "double",
+            "description": "The normalization factor that has already been applied to the index value prior to record ingest. Typically used to normalize the index value to a particular interval. Units of the normalization factor may vary depending on the provider of this data (REACH, POES, CEASE3, etc.).",
+            "type": "number",
+            "example": 2.12679e-7
+          },
+          "rbDuration": {
+            "format": "int32",
+            "description": "The timespan over which the associated radiation belt index is factored. If rbDuration is null, a 24 hour duration should be assumed. Note: rbDuration defines the length of the time window for this data record. The time window start time is defined by sgiDate, and the time window end time is defined by sgiDate plus rbDuration.",
+            "type": "integer",
+            "example": 24
+          },
+          "analyzerAttenuation": {
+            "format": "double",
+            "description": "Signal analyzer's input attenuation level, in decibels. Attenuation is a setting on the hardware that measures the power of a signal.",
+            "type": "number",
+            "example": 5.1
+          },
+          "observedBaseline": {
+            "description": "Observed baseline values of the frequencies specified in the frequencies field, in solar flux units. The baseline values will be used to help detect abnormal readings from the sun that might indicate a flare or other solar activity.",
+            "type": "array",
+            "items": {
+              "format": "int32",
+              "type": "integer"
+            },
+            "example": [
+              15,
+              32,
+              25,
+              134,
+              0,
+              6,
+              19,
+              8
+            ]
+          },
+          "frequencies": {
+            "description": "Array of individual power spectral density (PSD) frequencies of the signal, in megahertz. This array should correspond with the same-sized array of powers.",
+            "type": "array",
+            "items": {
+              "format": "double",
+              "type": "number"
+            },
+            "example": [
+              25,
+              25.125,
+              25.25,
+              25.375,
+              25.5,
+              25.625,
+              25.75,
+              25.875
+            ]
+          },
+          "powers": {
+            "description": "Array of individual power spectral density (PSD) powers of the signal, in watts. This array should correspond with the same-sized array of frequencies.",
+            "type": "array",
+            "items": {
+              "format": "double",
+              "type": "number"
+            },
+            "example": [
+              67.1,
+              65.2,
+              68.1,
+              74.3,
+              68.1,
+              96.4,
+              97.3,
+              68.1
+            ]
+          },
+          "rawFileURI": {
+            "description": "Optional URI location in the document repository of the raw file parsed by the system to produce this record. To download the raw file, prepend https://udl-hostname/scs/download?id= to this value.",
+            "maxLength": 256,
+            "type": "string",
+            "example": "rawFileURI"
+          },
+          "transactionId": {
+            "description": "Optional identifier to track a commercial or marketplace transaction executed to produce this data.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "TRANSACTION-ID"
+          },
+          "tags": {
+            "description": "Optional array of provider/source specific tags for this data, where each element is no longer than 32 characters, used for implementing data owner conditional access controls to restrict access to the data. Should be left null by data providers unless conditional access controls are coordinated with the UDL team.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "PROVIDER_TAG1",
+              "PROVIDER_TAG2"
+            ]
+          },
+          "source": {
+            "description": "Source of the data.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string",
+            "example": "Bluestaq"
+          },
+          "origin": {
+            "description": "Originating system or organization which produced the data, if different from the source. The origin may be different than the source if the source was a mediating system which forwarded the data on behalf of the origin system. If null, the source may be assumed to be the origin.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "THIRD_PARTY_DATASOURCE"
+          },
+          "origNetwork": {
+            "description": "The originating source network on which this record was created, auto-populated by the system.",
+            "maxLength": 32,
+            "minLength": 1,
+            "type": "string",
+            "readOnly": true,
+            "example": "ORIG"
+          },
+          "dataMode": {
+            "description": "Indicator of whether the data is EXERCISE, REAL, SIMULATED, or TEST data:\n\nEXERCISE:&nbsp;Data pertaining to a government or military exercise. The data may include both real and simulated data.\n\nREAL:&nbsp;Data collected or produced that pertains to real-world objects, events, and analysis.\n\nSIMULATED:&nbsp;Synthetic data generated by a model to mimic real-world datasets.\n\nTEST:&nbsp;Specific datasets used to evaluate compliance with specifications and requirements, and for validating technical, functional, and performance characteristics.\n\n",
+            "maxLength": 32,
+            "minLength": 1,
+            "enum": [
+              "REAL",
+              "TEST",
+              "SIMULATED",
+              "EXERCISE"
+            ],
+            "type": "string",
+            "example": "TEST"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "description": "Time the row was created in the database, auto-populated by the system.",
+            "type": "string",
+            "readOnly": true,
+            "example": "2018-01-01T16:00:00.123Z"
+          },
+          "createdBy": {
+            "description": "Application user who created the row in the database, auto-populated by the system.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string",
+            "readOnly": true,
+            "example": "some.user"
+          }
+        }
+      }
+    }
+  }
+}

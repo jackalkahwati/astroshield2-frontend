@@ -1,0 +1,3994 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Unified Data Library Services API",
+    "version": "1.30.0 Daiquiri",
+    "description": "Unified Data Library Services OpenAPI v3 documentation.",
+    "termsOfService": "storefront/storefront/appConfig/useragreement.html",
+    "contact": {
+      "name": "Sage Andorka, Deputy, Cross-Mission Ground",
+      "email": "unifieddatalibrary@bluestaq.com"
+    }
+  },
+  "tags": [
+    {
+      "name": "MTI",
+      "description": "These services provide operations for posting and querying Moving Target Indicator (MTI) STANAG 4607 data. Detailed MTI data supports activities such as targeting or less detailed data for applications such as situational awareness used/derived by exploitation systems."
+    }
+  ],
+  "externalDocs": {
+    "url": "udl/openapi.json"
+  },
+  "servers": [
+    {
+      "url": "https://unifieddatalibrary.com"
+    }
+  ],
+  "paths": {
+    "/filedrop/udl-mti": {
+      "post": {
+        "tags": [
+          "MTI"
+        ],
+        "description": "Service operation to take a list of Moving Target Indicator (MTI) formatted data as a POST body and ingest into the database. This operation is intended to be used for automated feeds into UDL. A specific role is required to perform this service operation. Please contact the UDL team for assistance.\n",
+        "operationId": "filedrop_udl_mti_post_id",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Mti_Ingest"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Accepted"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/udl/mti": {
+      "get": {
+        "description": "Service operation to dynamically query data by a variety of query parameters not specified in this API documentation. See the queryhelp operation (/udl/&lt;datatype&gt;/queryhelp) for more details on valid/required query parameter information.",
+        "tags": [
+          "MTI"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Mti_Abridged"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "406": {
+            "description": "MediaType Not Accepted by Request Headers"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "parameters": [
+          {
+            "name": "createdAt",
+            "description": "Time the row was created in the database. (YYYY-MM-DDTHH:MM:SS.sssZ)",
+            "required": true,
+            "schema": {
+              "format": "date",
+              "type": "string"
+            },
+            "in": "query"
+          }
+        ]
+      }
+    },
+    "/udl/mti/count": {
+      "get": {
+        "description": "Service operation to return the count of records satisfying the specified query parameters. This operation is useful to determine how many records pass a particular query criteria without retrieving large amounts of data. See the queryhelp operation (/udl/&lt;datatype&gt;/queryhelp) for more details on valid/required query parameter information.",
+        "tags": [
+          "MTI"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "406": {
+            "description": "MediaType Not Accepted by Request Headers"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "parameters": [
+          {
+            "name": "createdAt",
+            "description": "Time the row was created in the database. (YYYY-MM-DDTHH:MM:SS.sssZ)",
+            "required": true,
+            "schema": {
+              "format": "date",
+              "type": "string"
+            },
+            "in": "query"
+          }
+        ]
+      }
+    },
+    "/udl/mti/createBulk": {
+      "post": {
+        "description": "Service operation intended for initial integration only, to take a list of Moving Target Indicator (MTI) records as a POST body and ingest into the database. This operation is not intended to be used for automated feeds into UDL. Data providers should contact the UDL team for specific role assignments and for instructions on setting up a permanent feed through an alternate mechanism.",
+        "tags": [
+          "MTI"
+        ],
+        "requestBody": {
+          "description": "JSON representation of multiple MTI records.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Mti_Ingest"
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "415": {
+            "description": "MediaType Unsupported"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/udl/mti/history": {
+      "get": {
+        "description": "Service operation to dynamically query historical data by a variety of query parameters not specified in this API documentation.  See the queryhelp operation (/udl/&lt;datatype&gt;/queryhelp) for more details on valid/required query parameter information.",
+        "tags": [
+          "MTI"
+        ],
+        "parameters": [
+          {
+            "description": "optional, fields for retrieval. When omitted, ALL fields are assumed. See the queryhelp operation (/udl/&lt;datatype&gt;/queryhelp) for more details on valid query fields that can be selected.",
+            "name": "columns",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "createdAt",
+            "description": "Time the row was created in the database. (YYYY-MM-DDTHH:MM:SS.sssZ)",
+            "required": true,
+            "schema": {
+              "format": "date",
+              "type": "string"
+            },
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Mti_Full"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "406": {
+            "description": "MediaType Not Accepted by Request Headers"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/udl/mti/history/aodr": {
+      "get": {
+        "description": "Service operation to dynamically query historical data by a variety of query parameters not specified in this API documentation, then write that data to the Secure Content Store.  See the queryhelp operation (/udl/&lt;datatype&gt;/queryhelp) for more details on valid/required query parameter information.",
+        "tags": [
+          "MTI"
+        ],
+        "parameters": [
+          {
+            "description": "optional, fields for retrieval. When omitted, ALL fields are assumed. See the queryhelp operation (/udl/&lt;datatype&gt;/queryhelp) for more details on valid query fields that can be selected.",
+            "name": "columns",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "optional, notification method for the created file link. When omitted, EMAIL is assumed. Current valid values are: EMAIL, SMS.",
+            "name": "notification",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "optional, field delimiter when the created file is not JSON. Must be a single character chosen from this set: (',', ';', ':', '|'). When omitted, \",\" is used. It is strongly encouraged that your field delimiter be a character unlikely to occur within the data.",
+            "name": "outputDelimiter",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "optional, output format for the file. When omitted, JSON is assumed. Current valid values are: JSON and CSV.",
+            "name": "outputFormat",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "createdAt",
+            "description": "Time the row was created in the database. (YYYY-MM-DDTHH:MM:SS.sssZ)",
+            "required": true,
+            "schema": {
+              "format": "date",
+              "type": "string"
+            },
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "406": {
+            "description": "MediaType Not Accepted by Request Headers"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/udl/mti/history/count": {
+      "get": {
+        "description": "Service operation to return the count of records satisfying the specified query parameters. This operation is useful to determine how many records pass a particular query criteria without retrieving large amounts of data. See the queryhelp operation (/udl/&lt;datatype&gt;/queryhelp) for more details on valid/required query parameter information.",
+        "tags": [
+          "MTI"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "406": {
+            "description": "MediaType Not Accepted by Request Headers"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "parameters": [
+          {
+            "name": "createdAt",
+            "description": "Time the row was created in the database. (YYYY-MM-DDTHH:MM:SS.sssZ)",
+            "required": true,
+            "schema": {
+              "format": "date",
+              "type": "string"
+            },
+            "in": "query"
+          }
+        ]
+      }
+    },
+    "/udl/mti/queryhelp": {
+      "get": {
+        "description": "Service operation to provide detailed information on available dynamic query parameters for a particular data type.",
+        "tags": [
+          "MTI"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "User Unauthorized"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "406": {
+            "description": "MediaType Not Accepted by Request Headers"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/udl/mti/tuple": {
+      "get": {
+        "description": "Service operation to dynamically query data and only return specified columns/fields. Requested columns are specified by the 'columns' query parameter and should be a comma separated list of valid fields for the specified data type. classificationMarking is always returned. See the queryhelp operation (/udl/<datatype>/queryhelp) for more details on valid/required query parameter information. An example URI: /udl/elset/tuple?columns=satNo,period&epoch=>now-5 hours would return the satNo and period of elsets with an epoch greater than 5 hours ago.",
+        "tags": [
+          "MTI"
+        ],
+        "parameters": [
+          {
+            "description": "Comma-separated list of valid field names for this data type to be returned in the response. Only the fields specified will be returned as well as the classification marking of the data, if applicable. See the ‘queryhelp’ operation for a complete list of possible fields.",
+            "required": true,
+            "name": "columns",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "createdAt",
+            "description": "Time the row was created in the database. (YYYY-MM-DDTHH:MM:SS.sssZ)",
+            "required": true,
+            "schema": {
+              "format": "date",
+              "type": "string"
+            },
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Mti_Full"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "406": {
+            "description": "MediaType Not Accepted by Request Headers"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Mti_Abridged": {
+        "description": "Information on the mission and flight plans, the type and configuration of the platform, and the reference time.",
+        "required": [
+          "classificationMarking",
+          "source",
+          "dataMode"
+        ],
+        "type": "object",
+        "properties": {
+          "classificationMarking": {
+            "description": "Classification marking of the data in IC/CAPCO Portion-marked format.",
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string",
+            "example": "U"
+          },
+          "source": {
+            "description": "Source of the data.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string",
+            "example": "Bluestaq"
+          },
+          "origin": {
+            "description": "Originating system or organization which produced the data, if different from the source. The origin may be different than the source if the source was a mediating system which forwarded the data on behalf of the origin system. If null, the source may be assumed to be the origin.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "THIRD_PARTY_DATASOURCE"
+          },
+          "id": {
+            "description": "Unique identifier of the record, auto-generated by the system.",
+            "maxLength": 36,
+            "minLength": 1,
+            "type": "string",
+            "example": "MTI-ID"
+          },
+          "dataMode": {
+            "description": "Indicator of whether the data is EXERCISE, REAL, SIMULATED, or TEST data:\n\nEXERCISE:&nbsp;Data pertaining to a government or military exercise. The data may include both real and simulated data.\n\nREAL:&nbsp;Data collected or produced that pertains to real-world objects, events, and analysis.\n\nSIMULATED:&nbsp;Synthetic data generated by a model to mimic real-world datasets.\n\nTEST:&nbsp;Specific datasets used to evaluate compliance with specifications and requirements, and for validating technical, functional, and performance characteristics.\n\n",
+            "maxLength": 32,
+            "minLength": 1,
+            "enum": [
+              "REAL",
+              "TEST",
+              "SIMULATED",
+              "EXERCISE"
+            ],
+            "type": "string",
+            "example": "TEST"
+          },
+          "createdBy": {
+            "description": "Application user who created the row in the database, auto-populated by the system.",
+            "maxLength": 64,
+            "type": "string",
+            "readOnly": true,
+            "example": "some.user"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "description": "Time the row was created in the database, auto-populated by the system.",
+            "type": "string",
+            "readOnly": true,
+            "example": "2018-01-01T16:00:00.123Z"
+          },
+          "p3": {
+            "description": "Nationality of the platform providing the data.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "NATIONALITY"
+          },
+          "p6": {
+            "description": "Control / handling marking.",
+            "maxLength": 128,
+            "type": "string",
+            "example": "MARKING"
+          },
+          "p7": {
+            "description": "Data record exercise indicator.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "INDICATOR"
+          },
+          "p8": {
+            "description": "ID of the platform providing the data (tail number for air platform, name and numerical designator for space-based platforms).",
+            "maxLength": 64,
+            "type": "string",
+            "example": "P8-ID"
+          },
+          "p9": {
+            "format": "int32",
+            "description": "Integer field, assigned by the platform, that uniquely identifies the mission for the platform.",
+            "type": "integer",
+            "example": 45
+          },
+          "p10": {
+            "format": "int32",
+            "description": "A platform-assigned number identifying the specific request or task that pertains to all Dwell, HRR, and Range-Doppler segments in the packet.  Job ID is unique within a mission.",
+            "type": "integer",
+            "example": 45
+          },
+          "missions": {
+            "description": "A platform-assigned number identifying the specific request or task that pertains to all Dwell, HRR, and Range-Doppler segments in the packet.  Job ID is unique within a mission.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MtiMission_Abridged"
+            }
+          },
+          "dwells": {
+            "description": "A platform-assigned number identifying the specific request or task that pertains to all Dwell, HRR, and Range-Doppler segments in the packet.  Job ID is unique within a mission.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MtiDwell_Abridged"
+            }
+          },
+          "hrrs": {
+            "description": "A platform-assigned number identifying the specific request or task that pertains to all Dwell, HRR, and Range-Doppler segments in the packet.  Job ID is unique within a mission.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MtiHRR_Abridged"
+            }
+          },
+          "jobDefs": {
+            "description": "A platform-assigned number identifying the specific request or task that pertains to all Dwell, HRR, and Range-Doppler segments in the packet.  Job ID is unique within a mission.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MtiJobDefinition_Abridged"
+            }
+          },
+          "freeTexts": {
+            "description": "A platform-assigned number identifying the specific request or task that pertains to all Dwell, HRR, and Range-Doppler segments in the packet.  Job ID is unique within a mission.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MtiFreeText_Abridged"
+            }
+          },
+          "platformLocs": {
+            "description": "A platform-assigned number identifying the specific request or task that pertains to all Dwell, HRR, and Range-Doppler segments in the packet.  Job ID is unique within a mission.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MtiPlatformLocation_Abridged"
+            }
+          },
+          "jobRequests": {
+            "description": "A platform-assigned number identifying the specific request or task that pertains to all Dwell, HRR, and Range-Doppler segments in the packet.  Job ID is unique within a mission.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MtiJobRequest_Abridged"
+            }
+          },
+          "origNetwork": {
+            "description": "The originating source network on which this record was created, auto-populated by the system.",
+            "maxLength": 32,
+            "minLength": 1,
+            "type": "string",
+            "readOnly": true,
+            "example": "ORIG"
+          }
+        }
+      },
+      "Mti_Full": {
+        "description": "Information on the mission and flight plans, the type and configuration of the platform, and the reference time.",
+        "required": [
+          "classificationMarking",
+          "source",
+          "dataMode"
+        ],
+        "type": "object",
+        "properties": {
+          "classificationMarking": {
+            "description": "Classification marking of the data in IC/CAPCO Portion-marked format.",
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string",
+            "example": "U"
+          },
+          "source": {
+            "description": "Source of the data.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string",
+            "example": "Bluestaq"
+          },
+          "origin": {
+            "description": "Originating system or organization which produced the data, if different from the source. The origin may be different than the source if the source was a mediating system which forwarded the data on behalf of the origin system. If null, the source may be assumed to be the origin.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "THIRD_PARTY_DATASOURCE"
+          },
+          "id": {
+            "description": "Unique identifier of the record, auto-generated by the system.",
+            "maxLength": 36,
+            "minLength": 1,
+            "type": "string",
+            "example": "MTI-ID"
+          },
+          "dataMode": {
+            "description": "Indicator of whether the data is EXERCISE, REAL, SIMULATED, or TEST data:\n\nEXERCISE:&nbsp;Data pertaining to a government or military exercise. The data may include both real and simulated data.\n\nREAL:&nbsp;Data collected or produced that pertains to real-world objects, events, and analysis.\n\nSIMULATED:&nbsp;Synthetic data generated by a model to mimic real-world datasets.\n\nTEST:&nbsp;Specific datasets used to evaluate compliance with specifications and requirements, and for validating technical, functional, and performance characteristics.\n\n",
+            "maxLength": 32,
+            "minLength": 1,
+            "enum": [
+              "REAL",
+              "TEST",
+              "SIMULATED",
+              "EXERCISE"
+            ],
+            "type": "string",
+            "example": "TEST"
+          },
+          "createdBy": {
+            "description": "Application user who created the row in the database, auto-populated by the system.",
+            "maxLength": 64,
+            "type": "string",
+            "readOnly": true,
+            "example": "some.user"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "description": "Time the row was created in the database, auto-populated by the system.",
+            "type": "string",
+            "readOnly": true,
+            "example": "2018-01-01T16:00:00.123Z"
+          },
+          "p3": {
+            "description": "Nationality of the platform providing the data.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "NATIONALITY"
+          },
+          "p6": {
+            "description": "Control / handling marking.",
+            "maxLength": 128,
+            "type": "string",
+            "example": "MARKING"
+          },
+          "p7": {
+            "description": "Data record exercise indicator.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "INDICATOR"
+          },
+          "p8": {
+            "description": "ID of the platform providing the data (tail number for air platform, name and numerical designator for space-based platforms).",
+            "maxLength": 64,
+            "type": "string",
+            "example": "P8-ID"
+          },
+          "p9": {
+            "format": "int32",
+            "description": "Integer field, assigned by the platform, that uniquely identifies the mission for the platform.",
+            "type": "integer",
+            "example": 45
+          },
+          "p10": {
+            "format": "int32",
+            "description": "A platform-assigned number identifying the specific request or task that pertains to all Dwell, HRR, and Range-Doppler segments in the packet.  Job ID is unique within a mission.",
+            "type": "integer",
+            "example": 45
+          },
+          "missions": {
+            "description": "A platform-assigned number identifying the specific request or task that pertains to all Dwell, HRR, and Range-Doppler segments in the packet.  Job ID is unique within a mission.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MtiMission_Full"
+            }
+          },
+          "dwells": {
+            "description": "A platform-assigned number identifying the specific request or task that pertains to all Dwell, HRR, and Range-Doppler segments in the packet.  Job ID is unique within a mission.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MtiDwell_Full"
+            }
+          },
+          "hrrs": {
+            "description": "A platform-assigned number identifying the specific request or task that pertains to all Dwell, HRR, and Range-Doppler segments in the packet.  Job ID is unique within a mission.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MtiHRR_Full"
+            }
+          },
+          "jobDefs": {
+            "description": "A platform-assigned number identifying the specific request or task that pertains to all Dwell, HRR, and Range-Doppler segments in the packet.  Job ID is unique within a mission.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MtiJobDefinition_Full"
+            }
+          },
+          "freeTexts": {
+            "description": "A platform-assigned number identifying the specific request or task that pertains to all Dwell, HRR, and Range-Doppler segments in the packet.  Job ID is unique within a mission.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MtiFreeText_Full"
+            }
+          },
+          "platformLocs": {
+            "description": "A platform-assigned number identifying the specific request or task that pertains to all Dwell, HRR, and Range-Doppler segments in the packet.  Job ID is unique within a mission.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MtiPlatformLocation_Full"
+            }
+          },
+          "jobRequests": {
+            "description": "A platform-assigned number identifying the specific request or task that pertains to all Dwell, HRR, and Range-Doppler segments in the packet.  Job ID is unique within a mission.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MtiJobRequest_Full"
+            }
+          },
+          "origNetwork": {
+            "description": "The originating source network on which this record was created, auto-populated by the system.",
+            "maxLength": 32,
+            "minLength": 1,
+            "type": "string",
+            "readOnly": true,
+            "example": "ORIG"
+          }
+        }
+      },
+      "Mti_Ingest": {
+        "description": "Information on the mission and flight plans, the type and configuration of the platform, and the reference time.",
+        "required": [
+          "classificationMarking",
+          "source",
+          "dataMode"
+        ],
+        "type": "object",
+        "properties": {
+          "classificationMarking": {
+            "description": "Classification marking of the data in IC/CAPCO Portion-marked format.",
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string",
+            "example": "U"
+          },
+          "source": {
+            "description": "Source of the data.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string",
+            "example": "Bluestaq"
+          },
+          "origin": {
+            "description": "Originating system or organization which produced the data, if different from the source. The origin may be different than the source if the source was a mediating system which forwarded the data on behalf of the origin system. If null, the source may be assumed to be the origin.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "THIRD_PARTY_DATASOURCE"
+          },
+          "id": {
+            "description": "Unique identifier of the record, auto-generated by the system.",
+            "maxLength": 36,
+            "minLength": 1,
+            "type": "string",
+            "example": "MTI-ID"
+          },
+          "dataMode": {
+            "description": "Indicator of whether the data is EXERCISE, REAL, SIMULATED, or TEST data:\n\nEXERCISE:&nbsp;Data pertaining to a government or military exercise. The data may include both real and simulated data.\n\nREAL:&nbsp;Data collected or produced that pertains to real-world objects, events, and analysis.\n\nSIMULATED:&nbsp;Synthetic data generated by a model to mimic real-world datasets.\n\nTEST:&nbsp;Specific datasets used to evaluate compliance with specifications and requirements, and for validating technical, functional, and performance characteristics.\n\n",
+            "maxLength": 32,
+            "minLength": 1,
+            "enum": [
+              "REAL",
+              "TEST",
+              "SIMULATED",
+              "EXERCISE"
+            ],
+            "type": "string",
+            "example": "TEST"
+          },
+          "createdBy": {
+            "description": "Application user who created the row in the database, auto-populated by the system.",
+            "maxLength": 64,
+            "type": "string",
+            "readOnly": true,
+            "example": "some.user"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "description": "Time the row was created in the database, auto-populated by the system.",
+            "type": "string",
+            "readOnly": true,
+            "example": "2018-01-01T16:00:00.123Z"
+          },
+          "p3": {
+            "description": "Nationality of the platform providing the data.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "NATIONALITY"
+          },
+          "p6": {
+            "description": "Control / handling marking.",
+            "maxLength": 128,
+            "type": "string",
+            "example": "MARKING"
+          },
+          "p7": {
+            "description": "Data record exercise indicator.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "INDICATOR"
+          },
+          "p8": {
+            "description": "ID of the platform providing the data (tail number for air platform, name and numerical designator for space-based platforms).",
+            "maxLength": 64,
+            "type": "string",
+            "example": "P8-ID"
+          },
+          "p9": {
+            "format": "int32",
+            "description": "Integer field, assigned by the platform, that uniquely identifies the mission for the platform.",
+            "type": "integer",
+            "example": 45
+          },
+          "p10": {
+            "format": "int32",
+            "description": "A platform-assigned number identifying the specific request or task that pertains to all Dwell, HRR, and Range-Doppler segments in the packet.  Job ID is unique within a mission.",
+            "type": "integer",
+            "example": 45
+          },
+          "missions": {
+            "description": "A platform-assigned number identifying the specific request or task that pertains to all Dwell, HRR, and Range-Doppler segments in the packet.  Job ID is unique within a mission.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MtiMission_Ingest"
+            }
+          },
+          "dwells": {
+            "description": "A platform-assigned number identifying the specific request or task that pertains to all Dwell, HRR, and Range-Doppler segments in the packet.  Job ID is unique within a mission.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MtiDwell_Ingest"
+            }
+          },
+          "hrrs": {
+            "description": "A platform-assigned number identifying the specific request or task that pertains to all Dwell, HRR, and Range-Doppler segments in the packet.  Job ID is unique within a mission.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MtiHRR_Ingest"
+            }
+          },
+          "jobDefs": {
+            "description": "A platform-assigned number identifying the specific request or task that pertains to all Dwell, HRR, and Range-Doppler segments in the packet.  Job ID is unique within a mission.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MtiJobDefinition_Ingest"
+            }
+          },
+          "freeTexts": {
+            "description": "A platform-assigned number identifying the specific request or task that pertains to all Dwell, HRR, and Range-Doppler segments in the packet.  Job ID is unique within a mission.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MtiFreeText_Ingest"
+            }
+          },
+          "platformLocs": {
+            "description": "A platform-assigned number identifying the specific request or task that pertains to all Dwell, HRR, and Range-Doppler segments in the packet.  Job ID is unique within a mission.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MtiPlatformLocation_Ingest"
+            }
+          },
+          "jobRequests": {
+            "description": "A platform-assigned number identifying the specific request or task that pertains to all Dwell, HRR, and Range-Doppler segments in the packet.  Job ID is unique within a mission.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MtiJobRequest_Ingest"
+            }
+          },
+          "origNetwork": {
+            "description": "The originating source network on which this record was created, auto-populated by the system.",
+            "maxLength": 32,
+            "minLength": 1,
+            "type": "string",
+            "readOnly": true,
+            "example": "ORIG"
+          }
+        }
+      },
+      "MtiDwell_Abridged": {
+        "type": "object",
+        "properties": {
+          "d2": {
+            "format": "int32",
+            "description": "Sequential count of a revisit of the bounding area in the last sent Job Definition Segment, where a Revisit Index of '0' indicates the first revisit.",
+            "type": "integer",
+            "example": 12
+          },
+          "d3": {
+            "format": "int32",
+            "description": "Temporally sequential count of a dwell within the revisit of a particular bounding area for a given job ID.",
+            "type": "integer",
+            "example": 12
+          },
+          "d4": {
+            "description": "Flag indicating the last dwell of the revisit.",
+            "type": "boolean",
+            "example": false
+          },
+          "d5": {
+            "format": "int32",
+            "description": "Count of the total number of targets reported during this dwell and sent in this Dwell Segment.",
+            "type": "integer",
+            "example": 12
+          },
+          "d6": {
+            "format": "int64",
+            "description": "Elapsed time, expressed in milliseconds, from midnight at the beginning of the day specified in the Reference Time fields (missionRefTime) of the Mission Segment.",
+            "type": "integer",
+            "example": 1234567890
+          },
+          "d7": {
+            "format": "double",
+            "description": "North-South position of the sensor at the temporal center of the dwell, in degrees.",
+            "type": "number",
+            "example": 1.2
+          },
+          "d8": {
+            "format": "double",
+            "description": "The East-West position of the sensor at the temporal center of the dwell, in degrees East (positive, 0 to 180) or West (negative, 0 to -180) of the Prime Meridian.",
+            "type": "number",
+            "example": 12
+          },
+          "d9": {
+            "format": "int32",
+            "description": "The altitude of the sensor at temporal center of the dwell, above the WGS 84 ellipsoid, expressed in centimeters.",
+            "type": "integer",
+            "example": 12
+          },
+          "d10": {
+            "format": "double",
+            "description": "Factor which modifies the value of the reported target latitude (Delta Latitude, field D32.4).",
+            "type": "number",
+            "example": 1.2
+          },
+          "d11": {
+            "format": "double",
+            "description": "Factor which modifies the value of the reported target longitude (Delta Longitude, field D32.5).",
+            "type": "number",
+            "example": 1.2
+          },
+          "d12": {
+            "format": "int32",
+            "description": "Standard deviation in the estimated horizontal sensor location at the time of the dwell, measured along the sensor track direction (field D15), in centimeters.",
+            "type": "integer",
+            "example": 12
+          },
+          "d13": {
+            "format": "int32",
+            "description": "Standard deviation in the estimated horizontal sensor location at the time of the dwell, measured orthogonal to the sensor track direction (field D15), in centimeters.",
+            "type": "integer",
+            "example": 12
+          },
+          "d14": {
+            "format": "int32",
+            "description": "Standard deviation of the sensor altitude estimate (field D9), in centimeters.",
+            "type": "integer",
+            "example": 12
+          },
+          "d15": {
+            "format": "double",
+            "description": "Ground track of the sensor at the time of the dwell, as the angle in degrees (clockwise) from True North.",
+            "type": "number",
+            "example": 1.2
+          },
+          "d16": {
+            "format": "int32",
+            "description": "Ground speed of the sensor at the time of the dwell, in millimeters per second.",
+            "type": "integer",
+            "example": 12
+          },
+          "d17": {
+            "format": "int8",
+            "description": "Velocity of the sensor in the vertical direction, in decimeters per second.",
+            "maximum": 127,
+            "minimum": -128,
+            "type": "integer",
+            "example": 2
+          },
+          "d18": {
+            "format": "int8",
+            "description": "Standard deviation of the estimate of the sensor track, in degrees.",
+            "maximum": 45,
+            "minimum": 0,
+            "type": "integer",
+            "example": 2
+          },
+          "d19": {
+            "format": "int32",
+            "description": "Standard deviation of estimate of the sensor speed, in millimeters per second.",
+            "type": "integer",
+            "example": 12
+          },
+          "d20": {
+            "format": "int32",
+            "description": "Standard deviation of estimate of the sensor vertical velocity, expressed in centimeters per second.",
+            "type": "integer",
+            "example": 12
+          },
+          "d21": {
+            "format": "double",
+            "description": "Heading of the platform at the time of the dwell, as the angle in degrees (clockwise) from True North to the roll axis of the platform.",
+            "type": "number",
+            "example": 1.2
+          },
+          "d22": {
+            "format": "double",
+            "description": "Pitch angle of the platform at the time of the dwell, in degrees.",
+            "type": "number",
+            "example": 12.23
+          },
+          "d23": {
+            "format": "double",
+            "description": "Roll angle of the platform at the time of the dwell, in degrees.",
+            "type": "number",
+            "example": 12.23
+          },
+          "d24": {
+            "format": "double",
+            "description": "The North-South position of the center of the dwell area, expressed as degrees North (positive) or South (negative) of the Equator.",
+            "type": "number",
+            "example": 12.23
+          },
+          "d25": {
+            "format": "double",
+            "description": "The East-West position of the center of the dwell area, expressed as degrees East (positive, 0 to 180) or West (negative, 0 to -180) of the Prime Meridian.",
+            "type": "number",
+            "example": 12.23
+          },
+          "d26": {
+            "format": "double",
+            "description": "Distance on the earth surface, expressed in kilometers, from the near edge to the center of the dwell area.",
+            "type": "number",
+            "example": 12.23
+          },
+          "d27": {
+            "format": "double",
+            "description": "For dwell based radars, one-half of the 3-dB beamwidth.  For non-dwell based radars, the angle between the beginning of the dwell to the center of the dwell.  Measured in degrees.",
+            "type": "number",
+            "example": 12.23
+          },
+          "d28": {
+            "format": "double",
+            "description": "Rotation of the sensor broadside face about the local vertical axis of the platform, in degrees.",
+            "type": "number",
+            "example": 12.23
+          },
+          "d29": {
+            "format": "double",
+            "description": "Rotation angle of the sensor about the transverse axis of the sensor broadside, in degrees.",
+            "type": "number",
+            "example": 12.23
+          },
+          "d30": {
+            "format": "double",
+            "description": "Rotation angle of the sensor about the transverse axis of the sensor broadside, in degrees.",
+            "type": "number",
+            "example": 12.23
+          },
+          "d31": {
+            "format": "int16",
+            "description": "Minimum velocity component, along the line of sight, which can be detected by the sensor, in decimeters per second.",
+            "type": "integer",
+            "example": 1
+          },
+          "d32": {
+            "description": "Minimum velocity component, along the line of sight, which can be detected by the sensor, in decimeters per second.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MtiTargetReport_Abridged"
+            }
+          },
+          "dwellts": {
+            "format": "date-time",
+            "description": "Dwell timestamp in ISO8601 UTC format.",
+            "type": "string",
+            "example": "2018-01-01T16:00:00.123Z"
+          }
+        }
+      },
+      "MtiDwell_Full": {
+        "type": "object",
+        "properties": {
+          "d2": {
+            "format": "int32",
+            "description": "Sequential count of a revisit of the bounding area in the last sent Job Definition Segment, where a Revisit Index of '0' indicates the first revisit.",
+            "type": "integer",
+            "example": 12
+          },
+          "d3": {
+            "format": "int32",
+            "description": "Temporally sequential count of a dwell within the revisit of a particular bounding area for a given job ID.",
+            "type": "integer",
+            "example": 12
+          },
+          "d4": {
+            "description": "Flag indicating the last dwell of the revisit.",
+            "type": "boolean",
+            "example": false
+          },
+          "d5": {
+            "format": "int32",
+            "description": "Count of the total number of targets reported during this dwell and sent in this Dwell Segment.",
+            "type": "integer",
+            "example": 12
+          },
+          "d6": {
+            "format": "int64",
+            "description": "Elapsed time, expressed in milliseconds, from midnight at the beginning of the day specified in the Reference Time fields (missionRefTime) of the Mission Segment.",
+            "type": "integer",
+            "example": 1234567890
+          },
+          "d7": {
+            "format": "double",
+            "description": "North-South position of the sensor at the temporal center of the dwell, in degrees.",
+            "type": "number",
+            "example": 1.2
+          },
+          "d8": {
+            "format": "double",
+            "description": "The East-West position of the sensor at the temporal center of the dwell, in degrees East (positive, 0 to 180) or West (negative, 0 to -180) of the Prime Meridian.",
+            "type": "number",
+            "example": 12
+          },
+          "d9": {
+            "format": "int32",
+            "description": "The altitude of the sensor at temporal center of the dwell, above the WGS 84 ellipsoid, expressed in centimeters.",
+            "type": "integer",
+            "example": 12
+          },
+          "d10": {
+            "format": "double",
+            "description": "Factor which modifies the value of the reported target latitude (Delta Latitude, field D32.4).",
+            "type": "number",
+            "example": 1.2
+          },
+          "d11": {
+            "format": "double",
+            "description": "Factor which modifies the value of the reported target longitude (Delta Longitude, field D32.5).",
+            "type": "number",
+            "example": 1.2
+          },
+          "d12": {
+            "format": "int32",
+            "description": "Standard deviation in the estimated horizontal sensor location at the time of the dwell, measured along the sensor track direction (field D15), in centimeters.",
+            "type": "integer",
+            "example": 12
+          },
+          "d13": {
+            "format": "int32",
+            "description": "Standard deviation in the estimated horizontal sensor location at the time of the dwell, measured orthogonal to the sensor track direction (field D15), in centimeters.",
+            "type": "integer",
+            "example": 12
+          },
+          "d14": {
+            "format": "int32",
+            "description": "Standard deviation of the sensor altitude estimate (field D9), in centimeters.",
+            "type": "integer",
+            "example": 12
+          },
+          "d15": {
+            "format": "double",
+            "description": "Ground track of the sensor at the time of the dwell, as the angle in degrees (clockwise) from True North.",
+            "type": "number",
+            "example": 1.2
+          },
+          "d16": {
+            "format": "int32",
+            "description": "Ground speed of the sensor at the time of the dwell, in millimeters per second.",
+            "type": "integer",
+            "example": 12
+          },
+          "d17": {
+            "format": "int8",
+            "description": "Velocity of the sensor in the vertical direction, in decimeters per second.",
+            "maximum": 127,
+            "minimum": -128,
+            "type": "integer",
+            "example": 2
+          },
+          "d18": {
+            "format": "int8",
+            "description": "Standard deviation of the estimate of the sensor track, in degrees.",
+            "maximum": 45,
+            "minimum": 0,
+            "type": "integer",
+            "example": 2
+          },
+          "d19": {
+            "format": "int32",
+            "description": "Standard deviation of estimate of the sensor speed, in millimeters per second.",
+            "type": "integer",
+            "example": 12
+          },
+          "d20": {
+            "format": "int32",
+            "description": "Standard deviation of estimate of the sensor vertical velocity, expressed in centimeters per second.",
+            "type": "integer",
+            "example": 12
+          },
+          "d21": {
+            "format": "double",
+            "description": "Heading of the platform at the time of the dwell, as the angle in degrees (clockwise) from True North to the roll axis of the platform.",
+            "type": "number",
+            "example": 1.2
+          },
+          "d22": {
+            "format": "double",
+            "description": "Pitch angle of the platform at the time of the dwell, in degrees.",
+            "type": "number",
+            "example": 12.23
+          },
+          "d23": {
+            "format": "double",
+            "description": "Roll angle of the platform at the time of the dwell, in degrees.",
+            "type": "number",
+            "example": 12.23
+          },
+          "d24": {
+            "format": "double",
+            "description": "The North-South position of the center of the dwell area, expressed as degrees North (positive) or South (negative) of the Equator.",
+            "type": "number",
+            "example": 12.23
+          },
+          "d25": {
+            "format": "double",
+            "description": "The East-West position of the center of the dwell area, expressed as degrees East (positive, 0 to 180) or West (negative, 0 to -180) of the Prime Meridian.",
+            "type": "number",
+            "example": 12.23
+          },
+          "d26": {
+            "format": "double",
+            "description": "Distance on the earth surface, expressed in kilometers, from the near edge to the center of the dwell area.",
+            "type": "number",
+            "example": 12.23
+          },
+          "d27": {
+            "format": "double",
+            "description": "For dwell based radars, one-half of the 3-dB beamwidth.  For non-dwell based radars, the angle between the beginning of the dwell to the center of the dwell.  Measured in degrees.",
+            "type": "number",
+            "example": 12.23
+          },
+          "d28": {
+            "format": "double",
+            "description": "Rotation of the sensor broadside face about the local vertical axis of the platform, in degrees.",
+            "type": "number",
+            "example": 12.23
+          },
+          "d29": {
+            "format": "double",
+            "description": "Rotation angle of the sensor about the transverse axis of the sensor broadside, in degrees.",
+            "type": "number",
+            "example": 12.23
+          },
+          "d30": {
+            "format": "double",
+            "description": "Rotation angle of the sensor about the transverse axis of the sensor broadside, in degrees.",
+            "type": "number",
+            "example": 12.23
+          },
+          "d31": {
+            "format": "int16",
+            "description": "Minimum velocity component, along the line of sight, which can be detected by the sensor, in decimeters per second.",
+            "type": "integer",
+            "example": 1
+          },
+          "d32": {
+            "description": "Minimum velocity component, along the line of sight, which can be detected by the sensor, in decimeters per second.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MtiTargetReport_Full"
+            }
+          },
+          "dwellts": {
+            "format": "date-time",
+            "description": "Dwell timestamp in ISO8601 UTC format.",
+            "type": "string",
+            "example": "2018-01-01T16:00:00.123Z"
+          }
+        }
+      },
+      "MtiDwell_Ingest": {
+        "type": "object",
+        "properties": {
+          "d2": {
+            "format": "int32",
+            "description": "Sequential count of a revisit of the bounding area in the last sent Job Definition Segment, where a Revisit Index of '0' indicates the first revisit.",
+            "type": "integer",
+            "example": 12
+          },
+          "d3": {
+            "format": "int32",
+            "description": "Temporally sequential count of a dwell within the revisit of a particular bounding area for a given job ID.",
+            "type": "integer",
+            "example": 12
+          },
+          "d4": {
+            "description": "Flag indicating the last dwell of the revisit.",
+            "type": "boolean",
+            "example": false
+          },
+          "d5": {
+            "format": "int32",
+            "description": "Count of the total number of targets reported during this dwell and sent in this Dwell Segment.",
+            "type": "integer",
+            "example": 12
+          },
+          "d6": {
+            "format": "int64",
+            "description": "Elapsed time, expressed in milliseconds, from midnight at the beginning of the day specified in the Reference Time fields (missionRefTime) of the Mission Segment.",
+            "type": "integer",
+            "example": 1234567890
+          },
+          "d7": {
+            "format": "double",
+            "description": "North-South position of the sensor at the temporal center of the dwell, in degrees.",
+            "type": "number",
+            "example": 1.2
+          },
+          "d8": {
+            "format": "double",
+            "description": "The East-West position of the sensor at the temporal center of the dwell, in degrees East (positive, 0 to 180) or West (negative, 0 to -180) of the Prime Meridian.",
+            "type": "number",
+            "example": 12
+          },
+          "d9": {
+            "format": "int32",
+            "description": "The altitude of the sensor at temporal center of the dwell, above the WGS 84 ellipsoid, expressed in centimeters.",
+            "type": "integer",
+            "example": 12
+          },
+          "d10": {
+            "format": "double",
+            "description": "Factor which modifies the value of the reported target latitude (Delta Latitude, field D32.4).",
+            "type": "number",
+            "example": 1.2
+          },
+          "d11": {
+            "format": "double",
+            "description": "Factor which modifies the value of the reported target longitude (Delta Longitude, field D32.5).",
+            "type": "number",
+            "example": 1.2
+          },
+          "d12": {
+            "format": "int32",
+            "description": "Standard deviation in the estimated horizontal sensor location at the time of the dwell, measured along the sensor track direction (field D15), in centimeters.",
+            "type": "integer",
+            "example": 12
+          },
+          "d13": {
+            "format": "int32",
+            "description": "Standard deviation in the estimated horizontal sensor location at the time of the dwell, measured orthogonal to the sensor track direction (field D15), in centimeters.",
+            "type": "integer",
+            "example": 12
+          },
+          "d14": {
+            "format": "int32",
+            "description": "Standard deviation of the sensor altitude estimate (field D9), in centimeters.",
+            "type": "integer",
+            "example": 12
+          },
+          "d15": {
+            "format": "double",
+            "description": "Ground track of the sensor at the time of the dwell, as the angle in degrees (clockwise) from True North.",
+            "type": "number",
+            "example": 1.2
+          },
+          "d16": {
+            "format": "int32",
+            "description": "Ground speed of the sensor at the time of the dwell, in millimeters per second.",
+            "type": "integer",
+            "example": 12
+          },
+          "d17": {
+            "format": "int8",
+            "description": "Velocity of the sensor in the vertical direction, in decimeters per second.",
+            "maximum": 127,
+            "minimum": -128,
+            "type": "integer",
+            "example": 2
+          },
+          "d18": {
+            "format": "int8",
+            "description": "Standard deviation of the estimate of the sensor track, in degrees.",
+            "maximum": 45,
+            "minimum": 0,
+            "type": "integer",
+            "example": 2
+          },
+          "d19": {
+            "format": "int32",
+            "description": "Standard deviation of estimate of the sensor speed, in millimeters per second.",
+            "type": "integer",
+            "example": 12
+          },
+          "d20": {
+            "format": "int32",
+            "description": "Standard deviation of estimate of the sensor vertical velocity, expressed in centimeters per second.",
+            "type": "integer",
+            "example": 12
+          },
+          "d21": {
+            "format": "double",
+            "description": "Heading of the platform at the time of the dwell, as the angle in degrees (clockwise) from True North to the roll axis of the platform.",
+            "type": "number",
+            "example": 1.2
+          },
+          "d22": {
+            "format": "double",
+            "description": "Pitch angle of the platform at the time of the dwell, in degrees.",
+            "type": "number",
+            "example": 12.23
+          },
+          "d23": {
+            "format": "double",
+            "description": "Roll angle of the platform at the time of the dwell, in degrees.",
+            "type": "number",
+            "example": 12.23
+          },
+          "d24": {
+            "format": "double",
+            "description": "The North-South position of the center of the dwell area, expressed as degrees North (positive) or South (negative) of the Equator.",
+            "type": "number",
+            "example": 12.23
+          },
+          "d25": {
+            "format": "double",
+            "description": "The East-West position of the center of the dwell area, expressed as degrees East (positive, 0 to 180) or West (negative, 0 to -180) of the Prime Meridian.",
+            "type": "number",
+            "example": 12.23
+          },
+          "d26": {
+            "format": "double",
+            "description": "Distance on the earth surface, expressed in kilometers, from the near edge to the center of the dwell area.",
+            "type": "number",
+            "example": 12.23
+          },
+          "d27": {
+            "format": "double",
+            "description": "For dwell based radars, one-half of the 3-dB beamwidth.  For non-dwell based radars, the angle between the beginning of the dwell to the center of the dwell.  Measured in degrees.",
+            "type": "number",
+            "example": 12.23
+          },
+          "d28": {
+            "format": "double",
+            "description": "Rotation of the sensor broadside face about the local vertical axis of the platform, in degrees.",
+            "type": "number",
+            "example": 12.23
+          },
+          "d29": {
+            "format": "double",
+            "description": "Rotation angle of the sensor about the transverse axis of the sensor broadside, in degrees.",
+            "type": "number",
+            "example": 12.23
+          },
+          "d30": {
+            "format": "double",
+            "description": "Rotation angle of the sensor about the transverse axis of the sensor broadside, in degrees.",
+            "type": "number",
+            "example": 12.23
+          },
+          "d31": {
+            "format": "int16",
+            "description": "Minimum velocity component, along the line of sight, which can be detected by the sensor, in decimeters per second.",
+            "type": "integer",
+            "example": 1
+          },
+          "d32": {
+            "description": "Minimum velocity component, along the line of sight, which can be detected by the sensor, in decimeters per second.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MtiTargetReport_Ingest"
+            }
+          },
+          "dwellts": {
+            "format": "date-time",
+            "description": "Dwell timestamp in ISO8601 UTC format.",
+            "type": "string",
+            "example": "2018-01-01T16:00:00.123Z"
+          }
+        }
+      },
+      "MtiFreeText_Abridged": {
+        "type": "object",
+        "properties": {
+          "f1": {
+            "description": "The originator of the Free Text message.",
+            "maxLength": 1024,
+            "type": "string",
+            "example": "ORIGINATOR"
+          },
+          "f2": {
+            "description": "The recipient for which the Free Text message is intended.",
+            "maxLength": 128,
+            "type": "string",
+            "example": "RECIPIENT"
+          },
+          "f3": {
+            "description": "Free text data message.",
+            "maxLength": 1024,
+            "type": "string",
+            "example": "TEXT"
+          }
+        }
+      },
+      "MtiFreeText_Full": {
+        "type": "object",
+        "properties": {
+          "f1": {
+            "description": "The originator of the Free Text message.",
+            "maxLength": 1024,
+            "type": "string",
+            "example": "ORIGINATOR"
+          },
+          "f2": {
+            "description": "The recipient for which the Free Text message is intended.",
+            "maxLength": 128,
+            "type": "string",
+            "example": "RECIPIENT"
+          },
+          "f3": {
+            "description": "Free text data message.",
+            "maxLength": 1024,
+            "type": "string",
+            "example": "TEXT"
+          }
+        }
+      },
+      "MtiFreeText_Ingest": {
+        "type": "object",
+        "properties": {
+          "f1": {
+            "description": "The originator of the Free Text message.",
+            "maxLength": 1024,
+            "type": "string",
+            "example": "ORIGINATOR"
+          },
+          "f2": {
+            "description": "The recipient for which the Free Text message is intended.",
+            "maxLength": 128,
+            "type": "string",
+            "example": "RECIPIENT"
+          },
+          "f3": {
+            "description": "Free text data message.",
+            "maxLength": 1024,
+            "type": "string",
+            "example": "TEXT"
+          }
+        }
+      },
+      "MtiHRR_Abridged": {
+        "type": "object",
+        "properties": {
+          "h2": {
+            "format": "int32",
+            "description": "Sequential count of a revisit of the bounding area for a given job ID.",
+            "type": "integer",
+            "example": 12
+          },
+          "h3": {
+            "format": "int32",
+            "description": "Sequential count of a dwell within the revisit of a particular bounding area for a given job ID.",
+            "type": "integer",
+            "example": 12
+          },
+          "h4": {
+            "description": "Flag to indicate the last dwell of the revisit.",
+            "type": "boolean",
+            "example": true
+          },
+          "h5": {
+            "format": "int32",
+            "description": "Sequential index of the associated MTI Report.",
+            "type": "integer",
+            "example": 12
+          },
+          "h6": {
+            "format": "int32",
+            "description": "Number of Range Doppler pixels that exceed target scatterer threshold and are reported in this segment.",
+            "type": "integer",
+            "example": 12
+          },
+          "h7": {
+            "format": "int32",
+            "description": "Number of Range Bins/Samples in a Range Doppler Chip.",
+            "type": "integer",
+            "example": 12
+          },
+          "h8": {
+            "format": "int32",
+            "description": "Number of Doppler bins in a Range-Doppler chip.",
+            "type": "integer",
+            "example": 12
+          },
+          "h9": {
+            "format": "int16",
+            "description": "The Peak Scatter returns the maximum power level (e.g. in milliwatts, or dBm) registered by the sensor.",
+            "type": "integer",
+            "example": 1
+          },
+          "h10": {
+            "format": "int16",
+            "description": "Detection threshold used to isolate significant target scatterer pixels, expressed as power relative to clutter mean in negative quarter-decibels.",
+            "type": "integer",
+            "example": 1
+          },
+          "h11": {
+            "format": "double",
+            "description": "3dB range impulse response of the radar, expressed in centimeters.",
+            "type": "number",
+            "example": 12.23
+          },
+          "h12": {
+            "format": "double",
+            "description": "Slant Range pixel spacing after over sampling, expressed in centimeters.",
+            "type": "number",
+            "example": 12.23
+          },
+          "h13": {
+            "format": "double",
+            "description": "3dB Doppler resolution of the radar, expressed in Hertz.",
+            "type": "number",
+            "example": 12.23
+          },
+          "h14": {
+            "format": "double",
+            "description": "Doppler pixel spacing after over sampling, expressed in Hertz.",
+            "type": "number",
+            "example": 12.23
+          },
+          "h15": {
+            "format": "double",
+            "description": "Center Frequency of the radar in GHz.",
+            "type": "number",
+            "example": 12.23
+          },
+          "h16": {
+            "description": "Enumeration table denoting the compression technique used.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "TABLE"
+          },
+          "h17": {
+            "description": "Enumeration table indicating the spectral weighting used in the range compression process.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "TABLE"
+          },
+          "h18": {
+            "description": "Enumeration table indicating the spectral weighting used in the cross-range or Doppler compression process.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "TABLE"
+          },
+          "h19": {
+            "format": "double",
+            "description": "Initial power of the peak scatterer, expressed in dB.",
+            "type": "number",
+            "example": 12.23
+          },
+          "h20": {
+            "format": "int8",
+            "description": "RCS of the peak scatterer, expressed in half-decibels (dB/2).",
+            "maximum": 127,
+            "minimum": -128,
+            "type": "integer",
+            "example": 117
+          },
+          "h21": {
+            "format": "int16",
+            "description": "When the RDM does not correlate to a single MTI report index or when the center range bin does not correlate to the center of the dwell; provide the range sample offset in meters from Dwell Center (positive is away from the sensor) of the first scatterer record.",
+            "type": "integer",
+            "example": 1
+          },
+          "h22": {
+            "format": "int16",
+            "description": "When the RDM does not correlate to a single MTI report index or the center doppler bin does not correlate to the doppler centroid of the dwell; Doppler sample value in Hz of the first scatterer record.",
+            "type": "integer",
+            "example": 1
+          },
+          "h23": {
+            "description": "Enumeration field which designates the type of data being delivered.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "FIELD"
+          },
+          "h24": {
+            "description": "Flag field to indicate the additional signal processing techniques applied to the data.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "FLAG"
+          },
+          "h27": {
+            "format": "int16",
+            "description": "Number of pixels in the range dimension of the chip.",
+            "type": "integer",
+            "example": 1
+          },
+          "h28": {
+            "format": "int64",
+            "description": "Distance from Range Bin to closest edge in the entire chip, expressed in centimeters.",
+            "type": "integer",
+            "example": 1234567890
+          },
+          "h29": {
+            "format": "int16",
+            "description": "Relative velocity to skin line.",
+            "type": "integer",
+            "example": 1
+          },
+          "h30": {
+            "format": "int8",
+            "description": "Computed object length based upon HRR profile, in meters.",
+            "maximum": 100,
+            "minimum": 0,
+            "type": "integer",
+            "example": 22
+          },
+          "h31": {
+            "format": "int8",
+            "description": "Standard deviation of estimate of the object length, expressed in meters.",
+            "maximum": 100,
+            "minimum": 0,
+            "type": "integer",
+            "example": 55
+          },
+          "h32": {
+            "description": "Standard deviation of estimate of the object length, expressed in meters.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MtiHRRScatterer_Abridged"
+            }
+          }
+        }
+      },
+      "MtiHRR_Full": {
+        "type": "object",
+        "properties": {
+          "h2": {
+            "format": "int32",
+            "description": "Sequential count of a revisit of the bounding area for a given job ID.",
+            "type": "integer",
+            "example": 12
+          },
+          "h3": {
+            "format": "int32",
+            "description": "Sequential count of a dwell within the revisit of a particular bounding area for a given job ID.",
+            "type": "integer",
+            "example": 12
+          },
+          "h4": {
+            "description": "Flag to indicate the last dwell of the revisit.",
+            "type": "boolean",
+            "example": true
+          },
+          "h5": {
+            "format": "int32",
+            "description": "Sequential index of the associated MTI Report.",
+            "type": "integer",
+            "example": 12
+          },
+          "h6": {
+            "format": "int32",
+            "description": "Number of Range Doppler pixels that exceed target scatterer threshold and are reported in this segment.",
+            "type": "integer",
+            "example": 12
+          },
+          "h7": {
+            "format": "int32",
+            "description": "Number of Range Bins/Samples in a Range Doppler Chip.",
+            "type": "integer",
+            "example": 12
+          },
+          "h8": {
+            "format": "int32",
+            "description": "Number of Doppler bins in a Range-Doppler chip.",
+            "type": "integer",
+            "example": 12
+          },
+          "h9": {
+            "format": "int16",
+            "description": "The Peak Scatter returns the maximum power level (e.g. in milliwatts, or dBm) registered by the sensor.",
+            "type": "integer",
+            "example": 1
+          },
+          "h10": {
+            "format": "int16",
+            "description": "Detection threshold used to isolate significant target scatterer pixels, expressed as power relative to clutter mean in negative quarter-decibels.",
+            "type": "integer",
+            "example": 1
+          },
+          "h11": {
+            "format": "double",
+            "description": "3dB range impulse response of the radar, expressed in centimeters.",
+            "type": "number",
+            "example": 12.23
+          },
+          "h12": {
+            "format": "double",
+            "description": "Slant Range pixel spacing after over sampling, expressed in centimeters.",
+            "type": "number",
+            "example": 12.23
+          },
+          "h13": {
+            "format": "double",
+            "description": "3dB Doppler resolution of the radar, expressed in Hertz.",
+            "type": "number",
+            "example": 12.23
+          },
+          "h14": {
+            "format": "double",
+            "description": "Doppler pixel spacing after over sampling, expressed in Hertz.",
+            "type": "number",
+            "example": 12.23
+          },
+          "h15": {
+            "format": "double",
+            "description": "Center Frequency of the radar in GHz.",
+            "type": "number",
+            "example": 12.23
+          },
+          "h16": {
+            "description": "Enumeration table denoting the compression technique used.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "TABLE"
+          },
+          "h17": {
+            "description": "Enumeration table indicating the spectral weighting used in the range compression process.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "TABLE"
+          },
+          "h18": {
+            "description": "Enumeration table indicating the spectral weighting used in the cross-range or Doppler compression process.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "TABLE"
+          },
+          "h19": {
+            "format": "double",
+            "description": "Initial power of the peak scatterer, expressed in dB.",
+            "type": "number",
+            "example": 12.23
+          },
+          "h20": {
+            "format": "int8",
+            "description": "RCS of the peak scatterer, expressed in half-decibels (dB/2).",
+            "maximum": 127,
+            "minimum": -128,
+            "type": "integer",
+            "example": 117
+          },
+          "h21": {
+            "format": "int16",
+            "description": "When the RDM does not correlate to a single MTI report index or when the center range bin does not correlate to the center of the dwell; provide the range sample offset in meters from Dwell Center (positive is away from the sensor) of the first scatterer record.",
+            "type": "integer",
+            "example": 1
+          },
+          "h22": {
+            "format": "int16",
+            "description": "When the RDM does not correlate to a single MTI report index or the center doppler bin does not correlate to the doppler centroid of the dwell; Doppler sample value in Hz of the first scatterer record.",
+            "type": "integer",
+            "example": 1
+          },
+          "h23": {
+            "description": "Enumeration field which designates the type of data being delivered.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "FIELD"
+          },
+          "h24": {
+            "description": "Flag field to indicate the additional signal processing techniques applied to the data.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "FLAG"
+          },
+          "h27": {
+            "format": "int16",
+            "description": "Number of pixels in the range dimension of the chip.",
+            "type": "integer",
+            "example": 1
+          },
+          "h28": {
+            "format": "int64",
+            "description": "Distance from Range Bin to closest edge in the entire chip, expressed in centimeters.",
+            "type": "integer",
+            "example": 1234567890
+          },
+          "h29": {
+            "format": "int16",
+            "description": "Relative velocity to skin line.",
+            "type": "integer",
+            "example": 1
+          },
+          "h30": {
+            "format": "int8",
+            "description": "Computed object length based upon HRR profile, in meters.",
+            "maximum": 100,
+            "minimum": 0,
+            "type": "integer",
+            "example": 22
+          },
+          "h31": {
+            "format": "int8",
+            "description": "Standard deviation of estimate of the object length, expressed in meters.",
+            "maximum": 100,
+            "minimum": 0,
+            "type": "integer",
+            "example": 55
+          },
+          "h32": {
+            "description": "Standard deviation of estimate of the object length, expressed in meters.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MtiHRRScatterer_Full"
+            }
+          }
+        }
+      },
+      "MtiHRR_Ingest": {
+        "type": "object",
+        "properties": {
+          "h2": {
+            "format": "int32",
+            "description": "Sequential count of a revisit of the bounding area for a given job ID.",
+            "type": "integer",
+            "example": 12
+          },
+          "h3": {
+            "format": "int32",
+            "description": "Sequential count of a dwell within the revisit of a particular bounding area for a given job ID.",
+            "type": "integer",
+            "example": 12
+          },
+          "h4": {
+            "description": "Flag to indicate the last dwell of the revisit.",
+            "type": "boolean",
+            "example": true
+          },
+          "h5": {
+            "format": "int32",
+            "description": "Sequential index of the associated MTI Report.",
+            "type": "integer",
+            "example": 12
+          },
+          "h6": {
+            "format": "int32",
+            "description": "Number of Range Doppler pixels that exceed target scatterer threshold and are reported in this segment.",
+            "type": "integer",
+            "example": 12
+          },
+          "h7": {
+            "format": "int32",
+            "description": "Number of Range Bins/Samples in a Range Doppler Chip.",
+            "type": "integer",
+            "example": 12
+          },
+          "h8": {
+            "format": "int32",
+            "description": "Number of Doppler bins in a Range-Doppler chip.",
+            "type": "integer",
+            "example": 12
+          },
+          "h9": {
+            "format": "int16",
+            "description": "The Peak Scatter returns the maximum power level (e.g. in milliwatts, or dBm) registered by the sensor.",
+            "type": "integer",
+            "example": 1
+          },
+          "h10": {
+            "format": "int16",
+            "description": "Detection threshold used to isolate significant target scatterer pixels, expressed as power relative to clutter mean in negative quarter-decibels.",
+            "type": "integer",
+            "example": 1
+          },
+          "h11": {
+            "format": "double",
+            "description": "3dB range impulse response of the radar, expressed in centimeters.",
+            "type": "number",
+            "example": 12.23
+          },
+          "h12": {
+            "format": "double",
+            "description": "Slant Range pixel spacing after over sampling, expressed in centimeters.",
+            "type": "number",
+            "example": 12.23
+          },
+          "h13": {
+            "format": "double",
+            "description": "3dB Doppler resolution of the radar, expressed in Hertz.",
+            "type": "number",
+            "example": 12.23
+          },
+          "h14": {
+            "format": "double",
+            "description": "Doppler pixel spacing after over sampling, expressed in Hertz.",
+            "type": "number",
+            "example": 12.23
+          },
+          "h15": {
+            "format": "double",
+            "description": "Center Frequency of the radar in GHz.",
+            "type": "number",
+            "example": 12.23
+          },
+          "h16": {
+            "description": "Enumeration table denoting the compression technique used.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "TABLE"
+          },
+          "h17": {
+            "description": "Enumeration table indicating the spectral weighting used in the range compression process.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "TABLE"
+          },
+          "h18": {
+            "description": "Enumeration table indicating the spectral weighting used in the cross-range or Doppler compression process.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "TABLE"
+          },
+          "h19": {
+            "format": "double",
+            "description": "Initial power of the peak scatterer, expressed in dB.",
+            "type": "number",
+            "example": 12.23
+          },
+          "h20": {
+            "format": "int8",
+            "description": "RCS of the peak scatterer, expressed in half-decibels (dB/2).",
+            "maximum": 127,
+            "minimum": -128,
+            "type": "integer",
+            "example": 117
+          },
+          "h21": {
+            "format": "int16",
+            "description": "When the RDM does not correlate to a single MTI report index or when the center range bin does not correlate to the center of the dwell; provide the range sample offset in meters from Dwell Center (positive is away from the sensor) of the first scatterer record.",
+            "type": "integer",
+            "example": 1
+          },
+          "h22": {
+            "format": "int16",
+            "description": "When the RDM does not correlate to a single MTI report index or the center doppler bin does not correlate to the doppler centroid of the dwell; Doppler sample value in Hz of the first scatterer record.",
+            "type": "integer",
+            "example": 1
+          },
+          "h23": {
+            "description": "Enumeration field which designates the type of data being delivered.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "FIELD"
+          },
+          "h24": {
+            "description": "Flag field to indicate the additional signal processing techniques applied to the data.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "FLAG"
+          },
+          "h27": {
+            "format": "int16",
+            "description": "Number of pixels in the range dimension of the chip.",
+            "type": "integer",
+            "example": 1
+          },
+          "h28": {
+            "format": "int64",
+            "description": "Distance from Range Bin to closest edge in the entire chip, expressed in centimeters.",
+            "type": "integer",
+            "example": 1234567890
+          },
+          "h29": {
+            "format": "int16",
+            "description": "Relative velocity to skin line.",
+            "type": "integer",
+            "example": 1
+          },
+          "h30": {
+            "format": "int8",
+            "description": "Computed object length based upon HRR profile, in meters.",
+            "maximum": 100,
+            "minimum": 0,
+            "type": "integer",
+            "example": 22
+          },
+          "h31": {
+            "format": "int8",
+            "description": "Standard deviation of estimate of the object length, expressed in meters.",
+            "maximum": 100,
+            "minimum": 0,
+            "type": "integer",
+            "example": 55
+          },
+          "h32": {
+            "description": "Standard deviation of estimate of the object length, expressed in meters.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MtiHRRScatterer_Ingest"
+            }
+          }
+        }
+      },
+      "MtiHRRScatterer_Abridged": {
+        "description": "HRR Scatterer record for a target pixel that exceeds the target detection threshold.",
+        "type": "object",
+        "properties": {
+          "h32_1": {
+            "format": "int32",
+            "description": "Scatterer’s power magnitude.",
+            "type": "integer",
+            "example": 1
+          },
+          "h32_2": {
+            "format": "int32",
+            "description": "Scatterer’s complex phase, in degrees.",
+            "type": "integer",
+            "example": 1
+          },
+          "h32_3": {
+            "format": "int32",
+            "description": "Scatterer’s Range index relative to Range-Doppler chip, where increasing index equates to increasing range.",
+            "type": "integer",
+            "example": 1
+          },
+          "h32_4": {
+            "format": "int32",
+            "description": "Scatterer’s Doppler index relative to Range-Doppler chip, where increasing index equates to increasing Doppler.",
+            "type": "integer",
+            "example": 1
+          }
+        }
+      },
+      "MtiHRRScatterer_Full": {
+        "description": "HRR Scatterer record for a target pixel that exceeds the target detection threshold.",
+        "type": "object",
+        "properties": {
+          "h32_1": {
+            "format": "int32",
+            "description": "Scatterer’s power magnitude.",
+            "type": "integer",
+            "example": 1
+          },
+          "h32_2": {
+            "format": "int32",
+            "description": "Scatterer’s complex phase, in degrees.",
+            "type": "integer",
+            "example": 1
+          },
+          "h32_3": {
+            "format": "int32",
+            "description": "Scatterer’s Range index relative to Range-Doppler chip, where increasing index equates to increasing range.",
+            "type": "integer",
+            "example": 1
+          },
+          "h32_4": {
+            "format": "int32",
+            "description": "Scatterer’s Doppler index relative to Range-Doppler chip, where increasing index equates to increasing Doppler.",
+            "type": "integer",
+            "example": 1
+          }
+        }
+      },
+      "MtiHRRScatterer_Ingest": {
+        "description": "HRR Scatterer record for a target pixel that exceeds the target detection threshold.",
+        "type": "object",
+        "properties": {
+          "h32_1": {
+            "format": "int32",
+            "description": "Scatterer’s power magnitude.",
+            "type": "integer",
+            "example": 1
+          },
+          "h32_2": {
+            "format": "int32",
+            "description": "Scatterer’s complex phase, in degrees.",
+            "type": "integer",
+            "example": 1
+          },
+          "h32_3": {
+            "format": "int32",
+            "description": "Scatterer’s Range index relative to Range-Doppler chip, where increasing index equates to increasing range.",
+            "type": "integer",
+            "example": 1
+          },
+          "h32_4": {
+            "format": "int32",
+            "description": "Scatterer’s Doppler index relative to Range-Doppler chip, where increasing index equates to increasing Doppler.",
+            "type": "integer",
+            "example": 1
+          }
+        }
+      },
+      "MtiJobDefinition_Abridged": {
+        "description": "The means for the platform to pass information pertaining to the sensor job that will be performed and details of the location parameters (terrain elevation model and geoid model) used in the measurement.",
+        "type": "object",
+        "properties": {
+          "j2": {
+            "description": "The type of sensor or the platform.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "TYPE"
+          },
+          "j3": {
+            "description": "Identifier of the particular variant of the sensor type.",
+            "maxLength": 8,
+            "type": "string",
+            "example": "J3-ID"
+          },
+          "j4": {
+            "format": "int8",
+            "description": "Flag field indicating whether filtering has been applied to the targets detected within the dwell area.",
+            "maximum": 127,
+            "minimum": -128,
+            "type": "integer",
+            "example": 3
+          },
+          "j5": {
+            "format": "int16",
+            "description": "Priority of this tasking request relative to all other active tasking requests scheduled for execution on the specified platform.",
+            "type": "integer",
+            "example": 1
+          },
+          "j6": {
+            "format": "double",
+            "description": "North-South position of the first corner (Point A) defining the area for sensor service, expressed as degrees North (positive) or South (negative) of the Equator.",
+            "maximum": 90,
+            "minimum": -90,
+            "type": "number",
+            "example": 10.23
+          },
+          "j7": {
+            "format": "double",
+            "description": " East-West position of the first corner (Point A) defining the area for sensor service, expressed as degrees East (positive, 0 to 180) or West (negative, 0 to -180) of the Prime Meridian.",
+            "maximum": 180,
+            "minimum": -180,
+            "type": "number",
+            "example": 10.23
+          },
+          "j8": {
+            "format": "double",
+            "description": " North-South position of the second corner (Point B) defining the area for sensor service, expressed as degrees North (positive) or South (negative) of the Equator.",
+            "maximum": 90,
+            "minimum": -90,
+            "type": "number",
+            "example": 10.23
+          },
+          "j9": {
+            "format": "double",
+            "description": "East-West position of the second corner (Point B) defining the area for sensor service, expressed as degrees East (positive, 0 to 180) or West (negative, 0 to -180) of the Prime Meridian.",
+            "maximum": 180,
+            "minimum": -180,
+            "type": "number",
+            "example": 10.23
+          },
+          "j10": {
+            "format": "double",
+            "description": "North-South position of the third corner (Point C) defining the area for sensor service, expressed as degrees North (positive) or South (negative) of the Equator.",
+            "maximum": 90,
+            "minimum": -90,
+            "type": "number",
+            "example": 10.23
+          },
+          "j11": {
+            "format": "double",
+            "description": "East-West position of the third corner (Point C) defining the area for sensor service, expressed as degrees East (positive, 0 to 180) or West (negative, 0 to -180) of the Prime Meridian.",
+            "maximum": 180,
+            "minimum": -180,
+            "type": "number",
+            "example": 10.23
+          },
+          "j12": {
+            "format": "double",
+            "description": "North-South position of the fourth corner (Point D) defining the area for sensor service, expressed as degrees North (positive) or South (negative) of the Equator.",
+            "maximum": 90,
+            "minimum": -90,
+            "type": "number",
+            "example": 10.23
+          },
+          "j13": {
+            "format": "double",
+            "description": "East-West position of the fourth corner (Point D) defining the area for sensor service, expressed as degrees East (positive, 0 to 180) or West (negative, 0 to -180) of the Prime Meridian.",
+            "maximum": 180,
+            "minimum": -180,
+            "type": "number",
+            "example": 10.23
+          },
+          "j14": {
+            "description": "Mode in which the radar will operate for the given job ID.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "MODE"
+          },
+          "j15": {
+            "format": "int32",
+            "description": "The nominal revisit interval for the job ID, expressed in deciseconds.  Value of zero, indicates that the sensor is not revisiting the previous area.",
+            "type": "integer",
+            "example": 100
+          },
+          "j16": {
+            "format": "int32",
+            "description": "Nominal estimate of the standard deviation in the estimated horizontal (along track) sensor location, expressed in decimeters.   measured along the sensor track direction defined in the Dwell segment.",
+            "type": "integer",
+            "example": 100
+          },
+          "j17": {
+            "format": "int32",
+            "description": "Nominal estimate of the standard deviation in the estimated horizontal sensor location, measured orthogonal to the track direction, expressed in decimeters.",
+            "type": "integer",
+            "example": 100
+          },
+          "j18": {
+            "format": "int32",
+            "description": "Nominal estimate of the standard deviation of the measured sensor altitude, expressed in decimeters.",
+            "type": "integer",
+            "example": 100
+          },
+          "j19": {
+            "format": "int16",
+            "description": "Standard deviation of the estimate of sensor track heading, expressed in degrees.",
+            "type": "integer",
+            "example": 10
+          },
+          "j20": {
+            "format": "int32",
+            "description": "Nominal standard deviation of the estimate of sensor speed, expressed in millimeters per second.",
+            "type": "integer",
+            "example": 10
+          },
+          "j21": {
+            "format": "int32",
+            "description": "Nominal standard deviation of the slant range of the reported detection, expressed in centimeters.",
+            "type": "integer",
+            "example": 10
+          },
+          "j22": {
+            "format": "double",
+            "description": "Nominal standard deviation of the measured cross angle to the reported detection, expressed in degrees.",
+            "type": "number",
+            "example": 10.23
+          },
+          "j23": {
+            "format": "int32",
+            "description": "Nominal standard deviation of the velocity line-of-sight component, expressed in centimeters per second.",
+            "type": "integer",
+            "example": 10
+          },
+          "j24": {
+            "format": "int16",
+            "description": "Nominal minimum velocity component along the line of sight, which can be detected by the sensor, expressed in decimeters per second.",
+            "type": "integer",
+            "example": 10
+          },
+          "j25": {
+            "format": "int16",
+            "description": "Nominal probability that an unobscured ten square-meter target will be detected within the given area of surveillance.",
+            "type": "integer",
+            "example": 10
+          },
+          "j26": {
+            "format": "int16",
+            "description": "The expected density of False Alarms (FA), expressed as the negative of the decibel value.",
+            "type": "integer",
+            "example": 10
+          },
+          "j27": {
+            "description": "The terrain elevation model used for developing the target reports.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "MODEL"
+          },
+          "j28": {
+            "description": "The geoid model used for developing the target reports.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "MODEL"
+          }
+        }
+      },
+      "MtiJobDefinition_Full": {
+        "description": "The means for the platform to pass information pertaining to the sensor job that will be performed and details of the location parameters (terrain elevation model and geoid model) used in the measurement.",
+        "type": "object",
+        "properties": {
+          "j1": {
+            "format": "int64",
+            "description": "A platform assigned number identifying the specific request or task to which the specific dwell pertains.",
+            "type": "integer",
+            "example": 1234567890
+          },
+          "j2": {
+            "description": "The type of sensor or the platform.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "TYPE"
+          },
+          "j3": {
+            "description": "Identifier of the particular variant of the sensor type.",
+            "maxLength": 8,
+            "type": "string",
+            "example": "J3-ID"
+          },
+          "j4": {
+            "format": "int8",
+            "description": "Flag field indicating whether filtering has been applied to the targets detected within the dwell area.",
+            "maximum": 127,
+            "minimum": -128,
+            "type": "integer",
+            "example": 3
+          },
+          "j5": {
+            "format": "int16",
+            "description": "Priority of this tasking request relative to all other active tasking requests scheduled for execution on the specified platform.",
+            "type": "integer",
+            "example": 1
+          },
+          "j6": {
+            "format": "double",
+            "description": "North-South position of the first corner (Point A) defining the area for sensor service, expressed as degrees North (positive) or South (negative) of the Equator.",
+            "maximum": 90,
+            "minimum": -90,
+            "type": "number",
+            "example": 10.23
+          },
+          "j7": {
+            "format": "double",
+            "description": " East-West position of the first corner (Point A) defining the area for sensor service, expressed as degrees East (positive, 0 to 180) or West (negative, 0 to -180) of the Prime Meridian.",
+            "maximum": 180,
+            "minimum": -180,
+            "type": "number",
+            "example": 10.23
+          },
+          "j8": {
+            "format": "double",
+            "description": " North-South position of the second corner (Point B) defining the area for sensor service, expressed as degrees North (positive) or South (negative) of the Equator.",
+            "maximum": 90,
+            "minimum": -90,
+            "type": "number",
+            "example": 10.23
+          },
+          "j9": {
+            "format": "double",
+            "description": "East-West position of the second corner (Point B) defining the area for sensor service, expressed as degrees East (positive, 0 to 180) or West (negative, 0 to -180) of the Prime Meridian.",
+            "maximum": 180,
+            "minimum": -180,
+            "type": "number",
+            "example": 10.23
+          },
+          "j10": {
+            "format": "double",
+            "description": "North-South position of the third corner (Point C) defining the area for sensor service, expressed as degrees North (positive) or South (negative) of the Equator.",
+            "maximum": 90,
+            "minimum": -90,
+            "type": "number",
+            "example": 10.23
+          },
+          "j11": {
+            "format": "double",
+            "description": "East-West position of the third corner (Point C) defining the area for sensor service, expressed as degrees East (positive, 0 to 180) or West (negative, 0 to -180) of the Prime Meridian.",
+            "maximum": 180,
+            "minimum": -180,
+            "type": "number",
+            "example": 10.23
+          },
+          "j12": {
+            "format": "double",
+            "description": "North-South position of the fourth corner (Point D) defining the area for sensor service, expressed as degrees North (positive) or South (negative) of the Equator.",
+            "maximum": 90,
+            "minimum": -90,
+            "type": "number",
+            "example": 10.23
+          },
+          "j13": {
+            "format": "double",
+            "description": "East-West position of the fourth corner (Point D) defining the area for sensor service, expressed as degrees East (positive, 0 to 180) or West (negative, 0 to -180) of the Prime Meridian.",
+            "maximum": 180,
+            "minimum": -180,
+            "type": "number",
+            "example": 10.23
+          },
+          "j14": {
+            "description": "Mode in which the radar will operate for the given job ID.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "MODE"
+          },
+          "j15": {
+            "format": "int32",
+            "description": "The nominal revisit interval for the job ID, expressed in deciseconds.  Value of zero, indicates that the sensor is not revisiting the previous area.",
+            "type": "integer",
+            "example": 100
+          },
+          "j16": {
+            "format": "int32",
+            "description": "Nominal estimate of the standard deviation in the estimated horizontal (along track) sensor location, expressed in decimeters.   measured along the sensor track direction defined in the Dwell segment.",
+            "type": "integer",
+            "example": 100
+          },
+          "j17": {
+            "format": "int32",
+            "description": "Nominal estimate of the standard deviation in the estimated horizontal sensor location, measured orthogonal to the track direction, expressed in decimeters.",
+            "type": "integer",
+            "example": 100
+          },
+          "j18": {
+            "format": "int32",
+            "description": "Nominal estimate of the standard deviation of the measured sensor altitude, expressed in decimeters.",
+            "type": "integer",
+            "example": 100
+          },
+          "j19": {
+            "format": "int16",
+            "description": "Standard deviation of the estimate of sensor track heading, expressed in degrees.",
+            "type": "integer",
+            "example": 10
+          },
+          "j20": {
+            "format": "int32",
+            "description": "Nominal standard deviation of the estimate of sensor speed, expressed in millimeters per second.",
+            "type": "integer",
+            "example": 10
+          },
+          "j21": {
+            "format": "int32",
+            "description": "Nominal standard deviation of the slant range of the reported detection, expressed in centimeters.",
+            "type": "integer",
+            "example": 10
+          },
+          "j22": {
+            "format": "double",
+            "description": "Nominal standard deviation of the measured cross angle to the reported detection, expressed in degrees.",
+            "type": "number",
+            "example": 10.23
+          },
+          "j23": {
+            "format": "int32",
+            "description": "Nominal standard deviation of the velocity line-of-sight component, expressed in centimeters per second.",
+            "type": "integer",
+            "example": 10
+          },
+          "j24": {
+            "format": "int16",
+            "description": "Nominal minimum velocity component along the line of sight, which can be detected by the sensor, expressed in decimeters per second.",
+            "type": "integer",
+            "example": 10
+          },
+          "j25": {
+            "format": "int16",
+            "description": "Nominal probability that an unobscured ten square-meter target will be detected within the given area of surveillance.",
+            "type": "integer",
+            "example": 10
+          },
+          "j26": {
+            "format": "int16",
+            "description": "The expected density of False Alarms (FA), expressed as the negative of the decibel value.",
+            "type": "integer",
+            "example": 10
+          },
+          "j27": {
+            "description": "The terrain elevation model used for developing the target reports.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "MODEL"
+          },
+          "j28": {
+            "description": "The geoid model used for developing the target reports.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "MODEL"
+          }
+        }
+      },
+      "MtiJobDefinition_Ingest": {
+        "description": "The means for the platform to pass information pertaining to the sensor job that will be performed and details of the location parameters (terrain elevation model and geoid model) used in the measurement.",
+        "type": "object",
+        "properties": {
+          "j1": {
+            "format": "int64",
+            "description": "A platform assigned number identifying the specific request or task to which the specific dwell pertains.",
+            "type": "integer",
+            "example": 1234567890
+          },
+          "j2": {
+            "description": "The type of sensor or the platform.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "TYPE"
+          },
+          "j3": {
+            "description": "Identifier of the particular variant of the sensor type.",
+            "maxLength": 8,
+            "type": "string",
+            "example": "J3-ID"
+          },
+          "j4": {
+            "format": "int8",
+            "description": "Flag field indicating whether filtering has been applied to the targets detected within the dwell area.",
+            "maximum": 127,
+            "minimum": -128,
+            "type": "integer",
+            "example": 3
+          },
+          "j5": {
+            "format": "int16",
+            "description": "Priority of this tasking request relative to all other active tasking requests scheduled for execution on the specified platform.",
+            "type": "integer",
+            "example": 1
+          },
+          "j6": {
+            "format": "double",
+            "description": "North-South position of the first corner (Point A) defining the area for sensor service, expressed as degrees North (positive) or South (negative) of the Equator.",
+            "maximum": 90,
+            "minimum": -90,
+            "type": "number",
+            "example": 10.23
+          },
+          "j7": {
+            "format": "double",
+            "description": " East-West position of the first corner (Point A) defining the area for sensor service, expressed as degrees East (positive, 0 to 180) or West (negative, 0 to -180) of the Prime Meridian.",
+            "maximum": 180,
+            "minimum": -180,
+            "type": "number",
+            "example": 10.23
+          },
+          "j8": {
+            "format": "double",
+            "description": " North-South position of the second corner (Point B) defining the area for sensor service, expressed as degrees North (positive) or South (negative) of the Equator.",
+            "maximum": 90,
+            "minimum": -90,
+            "type": "number",
+            "example": 10.23
+          },
+          "j9": {
+            "format": "double",
+            "description": "East-West position of the second corner (Point B) defining the area for sensor service, expressed as degrees East (positive, 0 to 180) or West (negative, 0 to -180) of the Prime Meridian.",
+            "maximum": 180,
+            "minimum": -180,
+            "type": "number",
+            "example": 10.23
+          },
+          "j10": {
+            "format": "double",
+            "description": "North-South position of the third corner (Point C) defining the area for sensor service, expressed as degrees North (positive) or South (negative) of the Equator.",
+            "maximum": 90,
+            "minimum": -90,
+            "type": "number",
+            "example": 10.23
+          },
+          "j11": {
+            "format": "double",
+            "description": "East-West position of the third corner (Point C) defining the area for sensor service, expressed as degrees East (positive, 0 to 180) or West (negative, 0 to -180) of the Prime Meridian.",
+            "maximum": 180,
+            "minimum": -180,
+            "type": "number",
+            "example": 10.23
+          },
+          "j12": {
+            "format": "double",
+            "description": "North-South position of the fourth corner (Point D) defining the area for sensor service, expressed as degrees North (positive) or South (negative) of the Equator.",
+            "maximum": 90,
+            "minimum": -90,
+            "type": "number",
+            "example": 10.23
+          },
+          "j13": {
+            "format": "double",
+            "description": "East-West position of the fourth corner (Point D) defining the area for sensor service, expressed as degrees East (positive, 0 to 180) or West (negative, 0 to -180) of the Prime Meridian.",
+            "maximum": 180,
+            "minimum": -180,
+            "type": "number",
+            "example": 10.23
+          },
+          "j14": {
+            "description": "Mode in which the radar will operate for the given job ID.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "MODE"
+          },
+          "j15": {
+            "format": "int32",
+            "description": "The nominal revisit interval for the job ID, expressed in deciseconds.  Value of zero, indicates that the sensor is not revisiting the previous area.",
+            "type": "integer",
+            "example": 100
+          },
+          "j16": {
+            "format": "int32",
+            "description": "Nominal estimate of the standard deviation in the estimated horizontal (along track) sensor location, expressed in decimeters.   measured along the sensor track direction defined in the Dwell segment.",
+            "type": "integer",
+            "example": 100
+          },
+          "j17": {
+            "format": "int32",
+            "description": "Nominal estimate of the standard deviation in the estimated horizontal sensor location, measured orthogonal to the track direction, expressed in decimeters.",
+            "type": "integer",
+            "example": 100
+          },
+          "j18": {
+            "format": "int32",
+            "description": "Nominal estimate of the standard deviation of the measured sensor altitude, expressed in decimeters.",
+            "type": "integer",
+            "example": 100
+          },
+          "j19": {
+            "format": "int16",
+            "description": "Standard deviation of the estimate of sensor track heading, expressed in degrees.",
+            "type": "integer",
+            "example": 10
+          },
+          "j20": {
+            "format": "int32",
+            "description": "Nominal standard deviation of the estimate of sensor speed, expressed in millimeters per second.",
+            "type": "integer",
+            "example": 10
+          },
+          "j21": {
+            "format": "int32",
+            "description": "Nominal standard deviation of the slant range of the reported detection, expressed in centimeters.",
+            "type": "integer",
+            "example": 10
+          },
+          "j22": {
+            "format": "double",
+            "description": "Nominal standard deviation of the measured cross angle to the reported detection, expressed in degrees.",
+            "type": "number",
+            "example": 10.23
+          },
+          "j23": {
+            "format": "int32",
+            "description": "Nominal standard deviation of the velocity line-of-sight component, expressed in centimeters per second.",
+            "type": "integer",
+            "example": 10
+          },
+          "j24": {
+            "format": "int16",
+            "description": "Nominal minimum velocity component along the line of sight, which can be detected by the sensor, expressed in decimeters per second.",
+            "type": "integer",
+            "example": 10
+          },
+          "j25": {
+            "format": "int16",
+            "description": "Nominal probability that an unobscured ten square-meter target will be detected within the given area of surveillance.",
+            "type": "integer",
+            "example": 10
+          },
+          "j26": {
+            "format": "int16",
+            "description": "The expected density of False Alarms (FA), expressed as the negative of the decibel value.",
+            "type": "integer",
+            "example": 10
+          },
+          "j27": {
+            "description": "The terrain elevation model used for developing the target reports.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "MODEL"
+          },
+          "j28": {
+            "description": "The geoid model used for developing the target reports.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "MODEL"
+          }
+        }
+      },
+      "MtiJobRequest_Abridged": {
+        "type": "object",
+        "properties": {
+          "r1": {
+            "description": "The requestor of the sensor service.",
+            "maxLength": 10,
+            "type": "string",
+            "example": "REQUESTER"
+          },
+          "r2": {
+            "description": "Identifier for the tasking message sent by the requesting station.",
+            "maxLength": 10,
+            "type": "string",
+            "example": "IDENTIFIER"
+          },
+          "r3": {
+            "format": "int8",
+            "description": "The priority of the request relative to other requests originated by the requesting station.",
+            "maximum": 255,
+            "minimum": -128,
+            "type": "integer",
+            "example": 15
+          },
+          "r4": {
+            "format": "double",
+            "description": "North-South position of the first corner (Point A) defining the requested area for service, expressed as degrees North (positive) or South (negative) of the Equator.",
+            "maximum": 90,
+            "minimum": -90,
+            "type": "number",
+            "example": 10.23
+          },
+          "r5": {
+            "format": "double",
+            "description": "East-West position of the first corner (Point A) defining the requested area for service, expressed as degrees East (positive, 0 to 180) or West (negative, 0 to -180) of the Prime Meridian.",
+            "maximum": 180,
+            "minimum": -180,
+            "type": "number",
+            "example": 10.23
+          },
+          "r6": {
+            "format": "double",
+            "description": "North-South position of the second corner (Point B) defining the requested area for service, expressed as degrees North (positive) or South (negative) of the Equator.",
+            "maximum": 90,
+            "minimum": -90,
+            "type": "number",
+            "example": 10.23
+          },
+          "r7": {
+            "format": "double",
+            "description": "East-West position of the second corner (Point B) defining the requested area for service, expressed as degrees East (positive, 0 to 180) or West (negative, 0 to -180) of the Prime Meridian.",
+            "maximum": 180,
+            "minimum": -180,
+            "type": "number",
+            "example": 10.23
+          },
+          "r8": {
+            "format": "double",
+            "description": "North-South position of the third corner (Point C) defining the requested area for service, expressed as degrees North (positive) or South (negative) of the Equator.",
+            "maximum": 90,
+            "minimum": -90,
+            "type": "number",
+            "example": 10.23
+          },
+          "r9": {
+            "format": "double",
+            "description": "East-West position of the third corner (Point C) defining the requested area for service, expressed as degrees East (positive, 0 to 180) or West (negative, 0 to -180) of the Prime Meridian.",
+            "maximum": 180,
+            "minimum": -180,
+            "type": "number",
+            "example": 10.23
+          },
+          "r10": {
+            "format": "double",
+            "description": "North-South position of the fourth corner (Point D) defining the requested area for service, expressed as degrees North (positive) or South (negative) of the Equator.",
+            "maximum": 90,
+            "minimum": -90,
+            "type": "number",
+            "example": 10.23
+          },
+          "r11": {
+            "format": "double",
+            "description": "East-West position of the fourth corner (Point D) defining the requested area for service, expressed as degrees East (positive, 0 to 180) or West (negative, 0 to -180) of the Prime Meridian.",
+            "maximum": 180,
+            "minimum": -180,
+            "type": "number",
+            "example": 10.23
+          },
+          "r12": {
+            "description": "Identifies the radar mode requested by the requestor.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "MODE"
+          },
+          "r13": {
+            "format": "int32",
+            "description": "Specifies the radar range resolution requested by the requestor, expressed in centimeters.",
+            "type": "integer",
+            "example": 10
+          },
+          "r14": {
+            "format": "int32",
+            "description": "Specifies the radar cross-range resolution requested by the requestor, expressed in decimeters.",
+            "type": "integer",
+            "example": 100
+          },
+          "jobReqEst": {
+            "format": "date-time",
+            "description": "Specifies the Earliest Start Time for which the service is requested.  Composite of fields R15-R20.",
+            "type": "string",
+            "example": "2018-01-01T16:00:00.123456Z"
+          },
+          "r21": {
+            "format": "int32",
+            "description": "Specifies the maximum time from the requested start time after which the request is to be abandoned, expressed in seconds.",
+            "type": "integer",
+            "example": 10
+          },
+          "r22": {
+            "format": "int32",
+            "description": "Specifies the time duration for the radar job, measured from the actual start of the job, expressed in seconds.",
+            "type": "integer",
+            "example": 10
+          },
+          "r23": {
+            "format": "int32",
+            "description": "Specifies the revisit interval for the radar job, expressed in deciseconds.",
+            "type": "integer",
+            "example": 100
+          },
+          "r24": {
+            "description": "the type of sensor or the platform.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "TYPE"
+          },
+          "r25": {
+            "description": "The particular variant of the sensor type.",
+            "maxLength": 8,
+            "type": "string",
+            "example": "VARIANT"
+          },
+          "r26": {
+            "description": "Flag field indicating that it is an initial request (flag = 0) or the desire of the requestor to cancel (flag = 1) the requested job.",
+            "type": "boolean",
+            "example": true
+          }
+        }
+      },
+      "MtiJobRequest_Full": {
+        "type": "object",
+        "properties": {
+          "r1": {
+            "description": "The requestor of the sensor service.",
+            "maxLength": 10,
+            "type": "string",
+            "example": "REQUESTER"
+          },
+          "r2": {
+            "description": "Identifier for the tasking message sent by the requesting station.",
+            "maxLength": 10,
+            "type": "string",
+            "example": "IDENTIFIER"
+          },
+          "r3": {
+            "format": "int8",
+            "description": "The priority of the request relative to other requests originated by the requesting station.",
+            "maximum": 255,
+            "minimum": -128,
+            "type": "integer",
+            "example": 15
+          },
+          "r4": {
+            "format": "double",
+            "description": "North-South position of the first corner (Point A) defining the requested area for service, expressed as degrees North (positive) or South (negative) of the Equator.",
+            "maximum": 90,
+            "minimum": -90,
+            "type": "number",
+            "example": 10.23
+          },
+          "r5": {
+            "format": "double",
+            "description": "East-West position of the first corner (Point A) defining the requested area for service, expressed as degrees East (positive, 0 to 180) or West (negative, 0 to -180) of the Prime Meridian.",
+            "maximum": 180,
+            "minimum": -180,
+            "type": "number",
+            "example": 10.23
+          },
+          "r6": {
+            "format": "double",
+            "description": "North-South position of the second corner (Point B) defining the requested area for service, expressed as degrees North (positive) or South (negative) of the Equator.",
+            "maximum": 90,
+            "minimum": -90,
+            "type": "number",
+            "example": 10.23
+          },
+          "r7": {
+            "format": "double",
+            "description": "East-West position of the second corner (Point B) defining the requested area for service, expressed as degrees East (positive, 0 to 180) or West (negative, 0 to -180) of the Prime Meridian.",
+            "maximum": 180,
+            "minimum": -180,
+            "type": "number",
+            "example": 10.23
+          },
+          "r8": {
+            "format": "double",
+            "description": "North-South position of the third corner (Point C) defining the requested area for service, expressed as degrees North (positive) or South (negative) of the Equator.",
+            "maximum": 90,
+            "minimum": -90,
+            "type": "number",
+            "example": 10.23
+          },
+          "r9": {
+            "format": "double",
+            "description": "East-West position of the third corner (Point C) defining the requested area for service, expressed as degrees East (positive, 0 to 180) or West (negative, 0 to -180) of the Prime Meridian.",
+            "maximum": 180,
+            "minimum": -180,
+            "type": "number",
+            "example": 10.23
+          },
+          "r10": {
+            "format": "double",
+            "description": "North-South position of the fourth corner (Point D) defining the requested area for service, expressed as degrees North (positive) or South (negative) of the Equator.",
+            "maximum": 90,
+            "minimum": -90,
+            "type": "number",
+            "example": 10.23
+          },
+          "r11": {
+            "format": "double",
+            "description": "East-West position of the fourth corner (Point D) defining the requested area for service, expressed as degrees East (positive, 0 to 180) or West (negative, 0 to -180) of the Prime Meridian.",
+            "maximum": 180,
+            "minimum": -180,
+            "type": "number",
+            "example": 10.23
+          },
+          "r12": {
+            "description": "Identifies the radar mode requested by the requestor.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "MODE"
+          },
+          "r13": {
+            "format": "int32",
+            "description": "Specifies the radar range resolution requested by the requestor, expressed in centimeters.",
+            "type": "integer",
+            "example": 10
+          },
+          "r14": {
+            "format": "int32",
+            "description": "Specifies the radar cross-range resolution requested by the requestor, expressed in decimeters.",
+            "type": "integer",
+            "example": 100
+          },
+          "jobReqEst": {
+            "format": "date-time",
+            "description": "Specifies the Earliest Start Time for which the service is requested.  Composite of fields R15-R20.",
+            "type": "string",
+            "example": "2018-01-01T16:00:00.123456Z"
+          },
+          "r21": {
+            "format": "int32",
+            "description": "Specifies the maximum time from the requested start time after which the request is to be abandoned, expressed in seconds.",
+            "type": "integer",
+            "example": 10
+          },
+          "r22": {
+            "format": "int32",
+            "description": "Specifies the time duration for the radar job, measured from the actual start of the job, expressed in seconds.",
+            "type": "integer",
+            "example": 10
+          },
+          "r23": {
+            "format": "int32",
+            "description": "Specifies the revisit interval for the radar job, expressed in deciseconds.",
+            "type": "integer",
+            "example": 100
+          },
+          "r24": {
+            "description": "the type of sensor or the platform.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "TYPE"
+          },
+          "r25": {
+            "description": "The particular variant of the sensor type.",
+            "maxLength": 8,
+            "type": "string",
+            "example": "VARIANT"
+          },
+          "r26": {
+            "description": "Flag field indicating that it is an initial request (flag = 0) or the desire of the requestor to cancel (flag = 1) the requested job.",
+            "type": "boolean",
+            "example": true
+          }
+        }
+      },
+      "MtiJobRequest_Ingest": {
+        "type": "object",
+        "properties": {
+          "r1": {
+            "description": "The requestor of the sensor service.",
+            "maxLength": 10,
+            "type": "string",
+            "example": "REQUESTER"
+          },
+          "r2": {
+            "description": "Identifier for the tasking message sent by the requesting station.",
+            "maxLength": 10,
+            "type": "string",
+            "example": "IDENTIFIER"
+          },
+          "r3": {
+            "format": "int8",
+            "description": "The priority of the request relative to other requests originated by the requesting station.",
+            "maximum": 255,
+            "minimum": -128,
+            "type": "integer",
+            "example": 15
+          },
+          "r4": {
+            "format": "double",
+            "description": "North-South position of the first corner (Point A) defining the requested area for service, expressed as degrees North (positive) or South (negative) of the Equator.",
+            "maximum": 90,
+            "minimum": -90,
+            "type": "number",
+            "example": 10.23
+          },
+          "r5": {
+            "format": "double",
+            "description": "East-West position of the first corner (Point A) defining the requested area for service, expressed as degrees East (positive, 0 to 180) or West (negative, 0 to -180) of the Prime Meridian.",
+            "maximum": 180,
+            "minimum": -180,
+            "type": "number",
+            "example": 10.23
+          },
+          "r6": {
+            "format": "double",
+            "description": "North-South position of the second corner (Point B) defining the requested area for service, expressed as degrees North (positive) or South (negative) of the Equator.",
+            "maximum": 90,
+            "minimum": -90,
+            "type": "number",
+            "example": 10.23
+          },
+          "r7": {
+            "format": "double",
+            "description": "East-West position of the second corner (Point B) defining the requested area for service, expressed as degrees East (positive, 0 to 180) or West (negative, 0 to -180) of the Prime Meridian.",
+            "maximum": 180,
+            "minimum": -180,
+            "type": "number",
+            "example": 10.23
+          },
+          "r8": {
+            "format": "double",
+            "description": "North-South position of the third corner (Point C) defining the requested area for service, expressed as degrees North (positive) or South (negative) of the Equator.",
+            "maximum": 90,
+            "minimum": -90,
+            "type": "number",
+            "example": 10.23
+          },
+          "r9": {
+            "format": "double",
+            "description": "East-West position of the third corner (Point C) defining the requested area for service, expressed as degrees East (positive, 0 to 180) or West (negative, 0 to -180) of the Prime Meridian.",
+            "maximum": 180,
+            "minimum": -180,
+            "type": "number",
+            "example": 10.23
+          },
+          "r10": {
+            "format": "double",
+            "description": "North-South position of the fourth corner (Point D) defining the requested area for service, expressed as degrees North (positive) or South (negative) of the Equator.",
+            "maximum": 90,
+            "minimum": -90,
+            "type": "number",
+            "example": 10.23
+          },
+          "r11": {
+            "format": "double",
+            "description": "East-West position of the fourth corner (Point D) defining the requested area for service, expressed as degrees East (positive, 0 to 180) or West (negative, 0 to -180) of the Prime Meridian.",
+            "maximum": 180,
+            "minimum": -180,
+            "type": "number",
+            "example": 10.23
+          },
+          "r12": {
+            "description": "Identifies the radar mode requested by the requestor.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "MODE"
+          },
+          "r13": {
+            "format": "int32",
+            "description": "Specifies the radar range resolution requested by the requestor, expressed in centimeters.",
+            "type": "integer",
+            "example": 10
+          },
+          "r14": {
+            "format": "int32",
+            "description": "Specifies the radar cross-range resolution requested by the requestor, expressed in decimeters.",
+            "type": "integer",
+            "example": 100
+          },
+          "jobReqEst": {
+            "format": "date-time",
+            "description": "Specifies the Earliest Start Time for which the service is requested.  Composite of fields R15-R20.",
+            "type": "string",
+            "example": "2018-01-01T16:00:00.123456Z"
+          },
+          "r21": {
+            "format": "int32",
+            "description": "Specifies the maximum time from the requested start time after which the request is to be abandoned, expressed in seconds.",
+            "type": "integer",
+            "example": 10
+          },
+          "r22": {
+            "format": "int32",
+            "description": "Specifies the time duration for the radar job, measured from the actual start of the job, expressed in seconds.",
+            "type": "integer",
+            "example": 10
+          },
+          "r23": {
+            "format": "int32",
+            "description": "Specifies the revisit interval for the radar job, expressed in deciseconds.",
+            "type": "integer",
+            "example": 100
+          },
+          "r24": {
+            "description": "the type of sensor or the platform.",
+            "maxLength": 32,
+            "type": "string",
+            "example": "TYPE"
+          },
+          "r25": {
+            "description": "The particular variant of the sensor type.",
+            "maxLength": 8,
+            "type": "string",
+            "example": "VARIANT"
+          },
+          "r26": {
+            "description": "Flag field indicating that it is an initial request (flag = 0) or the desire of the requestor to cancel (flag = 1) the requested job.",
+            "type": "boolean",
+            "example": true
+          }
+        }
+      },
+      "MtiMission_Abridged": {
+        "type": "object",
+        "properties": {
+          "m1": {
+            "description": "The mission plan id.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "M1-ID"
+          },
+          "m2": {
+            "description": "Unique identification of the flight plan.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "M2-ID"
+          },
+          "m3": {
+            "description": "Platform type that originated the data.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "PLATFORM"
+          },
+          "m4": {
+            "description": "Identification of the platform variant, modifications, etc.",
+            "maxLength": 16,
+            "type": "string",
+            "example": "IDENT"
+          },
+          "msnRefTs": {
+            "format": "date",
+            "description": "Mission origination date.",
+            "type": "string",
+            "example": "2018-01-01"
+          }
+        }
+      },
+      "MtiMission_Full": {
+        "type": "object",
+        "properties": {
+          "m1": {
+            "description": "The mission plan id.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "M1-ID"
+          },
+          "m2": {
+            "description": "Unique identification of the flight plan.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "M2-ID"
+          },
+          "m3": {
+            "description": "Platform type that originated the data.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "PLATFORM"
+          },
+          "m4": {
+            "description": "Identification of the platform variant, modifications, etc.",
+            "maxLength": 16,
+            "type": "string",
+            "example": "IDENT"
+          },
+          "msnRefTs": {
+            "format": "date",
+            "description": "Mission origination date.",
+            "type": "string",
+            "example": "2018-01-01"
+          }
+        }
+      },
+      "MtiMission_Ingest": {
+        "type": "object",
+        "properties": {
+          "m1": {
+            "description": "The mission plan id.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "M1-ID"
+          },
+          "m2": {
+            "description": "Unique identification of the flight plan.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "M2-ID"
+          },
+          "m3": {
+            "description": "Platform type that originated the data.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "PLATFORM"
+          },
+          "m4": {
+            "description": "Identification of the platform variant, modifications, etc.",
+            "maxLength": 16,
+            "type": "string",
+            "example": "IDENT"
+          },
+          "msnRefTs": {
+            "format": "date",
+            "description": "Mission origination date.",
+            "type": "string",
+            "example": "2018-01-01"
+          }
+        }
+      },
+      "MtiPlatformLocation_Abridged": {
+        "type": "object",
+        "properties": {
+          "l1": {
+            "format": "int64",
+            "description": "Elapsed time, expressed in milliseconds, from midnight at the beginning of the day specified in the Reference Time fields of the Mission Segment to the time the report is prepared.",
+            "type": "integer",
+            "example": 1234567890
+          },
+          "l2": {
+            "format": "double",
+            "description": "North-South position of the platform at the time the report is prepared, expressed as degrees North (positive) or South (negative) of the Equator.",
+            "maximum": 90,
+            "minimum": -90,
+            "type": "number",
+            "example": 45.23
+          },
+          "l3": {
+            "format": "double",
+            "description": "East-West position of the platform at the time the report is prepared, expressed as degrees East (positive) from the Prime Meridian.",
+            "maximum": 180,
+            "minimum": -180,
+            "type": "number",
+            "example": 45.23
+          },
+          "l4": {
+            "format": "int32",
+            "description": "Altitude of the platform at the time the report is prepared, referenced to its position above the WGS-84 ellipsoid, in centimeters.",
+            "type": "integer",
+            "example": 45
+          },
+          "l5": {
+            "format": "double",
+            "description": "Ground track of the platform at the time the report is prepared, expressed as the angle in degrees (clockwise) from True North.",
+            "type": "number",
+            "example": 45.23
+          },
+          "l6": {
+            "format": "int32",
+            "description": "Ground speed of the platform at the time the report is prepared, expressed as millimeters per second.",
+            "type": "integer",
+            "example": 50
+          },
+          "l7": {
+            "format": "int8",
+            "description": "Velocity of the platform in the vertical direction, expressed as decimeters per second.",
+            "maximum": 127,
+            "minimum": -128,
+            "type": "integer",
+            "example": 82
+          },
+          "platlocts": {
+            "format": "date-time",
+            "description": "Platform location timestamp in ISO8601 UTC format.",
+            "type": "string",
+            "example": "2021-01-01T01:01:01.123456Z"
+          }
+        }
+      },
+      "MtiPlatformLocation_Full": {
+        "type": "object",
+        "properties": {
+          "l1": {
+            "format": "int64",
+            "description": "Elapsed time, expressed in milliseconds, from midnight at the beginning of the day specified in the Reference Time fields of the Mission Segment to the time the report is prepared.",
+            "type": "integer",
+            "example": 1234567890
+          },
+          "l2": {
+            "format": "double",
+            "description": "North-South position of the platform at the time the report is prepared, expressed as degrees North (positive) or South (negative) of the Equator.",
+            "maximum": 90,
+            "minimum": -90,
+            "type": "number",
+            "example": 45.23
+          },
+          "l3": {
+            "format": "double",
+            "description": "East-West position of the platform at the time the report is prepared, expressed as degrees East (positive) from the Prime Meridian.",
+            "maximum": 180,
+            "minimum": -180,
+            "type": "number",
+            "example": 45.23
+          },
+          "l4": {
+            "format": "int32",
+            "description": "Altitude of the platform at the time the report is prepared, referenced to its position above the WGS-84 ellipsoid, in centimeters.",
+            "type": "integer",
+            "example": 45
+          },
+          "l5": {
+            "format": "double",
+            "description": "Ground track of the platform at the time the report is prepared, expressed as the angle in degrees (clockwise) from True North.",
+            "type": "number",
+            "example": 45.23
+          },
+          "l6": {
+            "format": "int32",
+            "description": "Ground speed of the platform at the time the report is prepared, expressed as millimeters per second.",
+            "type": "integer",
+            "example": 50
+          },
+          "l7": {
+            "format": "int8",
+            "description": "Velocity of the platform in the vertical direction, expressed as decimeters per second.",
+            "maximum": 127,
+            "minimum": -128,
+            "type": "integer",
+            "example": 82
+          },
+          "platlocts": {
+            "format": "date-time",
+            "description": "Platform location timestamp in ISO8601 UTC format.",
+            "type": "string",
+            "example": "2021-01-01T01:01:01.123456Z"
+          }
+        }
+      },
+      "MtiPlatformLocation_Ingest": {
+        "type": "object",
+        "properties": {
+          "l1": {
+            "format": "int64",
+            "description": "Elapsed time, expressed in milliseconds, from midnight at the beginning of the day specified in the Reference Time fields of the Mission Segment to the time the report is prepared.",
+            "type": "integer",
+            "example": 1234567890
+          },
+          "l2": {
+            "format": "double",
+            "description": "North-South position of the platform at the time the report is prepared, expressed as degrees North (positive) or South (negative) of the Equator.",
+            "maximum": 90,
+            "minimum": -90,
+            "type": "number",
+            "example": 45.23
+          },
+          "l3": {
+            "format": "double",
+            "description": "East-West position of the platform at the time the report is prepared, expressed as degrees East (positive) from the Prime Meridian.",
+            "maximum": 180,
+            "minimum": -180,
+            "type": "number",
+            "example": 45.23
+          },
+          "l4": {
+            "format": "int32",
+            "description": "Altitude of the platform at the time the report is prepared, referenced to its position above the WGS-84 ellipsoid, in centimeters.",
+            "type": "integer",
+            "example": 45
+          },
+          "l5": {
+            "format": "double",
+            "description": "Ground track of the platform at the time the report is prepared, expressed as the angle in degrees (clockwise) from True North.",
+            "type": "number",
+            "example": 45.23
+          },
+          "l6": {
+            "format": "int32",
+            "description": "Ground speed of the platform at the time the report is prepared, expressed as millimeters per second.",
+            "type": "integer",
+            "example": 50
+          },
+          "l7": {
+            "format": "int8",
+            "description": "Velocity of the platform in the vertical direction, expressed as decimeters per second.",
+            "maximum": 127,
+            "minimum": -128,
+            "type": "integer",
+            "example": 82
+          },
+          "platlocts": {
+            "format": "date-time",
+            "description": "Platform location timestamp in ISO8601 UTC format.",
+            "type": "string",
+            "example": "2021-01-01T01:01:01.123456Z"
+          }
+        }
+      },
+      "MtiTargetReport_Abridged": {
+        "description": "A grouping of zero or more target reports for which the sensor provides a single time, sensor position, reference position on the ground with simple estimates for the observed area at the reported time, and other pertinent data.",
+        "type": "object",
+        "properties": {
+          "d32_1": {
+            "format": "int32",
+            "description": "Sequential count of this MTI report within the dwell.",
+            "type": "integer",
+            "example": 2
+          },
+          "d32_2": {
+            "format": "double",
+            "description": "The North-South position of the reported detection, expressed as degrees North (positive) or South (negative) of the Equator.",
+            "maximum": 90,
+            "minimum": -90,
+            "type": "number",
+            "example": 20.23
+          },
+          "d32_3": {
+            "format": "double",
+            "description": "The East-West position of the reported detection, expressed as degrees East (positive) from the Prime Meridian.",
+            "maximum": 180,
+            "minimum": -180,
+            "type": "number",
+            "example": 20.23
+          },
+          "d32_4": {
+            "format": "int16",
+            "description": "The North-South position of the reported detection, expressed as degrees North (positive) or South (negative) from the Dwell Area Center Latitude.",
+            "maximum": 90,
+            "minimum": -90,
+            "type": "integer",
+            "example": 2
+          },
+          "d32_5": {
+            "format": "int16",
+            "description": "The East-West position of the reported detection, expressed as degrees East (positive, 0 to 180) or West (negative, 0 to -180) of the Prime Meridian from the Dwell Area Center Longitude.",
+            "maximum": 180,
+            "minimum": -180,
+            "type": "integer",
+            "example": 2
+          },
+          "d32_6": {
+            "format": "int16",
+            "description": "Height of the reported detection, referenced to its position above the WGS 84 ellipsoid, in meters.",
+            "type": "integer",
+            "example": 2
+          },
+          "d32_7": {
+            "format": "int16",
+            "description": "The component of velocity for the reported detection, expressed in centimeters per second, corrected for platform motion, along the line of sight between the sensor and the reported detection, where the positive direction is away from the sensor.",
+            "type": "integer",
+            "example": 2
+          },
+          "d32_8": {
+            "format": "int32",
+            "description": "The target wrap velocity permits trackers to un-wrap velocities for targets with line-of-sight components large enough to exceed the first velocity period.  Expressed in centimeters/sec.",
+            "type": "integer",
+            "example": 2
+          },
+          "d32_9": {
+            "format": "int8",
+            "description": "Estimated signal-to-noise ratio (SNR) of the target return, in decibels.",
+            "maximum": 127,
+            "minimum": -128,
+            "type": "integer",
+            "example": 17
+          },
+          "d32_10": {
+            "description": "The classification of the target (i.e. vehicle, aircraft, …).",
+            "maxLength": 32,
+            "type": "string",
+            "example": "vehicle"
+          },
+          "d32_11": {
+            "format": "int8",
+            "description": "Estimated probability that the target classification field is correctly classified.",
+            "maximum": 100,
+            "minimum": 0,
+            "type": "integer",
+            "example": 90
+          },
+          "d32_12": {
+            "format": "int32",
+            "description": "Standard deviation of the estimated slant range of the reported detection, in centimeters.",
+            "type": "integer",
+            "example": 2
+          },
+          "d32_13": {
+            "format": "int32",
+            "description": "Standard deviation of the position estimate, in the cross-range direction, of the reported detection, in decimeters.",
+            "type": "integer",
+            "example": 2
+          },
+          "d32_14": {
+            "format": "int16",
+            "description": "Standard deviation of the estimated geodetic height, in meters.",
+            "type": "integer",
+            "example": 2
+          },
+          "d32_15": {
+            "format": "int16",
+            "description": "Standard deviation of the measured line-of-sight velocity component, in centimeters per second.",
+            "type": "integer",
+            "example": 2
+          },
+          "d32_16": {
+            "format": "int16",
+            "description": "The Truth Tag- Application is the Application Field truncated to 8 bits, from the Entity State Protocol Data Unit (PDU) used to generate the MTI Target.",
+            "type": "integer",
+            "example": 2
+          },
+          "d32_17": {
+            "format": "int64",
+            "description": "The Truth Tag - Entity is the Entity Field from the Entity State PDU used to generate the MTI Target.",
+            "type": "integer",
+            "example": 1234567890
+          },
+          "d32_18": {
+            "format": "int8",
+            "description": "Estimated radar cross section of the target return, in half-decibels.",
+            "maximum": 127,
+            "minimum": -128,
+            "type": "integer",
+            "example": 98
+          }
+        }
+      },
+      "MtiTargetReport_Full": {
+        "description": "A grouping of zero or more target reports for which the sensor provides a single time, sensor position, reference position on the ground with simple estimates for the observed area at the reported time, and other pertinent data.",
+        "type": "object",
+        "properties": {
+          "d32_1": {
+            "format": "int32",
+            "description": "Sequential count of this MTI report within the dwell.",
+            "type": "integer",
+            "example": 2
+          },
+          "d32_2": {
+            "format": "double",
+            "description": "The North-South position of the reported detection, expressed as degrees North (positive) or South (negative) of the Equator.",
+            "maximum": 90,
+            "minimum": -90,
+            "type": "number",
+            "example": 20.23
+          },
+          "d32_3": {
+            "format": "double",
+            "description": "The East-West position of the reported detection, expressed as degrees East (positive) from the Prime Meridian.",
+            "maximum": 180,
+            "minimum": -180,
+            "type": "number",
+            "example": 20.23
+          },
+          "d32_4": {
+            "format": "int16",
+            "description": "The North-South position of the reported detection, expressed as degrees North (positive) or South (negative) from the Dwell Area Center Latitude.",
+            "maximum": 90,
+            "minimum": -90,
+            "type": "integer",
+            "example": 2
+          },
+          "d32_5": {
+            "format": "int16",
+            "description": "The East-West position of the reported detection, expressed as degrees East (positive, 0 to 180) or West (negative, 0 to -180) of the Prime Meridian from the Dwell Area Center Longitude.",
+            "maximum": 180,
+            "minimum": -180,
+            "type": "integer",
+            "example": 2
+          },
+          "d32_6": {
+            "format": "int16",
+            "description": "Height of the reported detection, referenced to its position above the WGS 84 ellipsoid, in meters.",
+            "type": "integer",
+            "example": 2
+          },
+          "d32_7": {
+            "format": "int16",
+            "description": "The component of velocity for the reported detection, expressed in centimeters per second, corrected for platform motion, along the line of sight between the sensor and the reported detection, where the positive direction is away from the sensor.",
+            "type": "integer",
+            "example": 2
+          },
+          "d32_8": {
+            "format": "int32",
+            "description": "The target wrap velocity permits trackers to un-wrap velocities for targets with line-of-sight components large enough to exceed the first velocity period.  Expressed in centimeters/sec.",
+            "type": "integer",
+            "example": 2
+          },
+          "d32_9": {
+            "format": "int8",
+            "description": "Estimated signal-to-noise ratio (SNR) of the target return, in decibels.",
+            "maximum": 127,
+            "minimum": -128,
+            "type": "integer",
+            "example": 17
+          },
+          "d32_10": {
+            "description": "The classification of the target (i.e. vehicle, aircraft, …).",
+            "maxLength": 32,
+            "type": "string",
+            "example": "vehicle"
+          },
+          "d32_11": {
+            "format": "int8",
+            "description": "Estimated probability that the target classification field is correctly classified.",
+            "maximum": 100,
+            "minimum": 0,
+            "type": "integer",
+            "example": 90
+          },
+          "d32_12": {
+            "format": "int32",
+            "description": "Standard deviation of the estimated slant range of the reported detection, in centimeters.",
+            "type": "integer",
+            "example": 2
+          },
+          "d32_13": {
+            "format": "int32",
+            "description": "Standard deviation of the position estimate, in the cross-range direction, of the reported detection, in decimeters.",
+            "type": "integer",
+            "example": 2
+          },
+          "d32_14": {
+            "format": "int16",
+            "description": "Standard deviation of the estimated geodetic height, in meters.",
+            "type": "integer",
+            "example": 2
+          },
+          "d32_15": {
+            "format": "int16",
+            "description": "Standard deviation of the measured line-of-sight velocity component, in centimeters per second.",
+            "type": "integer",
+            "example": 2
+          },
+          "d32_16": {
+            "format": "int16",
+            "description": "The Truth Tag- Application is the Application Field truncated to 8 bits, from the Entity State Protocol Data Unit (PDU) used to generate the MTI Target.",
+            "type": "integer",
+            "example": 2
+          },
+          "d32_17": {
+            "format": "int64",
+            "description": "The Truth Tag - Entity is the Entity Field from the Entity State PDU used to generate the MTI Target.",
+            "type": "integer",
+            "example": 1234567890
+          },
+          "d32_18": {
+            "format": "int8",
+            "description": "Estimated radar cross section of the target return, in half-decibels.",
+            "maximum": 127,
+            "minimum": -128,
+            "type": "integer",
+            "example": 98
+          }
+        }
+      },
+      "MtiTargetReport_Ingest": {
+        "description": "A grouping of zero or more target reports for which the sensor provides a single time, sensor position, reference position on the ground with simple estimates for the observed area at the reported time, and other pertinent data.",
+        "type": "object",
+        "properties": {
+          "d32_1": {
+            "format": "int32",
+            "description": "Sequential count of this MTI report within the dwell.",
+            "type": "integer",
+            "example": 2
+          },
+          "d32_2": {
+            "format": "double",
+            "description": "The North-South position of the reported detection, expressed as degrees North (positive) or South (negative) of the Equator.",
+            "maximum": 90,
+            "minimum": -90,
+            "type": "number",
+            "example": 20.23
+          },
+          "d32_3": {
+            "format": "double",
+            "description": "The East-West position of the reported detection, expressed as degrees East (positive) from the Prime Meridian.",
+            "maximum": 180,
+            "minimum": -180,
+            "type": "number",
+            "example": 20.23
+          },
+          "d32_4": {
+            "format": "int16",
+            "description": "The North-South position of the reported detection, expressed as degrees North (positive) or South (negative) from the Dwell Area Center Latitude.",
+            "maximum": 90,
+            "minimum": -90,
+            "type": "integer",
+            "example": 2
+          },
+          "d32_5": {
+            "format": "int16",
+            "description": "The East-West position of the reported detection, expressed as degrees East (positive, 0 to 180) or West (negative, 0 to -180) of the Prime Meridian from the Dwell Area Center Longitude.",
+            "maximum": 180,
+            "minimum": -180,
+            "type": "integer",
+            "example": 2
+          },
+          "d32_6": {
+            "format": "int16",
+            "description": "Height of the reported detection, referenced to its position above the WGS 84 ellipsoid, in meters.",
+            "type": "integer",
+            "example": 2
+          },
+          "d32_7": {
+            "format": "int16",
+            "description": "The component of velocity for the reported detection, expressed in centimeters per second, corrected for platform motion, along the line of sight between the sensor and the reported detection, where the positive direction is away from the sensor.",
+            "type": "integer",
+            "example": 2
+          },
+          "d32_8": {
+            "format": "int32",
+            "description": "The target wrap velocity permits trackers to un-wrap velocities for targets with line-of-sight components large enough to exceed the first velocity period.  Expressed in centimeters/sec.",
+            "type": "integer",
+            "example": 2
+          },
+          "d32_9": {
+            "format": "int8",
+            "description": "Estimated signal-to-noise ratio (SNR) of the target return, in decibels.",
+            "maximum": 127,
+            "minimum": -128,
+            "type": "integer",
+            "example": 17
+          },
+          "d32_10": {
+            "description": "The classification of the target (i.e. vehicle, aircraft, …).",
+            "maxLength": 32,
+            "type": "string",
+            "example": "vehicle"
+          },
+          "d32_11": {
+            "format": "int8",
+            "description": "Estimated probability that the target classification field is correctly classified.",
+            "maximum": 100,
+            "minimum": 0,
+            "type": "integer",
+            "example": 90
+          },
+          "d32_12": {
+            "format": "int32",
+            "description": "Standard deviation of the estimated slant range of the reported detection, in centimeters.",
+            "type": "integer",
+            "example": 2
+          },
+          "d32_13": {
+            "format": "int32",
+            "description": "Standard deviation of the position estimate, in the cross-range direction, of the reported detection, in decimeters.",
+            "type": "integer",
+            "example": 2
+          },
+          "d32_14": {
+            "format": "int16",
+            "description": "Standard deviation of the estimated geodetic height, in meters.",
+            "type": "integer",
+            "example": 2
+          },
+          "d32_15": {
+            "format": "int16",
+            "description": "Standard deviation of the measured line-of-sight velocity component, in centimeters per second.",
+            "type": "integer",
+            "example": 2
+          },
+          "d32_16": {
+            "format": "int16",
+            "description": "The Truth Tag- Application is the Application Field truncated to 8 bits, from the Entity State Protocol Data Unit (PDU) used to generate the MTI Target.",
+            "type": "integer",
+            "example": 2
+          },
+          "d32_17": {
+            "format": "int64",
+            "description": "The Truth Tag - Entity is the Entity Field from the Entity State PDU used to generate the MTI Target.",
+            "type": "integer",
+            "example": 1234567890
+          },
+          "d32_18": {
+            "format": "int8",
+            "description": "Estimated radar cross section of the target return, in half-decibels.",
+            "maximum": 127,
+            "minimum": -128,
+            "type": "integer",
+            "example": 98
+          }
+        }
+      }
+    }
+  }
+}

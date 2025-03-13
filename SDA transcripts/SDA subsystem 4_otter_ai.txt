@@ -1,0 +1,178 @@
+Speaker 1  0:00  
+It might be more efficient this time around, just kind of open it up for any concerns or questions or issues people are running into, respectfully integrated on the message bus, or just stuff unrelated to that regarding tap lab at large. And then, you know, I can take down notes and then follow up with Fernando asynchronously to kind of touch base, and hopefully resolve those issues or get you in contact with Dan, or whoever it might be at the top lab as well. So that sounds good. I think I just want to kind of generally open up the floor to any pertinent issues or concerns people want to bring up during this meeting. So yeah, let me know if there's anything that people want to talk about or discuss
+
+Speaker 2  0:57  
+at a question pace. So the past cohorts, we did the group like the whole COVID wide arc welders meeting, the welders arc meeting. And I know that that's kind of been moved to the team leads participating in those weekly I'm wondering if there's any notes or transcripts or summaries that could be passed to to us.
+
+Speaker 1  1:17  
+Yeah, that's a good point. I think that I don't have existing notes or transcripts, but moving forward, I can make a point to record that and then send something out in rocket chat that's just like a summary of those meetings. That'd be great. Yeah, that's a great idea. I'll do that moving forward. And just to give you time, everyone an update on where we're at. The main discussions recently have been one still surrounding kind of message bus integration. I think more and more people are really integrated onto that, though. And then we're going to start connecting up different subsystems really soon. So that's, I think the next week or two, we should start seeing those kind of like first connections emerging, which is exciting. And then the other big point of discussion has been on the creating a common operating picture, like a user interface for an operator of the system, and so starting to design that. I know that there's people, even within this subsystem, that are starting to think about that as well. I think the guitar and rich boy can have conversations with with him about potentially exploring some of those things. So I think the the common operating picture is kind of the next big thing we're shifting towards. And if there's other if people want to get involved in that from a design perspective as well as an implementation perspective, please let me know if you feel like that's kind of in your wheelhouse. Really, what we're doing right now is identifying, like, what are the key pieces of information that would need to be displayed to a user. When does a user have control or can act on the system or the inputs? So when do they need to get alerted? And then how do they respond? And what inputs do they have into the system? And then how does the system respond based off those operator inputs? Is kind of that architecture definition that we're doing right now. So if you guys have thoughts there, if you guys feel like that's something that they are well equipped to help design, please let me know and get you involved.
+
+Speaker 3  3:12  
+Hey, Randy Guthrie here, not normally, first time caller, I guess I'll say that to this subsystem. But one of the things that we're looking about is creating a dashboard of sorts that gives for Leo V LEO some of forecast for drag, space weather, drag and and we're not quite sure how that's going to be, whether it's going to be just a value or maybe some kind of a red, yellow, green, compared to SBG for XP or MS or something. So we can say, hey, if you're using one of these popular propagators, or looking at t les that came from one of these propagators, you're going to be off by x, you know, something like that. So one of the things that we're look, you know, we'd like to test with is couple of cohorts ago, or I've seen a list of CCDM violators, or I call it kind of the most wanted list. And trying to get at you know, is, is that? Is this the right subsystem that does that and and if you have it, I'd love to see who's on that top 30 list and on the American top 30 and see what we can and then do some analysis on orbit prediction. So I'll just make that request, and it was over in the general chat and the thread, but I'll just ask right here for that you saw. This is the list,
+
+Speaker 1  5:02  
+yeah, so this you're in the right place. This is the CCDM violator list that's ranked based off of essentially the degree to which we think object is exhibiting CCD I mean, a lot of the groups in here working on models that would support kind of this ranking, right? And so there's photometry, there's state estimates, maneuver prediction all kind of baked into this roll up, and you're saying, if I'm understanding correctly, you guys are creating a higher fidelity model for V LEO drag, and you want to prioritize running that on the objects that are of most interest. So
+
+Speaker 3  5:46  
+the way, the way my brain is going right now is pulling a space track tle and then basically giving you, you know, a dashboard based on these that says, here's the drag that this subject experiencing. So if you think it might be maneuvering, you may be able to either confirm the maneuver or say that could be environmental. Let's, let's investigate further and and just put some kind of, I don't know, a star or a, you know,
+
+Speaker 1  6:26  
+so fundamentally, it's almost, it's like more of a mover maneuver detection capability that, yeah, looks at the expected drag compared to what you're seeing on The Keely to make that right there should Okay,
+
+Speaker 3  6:42  
+and we're really close to being able to do forecasts as well. So 2448 72 hour forecast. So in theory, we're still going through the verification, validation steps with our solution, but the idea would be, we, you'd be a bubble of the uncertainty bubble right now, with EMS is around 50 kilometers, and ours is about half a kilometer. So so we can really pull that bubble down and and because of that, we may, and we're working with pulsar, be able to provide a some way of saying, Yeah, it really, it's here, and it did maneuver, it's really there. Yeah,
+
+Speaker 1  7:34  
+yes. A couple thoughts. One that sounds like a sweet capability, really cool. But my thoughts immediately with respect to the dashboard, kind of like jump to there's a difference between, I think, what might be most salient from a product perspective that you're building and what is most functional and practical within welders arc. And I mean, that's something we've had to work through a lot ourselves. Are the dashboard I just showed you is honestly more of a demonstration and marketing thing, more than anything. But fundamentally, within welders arc, the we're never going to have that dashboard up. It's going to be machine to machine. That list is going to be published to the message bus, and you'll never see it. So I think, from an integration standpoint, if you want to kind of accelerate that capability being integrated within well or sorry, I would prioritize how you capture all that information just talks about into a message and a topic that goes on to the message bus. Not to say that the dashboard is invaluable, because when you're talking to stakeholders and users, they like seeing that type of thing,
+
+Speaker 3  8:37  
+you're absolutely right. And this is good thinking. Because, on the one hand, what we're the dashboard is actually we're developing it for possible use over in the JCO, or if you familiar with those folks over there, yeah, yeah. And so I'm in the daily stand ups there, and they're always, where'd that thing in Leo go, you know? And I go, Well, let me help you. But, but I like the idea very baked, that you would something, would trigger something on this list, and I could return some value, whether it's a corrected tle or or something, some input. And that's, and that's always been a problem here is, is? What is? What is the product of most use when you're trying to eliminate, either confirm or deny that this was a maneuver or something like that, and it could be a flag, it could just be, you know, it could be a binary. You know, was there significant drag today? Yes, you know,
+
+Speaker 1  10:06  
+would it be, was there significant drag? Or would it be this object based off of our drag models, is outside of where we'd expect it to be, outside of that bubble, or not? Yeah, and maybe that's like a three sigma value or something that, no, this is
+
+Speaker 3  10:21  
+exactly the conversation we've kind of, let's play with it, you know. So I just needed, I just needed those no rad IDs to start playing around. And yeah, and I saw all kinds of sketches
+
+Speaker 1  10:39  
+in the past. We've been, we've been kind of giving people API keys to access that list, but I think Fernando has since brought the list onto the message was. So I think that we can give, just give you a topic to subscribe to and pull it that way now, so I'll get with him, and maybe I'll just set up like a rocket chat with us three in it and and have him work, giving you access to that.
+
+Speaker 3  11:02  
+Yeah, and all my Kafka guy is Sean and and because we're, we have, we have space weather topics, but we're trying to figure out what you know what's the right collection of those? And so he would, I'll definitely bring him into the conversation as well. Okay, that sounds great
+
+Speaker 4  11:32  
+comment. It almost sounds like an anti CCDM indicator, right? Because, yes,
+
+Speaker 3  11:38  
+this is one. Is someone else might like to know when something thing is in an unusual place because it experienced drag. And also someone else might like to know that what seemed to be a maneuver maybe isn't a maneuver, anti CCDM indicator decrement that CCDM indicator about a maneuver because it was just drag. It almost seems like you want your own indicator for for multiple kinds of users to be able to consume, yeah. Originally the company was saying, Oh, that because our uncertainty is so much smaller we can get we use that ensemble to and we can get 95% of our ensemble inside a bubble that's about a kilometer in diameter, versus 50 And so from a false for an RPO or
+
+Speaker 3  12:46  
+the wood I've got too many words in my head. Close approach, what we call satellites crashing. Come on again. Junction, thank you. Conjunction, assessment, you really can eliminate a lot of false positives if you can reduce those bubbles down to, you know, much smaller value. So that was one use that our company was focused on. But we're also from the from an RPO in general. It's just another input that says, especially during big solar maximums, satellites just fall out of the sky and but it's a good opportunity to conceal and maneuver. So that's one of the scenarios that we think isn't very common, but plausible. I
+
+Unknown Speaker  13:40  
+cool.
+
+Unknown Speaker  13:43  
+Yeah, anyway,
+
+Speaker 3  13:44  
+so just wanted to work with you guys on, you know, instead of trying to do everything in Star Trek, let's, let's pick satellites that you care about, right?
+
+Speaker 1  13:56  
+I like that approach all Fernand to get you access to that, to the scope,
+
+Speaker 3  14:01  
+perfect. Thank you. All right. Well, that's it. That's it for me. I'll stay on the call, of course, but thanks for listening. Yeah, thanks.
+
+Speaker 1  14:15  
+All right. Let's see anyone else have any anything they want to bring up during the last 15 minutes or so that we
+
+Unknown Speaker  14:26  
+have got a quick question for you, if you don't mind.
+
+Unknown Speaker  14:29  
+Yeah, go ahead.
+
+Speaker 5  14:31  
+Good to see you again. And I've been a little bit out of the loop, unfortunately, trying to get back in and I got to do some homework to speed up and do that. Used to have these welders are meeting and various other technical meetings with the major wondering if you have recommendations on what I could do to come up to speed on the latest technical on both the requirements and on the
+
+Speaker 1  15:01  
+progress side, yeah, so I talked to Ryan about this kind of at the top here, but I think that what I'm going to do moving forward is, every time we have one of those meetings, just take some minutes or notes of kind of those big, top level outcomes, and then send those out to the collab channel. And I don't think there's anything precluding you or whoever else from talking to major pond or David directly. If that's something you want to I can even help make that introduction. So I'm not trying to, you know, firewall this by any means. I'm just saying for this, because those, well, they start meetings, aren't just the subsystem leads. I figure the best thing I can do is give you guys, like a transcript and kind of like the main outcomes of each of those, so you stay in the loop of kind of what the main of what the kind of holistic welders arc group is prioritizing and moving towards
+
+Unknown Speaker  16:00  
+that would be awesome. Thank you very
+
+Unknown Speaker  16:01  
+much. Cool.
+
+Speaker 6  16:06  
+Hey, pace, wanted to quickly ask you a question. I was talking to Fernando last week, so we got set up on on Kafka, and he wants to know if we've been able to publish to the to the test environment topic. What's kind of like your process? I mean, if we want to just, you know, kind of, you know, get across the finish line here, is there, you know, is there like a plan that you guys have that you want us to follow?
+
+Speaker 1  16:35  
+So there should be a set of example schemas in the Git lab, and I did Fernando refer you to those. Yeah. Okay, so in terms of the process, I think first showing that you can publish to the message bus and confirm that we can pull that information in, regardless of optimizing any type of schema or format or even like data product we want to I think that would be the first step. Second step, I think, would be to get it in a form that we can ingest as a indicator. So that goes back to some of the conversation with Randy, like, is that going to be a probability that you're putting on there? Is that going to be, you know, a flag, what kind of metadata is included in that that we want to bring into the CCDM subsystem? I think that's the second step. So first is just confirmation that we can pull, we can see your data, we can subscribe on the message bus. And then second kind of optimize the specific information that's on that, on that packet that you're putting in there, okay, and then, and then after that, it's really just integrating it alongside the rest of the indicators and then putting it on, you know, pointed into the prioritization scheme which drives the object of interest list. That's kind of the main outcome, right from your perspective, I think packaging it and thinking about how you're messaging it and productizing it is something we'll leave to you so that you can ideally get awarded a subscription to the tap lab. But one of the kind of like main outcomes, one of the prerequisites for those global data marketplace bits, seems to be, you know you've it's ready to be integrated, or you are actively integrating onto the message bus and and working with us on that. So I think those are the those are steps I would outline, if that makes sense for you. Okay,
+
+Unknown Speaker  18:33  
+that's helpful.
+
+Unknown Speaker  18:39  
+Well, thanks, Jack. Um, 10 minutes left. Anyone else want to raise any concerns or questions?
+
+Speaker 7  18:52  
+That was kind of observation and probably more relevant for Fernando. But I noticed as this fourth schema and the indicator top, or the scheme is not merged in and the Indicator topics are not registered in the message topic, pub, sub, CSV. Yeah, I figured probably keep on track on that also, it's kind of hard to tell, I guess, just without going in and checking what everyone is pushing, what topics are actually being used. And I know there's some indication of that from the CSB, but I was wondering from your waters, arcs, arc meetings, if there's any talk of kind of more documentation on that side.
+
+Speaker 1  19:35  
+There is, I think that's something that, because we've just, like, been trying to integrate so quickly, especially for other things like the general Google and visits, but like, the it's been stuff we haven't focused on, because it's like, Okay, we just need something working. There has been talk about getting better documentation there. And just to be clear, because I've been tracking the message bus CSV, that that's been something for now that's been handling is that. So there's a subsystem for message plus CSV that's supposed to kind of log all of the topics that are being published.
+
+Speaker 7  20:09  
+There's just a general message topics. One of the SS, four ones are in it, yep.
+
+Speaker 1  20:19  
+All right, yeah. I'll just hang up with Fernando and make sure that we update that. Thanks for letting me know.
+
+Speaker 7  20:27  
+Yeah. And then, along the lines of the documentation, I know, like previously, with no red is more clear visually, or you could, like, go and see the wiring and everything. So I'm sure you guys are having conversations on it. But, you know,
+
+Speaker 1  20:42  
+there's no good way to do that yet. People, yeah, people want to make like, so in addition to the common operating picture thing, that time, it's gonna be like the user facing UI, people want to make like a more like diagnostic UI, which would have kind of like the internal view of everything happening. I think we're working on that, but right now, it's pretty bare bones. It's just like there's a Kafka, anyone that's called like dashboard, which tells you how many total messages are being sent and subscribed to, but it doesn't give you kind of the granularity of, like, the specific topics from my understanding, and like, how much the traffic on a single topic, for instance, or anything like that. So I think as the capability do that, we just haven't built anything yet, but it has been something we've talked about. And Allah, make sure to kind of relay to kind of the value of that to the rest of the Well, we started people,
+
+Unknown Speaker  21:39  
+cool, yeah, that's all for this.
+
+Speaker 1  21:57  
+Okay, great. Anything else we have about five minutes left. I of yes, this is
+
+Speaker 8  22:08  
+going to give you an update that we are on the we are on Kafka, receiving and publishing messages. So right now, we are working on extending the algorithm to bring in some of the TM TMDb
+
+Speaker 1  22:26  
+comparisons for flags. That's awesome. Have you? Have you talked to Fernando about that? There might have been some traffic on rocket chat I saw. But as far as integrating that into the into the entire subsystem as a potential indicator. Have you talked to Fernando about that? Yeah,
+
+Speaker 8  22:46  
+yeah. So our topic is under subsystem for so he and I talked about that when he created the topic for us.
+
+Speaker 1  22:53  
+Oh, he created it for, okay, great. Sounds great. I think then we can is the extended to the TMDB? Is that like a blocker for us moving forward? Was kind of bringing that in as a indicator? Are you, is that like a sequential thing, or can that be done in parallel, where we can bring what you have right now and then, that will essentially be an update to the quality longer term,
+
+Speaker 8  23:16  
+you could bring it in right now and the TMG is just going to be a quality update. Okay? Awesome. I
+
+Speaker 1  23:25  
+got something we should shoot for to do this cohort, bringing them to know as an indicator.
+
+Speaker 8  23:35  
+So we'll keep you updated as we bring in the different TMDb fields that are going to be filtering our results even better, got it
+
+Speaker 3  23:57  
+Jack. Well,
+
+Speaker 1  24:01  
+there's nothing else. I told you the last call for anything else before we wrap up. So anything else out there, otherwise we can follow up over rocket chat.
+
+Speaker 3  24:14  
+Just put a reminder out that if you haven't already confirmed participation in the midpoint check in. Make sure you go out on the wiki and sign up.
+
+Speaker 1  24:24  
+Yeah, good call. And so that reminder Randy, yes, that's for everyone. The midpoint check is requirement to participate in the demo. So make sure that you log yourself as a participant for that. I think that's that's on the wiki. You said, Randy, is there like CSV or Google sheet that we have to fill out? That's
+
+Speaker 3  24:52  
+a great question. I have not been able to get access to the wiki, so somebody else on my team is supposedly done that
+
+Speaker 1  25:04  
+it might just be an email confirmation to send out to David as well. Yeah,
+
+Speaker 3  25:09  
+I think that's probably a good backup. Okay, I will track that down
+
+Speaker 1  25:18  
+and then send a follow up in the collab channel.
+
+Unknown Speaker  25:27  
+Cool, thanks.
+
+Speaker 1  25:37  
+Yeah, sounds good. Well. Appreciate everyone joining. Like I said, if there's any other concerns we didn't address during this call, feel free to reach out, rock and chat. And I think we can wrap up. So yeah, have a great rest of your day everyone. Thanks for joining.
+
+Unknown Speaker  25:54  
+Thank you. See you guys. Bye.
+
+Transcribed by https://otter.ai

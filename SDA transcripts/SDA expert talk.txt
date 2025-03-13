@@ -1,0 +1,1502 @@
+Unknown Speaker  00:25
+Can you hear me?
+
+Unknown Speaker  00:28
+We can hear you, logically.
+
+Unknown Speaker  00:32
+All right, now it's looking I
+
+Unknown Speaker  00:45
+using software right after you do an update, just minutes before your presentation,
+
+Unknown Speaker  00:56
+we're
+
+Unknown Speaker  01:03
+zoo screen, right? Yeah, I know I'm trying to get back to where I had everything set up, and
+
+Unknown Speaker  01:11
+now we're back to,
+
+Unknown Speaker  01:14
+let's just try this.
+
+Unknown Speaker  01:17
+Okay, you see my screen? Perfect. All right, so Aloha, I'm TS Kelso, and I'm the greater chief scientist and CTO of slut track. And today I'd like to talk story with you about what slutstrack is, what it does, and how that can help with many of the things you are all doing to provide space domain awareness in the Near Earth
+
+Unknown Speaker  01:41
+space environment. So let's get right into it
+
+Unknown Speaker  01:46
+first. To do that, I want to start by talking about what slush track is by first covering its historical background. And so that's the period from 1979 to 2004
+
+Unknown Speaker  01:58
+and then dive into the major developments over the past 20 years that you might be most interested in. As we look at those developments, you should begin to to more clearly see al so track helps improve SSA, particularly by the development application of something we call supplemental GP, or sub GP, data, and we'll go through some recurring problems that we already provide solutions for.
+
+Unknown Speaker  02:25
+So as we go through all of this material, I'd like you to consider three primary focus concepts. The first is that SSA is the foundation of everything we do in space. And here we define SSA as the knowledge and practice of tracking objects in space, in the space environment itself.
+
+Unknown Speaker  02:45
+This concept really shouldn't be anything new, since it's impossible to apply military force against a target, whether it's to attack that target, surveil it, or even to protect it, if we don't know where that target is located. As a foundational concept, it is vital that we ensure its integrity and not just assume it exists.
+
+Unknown Speaker  03:06
+The second concept is that the best way to predict the future is to create it. Now this quote is often ascribed to Abraham Lincoln, and while it's consistent with many of the things he said, it can't be tied directly to anything that he ever wrote or spoke about, and a lot of people will other otherwise credit it to Nobel Prize winner Dennis Gabor, who was the discoverer of philosophy in his 1963 book, inventing the Future. But he took more negative perspective, they are saying future can't be predicted, but futures can be invented. So the I think the best source for that quote is Alan Kay, who was the inventor of the computer mouse, and this was K's response when pressed by Xerox executives about how to predict the future of computer technology back in 1971
+
+Unknown Speaker  04:04
+when you're going to see that a lot of what celestre has done and continues to do is inventing the future for SSA.
+
+Unknown Speaker  04:13
+Final concept is one by dusty miller that's inscribed on the eagle and fledgling statue at the Air Force Academy. Man's flight through life is sustained by the power of his knowledge to invent the future. Requires each of us to commit to lifelong learning, to seek out not only the problems that Bedell us, but simple and effective solutions to address them. This is a never ending quest in which we can never become complacent.
+
+Unknown Speaker  04:42
+Let's see. I'm
+
+Unknown Speaker  04:46
+gonna be pop whoops, popping back and forth.
+
+Unknown Speaker  04:54
+Oh, come on. I'm
+
+Unknown Speaker  04:57
+gonna try popping back and forth here between sheriff.
+
+Unknown Speaker  05:00
+A notch here, but we'll see how that goes.
+
+Unknown Speaker  05:04
+So
+
+Unknown Speaker  05:06
+what is Celestine? Many people think of it as a place to go to get tle data for tracking satellites and certainly how it got started, but it has evolved In many ways that you may not Be aware of.
+
+Unknown Speaker  07:04
+And selected by the aft space commander, General hardinger, to be in the first graduate space operations class of 18 at Athens in 1981
+
+Unknown Speaker  07:16
+the focus was primarily on operations research, but some of us managed to create a minor in NASA dynamics, and that was an amazing learning experience. And afec gave us access to detail the Defense Technical Information Center, where we could access all sorts of technical documents on paper. Of course, you
+
+Unknown Speaker  07:40
+the
+
+Unknown Speaker  07:43
+primary way to learn anything current at the time was through computer and astronomy magazines. At one point in the February 1980 issue bike magazine, I saw an ad for a software program called sat track being sold out of a computer store in Colorado Springs.
+
+Unknown Speaker  08:02
+When I finally got a copy and set out trying to figure out how it worked.
+
+Unknown Speaker  08:08
+Was written in BASIC it wasn't particularly well documented. So I asked my class leader, who used to work in Cheyenne Mountain, what he thought he looked at it and quickly replied, Oh, that's SGB four. I remember thinking, What the heck is that the DTEC was about to help answer that question.
+
+Unknown Speaker  08:37
+One really important part of that software package, though, was it explained how you could write a letter to NASA and request NASA prediction bulletins for satellites you wanted to track. Okay, but
+
+Unknown Speaker  08:51
+in part one of those bulletins was the two line format, formatted GP data that we're all familiar with. So you can see an example here from 1984
+
+Unknown Speaker  09:03
+The process took weeks to write a letter and get a response before NASA prediction bulletin started showing up via first class mail every couple of days. Okay, but you still had the question of, How did you even know what satellites were up there and might be visible?
+
+Unknown Speaker  09:22
+I
+
+Unknown Speaker  09:25
+at the end of the call,
+
+Unknown Speaker  09:28
+how to switch the screen share, man, just leave it up there.
+
+Unknown Speaker  09:42
+I All right, everyone, just leave the slides up there and not play around with it.
+
+Unknown Speaker  10:00
+As I'm trying to figure out all those things, I graduated from affit and headed off to the blue cube at Sunnyvale Air Force Station in California. My job there were first to develop all the training to activate Falcon Air Force Station, now Schieber Space Force Base, and second to be the Chief of Operations for the GPS Mission Control Center, launching the last two block one satellites and
+
+Unknown Speaker  10:27
+planning for the future launches on the US Space Shuttle, which of course, never happened because of the Challenger accident.
+
+Unknown Speaker  10:36
+This assignment wasn't my first or actually any choice, but again, I was in the right place at the right time, this time in Silicon Valley, where people were trying to figure out how to connect computers via dial up modems. We were developing software for electronic bulletin board systems or BBs, while I was also getting data from NASA almost every day and typing it up so I could visually observed satellites.
+
+Unknown Speaker  11:03
+One day, I had this genius idea. What if I set up a BBS and took the data I typed up and put that online for other download that would save them the effort of having to request the data from NASA type it up and allow them to take advantage of the software I created to minimize the chance errors in transcribing the data
+
+Unknown Speaker  11:25
+as if there were actually a lot of geeks out there that wanted to do that and could actually find my number for the DBS. But eventually that did happen in 1985
+
+Unknown Speaker  11:37
+just before I left to go to the University of Texas in Austin by the PhD and
+
+Unknown Speaker  11:43
+things only grew from there. My office experience in ICBMs and GPS helped me focus on providing tools and documentation to support things like interoperability and even data interchange back then, was a challenge. There were proprietary data exchange protocols that were different for different operating systems and retyping, space, track, report number three to replicate all of the mathematical notation was only possible in something called attack, something I was learning to use to write my dissertation,
+
+Unknown Speaker  12:18
+and that had limited application until 1993
+
+Unknown Speaker  12:22
+when the PDF, reportable document format first became available,
+
+Unknown Speaker  12:28
+and I still had to type all of the data by hand, while I continue to try to convince NASA to set up their own PBS, which also didn't happen until 1993
+
+Unknown Speaker  12:39
+after finishing my PhD and serving as a professor at Abbott for six years, I was off to air University at Maxwell Air Force Base Alabama. This was the World Wide Web was being born.
+
+Unknown Speaker  12:52
+That was yet another opportunity to press the state of the art and start expanding the educational part of what celestial act office,
+
+Unknown Speaker  13:01
+including writing columns for satellite times from 1994 to 1998
+
+Unknown Speaker  13:07
+it was also where Select Track made its first appearance on the web, four years at Area University and three more at API, as Associate Dean, Vice commandant, and commandant and I was off to headquarters, Air Force, Space Command as the head of analysis, reporting to the space commander and vice commander, just days before September 11.
+
+Unknown Speaker  13:29
+Here, all that experience, learning, applying and teaching space operations came to a head of all the things I handled there, like being the DoD analysis lead to the Columbia accident investigation. Most important realization is that more than 80% of comms going to and from our military tiers of operations in Afghanistan and Iraq are going over commercial satellites,
+
+Unknown Speaker  13:58
+and when I started pulling the thread on what we were doing to protect those satellites, the answers were less than satisfying.
+
+Unknown Speaker  14:06
+There were lots of reasons and beliefs for why we couldn't do anything, but the bottom line, to be blunt, was that people were ill informed and complacent, something a military officer simply cannot afford to be.
+
+Unknown Speaker  14:21
+But even as McConnell beating down the constant misinformation to get anything done was more than frustrating, given the magnitude of what was at stake, things like it will take a super computer and millions of dollars to do that, and would still take so long to do that, by the time the calculations complete, they would be were complete, they would be outdated. And of course, there's no way to distribute the data to everyone who needs it in a timely fashion.
+
+Unknown Speaker  14:50
+Eventually, I decided the best way to affect needed change was to retire after 32 years of service, and do that from the outside. So.
+
+Unknown Speaker  15:00
+And set and I set out to educate the space community on the magnitude of the conjunction assessment problem, and like any good staff officer, to show that many of our challenges could be solved with a little creativity. And Celestra was going to be instrumental to that effort.
+
+Unknown Speaker  15:20
+This was a major transition point for what we do on Celestra. We are moving from making the data easily available along with the associated documentation and education material, essentially inventing the future, to the application phase of our story.
+
+Unknown Speaker  15:37
+And this is a good time to review our focus concepts, particularly dusty Miller's quote.
+
+Unknown Speaker  15:44
+A lot of what got us from the beginning of the story to hear was a result of curiosity and a willingness to learn.
+
+Unknown Speaker  15:52
+Those who do not constantly strive to learn are complacent. They either think they know everything they need to know, or actually think they know everything, or that whatever they don't know is unknowable, or at least can't be figured out by our adversaries without substantial time and cost.
+
+Unknown Speaker  16:12
+These thoughts manifest in two forms in the military environment,
+
+Unknown Speaker  16:16
+either we have everything under control, or that certain things are beyond our control, or those of our adversaries, those of you who have studied military history to be able to come up with lots of examples where those beliefs led to bad outcomes for the complacent, we must move beyond these beliefs by constantly challenging what we know and seeking more,
+
+Unknown Speaker  16:43
+our first challenge in 2004
+
+Unknown Speaker  16:45
+was the show that we actually could provide injunction assessment at reasonable cost, make that relevant available whoever wanted it in a timely manner. By now, 20 years into our story, it was pretty clear that waiting on government to solve our problems would not be sufficient. We would have to continue to invent the future and turn to existing low cost, commercial cost solutions.
+
+Unknown Speaker  17:13
+The first phase of addressing our challenge was to show that the existing beliefs about cost and timeliness were untrue, believe it or not, it actually only took me about two weeks to do that, literally on some serious drugs and with one arm figuratively tied behind my back. Story for another time,
+
+Unknown Speaker  17:35
+it started with the standard desktop computer existing cot software in the form of satellite toolkit and the publicly available GP data for the catalog
+
+Unknown Speaker  17:47
+and design software to ingest the GP data from saw track into SDK and configure SDK to calculate all the close approaches for the coming week within five kilometers for any payload. Nobody seemed to know then which ones were active.
+
+Unknown Speaker  18:05
+The software then took the resulting data and formatted it for use by use of Celestra, allowing a searchable output by name, international designator or catalog number, and then sorted by time of closest approach in range or maximum probability
+
+Unknown Speaker  18:25
+that system was Socrates, satellite, orbital conjunction reports, assessing threatening encounters in space. Socrates became the first SOA for service oriented architecture, for conjunction assessment. That is, that performed all the calculations just once on the server and allow clients to search and review, review the results the operational run on August 17 of 2005
+
+Unknown Speaker  18:52
+2686
+
+Unknown Speaker  18:54
+payloads were screened against the full catalog, minus restricted loss and Al saps of 8593
+
+Unknown Speaker  19:03
+RSOs that run took just 85 minutes to analyze and upload results for you. Now
+
+Unknown Speaker  19:11
+that we dispelled the beliefs that it wasn't possible to do injunction analysis calculations in an affordable and timely way that made the results readily available, it was time for the second phase of the effort to examine weaknesses in the process.
+
+Unknown Speaker  19:28
+The first weakness lay in the use of GP data for the calculations
+
+Unknown Speaker  19:39
+as to before the GP data produced was not designed to meet the accuracy requirements needed for conjunction assessment. That process was designed to maintain track custody for RSOs to avoid creating ucts, but the GP data was the only publicly available full catalog data at the time.
+
+Unknown Speaker  20:00
+The second weakness lay in the fact that the hardest RSOs to track were the ones that maneuver
+
+Unknown Speaker  20:07
+using non cooperative tracking, that maneuvers had to be detected and processed after they occur, which might take days, if not weeks,
+
+Unknown Speaker  20:17
+under detected maneuvers present a risk to act and satellites, which might require collision avoidance maneuvers, if only the location of the maneuvering object was known. And
+
+Unknown Speaker  20:28
+the last weakness was that we didn't have any source information that would tell us which tell us which satellite were active view that to ensure that we produce data point in producing warnings for satellite that can't maneuver,
+
+Unknown Speaker  20:46
+and we needed awareness of which satellites could maneuver to both avoid satellites maneuvering into each other, perhaps while trying to avoid a collision, because their operators simply weren't communicating.
+
+Unknown Speaker  21:00
+The good part about Socrates was that the process was robust to changing data sources, which allowed the Celestra to focus on how to improve, but incremental. In fact, that meant we could segment the data allow improvements where we had the greatest weakness.
+
+Unknown Speaker  21:18
+Thinking about these problems revealed a simple solution. If the hardest thing to do was maintain track custody for active satellites because they maneuvered, why not just ask the satellite operators to share the data they already produced to perform their mission,
+
+Unknown Speaker  21:35
+since they were the ones planning and executing the maneuvers, had to incorporate them into their data products for daily operations. We just asked for a copy of those data products, and use that data instead of the GP data when it was available,
+
+Unknown Speaker  21:51
+data would have higher accuracy due to mission requirements, would be tagged to a specific object to avoid mixing observations and getting bad orbits include recent and planned maneuvers, and would allow us to know which satellites were operational and maneuverable and if used for SSA, it meant less time would need to be spent on Catalan maintenance so that limited SSA resources could be focused on uncooperative RSOs.
+
+Unknown Speaker  22:22
+All we needed now was to get satellite operated to buy into the concept of sharing their data. Believe it or not, we started by asking Iridium to share their data in July of 2008
+
+Unknown Speaker  22:35
+followed by a trip to Vandenberg in August of 2008
+
+Unknown Speaker  22:38
+to offer the new J spot away to adapt Socrates to use their SP data.
+
+Unknown Speaker  22:45
+Weren't able to get data from Iridium because their Boeing contractors insisted with vital it wasn't
+
+Unknown Speaker  22:52
+and J Spock seemed uninterested, even though the effort would be at no cost under their existing contract with AGI.
+
+Unknown Speaker  23:01
+Wasn't until al sad approached us at about the same time and asked, Hey, if we gave you our Ephemeris, we'd use that in Socrates instead of GP data. That was the start of the phase. The
+
+Unknown Speaker  23:16
+start of us actually getting some traction in this phase. So by the end of 2008 we had al sat SES
+
+Unknown Speaker  23:26
+Al, International Consortium of geo satellite operators sharing data in the Socrates geo prototype.
+
+Unknown Speaker  23:35
+Then in February, 2009 radium 33 cosmonaut 2251 collided, and people started realizing the need to do the same thing for Leo.
+
+Unknown Speaker  23:46
+Eventually, that led to the formation the space Data Association, the original SDA, and even J Spock eventually, or even J SPOC eventually, started accepting ephemerides and using them for conjunction assessment. By the time I retired, the second time, SBA was screening over 700 satellites, or 30 plus operators, including NASA and Noa you met sat and even the UK's mov from about as many countries.
+
+Unknown Speaker  24:20
+So Celestra continues
+
+Unknown Speaker  24:23
+to use the new Socrates plus to demonstrate the magnitude of the conjunction problem and to illustrate ways to make the data more action. You can see the numbers have changed, you know, fairly considerably from that 2005
+
+Unknown Speaker  24:38
+step. But today we're screening 11,055
+
+Unknown Speaker  24:42
+active satellites against the catalog of 27,041
+
+Unknown Speaker  24:49
+satellites
+
+Unknown Speaker  24:51
+that actually includes some al status
+
+Unknown Speaker  24:59
+along this part of the.
+
+Unknown Speaker  25:00
+Journey, we were learning a lot about the data, not only the data provided by the US DoD by satellite operators as well. Of course, we advocated for the use of standard data products by satellite operators, but also work to convert satellite operator data provided and other coordinate systems and formats when needed, addressing limitations of legacy software.
+
+Unknown Speaker  25:24
+One of the things we learned was that there were lots of issues with the data that can teach us even more. After all, every system will have issues. It is imperative to look for those issues and use them to learn how to avoid them in the future,
+
+Unknown Speaker  25:40
+and we needed to use those lessons learned to check every conjunction result. Using the data blindly is just one manifestation of the we have everything under control, aspect of complacency,
+
+Unknown Speaker  25:54
+and then you were likely to learn about those issues at the least opportune time.
+
+Unknown Speaker  26:00
+We knew there were issues with the GP data from anecdotal evidence where satellites weren't where they where we expected them to be. But how can we quantify how often that happened and how bad the data might be? Then one day in December, 2007
+
+Unknown Speaker  26:17
+got an email from a Celestra user in Brazil reporting that the position calculated by SGB four using the latest GP data for one of the actin GPS satellites, was off by over 20,000 kilometers from the position calculated for that object using the data that comes from the GPS laminator. Wait what he asked if I knew which one was right. I actually done a detailed paper assessing accuracy of the GP data for GPS satellites in January of that year, titled validation of SG before and is GPS 200 D against GPS precision ephemerides. So I had a pretty good idea what the answer was.
+
+Unknown Speaker  27:09
+Person took the Almanac and GP data verified report, then I checked the NGA precise ephemerides to see what they showed as expected, the Almanac was correct. This wasn't the first time we'd seen this problem. It was just a worse one.
+
+Unknown Speaker  27:27
+How could this even happen? Even though both J SPOC and two stops the organization operating the GPS constellation at the time were both part of the same US Air Force, they simply didn't talk or share data.
+
+Unknown Speaker  27:43
+So while two SOPs perform morbid determination and produced the almanacs and Nanus, who advised users of issues with GPS constellation J SPOC, didn't use any of this data for SSA, partly because they couldn't translate the data.
+
+Unknown Speaker  28:02
+Now two now, two stops from the G wick today, issued Nanos days ahead of any planned maneuver and a forecast delta V message, and you can see those highlighted in this year nannies,
+
+Unknown Speaker  28:18
+since that would impact the GPS accuracy until a new orbit solution was determined, and once that maneuver happens, then they issue another Nanu forecast summary message, setting the satellite healthy in the almanac.
+
+Unknown Speaker  28:33
+So if J Spock couldn't ingest a GPS Almanac, how would they know where to look for a GPS satellite after it maneuver, other than searching for it with limited resources, in this case, optical sensors like GEOS, again, the solution was pretty straightforward. We knew the almanac data was correct. We knew J, SPOC needed GP data in the T, le format for their Al is or SSN sensors to use the relocate satellite. Since SDK had tools to fit observations like those from an SSN sensor to produce an SGP or compatible solution, why don't we just propagate the GPS almanac in accordance with the GPS ICD, and then fit that Ephemeris, using SGB four to produce supplemental GP data or sub GP.
+
+Unknown Speaker  29:29
+Then whenever J Spock lost a GPS satellite, they could just check Celestra to get data they could use to relocate that satellite. They didn't need to ask for help or even let anyone know they were checking and slice track doesn't even have user accounts, so we would have no way to even know they were doing that. The problem would just go away.
+
+Unknown Speaker  29:53
+All the results of the GPS validation test case written up on the new SGB.
+
+Unknown Speaker  30:00
+Eight or something, P page and reported the J spot in January 2008
+
+Unknown Speaker  30:06
+and it turned out it was so easy to do that we applied it to the glow NAS constellation Next, using their rapid ephemerides. The advantage to using these two constellations was that we had centimeter or meter level truth to compare our results against. And you can see, in this case, this is the difference from the precise ephemeris in the graph, and the blue is the supplemental data, and the red is the typical GP data
+
+Unknown Speaker  30:41
+working on that project, it quickly became apparent that there were lots of advantages to sub GP data. First, it should be more accurate, since observations were tagged to a specific object, you couldn't mix observations from different objects, like what might happen in geo clusters. It would not be so conveyors of weather, day night, for optical sensors, it would include the effects of the latest maneuvers and perhaps even planned maneuvers. And perhaps most importantly, it worked with sGv four, which was available by this time in almost any satellite tracking software thanks to efforts by Celestra back in the late 1980s
+
+Unknown Speaker  31:24
+to highlight the need to use as before with GP data, and provided the source code to do that correctly.
+
+Unknown Speaker  31:33
+And GP data was much smaller than ephemerides, requiring less bandwidth to transmit and less storage
+
+Unknown Speaker  31:41
+you could continue to propagate the sub GP solution behind the end and Ephemeris if needed.
+
+Unknown Speaker  31:48
+But perhaps best of all, that avoided needing to develop software that that could handle all the different sorts of data formats and reference frames, which then had to be independently validated
+
+Unknown Speaker  32:04
+as the years went by, slush track built before with satellite operators and got access to more of their data. The number of objects we produce, SGP, four or sub GP data for continue to grow, in fact, today or actually yesterday saw us track provides some GP data for 8272
+
+Unknown Speaker  32:27
+satellites of the 11,054
+
+Unknown Speaker  32:31
+at are in the cattle dog that have GP data.
+
+Unknown Speaker  32:40
+And that means that, and so that's almost 75% right, and that means we have eliminated lost satellite submission maneuvers, right? Sadly, no,
+
+Unknown Speaker  32:53
+even though it's been 17 years since now, since Celestra first started producing daily sub GP data for the GPS constellation, and 18
+
+Unknown Speaker  33:04
+continues to lose these satellites following maneuvers reported by G wick and forecast delta V nannies. The latest case involves not one, but two GPS satellites that maneuvered in early February this year and have been lost for 17 and 20 days with discrepancies of 2785
+
+Unknown Speaker  33:25
+kilometers and just over 1000 kilometers respectively. Here in two seems to have been located as of yesterday. But here in 28 has updated data that seems to be associated with some other object. And you can actually, when you get the slides, you can click on something like this and actually go to the website and leave it see the latest data. And you'll notice that now the data is only two days old, but it's still 1100 kilometers off. So there they've somehow associated the data with something else, and maybe not correctly associated, because the data is still not updating, and that's the kind of situation that we see, unfortunately, all too often.
+
+Unknown Speaker  34:20
+In fact.
+
+Unknown Speaker  34:24
+So in this situation became so prevalent that we created a new tool to make finding and fixing those cases as easy as possible. Spoiler alert, it only took a little over a day to create this capability, and it assesses about 8500
+
+Unknown Speaker  34:41
+sub GP records so quickly, in about 10 seconds that we run it every half hour
+
+Unknown Speaker  34:49
+by 80 now you may be thinking, I'm making all this stuff.
+
+Unknown Speaker  34:54
+One of the things we're adamant about on Celestra is showing our work. So let's get down to that we're.
+
+Unknown Speaker  35:00
+The first problem we run into, and that many satellite operators are not aware of, is that even though 18th gets satellite ephemerides, or a lot of satellites via space track, and uses them for conjunction assessment, they do not use those for SSA just because it seems perfectly reasonable they would does not make it true, and relying on the false assumption that they know about recent maneuvers is a dangerous choice, whether you believe it or not. We will show you many cases where that clearly cannot be true.
+
+Unknown Speaker  35:37
+So let's look at that tool, the sub GP versus GP comparisons tool. It allows us to quickly assess any satellites we have sub GP data for and perform various comparisons. When the tool comes up, by default, it is sorted by the worst results, comparing the 18 GP data to Celestra sub GP data. You can see from this example that the RMS differences can be pretty extreme, with the top one being 11,200
+
+Unknown Speaker  36:08
+kilometers. At the time, putting this presentation together, I'm going to even be well the O 3b satellites are in equatorial orbits at an altitude of about 8000 kilometers. So if the two orbit solutions are on the opposite sides of the earth in the same orbit,
+
+Unknown Speaker  36:26
+the difference would be almost 29,000 kilometers.
+
+Unknown Speaker  36:31
+So this is a pretty bad case, but definitely possible. And the problem arises because only a few optical sensors can see objects in these orbits and optical sensors are typically limited in nighttime operations with good weather having bad weather when even a small maneuver occurs, and make recovery difficult.
+
+Unknown Speaker  36:54
+But how do we know how good the sub GP data is? Well, we also have an RMS difference column for the sub GP data, and that's the one where my cursor is, if you can see the cursor
+
+Unknown Speaker  37:10
+that compares the original source data. In this case, the SES Ephemeris uploaded the spacecraft for 18 to use in CA screening when we fit that Ephemeris with SGD core to produce the sub GP data, we obtain an RMS difference in the fit of the fit as a byproduct over the period of that fit, a six hour span from the time of this comparison run, the RMS difference For that fit is 47 meters.
+
+Unknown Speaker  37:41
+Now the SES Ephemeris might be off. It is unlikely to be by much, and the sub GP data matches it extremely well. So the 18th RMS difference of 11,200 kilometers is definitely pointing to a problem that result is probably not too unexpected. Given the latest data, there is 45 days old.
+
+Unknown Speaker  38:07
+Any of these columns are sortable, and so again, like if you click on the link, it'll take it'll take the Celestra. Can you check? We can look at what's the worst RMS for any of these satellites, you can look at things by age, and you can see that, you know, sometimes things that aren't old end up being, you know, very bad, vice versa. So it's important to check every time you do that you
+
+Unknown Speaker  38:44
+and so in the example that we have here, worst case for the sub GP RMS turns out to be for Starlink 31 664,
+
+Unknown Speaker  38:56
+and so you can also in that example, you Go in, of course, we don't have that, because that satellite decayed. But if you wanted to see what was going on with that satellite, like, here's the worst case right now, and you click on the graph, you'll see, well, it's decaying. It's almost down to 200 kilometers, and that probably explains what's going on? And like I said in the case for 31 664, indicated yesterday.
+
+Unknown Speaker  39:28
+Actually, I'm sorry it decayed the same day that we did this slide.
+
+Unknown Speaker  39:39
+And so one of the things to note here is not every sub GP solution is going to be good, and it's important to be able to check that as well, because, as I said before, any system can finite data.
+
+Unknown Speaker  39:55
+So but this value shows us that neither the GP or the.
+
+Unknown Speaker  40:00
+Subjective data for that particular satellite to be considered reliable.
+
+Unknown Speaker  40:06
+As you explore this table, you'll notice that,
+
+Unknown Speaker  40:12
+notice that assumptions that there is a strong correlation between the data age and RMS is not supported. It all depends on the nature of the orbit and how much the satellite might be maneuvering.
+
+Unknown Speaker  40:27
+So the comparisons table shows the problem. But what about the solution? I promise. Well, the very first column on the left there's a link to the latest sub GP solution. So for 03, B, FM, four, if we go back to the website, it's still up here at the top. All we have to do is go over here, click on that solution, and there's the latest sub GP
+
+Unknown Speaker  40:52
+value or data in the tle format that they could use. So
+
+Unknown Speaker  41:11
+get that, they get that data, and they can pass that to their analyst. Might actually be tracking that object and the analyst catalog, but not know what it is, or they can send it to the SSN sensors, and like the ones here on Maui, that can see those satellites to see if there is an object at that organ location, if there is an all likelihood it's O, 3v, F, m4,
+
+Unknown Speaker  41:34
+it really couldn't be easier. One table to highlight the worst disagreement between the sub G P data and the 18th GP data, and when the sub GP RMS value is good look on the length of the sub GP data to resolve the problem. Done properly, you should be able to quickly reduce the 279 cases that have a GP RMS of 25 kilometers or more to zero and locate two active satellites on the lawsuits.
+
+Unknown Speaker  42:05
+Now you may be thinking, we have other data that is better than JP data, so let's examine that assumption. Of course, you'd be talking about the SP or special perturbations data, or maybe even the new XP data. Certainly you've been told how much better these data types are. But is it true?
+
+Unknown Speaker  42:26
+If you think through this assumption, you should realize that the force models for those two data types are better than that for the GP data, and you would be correct before we continue though. What exactly do we mean by a force model.
+
+Unknown Speaker  42:42
+And I think Newton observed when he created his laws of motion, an object at rest will remain at rest unless it is acted upon by an external force. In a relativistic sense, at rest is relative to any inertial frame of reference. If we know the force is acting on an object, we can predict that object's motion over time in the Earth orbit. We need to consider the forces of gravity, both the earth and third bodies like the sun and the moon, as well as the non uniform density of the earth. We also need to consider things like drag and solar radiation pressure, SP can handle higher order fidelity, or the Earth's not non uniform gravitational field better than SG before can, and it can even include things like solid earth ties and SG before XP includes things like solar radiation, pressure that SG before it is done.
+
+Unknown Speaker  43:39
+Are there any other forces were not considering them. Oh yeah, the one that made this such a difficult problem in the first place, maneuvers.
+
+Unknown Speaker  43:49
+None of these force models include maneuvers. If you miss a maneuver in observation, you're going to get a bad orbit, regardless of the fidelity of the prop game.
+
+Unknown Speaker  44:01
+So let's examine the effects of incomplete force models for a moment and start with something simple. Let's look at a car driving through a city, and let's start by assuming a very simple force model. None
+
+Unknown Speaker  44:17
+the car enters the city grid and at a constant speed and cannot accelerate either speed, speed up or slow down. If we took observations at the circles, we would expect the time between successive observations to be equal as would be the velocity. And if we compare the observations to the data from our propagator, they should match exactly the RMS difference would be zero.
+
+Unknown Speaker  44:43
+Now, what happens if we start to notice that things aren't lining up at the observations,
+
+Unknown Speaker  44:50
+the time and velocity measurements are off, and our RMS difference starts to increase? That is our Fit starts to degrade.
+
+Unknown Speaker  44:59
+Remembering Newton.
+
+Unknown Speaker  45:00
+Law, we would have to assume that there were some other forces acting on our car, but where and how.
+
+Unknown Speaker  45:09
+If we assume cars do not have brakes and accelerators, we rarely use them, perhaps these accelerations are due to drag and winds in the urban canyons, which are dominated in the direction of motion. We might not have thought that these effects were important before, but maybe we should add drag into our force model. When we do, we find that improves our RMS differences or our fit.
+
+Unknown Speaker  45:34
+Now, what happens if we have cars that do have accelerators and brakes and they're in traffic that ebbs and flows, these would be considered maneuvers. But when we apply our force model that does not include maneuvers, what happens to those unmodeled forces? Well, they're going to get absorbed into the drag force. That's exactly what happens, not only in GP data, but the XP and SP data as well, depending upon the magnitude of these forces, the drag term may be able to reasonably adjust the orbit, actually making the fact, actually masking the fact that there are maneuvers.
+
+Unknown Speaker  46:18
+The reality is, we're just finding the solution and don't know when our assumptions are going to break down. What if we have a large maneuver that might cause us to miss an observation and continue to apply resources looking forward along the original path,
+
+Unknown Speaker  46:36
+even if we did somehow pick up the object later, the discrepancy with the original path might lead us to ignore that as being the original object and add it to the analyst capital.
+
+Unknown Speaker  46:50
+And if a correlation is made without knowing where the maneuver heard, we might be better off discarding the previous data adjusting our fence span to discard those before the maneuvers, rather than degrade the quality of our solution. And if we don't properly model the maneuvers, our model, model will have the largest error, largest prediction errors around the times of the maneuvers, whether those are past or future.
+
+Unknown Speaker  47:19
+So it's a hard problem, but the sub GP data, a lot of that, using Starlink as an example, SpaceX collects DPS observation and then downloads those to their flight dynamics team and the known association it already knows about past maneuvers and doesn't have to find and process that. It processes plan maneuvers into their ephemerides, along with the rest of their force model to recreate the orbit, you don't have to know the actual force model, regardless of its complexity. All you need to know is how to interpolate the data. Now
+
+Unknown Speaker  47:57
+let's get back to our comparisons as of now, and this was yesterday, as I was wrapping up the final version 284 cases where we had the 18th RMS, more than 25 kilometers off. 261
+
+Unknown Speaker  48:14
+of those were for Starlink satellites. And some of those were pretty extreme. Now, Starlink uploads their ephemerides, the spacecraft for CA screening three times each and every day. It should be pretty clear at this point that 18th is not using that data for SSA. And if it's still not clear, I can share all sorts of other examples at some other time.
+
+Unknown Speaker  48:39
+And I hope you're understanding the value of using operator provided data and improving our SSA. You can use that Ephemeris directly.
+
+Unknown Speaker  48:56
+You can use that ephemeris data directly, but there are a host of issues that make that more difficult, many situations do the things like the sheer amount of data needed, and DOD is legacy systems are designed to handle that data as various formats and reference frames. The sub GP data serves as an intermediary between the full precision ephemeralities to improve overall. SSA, but
+
+Unknown Speaker  49:23
+at least 18 is using ephemerides for CA, right? Well, not exactly the way you might think.
+
+Unknown Speaker  49:35
+We know that many satellite operators upload ephemerides to space track every day for 18 to screen for close approaches. This is the result of work with Socrates back in 2008
+
+Unknown Speaker  49:47
+to show that it could and should be done that way. And if you had the data,
+
+Unknown Speaker  49:53
+should be easy to verify all the calculations or particular count or particular closest approach without prior.
+
+Unknown Speaker  50:00
+Property. Of course, just because it is easy doesn't mean it shouldn't be checked each and every time.
+
+Unknown Speaker  50:07
+Many years ago, when I was in charge of the space data center and the SDC operations, we got lots of CDMS or conjunction data messages from 18 for our operators. We had a pretty tight process where operators uploaded their data to us, and we uploaded it to space track in a way we could identify whether a particular CDM was using the same Ephemeris as we were,
+
+Unknown Speaker  50:34
+even though we were doing everything we could to reduce the latency involved reducing the results. It wasn't unusual that the CDMS we got would be using an earlier feminist and on occasion, we would find we would receive CDMS using the same ephemerides, and the results were matching arms.
+
+Unknown Speaker  50:54
+That's great work once, so we don't need to do that anymore, right? Wrong?
+
+Unknown Speaker  50:59
+One day, I noticed the CDM that reported a closed approach that used the same Ephemeris as we did, but had a dramatically different set of calculated circumstances. How could that be spent a lot of time trying to fit to trying to see what we might be doing wrong?
+
+Unknown Speaker  51:18
+Then, as I was looking over the CDM data the second or third or whatever time I saw in the optional data, reported that reported the apogee and perigee for this geo satellite. It showed a negative perigee wait.
+
+Unknown Speaker  51:37
+It showed a perigee below the surface of the Earth,
+
+Unknown Speaker  51:41
+I immediately reached out to 18 to determine how that could be and how a negative perigee wouldn't be flagged as an error. I
+
+Unknown Speaker  51:50
+asked how they could interpolate the ephemeris the ephemeris data to come up with that result. And the response I got puzzled me at first, we don't interpolate we fit.
+
+Unknown Speaker  52:03
+What does that mean?
+
+Unknown Speaker  52:05
+18 couldn't seem to answer that question. Eventually it dawned on
+
+Unknown Speaker  52:10
+when the CDM was created, it was done via the ccsds standards process. DoD wasn't interested in going through an extended standards development and already had a process and format, well, at least the specific data elements to do that. DOD insisted that the community use their format in that format. It included yet another way to represent orbital debt.
+
+Unknown Speaker  52:37
+At the time, I was pretty adamant that this was a mistake. Ccsds had already developed three orbital data forms, the OEM, the orbit, Ephemeris message for ephemerides, the OPM, the orbit parameter message for state vectors and the omm, our orbit mean element message for GP data. I insisted there was no reason why both objects involved in a conjunction would use the same type of orbital data, and that rather than converting a standard format to the state vector being proposed for the CEM via some unknown process, the message should include the original OEM OPM or omm data actually used for the calculation.
+
+Unknown Speaker  53:25
+Of course, remember, the CDM was designed to handle SP data, which was in the form of a VCM or vector covariance. Message 18 still hadn't come to accept why they should screen using operator ephemerides, as Socrates had already been doing,
+
+Unknown Speaker  53:43
+if you look at the CDM form included, that's right maneuvers. There's no way to include maneuvers. It's going to be done with an Ephemeris, of course. To get everything to match, you have to refit the ephemeris with the force model specified in the CDM, which, of course, doesn't have maneuvers, and works fine if there are no maneuvers, but if there are maneuvers, you have just smoothed out any maneuver information in the ephemeris. And if a close approach occurs around a maneuver, the fit will be worse, as we discussed earlier, and that's what happened in the case that reveal,
+
+Unknown Speaker  54:21
+still not clear what part of an operator ephemeris is being fit to produce a CDM, but the Fit occurs before the calculations, just as you get one more example of people not thinking through the implications of a decision beforehand and not Checking or validating their assumptions on each and every event, and once again, this is a situation where there is an easy solution which is already used in space data set.
+
+Unknown Speaker  54:52
+So why does this matter? Right now, we're only considering objects where we can get authoritative data from cooperative satellite operators.
+
+Unknown Speaker  55:00
+Years. What about those operators that are unwilling or unable to help?
+
+Unknown Speaker  55:06
+Just looking at the so let's start with the SpaceX transporter bandwagon launches that typically have dozens to more than 100
+
+Unknown Speaker  55:16
+passengers on those launches. Just looking at the last five launches. You can see there anywhere from 29 to 131
+
+Unknown Speaker  55:25
+passengers on these launches. And the 131 is for a transporter. 12. We're not everything is deployed. Yet.
+
+Unknown Speaker  55:34
+You can also see that each launch occurred, or you see when each launch occurred and when we got the first GP data for any of these objects, that delay has been at least nine days, as much as 29 days on transporter 12. That's a long time to have dozens of objects in Earth orbit that don't have any data good enough to put in the GP catalog and can't be effectively screened for potential collisions.
+
+Unknown Speaker  56:04
+It also makes the process of identifying these objects difficult.
+
+Unknown Speaker  56:08
+If a satellite operator has to scan through dozens of objects with a high gain, ie, narrow bandwidth, or, I'm sorry, beam with antenna weeks after launch, their satellite may already be dead. Why? Because they assume DoD had it all under control, which DoD regularly tells me, and they assume they would know that their satellites orbit and identification right after it was deployed.
+
+Unknown Speaker  56:37
+Failing to plan for reality may mean that the operator couldn't perform required early orbit activity like activating power systems or communicate with their satellite to know about and deal with an unplanned emergency that happened in that 29 day period before the data became available.
+
+Unknown Speaker  56:57
+So you can see that large percentages of each launch still have passengers that are not identified, and some have even decayed before ever being identified.
+
+Unknown Speaker  57:10
+Of course, there have been similar launches done by Russia, India and others, and we expect this trend to continue. In fact, transporter 13 is scheduled for the next month.
+
+Unknown Speaker  57:22
+Now, just like we do for every Starlink launches, where delays in the release of the 18 GP data and be five to eight days, so much track produces Ephemeris based sub GP data for any satellite operator that provides us informalities
+
+Unknown Speaker  57:38
+so far, that's only been planet who typically has many dozens of their satellites on these launches, I think one they had almost 100
+
+Unknown Speaker  57:49
+we have been getting planets, ephemerated every two hours at least as far back as 2017
+
+Unknown Speaker  57:57
+so act produces sub GP For these satellites within two to four hours post deployment, and we can definitely match the or definitively match the planet satellites to the 18 GP down within minutes as soon as that data becomes away. And we do the same thing for Starlink, where it takes us about eight hours before we get the dad, six years recent history.
+
+Unknown Speaker  58:26
+But what about the restaurant right now? China has three star life constellations already launched, and that are each plan to have.
+
+Unknown Speaker  58:40
+I just
+
+Unknown Speaker  59:01
+think, yeah, I drove up to the River
+
+Unknown Speaker  59:04
+Hill. They were kind of believers this morning. I didn't
+
+Unknown Speaker  59:11
+sleep at
+
+Unknown Speaker  59:13
+all last night. I slept al today and I wrote 24
+
+Unknown Speaker  59:18
+and
+
+Unknown Speaker  59:24
+shut off my
+
+Unknown Speaker  59:27
+last like
+
+Unknown Speaker  59:40
+me off my last
+
+Unknown Speaker  59:43
+girl situation,
+
+Unknown Speaker  59:51
+into a detective regime
+
+Unknown Speaker  59:55
+where 34 of those decay without ever being identified. Just give.
+
+Unknown Speaker  1:00:00
+So the numbers for the PRC, as you can see, which us considers to be an adversary, particularly
+
+Unknown Speaker  1:00:09
+Good either numbers as far as area goes.
+
+Unknown Speaker  1:00:20
+Windows you
+
+Unknown Speaker  1:00:52
+DoD would be putting more effort into doing the same thing that their data suggests otherwise,
+
+Unknown Speaker  1:00:59
+even with West track works with operators to verify their analysis and pass that to 18. It's often ignored,
+
+Unknown Speaker  1:01:07
+but for now, that wraps up our presentation. But the story continues. We've covered a lot, and there's a lot, no, lot more going on on slush track that would take more time than we have today. Hopefully these examples have raised your awareness, not only of the problems, but also possible and already existing solutions and the national security implications should be obvious. If they aren't to you, I can assure you they are to our to US and allied adversaries. I look forward to your questions, and thank you for your time,
+
+Unknown Speaker  1:01:50
+I guess so made the pond
+
+Unknown Speaker  1:01:55
+is not here. Is anybody? I'm right here, sir. Hey, we are here. Okay, I'll turn on the camera to this
+
+Unknown Speaker  1:02:05
+option. Hey, so thank you so much for for your presentation. Is really, really interesting stuff. I guess I'll Is anybody out there in zoom land? Have any questions? You guys can either either chime in and talk or post it to the the chat.
+
+Unknown Speaker  1:02:25
+And if not, I've got a couple of my own questions. So is one. I'm curious what you think about the future of the tle two line element. Do you think it's still a good format? It's held up over time? Do you think they're, you know, with now that we have more computing power, would it be more useful or better to
+
+Unknown Speaker  1:02:47
+use state vectors or another more
+
+Unknown Speaker  1:02:50
+data rich product over and that's a great question, and we've actually been working on the answer for that for almost five years now. So the if you're familiar with the TLA format, it was designed back in an era where everything was being done on punch cards, literally. And so you had a limit of, typically, 72 columns for data, and they were trying to minimize that, because you had storage that was on tape and it wasn't fast. There was all sorts of problems with that, and we're well out of that situation now. And the reality and and you know, if you go to Select Track, there's links at the bottom of the page that show,
+
+Unknown Speaker  1:03:37
+still how to follow on blue sky or x? But we have several things relating to this particular question. And the first one that's really, really important is when you have these fixed field formats, like the tele format, we have certain limitations. So one of them is the five digit catalog number and and a lot of people are under the assumption, the incorrect assumption that we have until we get to 100,000 in the catalog before we run out of five digit catalog numbers. That's not exactly true and in the main part of the catalog. And Ashley, I wonder if I can just a second
+
+Unknown Speaker  1:04:22
+use user, instead of just talking about it to show You,
+
+Unknown Speaker  1:04:36
+I'll get to that one another,
+
+Unknown Speaker  1:04:40
+maybe
+
+Unknown Speaker  1:04:43
+not. Okay. Let's
+
+Unknown Speaker  1:04:45
+just try to get the website here real quick. Whoops,
+
+Unknown Speaker  1:04:52
+when I got to the one page,
+
+Unknown Speaker  1:04:55
+I never information, but to go to go to blue sky, and you follow.
+
+Unknown Speaker  1:05:00
+So right at the very top, this is what the design, the structure in the catalog looks like. And so here's here's where we are right now in this plot, these are the five digit catalog numbers, and you notice that 70 1000s are assigned for launch nominals. 80 1000s are our analyst catalog, and the 90 1000s are sensor ucts. So we've got to 70,000
+
+Unknown Speaker  1:05:25
+we're just over 63,000 now. And we've got those three Chinese constellations that are going to launch 10 to 15,000 each. We've got SpaceX that has launched,
+
+Unknown Speaker  1:05:39
+I think they've just gone over 8000 of the 12,000
+
+Unknown Speaker  1:05:44
+in their first
+
+Unknown Speaker  1:05:46
+license and all sorts of other activity that's going on. So we're going to run out of those. Now. You'll notice that in this diagram they talk about something called Alpha Phi, and the notion is that we're going to use a letter instead of a number in the purse, Al,
+
+Unknown Speaker  1:06:03
+I will assure you that all sorts of things are going to break when we do that. In fact, it's really interesting. If you look at Space Force documentation for things like SG before and SG before XP, when they both specifically identify that the five digit catalog number is an integer.
+
+Unknown Speaker  1:06:27
+And so we have all sorts of legacy software, whether it's DoD software or otherwise, where it's assuming a number, when you put a letter in there, it's going to break. And so we're not doing that. We're already using
+
+Unknown Speaker  1:06:42
+Al is cat. Al is numbers in this range up here that they show as Al for five, but we're doing things like pre launch nominals in the 700 million range that can't even be addressed by Al for five. So yeah, we're we've got, and I'll send out major pond, I'll send you a link, and you can send it to the people that attended, but there's specific documentation that talks about what the problem is, what the solution is, why we need to do that, how that fixes not only things like the five digit catalog Number, but it also addresses, believe it or not, things like two digit years. Like here we are, 25 years into the 21st century, and we're still using two digit Avalon numbers. And you think, well, we got another 25 years before it's a problem, right?
+
+Unknown Speaker  1:07:40
+The fact that we haven't fixed it in the first 25 years means we'll fix it the second I've got a bridge.
+
+Unknown Speaker  1:07:49
+It's something we can fix. We actually already provide that on Celestra. So in May of 2020
+
+Unknown Speaker  1:07:57
+Celestra and space track work together to figure out what other formats we can provide the GP data so we still have tle format when we finally run out of catalog numbers. And who knows, we could have like, some massive debris event that we eat up a block of catalog numbers before people are really ready to do that. So we need to do that so that, yeah, I don't, I don't think the TLA has got much more life ahead of it, and we should be counting on that.
+
+Unknown Speaker  1:08:33
+Thank you, yeah, and I'll be happy to send out that information I'll get with with you and Kevin, after I got a question on the chat says, Thank you, Dr Kelso for the very informative talk. How do you view one thing about the
+
+Unknown Speaker  1:08:47
+data stand so as far as data standards and GP versus tle, Dr Kelso has me diving into a lot of the public the ICD documents and documents that Dr Kelso mentioned that you know what they end up being, you know, at their lowest, most detailed level, are essentially the system design documents that go to developers and setting us up for a lot of extraneous and complicated and cumbersome
+
+Unknown Speaker  1:09:24
+translations or conversions back and forth between data types is just creating points of error, and especially if these
+
+Unknown Speaker  1:09:35
+changes start to deviate from the published documents that have been out there that people have already designed systems for so dr Kelsall started to allude to it, but you know, the systems have been designed where you know if they are using the TLD format, like the catalog number field is only designed to accept integers and the alpha five i.
+
+Unknown Speaker  1:10:00
+A translation between GP, you know, nine digit catalog numbers and and TLD, five digit
+
+Unknown Speaker  1:10:08
+requires letters. And if you start putting the letters in there, you're you're essentially converting that field to a string, which is going to break a lot of software that's that's been out there, and it's going to in a lot of folks operating space systems, especially at the operator level, like they especially when you get into some of the third world countries and whatnot, they don't really know these problems are coming, because a lot of folks aren't looking into the systems that deeply when, when they contact us, it's usually after something is already broken. So yes, there's definitely obsolete. I think from most of our opinions, we understand why alpha five is necessary, but that's because a lot of other things have been allowed to go obsolete. Like I think the last metric I heard on transmission lines to some of the older data lights or data or radar sites was on the order of seven kilobits per second.
+
+Unknown Speaker  1:11:06
+So obviously, can't stuff a lot of data in there, but the more we try to build things backwards compatible. I mean, I started working SSA back in 2001
+
+Unknown Speaker  1:11:17
+in Air Force, Space Command. And a lot of the problems that we're seeing today existed back when I was a lieutenant and and it's just been kind of neglected and put on the back burner. And I think that, just to add another plug, is when the when the focus change from SSA to SDA, with the, you know, the military aspects of the mission. We and Celestra still work SSA for space flight safety and
+
+Unknown Speaker  1:11:46
+preservation of the orbital environment, but that those fundamental tasks of orbital dynamics and SSA, which are the foundation to everything, they've gotten neglected for other things that are higher priority. But unfortunately, everything is dependent on them, and then, probably more so than any other domain.
+
+Unknown Speaker  1:12:09
+It's dependent on an awful lot of machine, machine interfaces. So when you start tweaking the data and having inconsistencies, then it starts to make things further down the chain, and it takes a lot, a long time to track it back to where the actual problem resides.
+
+Unknown Speaker  1:12:28
+Great. Thanks. Dr kuchipinski, Roger al debelli from I support the SBA tap lab here question, so kind of piggybacking off your serious question, how do you see the role of open source efforts or just even the Commercial Investments in telescopes, passive RF radar, helping overall space awareness.
+
+Unknown Speaker  1:12:49
+I think, I mean, I'm really well, I have been pretty excited and involved in a lot of the development of things like legal labs and EXO analytic and the capabilities they bring what we need to be doing for SSA, you know, the probably the biggest problem there is that these are all organizations that need to make money. We have, I don't think we've quite hit on the right model, business model for how they can all work together and make money, rather than Al compete, maybe drive each other out of business. So, you know, there's, there's capabilities there the one of the challenges that comes from that, right? So we talked a lot about, you know, doing, checking our work and showing our work, and what we're doing for SSA, and that's going to be necessary for any data that we're going to use. It can't be like our data is. And I'll use a term I like to use frequently, our data is magically delicious, you know, just trust us. And it's like we can't be doing that. We have to be able to verify what's going on in every single circumstance. And so you get into a situation with EXO analytic or al lab where they're providing data, but they don't want to give it away, that you know, and let you nitpick it. And you know, you one of the things you shouldn't take from my presentation today is, I'm not picking on anybody, right? I mean, a lot of the problems that we're faced with today are the result of failures by senior leadership. They could have resourced, they could have done other things to make sure that the people doing the mission today are prepared to do that mission, but they didn't. And so, you know, the fact that they weren't resourced doesn't mean the problems don't exist and that we can't find solutions to them. But it doesn't necessarily mean that we're, like, trying to find, you know, like, oh, they did something wrong, and we should somehow blame them for that. And.
+
+Unknown Speaker  1:15:00
+We're, we're in the same situation with these, you know, let's say third party SSA providers, is that they're generating data. They can't just give it away, because they'll just go out of business. But we need the data to be able to verify claims about how good the data is. So when you make claims like, we can see
+
+Unknown Speaker  1:15:22
+objects as small, or we can track objects as accurately. We need to be able to independently assess that. And I'm still a bit at a loss of how we're going to do that going forward, and if we don't do it, what we ultimately put ourselves at risk of are things like, well, you know, they're going to compete against each other, maybe drive each other out of business, or you're going to get into a situation, let's say, with you know. Ca, right. So think about when you make decisions. So if you and I have the same data going into a decision. Are we going to make the same decision? No, because you probably have a different risk profile than I did. Now, when you sit there and you go, you guys can have the free data, but you can't afford the paid for data, and so these guys have a different set of data, and they're going to make an even different, you know, decision based on that data than what you would regardless of your risk profile. And so we've got to find some way to keep these companies in business, because they're really providing, you know, a lot of, a lot of the global coverage, and, you know, the timeliness that we need to monitor this environment. We need to find ways to sustain them well without, you know, getting them in a situation where they're going to end up going out of business, and we lose that capability. So I think there's, there's a lot of
+
+Unknown Speaker  1:17:02
+lot of value there and adding them into the mix. Now, if, when you're talking about open source, you're talking about software to
+
+Unknown Speaker  1:17:11
+you know, we probably have figured that out on slush track. We're pretty much aside from things that you know involve cyber security, we're happy to share anything that we're doing. I mean, celestrites out there,
+
+Unknown Speaker  1:17:25
+it's not, it wasn't really intended to be like an operational capability, but it's obviously used like that by many, many people. And we get something like 3 million unique users above on the site. So we know there's lots of, you know, companies and governments and those kinds of things that are using Celestra, and we try to make sure that the data is current and the data is accurate, and that we're doing all sorts of checks for that, and we're trying, at the same time, to use what we're doing, Just like we did in today's presentation, to make
+
+Unknown Speaker  1:18:03
+the space community aware of the issues. Make sure that they're aware that we have certain things that don't require, you know, millions or billions of dollars to fix that. We already know how to do it, and we just need to do it. And so, you know, we want that to be transparent. We're happy to share code. In fact,
+
+Unknown Speaker  1:18:26
+you know, if you looked at SG before the
+
+Unknown Speaker  1:18:33
+So, yeah, it's, it's a valuable thing. We think, you know, it's important for people to show the work. It's important,
+
+Unknown Speaker  1:18:41
+let's say to lift each other up might be one way to think of it, right? I mean, we don't need and that was actually one of the reasons what came to be on Celestra
+
+Unknown Speaker  1:18:54
+started out the way it did, was, why on earth would I want to type up, which I had to do, you know, out of the DTEC document or space track Report Number three, way back in the day, why would I want to type that up and go through all the air, check anything else and then make everybody else do the same thing, or make everybody else realize what said right up front, and space Track report number three that you have to use
+
+Unknown Speaker  1:19:23
+SUV for with the GP data, you can't use a different propagator. And at the time, we had lots of people going, Oh, this is right, essential. This is the centricity. It's all the same and it's not. And so we wanted to make sure that all of that gets out there so that people aren't constantly reinventing the wheel, and we think there's lots of other players in this community that can help lift everybody else up by providing their piece of the puzzle to make things better.
+
+Unknown Speaker  1:19:56
+Excellent. Thank
+
+Unknown Speaker  1:19:58
+you with that one as well.
+
+Unknown Speaker  1:20:00
+Al. Also, I posted a really great quote from Dr Kelso regarding commercial data. I tried to post the actual image, but it wouldn't allow me, so I put a link into one of our social media sites.
+
+Unknown Speaker  1:20:12
+But I've been working probably a lot with the open source data, especially the RF open source data, recently, and also talking with some,
+
+Unknown Speaker  1:20:23
+you know, folks on the east coast and in the policy circles regarding the use of commercial data and what the plans are. And it's, you know, the the problems that we see with it, one is any data is helpful, and
+
+Unknown Speaker  1:20:41
+what happens? I don't know if you watch any of the social media activity around an event or a launch of how the international community works together, especially if it's
+
+Unknown Speaker  1:20:55
+kind of nonprofits or non government entities like amateur radio satellites and things of that nature, but everyone works together to try to figure out
+
+Unknown Speaker  1:21:06
+which satellite is, which where they are, how they can start establishing contact. And what I've noticed in this also happens with starlinks and planet satellites a lot, even just from hobbyists or even military type launches. There's a very large amateur radio community in the UK that is really on top of Russian launches and beacon frequencies within the first couple of revs.
+
+Unknown Speaker  1:21:33
+But what I've noticed and observed from that community is that there's a lot of peer review, and and it's almost like crowd sourced SSA and. And what I hear from some, you know, government leaders and policy makers as well, we how do we know we can trust it? What if it's wrong? But what I've noticed is that this community of techies and Astro dynamic experts, they love to point each other out when they're wrong. So there's, it's almost competitive, so so that there is a lot of self correcting action and and I would think that any kind of nefarious attempts to provide incorrect data would probably be found out the same way that errors are.
+
+Unknown Speaker  1:22:18
+Is that when you start combining data from different sources, you know, you'll, you'll have a lot of sources that congregate, you know, majority of your sources that will congregate on a specific solution. And then you'll have some outliers. And the outliers Get, get identified rather quickly.
+
+Unknown Speaker  1:22:34
+And then, when it comes to the commercial data,
+
+Unknown Speaker  1:22:37
+the IT, which would, of course, help more observations, you know, revisit frequency. You know, there's a lot of things that would help with
+
+Unknown Speaker  1:22:47
+but the issue, as Dr Council mentioned, it really comes down to not being a technical issue. It's a business and finance issue, and I nobody's really heard a good solution on how to make it work. And, you know, it's almost the models that I've heard some of the policy folks try to apply to it are things like comparisons to air traffic safety and maritime safety.
+
+Unknown Speaker  1:23:14
+But I can see where it's challenging for a commercial company
+
+Unknown Speaker  1:23:19
+that, you know, the position from a lot of SSA experts, is that the value of the data. The data is only valuable of most value if you can share it, if you get data on where your satellite is or where somebody else's is, that's that's only half the problem you know from a collision avoidance and space flight safety perspective, not only do you need to know where your satellite is, but and where everyone else is, but you also need to share the location, the most accurate location of where your satellite is, so that other people know how to maneuver around you,
+
+Unknown Speaker  1:23:53
+or they know where you are when they're making their own maneuver decisions and and the more that that information is not shared, that just increases risk. But
+
+Unknown Speaker  1:24:03
+it's a tough business case, you know, to expect the commercial providers to say, hey, well, what I can if you follow that model, I can only sell my data once, but then also the data is perishable again. Dr Kemp also mentioned earlier that it's not a direct correlation between the age of the data and and the RMS values, but it's, it's really depend on orbits and whatnot. But as we're primarily like a lot of the congestion and collision avoidance activity is now moving towards the mega constellations, and they're moving an awful lot. So, you know, we that's, I've heard from some folks. I'm not in the government anymore, left now, several years ago now, but, but
+
+Unknown Speaker  1:24:48
+I've heard from some of the folks, operators that are in in the you know field now that tell me that they use, they consider data usable, sometimes up to 30 days in space force. And you'll see that I.
+
+Unknown Speaker  1:25:00
+At slice track, we we consider data usable, really only about three days, especially when you get into the mega constellations that are constantly maneuvering just as a function of station keeping in a high drag environment. But for the commercial solving that puzzle piece, like said, it's really a business case, and they're trying to create a private model for something that traditionally has been an inherently government al function,
+
+Unknown Speaker  1:25:31
+and the models that that folks are comparing it to, like air traffic and maritime traffic like IAS, again, that data is only valuable if it's shared, so it kind of comes from now the contractors produce the equipment, something, in some cases, collect the data, but then the data is openly distributed. So a lot of times there's only one customer, which would be the government,
+
+Unknown Speaker  1:25:54
+and that's probably a difficult thing when you've got a lot of investors who spend a lot of money. So really, how to solve that problem? Of, you know, how do we ensure that they get properly compensated for, you know, building the work they do, building things,
+
+Unknown Speaker  1:26:12
+but that the data is distributed so that everybody's working with on the same sheet of music and comparing apples to apples? That's a complicated business problem to solve,
+
+Unknown Speaker  1:26:24
+and I don't, I don't think there's any path for that quickly looking at even just the government documents, like when you pull if you look at the public documents for tracks, the NOAA program, they have references in there to use commercial data, but they can't either even identify what the standards are going to be for for using and sharing that data. It essentially they punt it in the documentation to say that will be determined on a case by case basis, depending on the contract requirements. It's pretty hard to design a future system and plan to use that data when, if it's going to if there's no consistency. So there's a lot of lot of issues that need to be
+
+Unknown Speaker  1:27:08
+worked out with that. And but it, you know, it would be great if we could get it and share it. Everybody could use it. But, you know, they they can't give away the farm when they owe investors a lot of money and whatnot. So that's really the business case. And,
+
+Unknown Speaker  1:27:23
+yeah, it requires, certainly requires some more focus. Great. Thanks, Dr kretzmansti. And you know, you're speaking to at the hearts of many so here at the SCA tap lab, we have about 85 cohort members. Each of industry kind of banded together. We call it abscess closed gap. So you have 29 problem statements that we put on our website. So doing a lot of amazing work. So I know we're at time, no one be mindful of everyone's time. But just, you know, are there any gaps? Or, you know, do you have any advice for kind of the commercial base that we're supporting? As far as you know, from your perspective, you were Dr Kelso, of areas where you think, hey, this would be a great area to focus. Or this is something where, you know, if there were some additional investment, that you could probably see some return.
+
+Unknown Speaker  1:28:07
+And I think, I mean, you know, our focus has been all along, right? We've been doing this for 40 years now. It's been on the data, understanding the data, being able to quantify the the
+
+Unknown Speaker  1:28:22
+the quality of that data right, and understanding how to use it correctly. So, you know, we we've been working. And if you think about the early days for the way we did things on Celestra,
+
+Unknown Speaker  1:28:36
+you know, was sort of a call it like a funny date myself. Maybe I call it a Lego solution. I was gonna say, take her to like,
+
+Unknown Speaker  1:28:47
+you know, where you've got, you had people come in and it's like, well, I'm on track satellite. It's like, Well, okay, you know, here's, here's the documentation, here's some code and some computer language that you probably never heard of before. Oh, you know, code, computer, you know, how do you put this together? Oh, you forgot that you have to do, like, after you get those numbers, have to do some coordinate transformation or whatever. I mean, there were all these pieces that we expected people to come in and,
+
+Unknown Speaker  1:29:18
+you know, put the pieces together and then do what it was that they needed to do. And, you know, as as we started getting into, like, probably the
+
+Unknown Speaker  1:29:28
+20 year point, 20 or 30 year point, it became obvious that there's a lot of people that need to understand this that aren't software developers, right? And they're probably not even, you know, really familiar with orbital mechanics. So, you know, it got down to the and you think about, so we, you know, we had a discussion earlier about tle format, right? And use GPS data on on billions of smartphones around the world every day, right?
+
+Unknown Speaker  1:30:00
+Does anybody know what that data looks like? No, probably not, right? The data comes in, it's in a particular format. You know what propagators use? No. I mean, there's all these things that are going on that are developing standards and are not really masked, but they're not in the way of people learning about what's going on with the data. So we're trying to move to that kind of an environment. And a lot of the stuff that we're already doing on Celestra is don't worry about the data. We're working toward like it used to be. Want to know what satellites were, what orbits, or whatever, regardless of what it is like. We have a table that shows us GEO satellites, all the active GEO satellites, and which ones might be moving.
+
+Unknown Speaker  1:30:48
+If you when in the past. If you wanted to do that, had to get all the data. You had to figure out which satellites were the GEO satellites, and to figure out, like, what, what constitutes a move right, a drift or, or maybe super sinking it, get it out of geo those kinds of things, and how do I lay it out and and a good example for that is NOAA at the time when I developed that particular tool, would move their satellites, and they wanted to notify all the satellite operators in orbit that they were moving through their space. So it's like, Hey, we're going to move from, you know, 100 degrees west to, you know, 120 we want to notify any satellite operators in between. And it was even for for satellite operators, they were asking questions like, Well, how do we do that? And now we do it. I mean, we don't even think about it. It's all done on a map thing, right? We know what, which satellites are. You get a table. The table sortable. You can sort it by longitude. You can see like, oh, yeah, here's the longitudes I want. And you know who to do. We're trying to get to the point where it's like, you don't need to know what a tle is. You don't need to know what the format is, how to parse it, what issue before is any of that kind of stuff, and that's, that's more where I think that, you know, we're trying to go, not to, not to try to play games with people like, oh yeah, we're, we're doing it right wing. Link, but to make sure that people, particularly people like
+
+Unknown Speaker  1:32:20
+lawmakers and policy makers that are not going to be experts in this field. We don't present the information on what's going on up there in an objective and understandable way. They're going to recommend,
+
+Unknown Speaker  1:32:35
+let's say, regulations or laws or whatever, that are probably not going to be in line with making things better. And so we gotta, I think that's, you know, for going forward. And so I'm talking about data. That's kind of our piece of it, right? But for those of you that are out there working different parts of this problem, you need to consider that sometimes the people making the decisions, actually, a lot of times, people making the decisions are not experts in the stuff that you're doing, and you need to find a way to do that in a way that is easy and understandable. So working together, we can do that. You saw a lot of elaborative efforts on what we've done with Celestra over the you know, particularly the last 20 years, and we can continue doing that going forward. And we need to to be able to come up with these solutions, because we collectively working together and probably come up with better decisions, and waiting for, you know, some somebody in Congress, for example, to come up with an idea that they think that's the problem and it may not be a problem, and they're going to come up with a solution that we don't need, and then we're all going to be, you know, stuck trying to, trying to do that so we we can figure out the smart ways to do things before, you know, you get to The legislative process where people feel, feel, they have to,
+
+Unknown Speaker  1:34:03
+you know, impose their will on you to do it the way that they think it's right, even though they don't understand it. So I think that's probably the, you know, from our small piece of the puzzle, right, just the data, you know, share, collaborate,
+
+Unknown Speaker  1:34:20
+you know, be as transparent as possible on the things that we're doing, so that we all know and can find ways to work together even closer, and we can avoid
+
+Unknown Speaker  1:34:32
+taking detours on things that we really don't need to be wasting time
+
+Unknown Speaker  1:34:38
+on.
+
+Unknown Speaker  1:34:40
+Yeah, I would also
+
+Unknown Speaker  1:34:42
+say that I would think,
+
+Unknown Speaker  1:34:45
+at least in the from a US perspective, that there is a lot that can be done in the RF domain.
+
+Unknown Speaker  1:34:55
+We we did some initial proof of concept work a few years back of.
+
+Unknown Speaker  1:35:00
+Um, we called it RF SSA, and we were using some very inexpensive amateur bubble equipment and antennas that we bought off of
+
+Unknown Speaker  1:35:14
+Amazon, or even something we got for free, you know, old dish antennas and whatnot and and we found that we could do,
+
+Unknown Speaker  1:35:22
+we could learn a lot about
+
+Unknown Speaker  1:35:26
+that would help a lot about with precision orbit determination by looking at RF,
+
+Unknown Speaker  1:35:32
+you know, kind of the you know, the com external, or the you know, the broadcasted RF signals coming off of, you know, com satellites, TV satellites, NOAA satellites, things like that.
+
+Unknown Speaker  1:35:46
+And thinking about Rf is it's, you know, it's all weather, it's all orbit. You know, it works it from Leo to Geo. And even if it's not used for precision, the other thing that it can be used for is just a verification, you know, of, you know, if you've got all this data coming in from open source and commercial and even the operator provided data, I think we still need to have a perspective of trust but verify. And you know, so if they tell us that our satellite is at their satellites at a specific location, rather than using some of the,
+
+Unknown Speaker  1:36:27
+you know, more expensive and unique resources to verify that, you know, just sticking an antenna and measuring the power at an azimuth and elevation will give you a pretty good feel on whether the satellites actually where They say it is or not. And if you want to get into precision orbit, like we were able to see station keeping just using Doppler shift in a single antenna, we could see the station keeping activity. You can see thrust thrusters fire in the Doppler shift. There's a lot that can be done. And yeah, and Dr Kelso just pointed
+
+Unknown Speaker  1:37:05
+put out a link to SAT Knox, which is one of the large amateur radio, satellite amateur radio nonprofits that we work with, and they have put out
+
+Unknown Speaker  1:37:20
+SDR stations and receivers all around the world, and a lot of them, you can actually book time and remotely operate it to do this kind of stuff. Another nonprofit that we've worked with in this area has been DSes, the deep space exploration society. They are a group of radio astronomers, and they're actually come from, you know, RF Intel channels that that I used to work in. And so they're, they're sharp folks, and they built radio astronomy packages that essentially contain all of the same necessary components to do the basic RF SSA that that we did as a proof of concept and but they have these deployed all around the world now at with various, you know, amateur radio astronomers, but are very willing to just tune to a certain frequency and point it at A specific satellite and collect data for us. So there, there is a lot that can be done in this area, and I don't know if you will get any traction with US government. I've been trying to convince them since I was in the military, but I think it back as far back as at least 2009
+
+Unknown Speaker  1:38:37
+that doing this is a good idea. And I never, never got any traction. But I do know that some of our material, Dr Kelso briefed to Australia, and I know that they have been building, or have built a passive RF system to do this type of work. But that's certainly an area that's right.
+
+Unknown Speaker  1:38:57
+One thing that I would certainly point out to,
+
+Unknown Speaker  1:39:01
+you know, any contractors or anyone doing work in this area is
+
+Unknown Speaker  1:39:06
+that to be very careful of the data, like what, what I've seen in a lot of the documentation for, you know, tracks and the new systems, is that they're not going To be doing like people, people are generally misinformed, or the scope of the projects changed, one or the other on what they're going to be doing, and they're not going to be producing any orbital data, which should make sense, because Space Force, you know, owns all the sensors. So if you read the tracks documentation, they're still going to be reliant on 18th producing the orbital data, and then they're going to build tools and capabilities on top of that orbital data to do new things, which is probably similar to a lot of things that happen in Space Force and SDA, as you're accepting the data and then building tools on top of it, and the dangerous piece there, or.
+
+Unknown Speaker  1:40:00
+Or the potential for air is that I know back all the way until I started working for Dr Kelso, anytime I designed a system and or worked on something in the government, I started from the position of the system in front and I am getting the absolute highest quality, best data possible from the system in front of me, and that's what I'm ingesting into my system. And I don't think I've ever seen a contract written that had any kind of requirements to say, Do you know, data cleansing and quality assurance on the data prior to ingesting it from this government system and putting it into the next one? So that is something that I would be cautious of as a developer, that you may be building something that, from a perspective of physics, would be working absolutely perfectly if you were getting good data. And if it's not working, it might not be that you built something wrong. It might be there's a hidden assumption or error in the data prior to you ingesting it, and you need to probably be mindful of that
+
+Unknown Speaker  1:41:08
+both both from what you're going to operationally produce, but then also from from a contractor performance perspective.
+
+Unknown Speaker  1:41:20
+Thanks. Dr kuchipinski, thank you. Dr Kelso, I know a number of folks here, but just want to say really appreciate you guys taking out the time. And, you know, want to continue the partnership. So. Dr kuchipinsky, I know you mentioned you have some, you know, kind of notes and tech documents. I think you sent me a couple before, if you want to pass me any information directly on this. Roger speaking, I'm having put together a wrap up and reply all to the entire group to make sure that the information gets shared. So with that, any parting remarks that you guys have from your end?
+
+Unknown Speaker  1:41:55
+Yeah, I'm just to say that you know my email address is on every single page on the website. So if anybody has questions or, like I said, Any system can fail, including Celestra, and we try really hard not to do that, but if you find something wrong, you know, we're more than happy to have you point that out, and, you know, we'll look into it and we'll fix it as quick as we can. So I think that's an important part of what we're doing, and now you encourage people not to be reluctant to reach out if they have questions or think they're not understanding something that we're doing.
+
+Unknown Speaker  1:42:33
+And I would just add that we have to the differences between the data that you would get from space track or commercial or Celeste track, is that we do a lot of verification and validation on data. We augment our conclude, you know, we augment, you know, everyone uses the 18th data as the base foundation. We augment that with data from other sources.
+
+Unknown Speaker  1:43:00
+And
+
+Unknown Speaker  1:43:03
+yeah, I would say, you know, trying to think of, sorry, I got to pass you a message from the treasurer too. So she said that, but, but anyway, the difference is, we do some add value added to make that data as quick as possible, or at least identify when the data is in question, when it when using that data or making a decision on it is of higher risk than other data. So that's sort of what we add.
+
+Unknown Speaker  1:43:30
+And try to continue adding. And then the note from our treasurer is she always likes us to put a plug in at the end that we're not a contractor. We are a five an or government entity. We are a 501, c3, nonprofit, and we exist solely on donations. So if there's anyone that uses our data tools or anything that we can provide and likes it, please consider going to our website and providing a donation so we can continue to do it and start recruiting and training some of the younger generation to take over for us.
+
+Unknown Speaker  1:44:09
+Fantastic. Thank you. Dr kuchipinski, thank you. Dr Kelso,
+
+Unknown Speaker  1:44:14
+fantastic, fantastic presentation. And yeah, look forward to the collaboration. We're out here on the gardens of God side. So thank you so much.
+
+Unknown Speaker  1:44:25
+All right, see you guys. Thank you. Thank you. Thanks. Thank you. Applause.
+
+Unknown Speaker  2:30:13
+I will say this one positive,
+
+Unknown Speaker  2:30:17
+not even eating. I'm just so fucking sick.
+
+Unknown Speaker  2:30:21
+But I keep going.
+
+Unknown Speaker  2:30:23
+Gotta make the money and yeah,
+
+Unknown Speaker  2:30:26
+I'm gonna have a lot of issues going forward. I'm at the point where if like, any girl conducts me is like, Oh, hey, you seem so nice. I just wanna, like, smack their hands away and be like, Fuck off, bitch guy and never talk to me ever again, you fucking whore. That's what my instinct is so much pent up.
+
+Unknown Speaker  2:30:39
+Sounds like fucking 10 insults in one person. It's terrible.
+
+Unknown Speaker  2:30:44
+So that's why I say. I just want to get out of my system and fuck with 100 checks. That's gonna be the absolute boon for
+
+Unknown Speaker  2:30:51
+my product is that everyone can tell me, Oh, you can meet the right person. Everyone fuck that. I wanna meet the right fucking person. I wanna meet dozens and hundreds of fucking people. I wanna fuckin poor cheese. I wanna eat fucking wildly crazy. No fucking Coronavirus in Europe. That's me getting even. Me getting even with life like losers try and winners. Fuck the bronqui. And it's as simple as that, if you cannot get in there and fuck the bronqui, you're a fucking loser. Nobody has any balls to admit that that's true. We both know that we're just doing our best to like, maximize our chances. But
+
+Unknown Speaker  2:31:21
+if any girl from this small town area, town area ever hits me up again, I'm immediately going to completely pulverize crush and fucking incinerate their soul,
+
+Unknown Speaker  2:31:35
+because I don't go 20 years of delaying gratification just to give these fucking whores what I
+
+Unknown Speaker  2:31:41
+will not cave to that.
+
+Unknown Speaker  2:31:47
+Yep, you need deep down. Or somehow, I don't know, I'm gonna do it, but somehow, if I build some kind of company that's worth, like, a billion dollars or something, more women will show up to the door. I don't know that's really the only, the only
+
+Unknown Speaker  2:32:02
+game plan I have. I just don't feel like it's that easy. Just make a few million bucks. You see all these chips. I know friends are tail fellas got like, 50 mil in the bank. They don't get fucking bitches like lighting up to the door. Still gonna work for it still like, it has to be like, something you work really hard on to do really well, I
+
+Unknown Speaker  2:32:18
+think, like, like anything in life.
+
+Unknown Speaker  2:32:22
+But I was get to like, 155 pounds by Miami. So that's, that's another, like 1514,
+
+Unknown Speaker  2:32:28
+about 14 pounds left to come for that Miami trip in the next week. I'm gonna do some of these Hail Mary calls. I'm gonna just, I'm hoping one of these calls pulls together the money I need so I can go to Miami do that teal retreat.
+
+Unknown Speaker  2:32:42
+Then I'm just like, you know, I kind of mentally set myself up where I, like, don't focus on women at all. I just focus completely
+
+Unknown Speaker  2:32:50
+on
+
+Unknown Speaker  2:32:51
+work. But yet, I don't
+
+Unknown Speaker  2:32:56
+feel like I have, like, a gun to my head to, like, deliver certain things on time. I feel like my most productive work is gonna come out of the next, like five years in my years in my in my whole life, I'm gonna have like, oh, like, a couple contracts that were all like, schmoozing and, you know, bean flicking and circle jerking until you get the contract after two years. You always have those at the same time. I feel like I'll have a few contracts that are also the result of just absolute brute fucking push force, and that these people just, you just have to basically present. Somebody has to be present a situation to you, then you have to rework back to them in a way that, like, offers you a concrete deal, and they just have to agree, or else they risk looking like super awkward what they're talking about. We're actually
+
+Unknown Speaker  2:33:31
+pretty close to we're actually getting kind of close to a point where we're life smarter than the VCs due diligence. Fact, in many cases, we probably are, I think strategically, we're definitely beyond them, but on a technical line by line basis, you sometimes need, like, a PhD in the room to help link it back up a little bit. But even with VCs, I feel like they're the kind of people that you can tell them exactly what they want to hear, word for word, and then they'll just be like, it's too busy, true, you know. So like, you have to play numbers game. I did hire a firm like, well, the ones in the UK to help raise me money, but they're kind of, I don't know, dragging their asses right now. So I talked to another firm that actually had, like, a dude who raised like, $30 billion for robotics companies in like, private equity, and they have him raising money, and they're just like, Yeah, dude, we give you $5 million in six months, no problem. Or they're like, the guy was, like, being very honest, he's like, absolutely worst case scenario. He said, under six months, we'll cover the cost of your like, of the cost of our six month engagement.
+
+Unknown Speaker  2:34:20
+He said, well, at least have that covered. This need to, like, couple more levers, and I'll get this done if I get revenue before I get funded, somehow, that's gonna be, like, a great story. If I
+
+Unknown Speaker  2:34:29
+was able to basically say, like, on like, 100k Angel over like two years I was able to get, like, defense contracts, if I'm able to prove that, then I'm gonna have one of the best stories in Silicon Valley that I will be able to sell. So I don't know, part of me is, like, might be worth waiting two months to get the military award or getting funding, because I feel like it's just going to create a much stronger funding situation later, and then I just want to go through a process where I'm, like, knocking out meetings, knocking on contracts as bitches enter the inbox. I just reject them as as I please as well, especially once for my past but.
+
+Unknown Speaker  2:35:00
+That
+
+Unknown Speaker  2:35:02
+there's any new ones in there? Probably fuck them and Chuck but right now, I have no intention of ever getting married or having anything without this. I think that's stupid, until I change my mind. You.
+
+Unknown Speaker  2:35:40
+Yeah,
+
+Unknown Speaker  2:35:45
+so, dude, I'm thinking about, I gotta do this on LinkedIn. I'm gonna do it by hitting up some contacts first. But I want to create, like, the greatest ama in history on LinkedIn of the humanoid versus non humanoid battle. This, this entire webinar, which I intend to be like, one hour 30, is gonna be a complete plug for my business. It's about exposure and letting people know about the other side. And I just have to do it in a way. So I have to, like, there's gonna be a couple people presenting my solution that aren't me to make it seem like it's not obvious. But the whole point of this is that I want to set up, I want to set up like, a kind of like Q and A ama with like, with like Brad Porter from COVID, with Aaron Bishop from Nvidia. Maybe even we bring in one of the Lux species, like Bilal or sheen. We bring this kind of conversation about humanoids versus not human noise. But I want to get to really like brass tacks of it, and I wanted to get a large following. So I'm willing to plan this shit out for like two months. I'm okay with doing that. I may need some I may want one or two panelists to talk about peripheries of what we're doing. So one periphery is going to be like manufacturing. One periphery is going to be fucking space. So we bring, like, my NASA guy and like, ideally, if you want to come in, we can talk about the exciting partnerships we're working on or something, but I want to create, I think I can talk about connection base that I can create, and I'm just going to name it. I'm just going to name the events and their outcomes as what I want them to be. So it's just going to be like the greatest AMA on humanoid versus non humanoid, and be like, the results of the greatest humanoid AMA, and then like, to anybody else who hadn't seen that, be like, send them emails and be like, you can buy it for 15 bucks, you know, something like that. Like, I'm just, I gotta do some kind of side project like that. I gotta get my name out there. I gotta get myself exposed. Even if I'm just the guy interviewing parties, my knowledge will be showcased if I interview two different parties and I ask them questions, they both don't know. That's what people are gonna be like, oh shit. This interview is really on point. Who is this guy? And then, hopefully it makes sense, hopefully it makes sense. But I do everything right now.
+
+Unknown Speaker  2:37:26
+Keep this, keep this confidential. I'm, I'm talking to Sean tonight, Rohini. He's one
+
+Unknown Speaker  2:37:31
+of my Hail Mary calls. I'm not, I don't think. I don't know if I got, I forgot the balls to ask him straight for like, 25k already know if he'd do it. If he didn't, it's okay, like he's still a, still a good friend, but he might have other ideas on who I can talk to, but I gotta start taking these calls, like, right now, because other than that, like, if I'm 30 days out from like, money needing to be in the bank, then I'm like, shit. I've got like, two weeks together to get somebody secured, and that means and then that means two weeks I gotta push and clobber and claw them to get it done. That's just the way it works. But I think that this time around versus the last seven or eight times around, I know that when a small piece of money comes in, you can't rest on the laurels of it. You gotta keep going out there and reason more. I just feel like all these incubators like YC each have zero stuff. They're all treating me like the fucking like the fucking ugly chick you got something to prove. But like, I get their positions. But I feel like they're these guys are banking it way too tight. These guys have no idea if I can get a contract next month and next. But I think, oh, no, maybe it's just that. They just want to, like, they're willing to buy in at a higher price, if it's certain. I think that's the that's the case. But anyway, man, oh, it's a complicated world. I just as long
+
+Unknown Speaker  2:38:34
+as I can continue my work, like, I have to hit a point where, like, okay, like, my whole dating life has been, has been basically delayed. And I understand.
+
+Unknown Speaker  2:38:41
+So I want that payoff at some point. I don't want all the payoff. I just want some of it. At some point. I don't know, maybe it's a blessing that I'm not married, that I don't have anybody right now, that I'm completely single and I'm still, like, entirely a free man, like, I wanted to just fail a fucking movie if I really wanted to. I don't have money do that right now. But like, come across 25, 50k, oh, you can. You can live there for like, two years on that. So
+
+Unknown Speaker  2:39:02
+I'm not,
+
+Unknown Speaker  2:39:04
+I don't know
+
+Unknown Speaker  2:39:06
+things, then I'm thinking, there's probably a way I can throw
+
+Unknown Speaker  2:39:10
+like, other k into the bank, you know, like incubator, that I just fucking,
+
+Unknown Speaker  2:39:18
+like, take their money and just fucking, like, take their money and just piss off and then just keep, keep doing what I've been doing for 10 years, and just keep making money, and just have just enough money to to drink my ties and fuck 19 year old Vietnamese girls in my in my nine, I don't know, $450 a month apart.
+
+Unknown Speaker  2:39:35
+I just, I completely separated myself from the identity that I was supposed to be raised into, and then the person that I came when I went out on all my quests around the world. And now what I'm trying to do is take my favorites of each person and put it into some kind of new entity. Can be my same body, but it can be a new mindset. And like I just watched an ad for a fucking Silicon Valley company to do with a flying car. His flying car was literally a plastic shell over and.
+
+Unknown Speaker  2:40:00
+Propellers, any some dude from Europe was like, this flight moment was the equivalent of the Wright Brothers moment that, I'm like, Dude, your car can't let the 45 pound payload, no investors. They got like, one incubator, and they're taking like, $500 pre orders. I'm like, it's like 50,000 or like $250,000
+
+Unknown Speaker  2:40:14
+car. And like, something like that is still taking off and still making airwaves. And like, like, it's completely debunked. Like, there's no way that shits gonna work, you know, whatever, I think I do have a good DoD team. They're hard nosed fucking New Yorkers. Like, we're fucking brass packs. We fucking get the shit done. Well, from they even, like, in our first meetings, like, we got an office in fucking Manhattan, New York. I'm like, Yo, dude. Like, that's gonna make my fucking dick rise. I mean, if I go to Manhattan, maybe happen to have an office there. Well, I'm gonna go hang out there, but in the evening, I'm gonna go hang out at Manhattan bars, which are flooded with Wall Street douche bags and a bunch of fucking New York bimbos. So of course, yeah, I'm gonna take your meeting, because I'm looking forward to the meeting. I'm looking forward to the night after but anyway, that's just, I don't know. Man, let's just say next two months,
+
+Unknown Speaker  2:40:53
+I don't know. I talked to my fundraising firm the check. Who's gonna follow all the cash? In fact, our video, and I was like, I'm like, you gotta be real with me. I said, What is going on? And I was like, Are you guys screwed? Are you are you in? Like, uh, and she got really defensive. She was like, she's like, I know my process, and I know I'll get the money. My side is and that's what I asked her. This was good timing. I was like, Is there anything I should do? She's like, No. She's like, do not chime in comment, anything? She's like, we will handle it. We will get the money. Just hand tight like that being said, I can't take her word for much, so I'm just going to, I'm just going after my Hail Mary connection. So like when the when the 500k checks don't land, I gotta start begging for the 50k ones, but the 10k ones, and that's what I'm doing now. So I just sort of cut myself off from this past year, and I moved to California, and I want to forget about everything. I want to start completely anew there with my new vision, a new company, a new team, everything. And I just, I want to assume that my life starts at the age of 34 and that maybe I embark upon the beginning of a of a beautiful 30 year life. But that's how I look at it. If I imagine all the pain and the heartache and everything I take with me from my past, it's gonna carry with me into the future. But if I just cut lines between these decades to minimize their problems and to say that everything is somewhat manageable, I don't think that's a bad approach to take. That's kind of where my head's at Al, but holy shit. Sorry, I did not realize I was talking for tonight, ministry. I was just piecing around
+
+Unknown Speaker  2:42:07
+my house. Also, if enough momentum builds, bright Adcock from figure will probably want to come in and he'll want to, like, set the whole stage for the future kind of thing. But we got to tame him on that. If we, if we let him have like, a, like, a Keynote or A panel, we gotta question is as hard And I
+
+Unknown Speaker  2:46:38
+And this is probably won't, he won't come back to us after this, but it's gonna be one of those, like, revealing interviews that like rips apart his company, hopefully, when he doesn't expect it, and not a bad way. It's just people wanting to know more about the 21 and Well, if
+
+Unknown Speaker  2:46:53
+that's the case, he's actually been very good at hiding hiding news from people. He almost has, like a Steve Jobs level ability to do that, but he's gonna want to be the authority. I do see him, like on LinkedIn and stuff. He's always latching onto opportunities and posts and shit to show his authority over other people. That he's the humanoid guy. He's the guy that knows everything
+
+Unknown Speaker  2:47:12
+about humans. But I don't know I'm gonna do this. Then I wanna, I wanna launch this. If I got my friend Aaron from in video, she can bring in some of her other in video, like product managers, I don't think she'll be able to bring in Jensen. Bring in Jensen. He's like the rock star right now. But to bring in them, I can bring in maybe, like, a couple of, like,
+
+Unknown Speaker  2:47:29
+lux VCs, maybe some Founders Fund, one, two partners from Founders Fund that aren't, like, too, too postured into anything
+
+Unknown Speaker  2:47:37
+you know, like Vin al Khosla and whatever else you know, Mark andrees al and like, invite everybody,
+
+Unknown Speaker  2:47:44
+but it'll be like a LinkedIn and all online, but, but I think that we can, I think that there's an opportunity to really learn this, because Brad Porter from COVID tried to do this recently, and when he was asked all these questions, even a CEO, he didn't answer them all very well. He didn't really know exactly he was talking about. He answered
+
+Unknown Speaker  2:47:59
+questions in a way of like, well, this is how I think it goes, but you better talk to my you better talk to my like process engineer, or you better talk to like my firmware engineer, or you better talk to like my my chief software engineer. And we're like, Well, dude, like, how much work have you done here today? You're just like, basically passing blame on other people. So anyway, I noticed a few webinars from like, supposedly very prominent people that kind of went badly, and I want to capitalize on doing a really good one. But I think I want to have like, it shouldn't be like a one person interview against like two or three people. It needs to be like two or three people against two or three people. So there needs to be like, almost like me on one side with like three of my friends or something, supporting the cause of non humanoids versus the people that are valiantly for them, and and then, and then compare the results. And I think at the end of the debate, debate is going to go in the in the, in the, in the direction of noise, that's, that's, that's my prediction, but I'd be wrong. But, yeah, let me know if you'd be down to like,
+
+Unknown Speaker  2:48:47
+maybe work
+
+Unknown Speaker  2:48:49
+on something like this
+
+Unknown Speaker  2:48:56
+dude, I think that guy bred a cock, is gonna be the new Steve Jobs of Silicon Valley. I reached out to him on
+
+Unknown Speaker  2:49:06
+on x and asked him if he wanted to come to
+
+Unknown Speaker  2:49:10
+to University of Florida alumni dinner, which is happening next month. And
+
+Unknown Speaker  2:49:18
+yeah, just cricket stage. Didn't hear back from him. I've tried reaching him out so a couple times, but he's just too big now.
+
+Unknown Speaker  2:49:28
+So I don't even know if we can
+
+Unknown Speaker  2:49:32
+get him on your panel. I think he's got like,
+
+Unknown Speaker  2:49:37
+too much shit going on. But
+
+Unknown Speaker  2:49:41
+I really like the idea, actually, of what you're trying to do with having a humanoid versus non humanoid
+
+Unknown Speaker  2:49:48
+discussion. And I think it's a great idea to get your name out there, because, you know, in a way, you could, you know, they see it as like, you know, you're trying to promote them, but you know what you're.
+
+Unknown Speaker  2:50:00
+Real goal is for about yourself. And if you're able to take down, like one of these Silicon Valley Titans, makes you fucking look good dude, you know? And then that those videos get replayed, and then you become the big dick, and
+
+Unknown Speaker  2:50:15
+you know, that could get you another podcast, like Joe Rogan or whatever. So that might be your springboard. Yeah, I was
+
+Unknown Speaker  2:50:25
+just kind of thinking of that, that idea of like,
+
+Unknown Speaker  2:50:28
+there's that, like, that one girl that is, like, interviewing, like, all these, like, rappers and shit. And the way that she kind of got started
+
+Unknown Speaker  2:50:37
+is that she get gave people like, you know, she would just call, like, you know, B level, like singers, and she would just offer them, like, you know, 500 bucks,
+
+Unknown Speaker  2:50:48
+you know, come on our podcast. And you know, people would take her up on it. And, you know, 200 bucks or something like that. And you know that, you know, she was able to get, like, a big name, and that just put her, it just got her in the limelight. So I think that's all it is. Just like, attach yourself to a big name, and then, you know, after the the interview, you come off like the, you know, looking like the smart guy, and that's it, dude. I mean, that'll carry you. So I
+
+Unknown Speaker  2:51:27
+think it's a really good idea, dude, and you should definitely capitalize on it. And I think you'd be great at it.
+
+Unknown Speaker  2:51:35
+You know, in fact, you know, you know, get some of these big VCs, get, like Jason's. I mean, if you get Jason, and then you're in the and you impress him, like,
+
+Unknown Speaker  2:51:47
+it'll be like, you know, it'll get you somewhere. So I think it's a good idea.
+
+Unknown Speaker  2:51:54
+And as far as the chicks dude, like,
+
+Unknown Speaker  2:51:57
+I know it's like, tough to be like,
+
+Unknown Speaker  2:52:01
+you know this, like in cell situation, but you know that pressure cooker, kind of, like anxiety and stress that you get from it, it's probably exactly what you need to, Like, build, like a billion Dollar Business You Gotta, You
+
+Unknown Speaker  2:58:33
+entertain entertainment.
+
+Unknown Speaker  3:02:42
+No, No. Tomorrow I'm gonna
+
+Unknown Speaker  3:02:48
+move to school. Okay, so that's why
+
+Unknown Speaker  3:02:55
+you have to finish it right now. So go on your desk and finish it. Play that. We'll finish it right here.
+
+Unknown Speaker  3:03:09
+No, but I'll leave
+
+Unknown Speaker  3:03:16
+today. Mom got me this pink pink today.
+
+Unknown Speaker  3:03:24
+And help me finishing it up. Speed up part, that yellow part, they're gonna take it again and pull it there and then
+
+Unknown Speaker  3:03:36
+take again. Just do one at a time. Take the yellow thing, or I do the elephant. You pull it to the other side and get this, and you also get the end of death.
+
+Unknown Speaker  3:03:51
+And I'm gonna show you the charms.
+
+Unknown Speaker  3:03:56
+We're gonna have three charms.
+
+Unknown Speaker  3:03:59
+Where did the chance go?
+
+Unknown Speaker  3:04:09
+Oh, no,
+
+Unknown Speaker  3:04:16
+I found a penguin.
+
+Unknown Speaker  3:04:22
+Ah. Look. We ate this at your brother's house.
+
+Unknown Speaker  3:04:31
+We ate
+
+Unknown Speaker  3:04:35
+this before pepperoni for you and all of our clothes. I where
+
+Unknown Speaker  3:04:44
+it was, yeah,
+
+Unknown Speaker  3:04:46
+this is tea or lipstick.
+
+Unknown Speaker  3:04:50
+It looks like ice cream, dude, not.
+
+Unknown Speaker  3:04:57
+It looks like ice cream to you, but does.
+
+Unknown Speaker  3:05:00
+Into
+
+Unknown Speaker  3:05:06
+me. Oh, where's the other one? I found a penguin one. See,
+
+Unknown Speaker  3:05:11
+Hello, little hat,
+
+Unknown Speaker  3:05:14
+scarf, cute,
+
+Unknown Speaker  3:05:19
+Dad, I know you tried a bubble before.
+
+Unknown Speaker  3:05:27
+I know I tried this before
+
+Unknown Speaker  3:05:31
+this, yes,
+
+Unknown Speaker  3:05:36
+a little
+
+Unknown Speaker  3:05:39
+elephant with a bar frozen.
+
+Unknown Speaker  3:05:44
+You know, I have two of these. I have two of these.
+
+Unknown Speaker  3:05:50
+And look
+
+Unknown Speaker  3:05:53
+another boba,
+
+Unknown Speaker  3:05:57
+but I'm only gonna have the penguin charm,
+
+Unknown Speaker  3:06:03
+and I'm also, where
+
+Unknown Speaker  3:06:09
+did it Go, the
+
+Unknown Speaker  3:06:18
+little food chart.
+
+Unknown Speaker  3:06:21
+But it's a cotton candy trunk. Dad, find a cotton candy truck. It's in here somewhere. And cotton candy, you can't fit, like too many charms. It's not gonna fit. You can't fit like 100
+
+Unknown Speaker  3:06:35
+no one gonna fit two on there,
+
+Unknown Speaker  3:06:40
+three or you got three already? No, I'm not gonna put these on.
+
+Unknown Speaker  3:06:46
+Do you want this one on? Yeah, and I also want the cotton candy one off. Where did it
+
+Unknown Speaker  3:06:55
+go? Where did
+
+Unknown Speaker  3:06:58
+the cotton candy one go?
+
+Unknown Speaker  3:07:02
+Here. Is another ice cream,
+
+Unknown Speaker  3:07:05
+but its eyes look so bad.
+
+Unknown Speaker  3:07:14
+Please. You have to dig this way to find the cock candy. Turn I need it. It's one of my favorite
+
+Unknown Speaker  3:07:30
+chocolate candy. Just know one day when I have had a pink jacket, Maddie pink sister, Fauci looked
+
+Unknown Speaker  3:07:40
+like me finding it at the moment. Bow on
+
+Unknown Speaker  3:07:45
+and I didn't have that kind of skin.
+
+Unknown Speaker  3:07:52
+And when I have a green jacket or dress and a green head
+
+Unknown Speaker  3:07:58
+of my headband, I look like this girl. I don't have the same skin.
+
+Unknown Speaker  3:08:05
+Look, look. These girls are actually the same. These girls are actually the same, but
+
+Unknown Speaker  3:08:14
+the pink one is dressed up a different outfit.
+
+Unknown Speaker  3:08:20
+See,
+
+Unknown Speaker  3:08:21
+you
+
+Unknown Speaker  3:08:23
+just take all of them out.
+
+Unknown Speaker  3:08:39
+Here we go. You need dad to attach it on.
+
+Unknown Speaker  3:08:50
+No, gosh, Dad, don't hang it on to that one. Okay,
+
+Unknown Speaker  3:08:58
+I'll take it on for that. I don't know how to do this, dude, hang your dog.
+
+Unknown Speaker  3:09:05
+Oh, you only don't know in
+
+Unknown Speaker  3:09:14
+feet. You have to put it on,
+
+Unknown Speaker  3:09:17
+on here somewhere. I'm gonna show you how after you put the penguin, okay, let's put all these back first.
+
+Unknown Speaker  3:09:35
+First, Dad,
+
+Unknown Speaker  3:09:38
+you take a piece of this and then
+
+Unknown Speaker  3:09:44
+cut.
+
+Unknown Speaker  3:09:53
+And you just do that.
+
+Unknown Speaker  3:09:59
+So.
+
+Unknown Speaker  3:10:04
+Oh, actually, actually,
+
+Unknown Speaker  3:10:07
+I actually missed it up.
+
+Unknown Speaker  3:10:14
+So first
+
+Unknown Speaker  3:10:16
+you get
+
+Unknown Speaker  3:10:18
+this
+
+Unknown Speaker  3:10:20
+and you get
+
+Unknown Speaker  3:10:28
+all this work,
+
+Unknown Speaker  3:10:30
+not
+
+Unknown Speaker  3:10:44
+I did it, Dad, maybe I could do this one too. It's a ring for me, just a ring.
+
+Unknown Speaker  3:10:55
+That's the only thing. It is a ring.
+
+Unknown Speaker  3:10:58
+So first we have to move the charm here, so because we want the rubber band to go there,
+
+Unknown Speaker  3:11:10
+because then I'll be
+
+Unknown Speaker  3:11:12
+then the charm will be sticky on the tighter, and then want some of the rubber band, but not the end. I'm just almost showing you,
+
+Unknown Speaker  3:11:23
+but you have to plan the yacht and then give it to me, and I should do the rest. But don't do it on end. Do it like dare, okay,
+
+Unknown Speaker  3:11:38
+like
+
+Unknown Speaker  3:11:42
+when you think it's easier for you today. You got smaller fingers.
+
+Unknown Speaker  3:11:51
+Okay on it. I did to penguin until I think I could. I
+
+
+Transcribed by https://otter.ai

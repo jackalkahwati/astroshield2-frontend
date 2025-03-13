@@ -1,0 +1,1965 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Unified Data Library Services API",
+    "version": "1.30.0 Daiquiri",
+    "description": "Unified Data Library Services OpenAPI v3 documentation.",
+    "termsOfService": "storefront/storefront/appConfig/useragreement.html",
+    "contact": {
+      "name": "Sage Andorka, Deputy, Cross-Mission Ground",
+      "email": "unifieddatalibrary@bluestaq.com"
+    }
+  },
+  "tags": [
+    {
+      "name": "MissionAssignment",
+      "description": "These services provide operations for manipulation and querying of mission assignment objects. MissionAssignment is used by C2 JUs and, optionally, non-C2 JUs to assign missions, designate targets, and provide target information to non-C2 JU platforms. Provision is made for the non-C2 JU platforms to acknowledge the message through receipt/compliance action."
+    }
+  ],
+  "externalDocs": {
+    "url": "udl/openapi.json"
+  },
+  "servers": [
+    {
+      "url": "https://unifieddatalibrary.com"
+    }
+  ],
+  "paths": {
+    "/udl/missionassignment": {
+      "get": {
+        "description": "Service operation to dynamically query data by a variety of query parameters not specified in this API documentation. See the queryhelp operation (/udl/&lt;datatype&gt;/queryhelp) for more details on valid/required query parameter information.",
+        "tags": [
+          "MissionAssignment"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MissionAssignment_Abridged"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "406": {
+            "description": "MediaType Not Accepted by Request Headers"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "parameters": [
+          {
+            "name": "ts",
+            "description": "the timestamp of the mission data, in ISO 8601 UTC format. (YYYY-MM-DDTHH:MM:SS.ssssssZ)",
+            "required": true,
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            },
+            "in": "query"
+          }
+        ]
+      },
+      "post": {
+        "description": "Service operation to take a single MissionAssignment as a POST body and ingest into the database. A specific role is required to perform this service operation. Please contact the UDL team for assistance.",
+        "tags": [
+          "MissionAssignment"
+        ],
+        "requestBody": {
+          "description": "JSON representation of one MissionAssignment.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MissionAssignment_Ingest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "415": {
+            "description": "MediaType Unsupported"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/udl/missionassignment/{id}": {
+      "delete": {
+        "description": "Service operation to delete a MissionAssignment object specified by the passed ID path parameter. A specific role is required to perform this service operation. Please contact the UDL team for assistance.",
+        "tags": [
+          "MissionAssignment"
+        ],
+        "parameters": [
+          {
+            "description": "The ID of the MissionAssignment to delete.",
+            "required": true,
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "404": {
+            "description": "Item Not Found"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "get": {
+        "description": "Service operation to get a single MissionAssignment record by its unique ID passed as a path parameter.",
+        "tags": [
+          "MissionAssignment"
+        ],
+        "parameters": [
+          {
+            "description": "The ID of the MissionAssignment to find.",
+            "required": true,
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MissionAssignment_Full"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "404": {
+            "description": "Item Not Found"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "406": {
+            "description": "MediaType Not Accepted by Request Headers"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "put": {
+        "description": "Service operation to update a single MissionAssignment. A specific role is required to perform this service operation. Please contact the UDL team for assistance.",
+        "tags": [
+          "MissionAssignment"
+        ],
+        "parameters": [
+          {
+            "description": "The ID of the MissionAssignment to update.",
+            "required": true,
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "JSON representation of one MissionAssignment.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MissionAssignment_Ingest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "404": {
+            "description": "Item Not Found"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "415": {
+            "description": "MediaType Unsupported"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/udl/missionassignment/count": {
+      "get": {
+        "description": "Service operation to return the count of records satisfying the specified query parameters. This operation is useful to determine how many records pass a particular query criteria without retrieving large amounts of data. See the queryhelp operation (/udl/&lt;datatype&gt;/queryhelp) for more details on valid/required query parameter information.",
+        "tags": [
+          "MissionAssignment"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "406": {
+            "description": "MediaType Not Accepted by Request Headers"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "parameters": [
+          {
+            "name": "ts",
+            "description": "the timestamp of the mission data, in ISO 8601 UTC format. (YYYY-MM-DDTHH:MM:SS.ssssssZ)",
+            "required": true,
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            },
+            "in": "query"
+          }
+        ]
+      }
+    },
+    "/udl/missionassignment/createBulk": {
+      "post": {
+        "description": "Service operation to take multiple MissionAssignments as a POST body and ingest into the database. A specific role is required to perform this service operation. Please contact the UDL team for assistance.",
+        "tags": [
+          "MissionAssignment"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/MissionAssignment_Ingest"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "415": {
+            "description": "MediaType Unsupported"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/udl/missionassignment/history": {
+      "get": {
+        "description": "Service operation to dynamically query historical data by a variety of query parameters not specified in this API documentation.  See the queryhelp operation (/udl/&lt;datatype&gt;/queryhelp) for more details on valid/required query parameter information.",
+        "tags": [
+          "MissionAssignment"
+        ],
+        "parameters": [
+          {
+            "description": "optional, fields for retrieval. When omitted, ALL fields are assumed. See the queryhelp operation (/udl/&lt;datatype&gt;/queryhelp) for more details on valid query fields that can be selected.",
+            "name": "columns",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "ts",
+            "description": "the timestamp of the mission data, in ISO 8601 UTC format. (YYYY-MM-DDTHH:MM:SS.ssssssZ)",
+            "required": true,
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            },
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MissionAssignment_Full"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "406": {
+            "description": "MediaType Not Accepted by Request Headers"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/udl/missionassignment/history/aodr": {
+      "get": {
+        "description": "Service operation to dynamically query historical data by a variety of query parameters not specified in this API documentation, then write that data to the Secure Content Store.  See the queryhelp operation (/udl/&lt;datatype&gt;/queryhelp) for more details on valid/required query parameter information.",
+        "tags": [
+          "MissionAssignment"
+        ],
+        "parameters": [
+          {
+            "description": "optional, fields for retrieval. When omitted, ALL fields are assumed. See the queryhelp operation (/udl/&lt;datatype&gt;/queryhelp) for more details on valid query fields that can be selected.",
+            "name": "columns",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "optional, notification method for the created file link. When omitted, EMAIL is assumed. Current valid values are: EMAIL, SMS.",
+            "name": "notification",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "optional, field delimiter when the created file is not JSON. Must be a single character chosen from this set: (',', ';', ':', '|'). When omitted, \",\" is used. It is strongly encouraged that your field delimiter be a character unlikely to occur within the data.",
+            "name": "outputDelimiter",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "optional, output format for the file. When omitted, JSON is assumed. Current valid values are: JSON and CSV.",
+            "name": "outputFormat",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "ts",
+            "description": "the timestamp of the mission data, in ISO 8601 UTC format. (YYYY-MM-DDTHH:MM:SS.ssssssZ)",
+            "required": true,
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            },
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "406": {
+            "description": "MediaType Not Accepted by Request Headers"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/udl/missionassignment/history/count": {
+      "get": {
+        "description": "Service operation to return the count of records satisfying the specified query parameters. This operation is useful to determine how many records pass a particular query criteria without retrieving large amounts of data. See the queryhelp operation (/udl/&lt;datatype&gt;/queryhelp) for more details on valid/required query parameter information.",
+        "tags": [
+          "MissionAssignment"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "406": {
+            "description": "MediaType Not Accepted by Request Headers"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "parameters": [
+          {
+            "name": "ts",
+            "description": "the timestamp of the mission data, in ISO 8601 UTC format. (YYYY-MM-DDTHH:MM:SS.ssssssZ)",
+            "required": true,
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            },
+            "in": "query"
+          }
+        ]
+      }
+    },
+    "/udl/missionassignment/queryhelp": {
+      "get": {
+        "description": "Service operation to provide detailed information on available dynamic query parameters for a particular data type.",
+        "tags": [
+          "MissionAssignment"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "User Unauthorized"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "406": {
+            "description": "MediaType Not Accepted by Request Headers"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/udl/missionassignment/tuple": {
+      "get": {
+        "description": "Service operation to dynamically query data and only return specified columns/fields. Requested columns are specified by the 'columns' query parameter and should be a comma separated list of valid fields for the specified data type. classificationMarking is always returned. See the queryhelp operation (/udl/<datatype>/queryhelp) for more details on valid/required query parameter information. An example URI: /udl/elset/tuple?columns=satNo,period&epoch=>now-5 hours would return the satNo and period of elsets with an epoch greater than 5 hours ago.",
+        "tags": [
+          "MissionAssignment"
+        ],
+        "parameters": [
+          {
+            "description": "Comma-separated list of valid field names for this data type to be returned in the response. Only the fields specified will be returned as well as the classification marking of the data, if applicable. See the ‘queryhelp’ operation for a complete list of possible fields.",
+            "required": true,
+            "name": "columns",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "ts",
+            "description": "the timestamp of the mission data, in ISO 8601 UTC format. (YYYY-MM-DDTHH:MM:SS.ssssssZ)",
+            "required": true,
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            },
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MissionAssignment_Full"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "406": {
+            "description": "MediaType Not Accepted by Request Headers"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "MissionAssignment_Abridged": {
+        "description": "Platform mission assignment data.",
+        "required": [
+          "classificationMarking",
+          "ts",
+          "mad",
+          "source",
+          "dataMode"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Unique identifier of the record, auto-generated by the system.",
+            "maxLength": 36,
+            "minLength": 1,
+            "type": "string",
+            "example": "MISSIONASSIGNMENT-ID"
+          },
+          "classificationMarking": {
+            "description": "Classification marking of the data in IC/CAPCO Portion-marked format.",
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string",
+            "example": "U"
+          },
+          "trkId": {
+            "description": "The track ID that the status is referencing, addressee.",
+            "maxLength": 36,
+            "type": "string",
+            "example": "TRK-ID"
+          },
+          "ts": {
+            "format": "date-time",
+            "description": "The timestamp of the mission data, in ISO 8601 UTC format.",
+            "type": "string",
+            "example": "2021-01-01T01:01:01.123456Z"
+          },
+          "mad": {
+            "description": "The mission assignment discrete value.",
+            "maxLength": 16,
+            "minLength": 1,
+            "type": "string",
+            "example": "MAD"
+          },
+          "rc": {
+            "description": "Receipt/Compliance, values from TABLE B-9.",
+            "maxLength": 16,
+            "type": "string",
+            "example": "RC-123"
+          },
+          "rr": {
+            "format": "int32",
+            "description": "Recurrence rate, receipt/compliance.",
+            "type": "integer",
+            "example": 2
+          },
+          "tno": {
+            "description": "Track number objective.",
+            "type": "string",
+            "example": "TRACK_NUMBER"
+          },
+          "twenv": {
+            "description": "Threat warning environment.",
+            "maxLength": 16,
+            "type": "string",
+            "example": "THREAT_WARNING"
+          },
+          "lat": {
+            "format": "double",
+            "description": "WGS84 latitude, in degrees. -90 to 90 degrees (negative values south of equator).",
+            "maximum": 90,
+            "minimum": -90,
+            "type": "number",
+            "example": 45.23
+          },
+          "lon": {
+            "format": "double",
+            "description": "WGS84 longitude, in degrees. -180 to 180 degrees (negative values west of Prime Meridian).",
+            "maximum": 180,
+            "minimum": -180,
+            "type": "number",
+            "example": 45.23
+          },
+          "orginx": {
+            "description": "Origin of index number.",
+            "maxLength": 16,
+            "type": "string",
+            "example": "ORIGIN"
+          },
+          "env": {
+            "description": "Environment.",
+            "maxLength": 16,
+            "type": "string",
+            "example": "ENV"
+          },
+          "sz": {
+            "description": "Strength.",
+            "maxLength": 16,
+            "type": "string",
+            "example": "STRENGTH"
+          },
+          "index": {
+            "format": "int32",
+            "description": "Index number.",
+            "type": "integer",
+            "example": 5
+          },
+          "c1associateddmpis": {
+            "format": "int32",
+            "description": "TARGET POSITION CONTINUATION WORD - number of associated dmpis.",
+            "type": "integer",
+            "example": 3
+          },
+          "c2spc": {
+            "description": "TARGET DATA CONTINUATION WORD - space specific type, see TABLE B-39.",
+            "type": "string",
+            "example": "C2SPC"
+          },
+          "c2air": {
+            "description": "TARGET DATA CONTINUATION WORD - air specific type, see TABLE B-21.",
+            "type": "string",
+            "example": "C2AIR"
+          },
+          "c2sur": {
+            "description": "TARGET DATA CONTINUATION WORD - surface specific type, see TABLE B-21.",
+            "type": "string",
+            "example": "C2SUR"
+          },
+          "c2lnd": {
+            "description": "TARGET DATA CONTINUATION WORD - land specific type, see TABLE B-21.",
+            "type": "string",
+            "example": "C2LND"
+          },
+          "c2id": {
+            "description": "TARGET DATA CONTINUATION WORD - identity.",
+            "maxLength": 16,
+            "type": "string",
+            "example": "C2ID"
+          },
+          "c2idamplifyingdescriptor": {
+            "description": "TARGET DATA CONTINUATION WORD - identity amplifying descriptor.",
+            "maxLength": 16,
+            "type": "string",
+            "example": "C2IDAMP"
+          },
+          "c2alt": {
+            "format": "int32",
+            "description": "TARGET DATA CONTINUATION WORD - altitude, 100 FT, 2047=NS.",
+            "type": "integer",
+            "example": 3
+          },
+          "c2crs": {
+            "format": "int32",
+            "description": "TARGET DATA CONTINUATION WORD - course in increments of 1 degree.",
+            "type": "integer",
+            "example": 3
+          },
+          "c2spd": {
+            "format": "int32",
+            "description": "TARGET DATA CONTINUATION WORD - speed in 2 DM/HR, 2047=NS.",
+            "type": "integer",
+            "example": 3
+          },
+          "c2specialinterestindicator": {
+            "description": "TARGET DATA CONTINUATION WORD - special interest indicator.",
+            "maxLength": 16,
+            "type": "string",
+            "example": "C2SPECIAL"
+          },
+          "c2exerciseindicator": {
+            "description": "TARGET DATA CONTINUATION WORD - exercise indicator.",
+            "maxLength": 16,
+            "type": "string",
+            "example": "C2EXERCISE"
+          },
+          "c2exercisemof": {
+            "description": "TARGET DATA CONTINUATION WORD - method of fire.",
+            "maxLength": 16,
+            "type": "string",
+            "example": "MOF"
+          },
+          "c3lat": {
+            "format": "double",
+            "description": "POINT LOCATION CONTINUATION WORD - latitude, 0.0013 MINUTE.",
+            "type": "number",
+            "example": 10.23
+          },
+          "c3lon": {
+            "format": "double",
+            "description": "POINT LOCATION CONTINUATION WORD - longitude, 0.0013 MINUTE.",
+            "type": "number",
+            "example": 10.23
+          },
+          "c3elv": {
+            "format": "double",
+            "description": "POINT LOCATION CONTINUATION WORD - elevation, 25 FT, 1023=NS.",
+            "type": "number",
+            "example": 10.23
+          },
+          "c3ptl": {
+            "description": "TARGET DATA CONTINUATION WORD - point type 1.",
+            "maxLength": 16,
+            "type": "string",
+            "example": "C3PTL"
+          },
+          "c3ptnum": {
+            "description": "TARGET DATA CONTINUATION WORD - point number.",
+            "maxLength": 16,
+            "type": "string",
+            "example": "C3PTNUM"
+          },
+          "c4tgt": {
+            "description": "SURFACE ATTACK CONTINUATION WORD - target type - see TABLE B-32.",
+            "maxLength": 16,
+            "type": "string",
+            "example": "C4TGT"
+          },
+          "c4def": {
+            "description": "SURFACE ATTACK CONTINUATION WORD - target defenses.",
+            "maxLength": 16,
+            "type": "string",
+            "example": "C4DEF"
+          },
+          "c4runin": {
+            "format": "int32",
+            "description": "SURFACE ATTACK CONTINUATION WORD - run in heading, NS=511.",
+            "type": "integer",
+            "example": 5
+          },
+          "c4egress": {
+            "format": "int32",
+            "description": "SURFACE ATTACK CONTINUATION WORD - run in heading, NS=511.",
+            "type": "integer",
+            "example": 4
+          },
+          "c4numberofstores": {
+            "format": "int32",
+            "description": "SURFACE ATTACK CONTINUATION WORD - number of stores, NS=63.",
+            "type": "integer",
+            "example": 3
+          },
+          "c4typeofstores": {
+            "format": "int32",
+            "description": "SURFACE ATTACK CONTINUATION WORD - type of stores.",
+            "type": "integer",
+            "example": 2
+          },
+          "c4timediscrete": {
+            "description": "SURFACE ATTACK CONTINUATION WORD - time discrete.",
+            "maxLength": 16,
+            "type": "string",
+            "example": "C4TIMED"
+          },
+          "c4tm": {
+            "format": "int32",
+            "description": "SURFACE ATTACK CONTINUATION WORD - hour.",
+            "type": "integer",
+            "example": 4
+          },
+          "c4colon": {
+            "format": "int32",
+            "description": "SURFACE ATTACK CONTINUATION WORD - minute.",
+            "type": "integer",
+            "example": 5
+          },
+          "c4mod": {
+            "format": "int32",
+            "description": "SURFACE ATTACK CONTINUATION WORD - mode of delivery.",
+            "type": "integer",
+            "example": 5
+          },
+          "c5haeadj": {
+            "format": "int32",
+            "description": "CONTINUATION WORD - hae adjustment, measured in 3.125 FT.",
+            "type": "integer",
+            "example": 5
+          },
+          "c5tw": {
+            "format": "int32",
+            "description": "CONTINUATION WORD - time window.",
+            "type": "integer",
+            "example": 5
+          },
+          "c5tgtbrng": {
+            "format": "int32",
+            "description": "CONTINUATION WORD - target bearing.",
+            "type": "integer",
+            "example": 5
+          },
+          "c5latlsb": {
+            "format": "int32",
+            "description": "CONTINUATION WORD - used with c3_lat to double precision to approx 4 ft.",
+            "type": "integer",
+            "example": 5
+          },
+          "c5lonlsb": {
+            "format": "int32",
+            "description": "CONTINUATION WORD - used with c3_lon to double precision to approx 4 ft.",
+            "type": "integer",
+            "example": 5
+          },
+          "c5elevationlsbs": {
+            "format": "int32",
+            "description": "CONTINUATION WORD - used with c3_elv to double precision to approx 3 ft.",
+            "type": "integer",
+            "example": 5
+          },
+          "c5colon": {
+            "format": "int32",
+            "description": "SURFACE ATTACK CONTINUATION WORD - seconds in increments of 1 sec.",
+            "type": "integer",
+            "example": 5
+          },
+          "c6laser": {
+            "format": "int32",
+            "description": "TARGETING CONTINUATION WORD - laser illuminator code.",
+            "type": "integer",
+            "example": 5
+          },
+          "c6intel": {
+            "format": "int32",
+            "description": "TARGETING CONTINUATION WORD - index number, related, 0=NS.",
+            "type": "integer",
+            "example": 5
+          },
+          "c6tnr3": {
+            "format": "int32",
+            "description": "TARGETING CONTINUATION WORD - track number, related to 3.",
+            "type": "integer",
+            "example": 5
+          },
+          "c6dspct": {
+            "description": "TARGETING CONTINUATION WORD - designator/seeker pulse code type.",
+            "maxLength": 16,
+            "type": "string",
+            "example": "C6DSPCT"
+          },
+          "c6dspc": {
+            "description": "TARGETING CONTINUATION WORD - designator/seeker pulse code.",
+            "maxLength": 16,
+            "type": "string",
+            "example": "C6DSPC"
+          },
+          "c6fplpm": {
+            "description": "TARGETING CONTINUATION WORD - first pulse/last pulse mode.",
+            "maxLength": 16,
+            "type": "string",
+            "example": "C6FPLPM"
+          },
+          "c6longpm": {
+            "description": "TARGETING CONTINUATION WORD - long pulse mode.",
+            "maxLength": 16,
+            "type": "string",
+            "example": "C6LONGPM"
+          },
+          "c7tnor": {
+            "description": "THIRD PARTY CONTINUATION WORD  - track number, index originator.",
+            "type": "string",
+            "example": "C7TNOR"
+          },
+          "c7in3p": {
+            "format": "int32",
+            "description": "THIRD PARTY CONTINUATION WORD  - index number, third party.",
+            "type": "integer",
+            "example": 3
+          },
+          "c7elang2": {
+            "format": "double",
+            "description": "THIRD PARTY CONTINUATION WORD  - elevation angle, 2.",
+            "type": "number",
+            "example": 5.23
+          },
+          "createdAt": {
+            "format": "date-time",
+            "description": "Time the row was created in the database, auto-populated by the system.",
+            "type": "string",
+            "readOnly": true,
+            "example": "2018-01-01T16:00:00.123Z"
+          },
+          "createdBy": {
+            "description": "Application user who created the row in the database, auto-populated by the system.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string",
+            "readOnly": true,
+            "example": "some.user"
+          },
+          "source": {
+            "description": "Source of the data.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string",
+            "example": "Bluestaq"
+          },
+          "origin": {
+            "description": "Originating system or organization which produced the data, if different from the source. The origin may be different than the source if the source was a mediating system which forwarded the data on behalf of the origin system. If null, the source may be assumed to be the origin.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "THIRD_PARTY_DATASOURCE"
+          },
+          "dataMode": {
+            "description": "Indicator of whether the data is EXERCISE, REAL, SIMULATED, or TEST data:\n\nEXERCISE:&nbsp;Data pertaining to a government or military exercise. The data may include both real and simulated data.\n\nREAL:&nbsp;Data collected or produced that pertains to real-world objects, events, and analysis.\n\nSIMULATED:&nbsp;Synthetic data generated by a model to mimic real-world datasets.\n\nTEST:&nbsp;Specific datasets used to evaluate compliance with specifications and requirements, and for validating technical, functional, and performance characteristics.\n\n",
+            "maxLength": 32,
+            "minLength": 1,
+            "enum": [
+              "REAL",
+              "TEST",
+              "SIMULATED",
+              "EXERCISE"
+            ],
+            "type": "string",
+            "example": "TEST"
+          },
+          "origNetwork": {
+            "description": "The originating source network on which this record was created, auto-populated by the system.",
+            "maxLength": 32,
+            "minLength": 1,
+            "type": "string",
+            "readOnly": true,
+            "example": "ORIG"
+          }
+        }
+      },
+      "MissionAssignment_Full": {
+        "description": "Platform mission assignment data.",
+        "required": [
+          "classificationMarking",
+          "ts",
+          "mad",
+          "source",
+          "dataMode"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Unique identifier of the record, auto-generated by the system.",
+            "maxLength": 36,
+            "minLength": 1,
+            "type": "string",
+            "example": "MISSIONASSIGNMENT-ID"
+          },
+          "classificationMarking": {
+            "description": "Classification marking of the data in IC/CAPCO Portion-marked format.",
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string",
+            "example": "U"
+          },
+          "trkId": {
+            "description": "The track ID that the status is referencing, addressee.",
+            "maxLength": 36,
+            "type": "string",
+            "example": "TRK-ID"
+          },
+          "ts": {
+            "format": "date-time",
+            "description": "The timestamp of the mission data, in ISO 8601 UTC format.",
+            "type": "string",
+            "example": "2021-01-01T01:01:01.123456Z"
+          },
+          "mad": {
+            "description": "The mission assignment discrete value.",
+            "maxLength": 16,
+            "minLength": 1,
+            "type": "string",
+            "example": "MAD"
+          },
+          "rc": {
+            "description": "Receipt/Compliance, values from TABLE B-9.",
+            "maxLength": 16,
+            "type": "string",
+            "example": "RC-123"
+          },
+          "rr": {
+            "format": "int32",
+            "description": "Recurrence rate, receipt/compliance.",
+            "type": "integer",
+            "example": 2
+          },
+          "tno": {
+            "description": "Track number objective.",
+            "type": "string",
+            "example": "TRACK_NUMBER"
+          },
+          "twenv": {
+            "description": "Threat warning environment.",
+            "maxLength": 16,
+            "type": "string",
+            "example": "THREAT_WARNING"
+          },
+          "lat": {
+            "format": "double",
+            "description": "WGS84 latitude, in degrees. -90 to 90 degrees (negative values south of equator).",
+            "maximum": 90,
+            "minimum": -90,
+            "type": "number",
+            "example": 45.23
+          },
+          "lon": {
+            "format": "double",
+            "description": "WGS84 longitude, in degrees. -180 to 180 degrees (negative values west of Prime Meridian).",
+            "maximum": 180,
+            "minimum": -180,
+            "type": "number",
+            "example": 45.23
+          },
+          "orginx": {
+            "description": "Origin of index number.",
+            "maxLength": 16,
+            "type": "string",
+            "example": "ORIGIN"
+          },
+          "env": {
+            "description": "Environment.",
+            "maxLength": 16,
+            "type": "string",
+            "example": "ENV"
+          },
+          "sz": {
+            "description": "Strength.",
+            "maxLength": 16,
+            "type": "string",
+            "example": "STRENGTH"
+          },
+          "index": {
+            "format": "int32",
+            "description": "Index number.",
+            "type": "integer",
+            "example": 5
+          },
+          "c1associateddmpis": {
+            "format": "int32",
+            "description": "TARGET POSITION CONTINUATION WORD - number of associated dmpis.",
+            "type": "integer",
+            "example": 3
+          },
+          "c2spc": {
+            "description": "TARGET DATA CONTINUATION WORD - space specific type, see TABLE B-39.",
+            "type": "string",
+            "example": "C2SPC"
+          },
+          "c2air": {
+            "description": "TARGET DATA CONTINUATION WORD - air specific type, see TABLE B-21.",
+            "type": "string",
+            "example": "C2AIR"
+          },
+          "c2sur": {
+            "description": "TARGET DATA CONTINUATION WORD - surface specific type, see TABLE B-21.",
+            "type": "string",
+            "example": "C2SUR"
+          },
+          "c2lnd": {
+            "description": "TARGET DATA CONTINUATION WORD - land specific type, see TABLE B-21.",
+            "type": "string",
+            "example": "C2LND"
+          },
+          "c2id": {
+            "description": "TARGET DATA CONTINUATION WORD - identity.",
+            "maxLength": 16,
+            "type": "string",
+            "example": "C2ID"
+          },
+          "c2idamplifyingdescriptor": {
+            "description": "TARGET DATA CONTINUATION WORD - identity amplifying descriptor.",
+            "maxLength": 16,
+            "type": "string",
+            "example": "C2IDAMP"
+          },
+          "c2alt": {
+            "format": "int32",
+            "description": "TARGET DATA CONTINUATION WORD - altitude, 100 FT, 2047=NS.",
+            "type": "integer",
+            "example": 3
+          },
+          "c2crs": {
+            "format": "int32",
+            "description": "TARGET DATA CONTINUATION WORD - course in increments of 1 degree.",
+            "type": "integer",
+            "example": 3
+          },
+          "c2spd": {
+            "format": "int32",
+            "description": "TARGET DATA CONTINUATION WORD - speed in 2 DM/HR, 2047=NS.",
+            "type": "integer",
+            "example": 3
+          },
+          "c2specialinterestindicator": {
+            "description": "TARGET DATA CONTINUATION WORD - special interest indicator.",
+            "maxLength": 16,
+            "type": "string",
+            "example": "C2SPECIAL"
+          },
+          "c2exerciseindicator": {
+            "description": "TARGET DATA CONTINUATION WORD - exercise indicator.",
+            "maxLength": 16,
+            "type": "string",
+            "example": "C2EXERCISE"
+          },
+          "c2exercisemof": {
+            "description": "TARGET DATA CONTINUATION WORD - method of fire.",
+            "maxLength": 16,
+            "type": "string",
+            "example": "MOF"
+          },
+          "c3lat": {
+            "format": "double",
+            "description": "POINT LOCATION CONTINUATION WORD - latitude, 0.0013 MINUTE.",
+            "type": "number",
+            "example": 10.23
+          },
+          "c3lon": {
+            "format": "double",
+            "description": "POINT LOCATION CONTINUATION WORD - longitude, 0.0013 MINUTE.",
+            "type": "number",
+            "example": 10.23
+          },
+          "c3elv": {
+            "format": "double",
+            "description": "POINT LOCATION CONTINUATION WORD - elevation, 25 FT, 1023=NS.",
+            "type": "number",
+            "example": 10.23
+          },
+          "c3ptl": {
+            "description": "TARGET DATA CONTINUATION WORD - point type 1.",
+            "maxLength": 16,
+            "type": "string",
+            "example": "C3PTL"
+          },
+          "c3ptnum": {
+            "description": "TARGET DATA CONTINUATION WORD - point number.",
+            "maxLength": 16,
+            "type": "string",
+            "example": "C3PTNUM"
+          },
+          "c4tgt": {
+            "description": "SURFACE ATTACK CONTINUATION WORD - target type - see TABLE B-32.",
+            "maxLength": 16,
+            "type": "string",
+            "example": "C4TGT"
+          },
+          "c4def": {
+            "description": "SURFACE ATTACK CONTINUATION WORD - target defenses.",
+            "maxLength": 16,
+            "type": "string",
+            "example": "C4DEF"
+          },
+          "c4runin": {
+            "format": "int32",
+            "description": "SURFACE ATTACK CONTINUATION WORD - run in heading, NS=511.",
+            "type": "integer",
+            "example": 5
+          },
+          "c4egress": {
+            "format": "int32",
+            "description": "SURFACE ATTACK CONTINUATION WORD - run in heading, NS=511.",
+            "type": "integer",
+            "example": 4
+          },
+          "c4numberofstores": {
+            "format": "int32",
+            "description": "SURFACE ATTACK CONTINUATION WORD - number of stores, NS=63.",
+            "type": "integer",
+            "example": 3
+          },
+          "c4typeofstores": {
+            "format": "int32",
+            "description": "SURFACE ATTACK CONTINUATION WORD - type of stores.",
+            "type": "integer",
+            "example": 2
+          },
+          "c4timediscrete": {
+            "description": "SURFACE ATTACK CONTINUATION WORD - time discrete.",
+            "maxLength": 16,
+            "type": "string",
+            "example": "C4TIMED"
+          },
+          "c4tm": {
+            "format": "int32",
+            "description": "SURFACE ATTACK CONTINUATION WORD - hour.",
+            "type": "integer",
+            "example": 4
+          },
+          "c4colon": {
+            "format": "int32",
+            "description": "SURFACE ATTACK CONTINUATION WORD - minute.",
+            "type": "integer",
+            "example": 5
+          },
+          "c4mod": {
+            "format": "int32",
+            "description": "SURFACE ATTACK CONTINUATION WORD - mode of delivery.",
+            "type": "integer",
+            "example": 5
+          },
+          "c5haeadj": {
+            "format": "int32",
+            "description": "CONTINUATION WORD - hae adjustment, measured in 3.125 FT.",
+            "type": "integer",
+            "example": 5
+          },
+          "c5tw": {
+            "format": "int32",
+            "description": "CONTINUATION WORD - time window.",
+            "type": "integer",
+            "example": 5
+          },
+          "c5tgtbrng": {
+            "format": "int32",
+            "description": "CONTINUATION WORD - target bearing.",
+            "type": "integer",
+            "example": 5
+          },
+          "c5latlsb": {
+            "format": "int32",
+            "description": "CONTINUATION WORD - used with c3_lat to double precision to approx 4 ft.",
+            "type": "integer",
+            "example": 5
+          },
+          "c5lonlsb": {
+            "format": "int32",
+            "description": "CONTINUATION WORD - used with c3_lon to double precision to approx 4 ft.",
+            "type": "integer",
+            "example": 5
+          },
+          "c5elevationlsbs": {
+            "format": "int32",
+            "description": "CONTINUATION WORD - used with c3_elv to double precision to approx 3 ft.",
+            "type": "integer",
+            "example": 5
+          },
+          "c5colon": {
+            "format": "int32",
+            "description": "SURFACE ATTACK CONTINUATION WORD - seconds in increments of 1 sec.",
+            "type": "integer",
+            "example": 5
+          },
+          "c6laser": {
+            "format": "int32",
+            "description": "TARGETING CONTINUATION WORD - laser illuminator code.",
+            "type": "integer",
+            "example": 5
+          },
+          "c6intel": {
+            "format": "int32",
+            "description": "TARGETING CONTINUATION WORD - index number, related, 0=NS.",
+            "type": "integer",
+            "example": 5
+          },
+          "c6tnr3": {
+            "format": "int32",
+            "description": "TARGETING CONTINUATION WORD - track number, related to 3.",
+            "type": "integer",
+            "example": 5
+          },
+          "c6dspct": {
+            "description": "TARGETING CONTINUATION WORD - designator/seeker pulse code type.",
+            "maxLength": 16,
+            "type": "string",
+            "example": "C6DSPCT"
+          },
+          "c6dspc": {
+            "description": "TARGETING CONTINUATION WORD - designator/seeker pulse code.",
+            "maxLength": 16,
+            "type": "string",
+            "example": "C6DSPC"
+          },
+          "c6fplpm": {
+            "description": "TARGETING CONTINUATION WORD - first pulse/last pulse mode.",
+            "maxLength": 16,
+            "type": "string",
+            "example": "C6FPLPM"
+          },
+          "c6longpm": {
+            "description": "TARGETING CONTINUATION WORD - long pulse mode.",
+            "maxLength": 16,
+            "type": "string",
+            "example": "C6LONGPM"
+          },
+          "c7tnor": {
+            "description": "THIRD PARTY CONTINUATION WORD  - track number, index originator.",
+            "type": "string",
+            "example": "C7TNOR"
+          },
+          "c7in3p": {
+            "format": "int32",
+            "description": "THIRD PARTY CONTINUATION WORD  - index number, third party.",
+            "type": "integer",
+            "example": 3
+          },
+          "c7elang2": {
+            "format": "double",
+            "description": "THIRD PARTY CONTINUATION WORD  - elevation angle, 2.",
+            "type": "number",
+            "example": 5.23
+          },
+          "createdAt": {
+            "format": "date-time",
+            "description": "Time the row was created in the database, auto-populated by the system.",
+            "type": "string",
+            "readOnly": true,
+            "example": "2018-01-01T16:00:00.123Z"
+          },
+          "createdBy": {
+            "description": "Application user who created the row in the database, auto-populated by the system.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string",
+            "readOnly": true,
+            "example": "some.user"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "description": "Time the row was updated in the database, auto-populated by the system.",
+            "type": "string",
+            "readOnly": true,
+            "example": "2018-01-01T16:00:00.123Z"
+          },
+          "updatedBy": {
+            "description": "Application user who updated the row in the database, auto-populated by the system.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string",
+            "readOnly": true,
+            "example": "some.user"
+          },
+          "source": {
+            "description": "Source of the data.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string",
+            "example": "Bluestaq"
+          },
+          "origin": {
+            "description": "Originating system or organization which produced the data, if different from the source. The origin may be different than the source if the source was a mediating system which forwarded the data on behalf of the origin system. If null, the source may be assumed to be the origin.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "THIRD_PARTY_DATASOURCE"
+          },
+          "dataMode": {
+            "description": "Indicator of whether the data is EXERCISE, REAL, SIMULATED, or TEST data:\n\nEXERCISE:&nbsp;Data pertaining to a government or military exercise. The data may include both real and simulated data.\n\nREAL:&nbsp;Data collected or produced that pertains to real-world objects, events, and analysis.\n\nSIMULATED:&nbsp;Synthetic data generated by a model to mimic real-world datasets.\n\nTEST:&nbsp;Specific datasets used to evaluate compliance with specifications and requirements, and for validating technical, functional, and performance characteristics.\n\n",
+            "maxLength": 32,
+            "minLength": 1,
+            "enum": [
+              "REAL",
+              "TEST",
+              "SIMULATED",
+              "EXERCISE"
+            ],
+            "type": "string",
+            "example": "TEST"
+          },
+          "origNetwork": {
+            "description": "The originating source network on which this record was created, auto-populated by the system.",
+            "maxLength": 32,
+            "minLength": 1,
+            "type": "string",
+            "readOnly": true,
+            "example": "ORIG"
+          }
+        }
+      },
+      "MissionAssignment_Ingest": {
+        "description": "Platform mission assignment data.",
+        "required": [
+          "classificationMarking",
+          "ts",
+          "mad",
+          "source",
+          "dataMode"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Unique identifier of the record, auto-generated by the system.",
+            "maxLength": 36,
+            "minLength": 1,
+            "type": "string",
+            "example": "MISSIONASSIGNMENT-ID"
+          },
+          "classificationMarking": {
+            "description": "Classification marking of the data in IC/CAPCO Portion-marked format.",
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string",
+            "example": "U"
+          },
+          "trkId": {
+            "description": "The track ID that the status is referencing, addressee.",
+            "maxLength": 36,
+            "type": "string",
+            "example": "TRK-ID"
+          },
+          "ts": {
+            "format": "date-time",
+            "description": "The timestamp of the mission data, in ISO 8601 UTC format.",
+            "type": "string",
+            "example": "2021-01-01T01:01:01.123456Z"
+          },
+          "mad": {
+            "description": "The mission assignment discrete value.",
+            "maxLength": 16,
+            "minLength": 1,
+            "type": "string",
+            "example": "MAD"
+          },
+          "rc": {
+            "description": "Receipt/Compliance, values from TABLE B-9.",
+            "maxLength": 16,
+            "type": "string",
+            "example": "RC-123"
+          },
+          "rr": {
+            "format": "int32",
+            "description": "Recurrence rate, receipt/compliance.",
+            "type": "integer",
+            "example": 2
+          },
+          "tno": {
+            "description": "Track number objective.",
+            "type": "string",
+            "example": "TRACK_NUMBER"
+          },
+          "twenv": {
+            "description": "Threat warning environment.",
+            "maxLength": 16,
+            "type": "string",
+            "example": "THREAT_WARNING"
+          },
+          "lat": {
+            "format": "double",
+            "description": "WGS84 latitude, in degrees. -90 to 90 degrees (negative values south of equator).",
+            "maximum": 90,
+            "minimum": -90,
+            "type": "number",
+            "example": 45.23
+          },
+          "lon": {
+            "format": "double",
+            "description": "WGS84 longitude, in degrees. -180 to 180 degrees (negative values west of Prime Meridian).",
+            "maximum": 180,
+            "minimum": -180,
+            "type": "number",
+            "example": 45.23
+          },
+          "orginx": {
+            "description": "Origin of index number.",
+            "maxLength": 16,
+            "type": "string",
+            "example": "ORIGIN"
+          },
+          "env": {
+            "description": "Environment.",
+            "maxLength": 16,
+            "type": "string",
+            "example": "ENV"
+          },
+          "sz": {
+            "description": "Strength.",
+            "maxLength": 16,
+            "type": "string",
+            "example": "STRENGTH"
+          },
+          "index": {
+            "format": "int32",
+            "description": "Index number.",
+            "type": "integer",
+            "example": 5
+          },
+          "c1associateddmpis": {
+            "format": "int32",
+            "description": "TARGET POSITION CONTINUATION WORD - number of associated dmpis.",
+            "type": "integer",
+            "example": 3
+          },
+          "c2spc": {
+            "description": "TARGET DATA CONTINUATION WORD - space specific type, see TABLE B-39.",
+            "type": "string",
+            "example": "C2SPC"
+          },
+          "c2air": {
+            "description": "TARGET DATA CONTINUATION WORD - air specific type, see TABLE B-21.",
+            "type": "string",
+            "example": "C2AIR"
+          },
+          "c2sur": {
+            "description": "TARGET DATA CONTINUATION WORD - surface specific type, see TABLE B-21.",
+            "type": "string",
+            "example": "C2SUR"
+          },
+          "c2lnd": {
+            "description": "TARGET DATA CONTINUATION WORD - land specific type, see TABLE B-21.",
+            "type": "string",
+            "example": "C2LND"
+          },
+          "c2id": {
+            "description": "TARGET DATA CONTINUATION WORD - identity.",
+            "maxLength": 16,
+            "type": "string",
+            "example": "C2ID"
+          },
+          "c2idamplifyingdescriptor": {
+            "description": "TARGET DATA CONTINUATION WORD - identity amplifying descriptor.",
+            "maxLength": 16,
+            "type": "string",
+            "example": "C2IDAMP"
+          },
+          "c2alt": {
+            "format": "int32",
+            "description": "TARGET DATA CONTINUATION WORD - altitude, 100 FT, 2047=NS.",
+            "type": "integer",
+            "example": 3
+          },
+          "c2crs": {
+            "format": "int32",
+            "description": "TARGET DATA CONTINUATION WORD - course in increments of 1 degree.",
+            "type": "integer",
+            "example": 3
+          },
+          "c2spd": {
+            "format": "int32",
+            "description": "TARGET DATA CONTINUATION WORD - speed in 2 DM/HR, 2047=NS.",
+            "type": "integer",
+            "example": 3
+          },
+          "c2specialinterestindicator": {
+            "description": "TARGET DATA CONTINUATION WORD - special interest indicator.",
+            "maxLength": 16,
+            "type": "string",
+            "example": "C2SPECIAL"
+          },
+          "c2exerciseindicator": {
+            "description": "TARGET DATA CONTINUATION WORD - exercise indicator.",
+            "maxLength": 16,
+            "type": "string",
+            "example": "C2EXERCISE"
+          },
+          "c2exercisemof": {
+            "description": "TARGET DATA CONTINUATION WORD - method of fire.",
+            "maxLength": 16,
+            "type": "string",
+            "example": "MOF"
+          },
+          "c3lat": {
+            "format": "double",
+            "description": "POINT LOCATION CONTINUATION WORD - latitude, 0.0013 MINUTE.",
+            "type": "number",
+            "example": 10.23
+          },
+          "c3lon": {
+            "format": "double",
+            "description": "POINT LOCATION CONTINUATION WORD - longitude, 0.0013 MINUTE.",
+            "type": "number",
+            "example": 10.23
+          },
+          "c3elv": {
+            "format": "double",
+            "description": "POINT LOCATION CONTINUATION WORD - elevation, 25 FT, 1023=NS.",
+            "type": "number",
+            "example": 10.23
+          },
+          "c3ptl": {
+            "description": "TARGET DATA CONTINUATION WORD - point type 1.",
+            "maxLength": 16,
+            "type": "string",
+            "example": "C3PTL"
+          },
+          "c3ptnum": {
+            "description": "TARGET DATA CONTINUATION WORD - point number.",
+            "maxLength": 16,
+            "type": "string",
+            "example": "C3PTNUM"
+          },
+          "c4tgt": {
+            "description": "SURFACE ATTACK CONTINUATION WORD - target type - see TABLE B-32.",
+            "maxLength": 16,
+            "type": "string",
+            "example": "C4TGT"
+          },
+          "c4def": {
+            "description": "SURFACE ATTACK CONTINUATION WORD - target defenses.",
+            "maxLength": 16,
+            "type": "string",
+            "example": "C4DEF"
+          },
+          "c4runin": {
+            "format": "int32",
+            "description": "SURFACE ATTACK CONTINUATION WORD - run in heading, NS=511.",
+            "type": "integer",
+            "example": 5
+          },
+          "c4egress": {
+            "format": "int32",
+            "description": "SURFACE ATTACK CONTINUATION WORD - run in heading, NS=511.",
+            "type": "integer",
+            "example": 4
+          },
+          "c4numberofstores": {
+            "format": "int32",
+            "description": "SURFACE ATTACK CONTINUATION WORD - number of stores, NS=63.",
+            "type": "integer",
+            "example": 3
+          },
+          "c4typeofstores": {
+            "format": "int32",
+            "description": "SURFACE ATTACK CONTINUATION WORD - type of stores.",
+            "type": "integer",
+            "example": 2
+          },
+          "c4timediscrete": {
+            "description": "SURFACE ATTACK CONTINUATION WORD - time discrete.",
+            "maxLength": 16,
+            "type": "string",
+            "example": "C4TIMED"
+          },
+          "c4tm": {
+            "format": "int32",
+            "description": "SURFACE ATTACK CONTINUATION WORD - hour.",
+            "type": "integer",
+            "example": 4
+          },
+          "c4colon": {
+            "format": "int32",
+            "description": "SURFACE ATTACK CONTINUATION WORD - minute.",
+            "type": "integer",
+            "example": 5
+          },
+          "c4mod": {
+            "format": "int32",
+            "description": "SURFACE ATTACK CONTINUATION WORD - mode of delivery.",
+            "type": "integer",
+            "example": 5
+          },
+          "c5haeadj": {
+            "format": "int32",
+            "description": "CONTINUATION WORD - hae adjustment, measured in 3.125 FT.",
+            "type": "integer",
+            "example": 5
+          },
+          "c5tw": {
+            "format": "int32",
+            "description": "CONTINUATION WORD - time window.",
+            "type": "integer",
+            "example": 5
+          },
+          "c5tgtbrng": {
+            "format": "int32",
+            "description": "CONTINUATION WORD - target bearing.",
+            "type": "integer",
+            "example": 5
+          },
+          "c5latlsb": {
+            "format": "int32",
+            "description": "CONTINUATION WORD - used with c3_lat to double precision to approx 4 ft.",
+            "type": "integer",
+            "example": 5
+          },
+          "c5lonlsb": {
+            "format": "int32",
+            "description": "CONTINUATION WORD - used with c3_lon to double precision to approx 4 ft.",
+            "type": "integer",
+            "example": 5
+          },
+          "c5elevationlsbs": {
+            "format": "int32",
+            "description": "CONTINUATION WORD - used with c3_elv to double precision to approx 3 ft.",
+            "type": "integer",
+            "example": 5
+          },
+          "c5colon": {
+            "format": "int32",
+            "description": "SURFACE ATTACK CONTINUATION WORD - seconds in increments of 1 sec.",
+            "type": "integer",
+            "example": 5
+          },
+          "c6laser": {
+            "format": "int32",
+            "description": "TARGETING CONTINUATION WORD - laser illuminator code.",
+            "type": "integer",
+            "example": 5
+          },
+          "c6intel": {
+            "format": "int32",
+            "description": "TARGETING CONTINUATION WORD - index number, related, 0=NS.",
+            "type": "integer",
+            "example": 5
+          },
+          "c6tnr3": {
+            "format": "int32",
+            "description": "TARGETING CONTINUATION WORD - track number, related to 3.",
+            "type": "integer",
+            "example": 5
+          },
+          "c6dspct": {
+            "description": "TARGETING CONTINUATION WORD - designator/seeker pulse code type.",
+            "maxLength": 16,
+            "type": "string",
+            "example": "C6DSPCT"
+          },
+          "c6dspc": {
+            "description": "TARGETING CONTINUATION WORD - designator/seeker pulse code.",
+            "maxLength": 16,
+            "type": "string",
+            "example": "C6DSPC"
+          },
+          "c6fplpm": {
+            "description": "TARGETING CONTINUATION WORD - first pulse/last pulse mode.",
+            "maxLength": 16,
+            "type": "string",
+            "example": "C6FPLPM"
+          },
+          "c6longpm": {
+            "description": "TARGETING CONTINUATION WORD - long pulse mode.",
+            "maxLength": 16,
+            "type": "string",
+            "example": "C6LONGPM"
+          },
+          "c7tnor": {
+            "description": "THIRD PARTY CONTINUATION WORD  - track number, index originator.",
+            "type": "string",
+            "example": "C7TNOR"
+          },
+          "c7in3p": {
+            "format": "int32",
+            "description": "THIRD PARTY CONTINUATION WORD  - index number, third party.",
+            "type": "integer",
+            "example": 3
+          },
+          "c7elang2": {
+            "format": "double",
+            "description": "THIRD PARTY CONTINUATION WORD  - elevation angle, 2.",
+            "type": "number",
+            "example": 5.23
+          },
+          "createdAt": {
+            "format": "date-time",
+            "description": "Time the row was created in the database, auto-populated by the system.",
+            "type": "string",
+            "readOnly": true,
+            "example": "2018-01-01T16:00:00.123Z"
+          },
+          "createdBy": {
+            "description": "Application user who created the row in the database, auto-populated by the system.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string",
+            "readOnly": true,
+            "example": "some.user"
+          },
+          "source": {
+            "description": "Source of the data.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string",
+            "example": "Bluestaq"
+          },
+          "origin": {
+            "description": "Originating system or organization which produced the data, if different from the source. The origin may be different than the source if the source was a mediating system which forwarded the data on behalf of the origin system. If null, the source may be assumed to be the origin.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "THIRD_PARTY_DATASOURCE"
+          },
+          "dataMode": {
+            "description": "Indicator of whether the data is EXERCISE, REAL, SIMULATED, or TEST data:\n\nEXERCISE:&nbsp;Data pertaining to a government or military exercise. The data may include both real and simulated data.\n\nREAL:&nbsp;Data collected or produced that pertains to real-world objects, events, and analysis.\n\nSIMULATED:&nbsp;Synthetic data generated by a model to mimic real-world datasets.\n\nTEST:&nbsp;Specific datasets used to evaluate compliance with specifications and requirements, and for validating technical, functional, and performance characteristics.\n\n",
+            "maxLength": 32,
+            "minLength": 1,
+            "enum": [
+              "REAL",
+              "TEST",
+              "SIMULATED",
+              "EXERCISE"
+            ],
+            "type": "string",
+            "example": "TEST"
+          },
+          "origNetwork": {
+            "description": "The originating source network on which this record was created, auto-populated by the system.",
+            "maxLength": 32,
+            "minLength": 1,
+            "type": "string",
+            "readOnly": true,
+            "example": "ORIG"
+          }
+        }
+      }
+    }
+  }
+}

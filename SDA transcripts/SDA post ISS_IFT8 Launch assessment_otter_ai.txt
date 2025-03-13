@@ -1,0 +1,721 @@
+Unknown Speaker  0:00  
+You that someone else to step in.
+
+Speaker 1  0:11  
+I'm not a data scientist or the technical guy, but I'm just the POC has been working with, working on getting another data scientist or software engineer to step in to help out?
+
+Speaker 2  0:30  
+Yeah, I understand that you're transitioning over software, software engineer. We can try to roll you guys in some of the other stuff coming up. We weren't able to get your gift COVID at this time. Totally fine. Is there any other general comments that you wanted to add? Jeffrey,
+
+Unknown Speaker  0:59  
+no, I don't have anything right now. I
+
+Unknown Speaker  1:03  
+now see you got launch indication.
+
+Speaker 3  1:10  
+So this one was from the this was the very first indicator from the Web Scripting, I mean, data mining. And it worked very well. It was around maybe seven days before morning, and some of the fields actually are wrong because some problem in the in the code. I created it and updated it, but eventually I would remove the bug, and now it's fine. So and one more thing you will notice, this is only the payload, because I was using some tool and it was only displaying the payload rather than Hello header. So maybe I will find the header after some more packaging, but whatever you see is the just a payload.
+
+Speaker 2  2:02  
+Yes, well, we'll crack those fields better, but you're able to send that message. I think some of the these timestamps, they did, cause some confusion, other things down the line. Again, this is all just an exercise. Header
+
+Speaker 3  2:22  
+has a right time. Stomach in the header, it has COVID, I will see. And, yeah,
+
+Unknown Speaker  2:38  
+anything else to add?
+
+Speaker 3  2:41  
+And one more thing I want to add is I am actually modifying the code so you will get the warning every day, not just seven day before I will consult with the Jubilee, so you will have the updated information every time.
+
+Speaker 2  3:00  
+And how does work with some of the scrubbed launches? Is there information that gets captured when the launch does get scrubbed that says new launch time? Sorry. So with this thinking about the SpaceX launch. I guess we can talk about that later, but that launch to get scrubbed, so I'm curious about with the everyday update, the launch time gets updated and pushed out further for the launch window is for
+
+Speaker 3  3:38  
+using the data mining of those two data management generally, they don't update that information very quickly. Sometimes they do so sometimes they don't have they have some kind of keywords, like keyword,
+
+Speaker 3  4:00  
+like, some
+
+Speaker 4  4:12  
+of I can jump in here for a Second. I think, as we're trying to do, event based triggering, repeating the same message might not be the most appropriate way, unless there is a change in some information on the web or through images that we receive online, so only there's a change, then maybe sending a new message might be more appropriate. I think I
+
+Unknown Speaker  4:49  
+can make sense very frequently. Sometimes it's getting the entire
+
+Speaker 4  4:59  
+yes and on, on the on another place, we would aggregate these, all the inputs coming in, and combine them and make a combined analysis, either hostility or Some other assessment in a very different topic. Thank you.
+
+Speaker 5  5:33  
+So this particular message promote was this on the launch prediction topic.
+
+Unknown Speaker  5:43  
+This one was, yeah, on launch prediction topic,
+
+Speaker 5  5:46  
+okay, so launch prediction topic would have indications of launch prior to the launch actually occurring. Is that fair statement, and then if the web scraper catches something after the launch, confirming that it's actually happened, then that will go on the launch detection
+
+Speaker 3  6:06  
+topic. I'm also pushing one message after the detection, or just five minutes after the after the launch, so there will be an additional message and the topic will change to the detection and probability. I'm setting 0.5 because it's just the message we still have to confirm from the satellite images or other approaches, but you will see another message in the detection property. Okay. Is it right now? Here? Is
+
+Unknown Speaker  6:39  
+okay and okay. Thank you.
+
+Speaker 2  6:44  
+Chris, Would it help if it was, instead of saying launch time, predicted launch time, or is this promote emulating the UDL format?
+
+Speaker 3  6:55  
+I'm just actually following the UDL format. I think some of the Yeah, I will see some. Will see sometimes they don't make sense if I follow for the pre or post both because, for example, in the post, we should have left off some kind of thing right now, I'm just following the MBA, but see if you can suggest some field additional if you want to change the name of the fields,
+
+Unknown Speaker  7:22  
+I name
+
+Speaker 4  7:24  
+of the phrase Yes. So we are using the UDL launch detection schema, which seems to make sense for the most part, for launch prediction as well. We will have couple additional fields, like Windows Start and window end. In situations where there is no one fixed type for the launch. For example, if we get if it's not published online, but from satellite imagery, we see preparations going on. In those cases, we won't have a fixed launch time, but a window several day window, so we wouldn't have those two new variables added to it will be done in the next few weeks, collaboration with Planet Labs and other folks over great. Okay, that
+
+Unknown Speaker  8:21  
+makes sense.
+
+Unknown Speaker  8:25  
+Moving on
+
+Speaker 2  8:28  
+text, seven CU, boulders. Moving on to like the request commercial imagery, which was sort of what Julie just brought up. MGA, I think you guys did not participate.
+
+Speaker 6  8:43  
+So we we did attempt to participate, but we ran into a bug in our software code. We eventually traced it back just to our login authentication with global EG, and we were able to fix it, but not in time to get any indications for this launch. Okay?
+
+Speaker 2  9:07  
+That's all good, because sort of what we're trying to figure out, what these systems is, what are the bugs and any other notes injury?
+
+Speaker 6  9:16  
+No more notes for this one. Carbon, Carbon, Carbon
+
+Speaker 2  9:25  
+Jubilee, you got a image from him, though, correct
+
+Speaker 4  9:35  
+so from Carmen for the ISS launch. Yes, I did get an image. He did provide launch potential launch Start Time and End Time for that, but I'm not 100% sure whether I was pushed on. I wasn't able to copy and paste. I don't know if plan Labs was able to do that. I
+
+Unknown Speaker  10:03  
+I reach out,
+
+Speaker 2  10:12  
+you have your Airbus message, or you have both a message and an image, right? Yeah,
+
+Speaker 3  10:17  
+this image is old, and it was manually frustrated from the Airbus just for technology demonstration. So, but in the future, I will see how to make it even automatic.
+
+Unknown Speaker  10:33  
+Sorry, in the future, you'll try to make it event driven
+
+Speaker 3  10:35  
+the in the future, I'm thinking to do some experiment like it. Will use the Airbus API and capture the image. Right now I services and memory capture the image I see,
+
+Unknown Speaker  10:52  
+and we also got a map. Sorry,
+
+Speaker 4  10:59  
+yes, they did provide an image as well. However, their image did come with a message,
+
+Unknown Speaker  11:18  
+and these images are all I don't think are publicly releasable at the moment,
+
+Speaker 2  11:42  
+but next step upon imagery available check size for launch prep. So again, there's also the cloud for
+
+Unknown Speaker  11:59  
+the folder
+
+Speaker 3  12:06  
+you can see the descriptor is correct depends On the image, so it was fully automated. Yeah.
+
+Unknown Speaker  12:20  
+I Yeah,
+
+Speaker 2  12:33  
+as people do, sorry, this Do we have another image that you want to take along on this about
+
+Speaker 3  12:41  
+so it is the same mails. Actually the own image available. So I use my own image to run this.
+
+Speaker 3  12:54  
+So I think that mail should be in separate machine, right? Yeah,
+
+Unknown Speaker  13:04  
+so for
+
+Speaker 2  13:05  
+Planet, we're missing their message. All right, period of interest. Did anyone release a period of interest?
+
+Speaker 2  13:21  
+I whether so
+
+Speaker 4  13:27  
+they did, there's not central Kafka. I in the message, I pasted plant labs message that they would have sent from Kafka, but they didn't, and then I'm also sending the start and end time or period of interest from them.
+
+Speaker 4  13:59  
+That's when they take the launch may happen, might have happened, or
+
+Speaker 7  14:07  
+did the lunch for that time? Success? I
+
+Speaker 8  14:55  
+able to do, and how we may need to build out that functionality, rather without them. So that's kind of in process right now. Right now we've been kind of providing the sensor data from the weather perspective, from kind of a raw parameter perspective, but getting to the no go decision, that's a whole kind of like wrapping all of those things together and creating that so we may need to investigate further what the what the need is there, and if silicon Mountain is going to keep being part of that or not, that's ending issue.
+
+Speaker 2  15:26  
+Okay, yeah, fair enough. I know there are some students also working on this from Purdue,
+
+Unknown Speaker  15:35  
+so they could possibly be interested in your data as well. Moving on to complainer checks. Millennial. We did get a complainer check track was off by like two centimeters in energy.
+
+Speaker 9  15:56  
+I would have to go back and double check the exact Delta. But we did publish the message.
+
+Unknown Speaker  16:10  
+Seeing somewhere in the top of us, we can go pull it up.
+
+Unknown Speaker  16:18  
+Yes, it should be. I Okay.
+
+Unknown Speaker  16:32  
+Any other notes with that delta? But it looks like it was
+
+Speaker 9  16:42  
+winners. Intercept? Yeah, yeah. Results were as expected. I think we provided feedback initially on the prediction message for the pre launch. Sorry, was a little late coming in, and I think Burma has already made the update, so I appreciate that you
+
+Unknown Speaker  17:31  
+Hi, moving on to our
+
+Unknown Speaker  17:35  
+respect, are you?
+
+Speaker 10  17:42  
+I do? Only comment that I have to give is I'll just have to cross check the results of is resupply. And if the launch activities al do that in one of those cases, I see that no cop, not objects were found. But I just have to dig deep and make sure that the information that I put here is correct,
+
+Speaker 10  18:12  
+perfectly for us. We ingested the large normal from IRT and did this algorithms with Kafka in place.
+
+Unknown Speaker  18:29  
+Thank you. To,
+
+Speaker 5  18:41  
+yeah, so if I recall correctly, I believe so right now, right now I'm primarily consuming from the launch detection topic, if I recall correctly, I believe there was some messages in there about the ISS launch or resupply launch, but we did not catch them. I don't think anything triggered post launch. And then to continue on with the workflow, Jubilee, manually pushed a message into the launch detection topic that triggered service to update the nominal and publish it for downstream consumers. Yeah,
+
+Speaker 3  19:23  
+actually, now I remember that I was trying to my camera system actually didn't push the message in the right topic. It actually went to the detection, and then Jubilee actually manually generated the trigger. But it's a simple side story. I was also pushing the very scatter based detection so, but I didn't disclose to anyone. So we thought there is no room in the Excel sheet, so ignore that.
+
+Unknown Speaker  19:59  
+Okay,
+
+Speaker 3  20:01  
+so you should actually see the source, the source test that it's coming from the scraper camera or the satellite. So
+
+Speaker 2  20:32  
+for pre launch is that screening? So you guys post the message and again, there was no conjunction.
+
+Speaker 10  20:46  
+There were some conjunctions, and those are listed. There seven congestions were there, and I would give it a
+
+Unknown Speaker  20:56  
+perfect
+
+Unknown Speaker  21:01  
+the pipeline also worked, and I became the data type also I
+
+Speaker 2  21:20  
+shock to I guess We'll get to that later, but the hostility assessment, I
+
+Speaker 2  21:37  
+jack, is there anything you wanted to add about Star drives capability? I know it's not anything that came to mind from watching some of the results come up.
+
+Speaker 7  21:48  
+Yeah. I mean, we, we just got our system online on we were able to push it to the ECS instance that SDA tap lab was able to put up. But that's, that's kind of our only feedback. Okay,
+
+Speaker 2  22:27  
+stuff probably takes off. So lighthouse, John, if you're on Correct,
+
+Speaker 11  22:32  
+yes, I'm here. I think the big note here for this line is we were able to successfully publish. I've got a task on my end though to follow up with. We test two panopticons, or at least two different collect requests to panopticons. But the model that we have, we didn't account for. We were off by an hour or two when it came to sunlight for their location. So trying to determine if that's a data issue or a modeling issue on this side currently. But other than that, everything else works successfully. I
+
+Speaker 2  23:23  
+Awesome. That was great, unfortunately, but hearing that the request went out, I think that's a great first step. I
+
+Speaker 2  23:37  
+Alright, launch detection, so I had no coverage. Julie, everything else you want to say besides no coverage as well,
+
+Unknown Speaker  23:51  
+nothing else over
+
+Speaker 2  23:59  
+planet lab, I don't think got anything from them. So, yeah, this was the launch detection. So you sent this with your web scraper,
+
+Speaker 3  24:11  
+correct camera. I think, yeah, so this data is from the from the camera. And this is the something I actually tried, because it was, it went into the prediction topic. It should be the detection topic. So message is still in the prediction topic, but reality it should be in detection. So, but, yeah, but it actually worked. It was able to find. It was able to detect the launch. You can see the picture. The locator is just going up, and you can see some cloud and smoke. So confidence is also very accurate, and time is stopped, and everything looks good. So,
+
+Unknown Speaker  24:58  
+job. Well,
+
+Speaker 3  25:08  
+sorry, lunchtime. In my case, I think in this case, lunchtime, it's missing something. Is there anything wrong? Anything wrong. It's not international ISO format, yeah. But before the next exercise, I update so that is also incorrect. I
+
+Speaker 2  25:38  
+you would have been exactly on time. So is that based on, are you also getting the web scraper time? Yeah,
+
+Speaker 3  25:46  
+yeah, definitely. So I, my input is the web scraper, so I was getting some additional information on the proper feed.
+
+Speaker 2  25:56  
+Okay, so you make the assumption that the web scraper is part time, yeah, okay, you were then roughly a minute and 10 seconds later. Philosophy, 10 seconds process. I
+
+Unknown Speaker  26:16  
+is, yeah, the treated duties.
+
+Speaker 2  26:31  
+Next. I think this is an interesting metric to track for the launch and stuff, is how quickly did we pick it up?
+
+Speaker 2  26:44  
+All right? MJ, I know you guys are still integrating. Any other comments you want to add, or anything that was interesting from the Launch. From your perspective,
+
+Unknown Speaker  27:13  
+Jake, can you hear me?
+
+Unknown Speaker  27:16  
+We can't hear you. I see that you're off mute.
+
+Unknown Speaker  27:26  
+I can hear you now. It's very vain.
+
+Speaker 12  27:30  
+You can hear me now, I can hear you now. Yeah, it's getting better. Okay. No, I don't have anything to add. I did get a picture, but I ended up overriding it right as it was launching in time. I matched to my computer as they were right on time. But, yeah, it doesn't end up I don't have any hard copy of that time, so,
+
+Unknown Speaker  27:54  
+yeah, fair enough. Okay,
+
+Speaker 2  28:03  
+I know we just lost Tony. This is something that's being discussed in subsystem one about, how do we declare the active object? How do we assign this some kind
+
+Speaker 9  28:16  
+of ID? Yeah, I'm back. Sorry I missed timed my meeting. It's in a half hour. This still needs to get, get worked and and figured out
+
+Speaker 2  28:29  
+a good thing about these exercises and sort of identifying like, hey, we don't really have an internal system. I guess. Were you guys aware of this before? Were you discussing this before these functions?
+
+Speaker 9  28:43  
+Yeah, I've been talking at a lot of people about it. I don't think we've come up with a flow on on doing just that, especially with launch nominals, and adding it to the database ahead of the object being cataloged, and then notifications and the likes of that. So I think there's some business logic that needs to get flushed out. I
+
+Unknown Speaker  29:24  
+I predict launch sign, please ban on i
+
+Speaker 2  29:32  
+i don't remember how we're working on coming up with a map, so I talked with Jubilee, and I think the worst case scenario is assuming no one can provide me coverage. I'm just going to provide a lookup table of historic launches, and we can just, it's hard coded, so you can just look it up whenever. And so assuming you can't get it, or Verma can't get it, whoever, we can actually detect the measurements I need. We're just going to say, Oh, here's what it historically does. And I can do that for any launch site, for any vehicle on the world, assuming I can get at least one lap long. So it's like, if a rocket falls in a village in China, I can say I can find a lot longer that I can use that to get the flight
+
+Speaker 3  30:17  
+path me too. So actually, I also want to tell that one of the thing you can subscribe is my web scripter based protection. It will 100% all time. So it will be helpful for you all around the world, because it's just based on the scraper. So this, if you, if you see the source is a scraper, and the topic is the detection, you will be able to get some indication, just in the worst case when you don't have any coverage. And that capability is very reliable, and it will work at least something is better than nothing, right?
+
+Speaker 2  30:56  
+So that presumes that as a cooperative launch, though for both so that's maybe one thing we don't want to anticipate, especially one of the edge cases where the launch gets pushed. Just a caveat for that video. Is there anything
+
+Speaker 9  31:27  
+else? And I think that was all automated. Awesome. If Max is on, he can confirm if he got it automated. But yeah, we, we consumed the intrac radar nominal, ran a new screening, and then gave the output to to response. I
+
+Speaker 13  32:09  
+Yes, I am on. We were able to take in the for us, the process was we proved automation worked, that we were able to automatically pull in the launch nominals when they were posted. Our algorithm did its UDL scrape and ran and posted back to Kafka. So for us, we were very happy that everything ran as it was supposed to.
+
+Speaker 13  32:41  
+And then our next steps are we are going to have this week, we're going to have Patrick post a test UCT to make sure that we can run that the algorithm then also runs automatically with just pulling in one single UCT and just putting out one output instead of comparing to everything on the EBU.
+
+Speaker 2  33:04  
+Were you able to capture that message as well?
+
+Unknown Speaker  33:10  
+We did take a screenshot of it. Yes. Okay.
+
+Speaker 2  33:24  
+We'll see if we can go find that. All right, Max or sorry, Sheena, did you have anything
+
+Unknown Speaker  33:32  
+else? No, I didn't, we're good.
+
+Speaker 2  33:35  
+Max, yeah, so we got artifacts from you, the threat assessments.
+
+Speaker 14  33:42  
+Yep, yeah. So we we output bonds, recommendations. It was just manually so Tony, you guys were probably automated, but I just used what, whatever in this scenario, was copied and pasted to rocket chat, and then we output our response recommendation manually, this time for both the left of launch and right of launch. And there, I think, kind of mentioned this in rocket chat, there's some we have to figure out how to kind of carry on knowledge of the no rad ID or ID that you guys choose to use, and then I have to associate that with the launch that just happened. So we'll figure that out in the future. But this one was automated, and then I'm guessing, IFT eight, maybe after this. But that one, I think we were automated and ready to go on the message bus, and there was some mix ups with just topic names and stuff, but we should be pretty
+
+Unknown Speaker  34:44  
+close to ready to go.
+
+Unknown Speaker  34:46  
+Awesome.
+
+Speaker 2  34:50  
+Yeah, we will come back to the starship, putting on time.
+
+Speaker 2  35:01  
+All right, back to lay those. So we captured a lot of the notes about this from the previous one. I guess John was there anything else you wanted to add at the stop,
+
+Speaker 11  35:15  
+nothing else, and the link should bring you. You might get a few more on there, but that should be around the time with the UDL data. Awesome.
+
+Speaker 8  35:26  
+What's the rocket chat group named for this? Specifically,
+
+Unknown Speaker  35:32  
+yeah, that's this SBA cohort exercise.
+
+Unknown Speaker  35:41  
+Dropped it in the chat as well.
+
+Unknown Speaker  35:48  
+Sorry,
+
+Speaker 2  35:53  
+Chris, I know Tim was busy, so I presume they did anything or else, Alex, are you still on? Is there anything from sensors to report?
+
+Speaker 5  36:12  
+So Chris, yeah, I'm not aware of Tim being able to get anything on this.
+
+Speaker 2  36:34  
+How Yes, that was just for the lunch.
+
+Unknown Speaker  36:51  
+Yes, just for the lunch. I We
+
+Speaker 2  36:57  
+did possibly get an image from our sky of one of the overflights or
+
+Unknown Speaker  37:06  
+subsequent orbits.
+
+Unknown Speaker  37:08  
+I need to confirm that with Jack and COVID. I
+
+Unknown Speaker  37:30  
+Alex, are you on? I
+
+Unknown Speaker  37:40  
+nothing we heard. MJ,
+
+Unknown Speaker  37:42  
+still deploying,
+
+Unknown Speaker  37:51  
+right, nothing to report.
+
+Speaker 2  37:54  
+So with the passive stuff, you'd be getting like, S band,
+
+Speaker 12  38:01  
+yeah, S band and R, F, right, yes, but right now, we're in the process of upgrading equipment, so we weren't able to really have any input. You know, received anything associated for this exercise, anyone
+
+Unknown Speaker  38:23  
+from ARCA?
+
+Speaker 2  38:28  
+So unfortunately, it's gonna seem like we got a follow up, but we got to the EDL request stage, like one of the so the next steps are a lot of future proposed by trying to get again, all the rest of the subsystems in these were things that we discussed before Launch, trying to figure out smart maneuver that Al need to get up to docking. So that's something new that you can get from CCDM, the consumption assessment from SU Peter. Are you on Did you get anything for the consumption assessment?
+
+Speaker 15  39:09  
+Yeah, we are still discussing with Al ro autonomy, if they provide their sent trajectories and we can evaluate them regarding the safety point of view. Right now we are working to discuss how to figure out we can contribute to this exercise. And four to six, yeah, I was
+
+Unknown Speaker  39:41  
+just
+
+Speaker 9  39:43  
+gonna say, Have you started talking with CCDM on the on the smart maneuvers? Can you explain that a little bit? What? Are you thinking there? Or,
+
+Speaker 2  39:55  
+yeah. So I had some initial al discussions with based in Fernando about, can there's a lot of people that are detecting maneuvers from UDL poles or from like space track, so with the raising and lowering or whatever maneuver it needs to match speed with. ISS for the rendezvous is, can they detect when those maneuvers occur? So that's our simulating a smart maneuver for a co orbital.
+
+Speaker 9  40:33  
+I Okay, yeah, when you start having more conversations on that, I think millennial would be interested in contributing that our quote, unquote, Rockler assessment is doing maneuver planning assessments to go from a phasing orbit to rendezvous. So we could, we could help with that, with our our maneuver calculations that we're doing, and I'll be happy to sit down and talk with you about it a little bit more. But when you get to us at number line, 100 or wherever it is. Our our assessment for best ways, is not implemented in place or automated. So we didn't, we didn't continue on with the post launch assessments on this go around.
+
+Speaker 2  41:29  
+There's a lot of things going on. I know we're building the car as we go, these exercises are fun. Again, I recognize I am not major pond or major Al. I have no authority, so not here to punish anyone. I'm just here to try to, like punch. What could we do? Well, that could be interesting for the paper. I
+
+Speaker 2  41:55  
+conjunction assessment as well as assessment discussing with aloha, respect, is there any comment from the
+
+Speaker 10  42:11  
+automation part so not at this point. We couldn't have contributed anything on these terms at this point or
+
+Unknown Speaker  42:22  
+other possibilities. Assessment,
+
+Speaker 4  42:27  
+nobody informed me about any messages, so I'm not I can check with them. Is anybody else here? Many of those teams? But to my knowledge,
+
+Speaker 2  42:44  
+do we have anyone from Scout assessment path wires for GMV? I
+
+Speaker 15  43:02  
+I'm not sure did I miss we are sending your passwords and conjunction assessment message by now we are sending,
+
+Speaker 2  43:15  
+okay, did you get any of those for this exercise?
+
+Unknown Speaker  43:22  
+We don't. Right now,
+
+Speaker 4  43:26  
+Peter, could you go back and look through the outputs you generated on those days and highlight what was detected for these vehicles or vehicle,
+
+Speaker 15  43:46  
+we are discussing with Our autonomy. We are still discussing with them? We don't have yet any result from this exercise,
+
+Speaker 4  44:03  
+like, Can you do a post analysis with the data that's been generated already?
+
+Unknown Speaker  44:10  
+Yeah, okay, okay.
+
+Speaker 2  44:17  
+Okay, intense estimation, anyone from 10, one aerospace Statler, hinky, Max, you're on. But how about sprout technologies in our park? Light,
+
+Speaker 14  44:31  
+yeah, or I don't know if sprout is on, but we've worked kind of closely with them. I don't think we're the DF and then response recommendation, that would be what we did above. But then for the intent estimation, I think that would run on top of space maps. EO Pez was, and that's, that's a service that's constantly running, I think, kind of like Peter was mentioning, but specifically that isn't running yet, but when it is, and if there is a payload Engagement Zone for electric EO ISR, then that would be something that could come out, okay? And Peter, I think one question where they were maybe asking is like, because I know your company provides conjunction assessments, and your al PES Wes is kind of a subset of the conjunction assessments, but I think they're wondering if you might have conjunction assessments, possibly for this exercise, like when the new no rad ID came up into space track, and you guys calculate all your conjunction assessments, you might have gotten one between this new object and The ISs.
+
+Speaker 15  45:48  
+Yeah, that's right assessment. But I guess the peak reach or before 200 kilometers, right? So there are not much conjunction event in that altitude. Am I right? So I am hesitating. So how to how to figure out we can contribute?
+
+Unknown Speaker  46:22  
+Yeah, okay, sounds good. I was just curious.
+
+Speaker 15  46:26  
+Yeah, we're working on that with Al autonomy.
+
+Speaker 14  46:31  
+Yeah, sounds good. That makes sense. You know your product better than I do. I was just curious.
+
+Speaker 15  46:36  
+Go ahead, I think. Thank you. Thank you for pointing out that. Okay,
+
+Speaker 2  46:42  
+these are all good discussions, though. So RPO time for adopting at ISS. This was one of the things we were hoping to get with any I odd. I don't think there's anyone from turian or any of the other nei company here. I don't know if it's separated or if it's still on there. So there was no re entry. But I'm more of touchdown, alright, so system level stuff, just one day, I believe we sort of already discussed. Object ID. Sorry, did someone else have a comment?
+
+Speaker 16  47:34  
+I state
+
+Speaker 2  47:44  
+estimation. I don't think anyone's here from state estimation. Is that correct?
+
+Speaker 2  48:03  
+Yeah, John with the c2 system, so we did publish requests, but there was no follow up request. I think that really depends on CCDM to elevate those priorities. Say, Hey, this is a conjunction that's happening or a maneuver that happens, so let's go get follow ups. So we got the initial one, but we can get follow up but that's totally fine, yes, and
+
+Speaker 11  48:34  
+I think to add on to that, one potential gap here too, is if we don't get a detection, then we're dead in the waters. So maybe testing off the CO planer or other information so we're not we don't have that hard dependency or upstream, because we might always get those. So that was one identified. Yeah,
+
+Speaker 2  49:08  
+that's a really great point. All right, so system six recommendations, course actions, Shauna did see her online as well. As we continue to run these exercises, I hope it gives you some access to some of the messages or images that are being passed around on the top of the bus, if that's useful at all to you, or if you have any thoughts about what these exercises can provide to you as well for the UI, I think that, I think Tony's comment earlier about having the unique identifier to, like, tie everything together is one of the things that it's currently lacking. Like, right now I'm reading in I can get, you know, the raw target database, and, like, some of the raw events that are published to the event dB, but they're all seemingly random. I know they're not random. They don't have anything to, like, say, this is like, this is the IFTA launch, right? Which is something that then we would target an interface to have more details and right now everything is, everyone is doing their work, like stovepipe, working on to tie everything together. But as it is, if more things are being pushed in, then, yeah, I'm currently just working on a way for us to show kind of what the status of things are. But as we get more integration, then the interface will actually start to make sense to a person watching it. Yeah, that makes sense. And what other association we are doing is the UU IDs from parent to child messages, or how they build off of each other. We are still building that out. I was going to try to see what the longest trace was. I don't think anyone really published any you IDs, but we can sort of justify the
+
+Unknown Speaker  51:12  
+on that part of the
+
+Unknown Speaker  51:14  
+traceability, I think that system
+
+Unknown Speaker  51:28  
+will start to feel more space Protocol is awesome, or anyone else for today's protocol?
+
+Unknown Speaker  51:43  
+Okay? Do
+
+Speaker 2  51:59  
+and she done Max, I want to get rid of these two columns, since they're already used above. Capture. It's Carly on. I
+
+Speaker 2  52:33  
+I know we keep losing some people for other meetings, understandable. I think for sake of the time, maybe we won't go through IFT eight, unless anyone has any problems with that, or, sorry if anyone really wants to talk about what they did for IFT eight, I just want to take this time to sort of write down general notes, like, how did everyone take the exercise, when, what type of statistics or metrics we captured from this? Or general notes? I think the main thing that came up is that object ID is pretty important. So sooner we can give a object an ID that can be carried throughout that really helps a lot of the other systems.
+
+Unknown Speaker  53:26  
+Project ID is message ID, sorry, so not
+
+Speaker 2  53:31  
+necessarily the message ID. But do we declare the satellite give it a unique identifier that Everyone can associate with? I?
+
+Speaker 11  54:13  
+I guess one addition there of the traceability is not only internal to Kafka, or Wilders are Kafka, but UDL. I know a lot of collect request responses are going out that way, but in the future, there's places on UDL for conjunction and other assessments, potentially so as we look to have an ID or some way to trace having a mechanism or identify a mechanism, whether it's a field or set of fields in the UDL as well, to help with that traceability, because we're going to have to trace across both systems, or likely will. So,
+
+Unknown Speaker  54:52  
+yeah, that's good plan.
+
+Speaker 3  55:04  
+Actually, in my detection, I'm assigning a very unique ID to each rocket or launch or all my six messages, six type optimistic. But we need a global,
+
+Speaker 2  55:18  
+yeah, we need some kind of centralized system. So it makes sense to kick it off as far left as whatever picks it up first. That could be an answer of who gets to assign a unique ID, but all the systems have to agree about how that unique ID is designed. Yes. Is that a like the message ID, or it's the same type of format? There are we going to do like numbered, like an or add ID? You just keep counting up. So there just has to be some kind of centralized stuff that everyone replicates. I
+
+Unknown Speaker  56:34  
+any other notes.
+
+Speaker 3  56:37  
+One note I want to suggest is, before we do some exercise, actually, we should test our system. So I remember everything was working just two days before ago, before the launch exercise, and one of the system script didn't work well. So because I modified just one hour ago, I modified the code and then it didn't work. So if you want to do some testing, I mean some exercise. I think we should test before the exercise, right? Sometimes they will just run perfectly. My really, very bad experience, I modified the code just one more ago, and I was very confident, because I'm a software engineer, I know this will 100% work. My code will never break, but didn't work. So testing before the launch,
+
+Speaker 4  57:28  
+one suggestion here so to everybody, speak to the company that's going to trigger your algorithm. Speak to the company that's going to take your algorithms output and trigger theirs, and please use BAFTA to send test messages. Don't be scared to send just fake messages to test the triggers. Do it repeatedly and make sure that your algorithms are robust, so that they work when we're doing these exercises. Thank you.
+
+Speaker 3  57:59  
+Can you use the test topic that will also help so the main message bus will not be this message? Jason like we can keep the separate topic for testing. Suppose I want to test with aloha. I can send a test message to the test topic, and he can subscribe from the test topic. And so we will not fill the real message bus with the voice, right what do you think?
+
+Unknown Speaker  58:22  
+So?
+
+Speaker 4  58:25  
+I don't think there are any financial or other professions by sending fake messages on the real topics right now. So I would suggest at this moment, if anybody else knows otherwise, John, do you want to chime in? We
+
+Speaker 3  58:42  
+can have some flag test like this message? Test message,
+
+Speaker 11  58:46  
+yeah, I would agree. I would put a flag on the message itself right now, versus trying to discriminate by topic, and we're doing that as an example with some of our launch messages, we're using the data mode to differentiate between if it's real, simulated read and test.
+
+Speaker 4  59:07  
+Like in the header of the message, have a variable that says, Test, true.
+
+Speaker 11  59:14  
+I think it could go in the header. I know if you're adopting a UDL schema for your payload, they have a data mode, and I'd recommend using that data mode as the main key if you're if you're using a UDL schema and
+
+Speaker 5  59:28  
+that that's in the body or the payload, yeah, it would be nice if we could standardize around, maybe having that field and stuff on all the messages. So it's kind of, I don't know if he just makes it easier, if you have some standard mechanisms for communicating those
+
+Speaker 4  59:52  
+couldn't. Could you post that on the SS five collab channel. Chris, like a sample message on it. Yep. Thank you
+
+Unknown Speaker  1:00:05  
+and I. can press that that's associated, at least with whatever IB we come up with, and that we can also been associated to.
+
+Unknown Speaker  1:00:32  
+I John, is there anyone right of you that picked up this question request? You get any responses? Back.
+
+Speaker 11  1:00:45  
+I will have to check I didn't look at the response. I'd have to correlate the response ID to the Collect request.
+
+Speaker 2  1:00:59  
+I think we got history processes in the chain, but this was before and launch, so we didn't have a lot of our launch stuff. And so there's a lot of again, this is our first one that we're trying to do this stuff. I think that's a good metric to have. Think we got for promoted. You said you reflected seven days ahead.
+
+Speaker 3  1:01:35  
+Sorry, I missed you. Diverge. What is this for the
+
+Unknown Speaker  1:01:40  
+pre launch rate, yeah,
+
+Unknown Speaker  1:01:44  
+just picking up metrics
+
+Unknown Speaker  1:01:50  
+pre launch I
+
+Unknown Speaker  1:02:00  
+think automation could be metric
+
+Speaker 2  1:02:09  
+automation, so yeah, that sort of sort of longest automated chain was, right now, three processes, or were you thinking
+
+Speaker 3  1:02:21  
+of the timing, like how accurate you detect something before the actual event, accuracy rate, not accuracy metric, like how accurate is the detection, but I think the Time, how close this is the real knowledge.
+
+Speaker 2  1:02:42  
+So you're out by like, a minute and 10 seconds, I think on your screen for your webcam for dinner, but if I'm using the
+
+Speaker 3  1:02:53  
+phone, sometimes for video images five minutes or something, I
+
+Speaker 2  1:03:10  
+I will also run through and say how many processes contributed. Any other
+
+Speaker 3  1:03:22  
+ventures, like, approach, like, how many nodes we have? Like, we can make it through your graph and find some kind of properties of state graphs, right that can tell you,
+
+Speaker 2  1:03:33  
+yeah. So that is something that we can get with the traceability, especially something that space protocol is looking at. But, yeah. Graphical Analysis, how many nodes? So that's what I was thinking about. How many processes did this exercise touch?
+
+Unknown Speaker  1:04:01  
+Another sorry, go ahead from coverage
+
+Unknown Speaker  1:04:10  
+for detection or
+
+Speaker 3  1:04:12  
+coverage for entire exercise, even for detection like sometimes we don't have courage. Sometimes we have so how much percentage COVID We have for all systems that
+
+Speaker 2  1:04:30  
+one also comes out in the longest chain, and Once we start doing the graph analysis. But yeah, actually doing, like, the geo spacial coverage on the earth or once it's in orbit.
+
+Speaker 3  1:04:54  
+Usually one more thing, if I want to add, no, I have no idea it's correct or not. How, how real time is this? Even you don't have coverage, even you don't have anything, still, you can predict or produce some, for example, recommendation or, for example, trajectory, for example, anything, right? So it can real time is another thing, even it's not accurate, right? So
+
+Unknown Speaker  1:05:18  
+yeah, and that's
+
+Speaker 2  1:05:21  
+where we're trying to capture here with. Like the launch detection was minute off, or we picked it up seven days ahead. So we, I guess we can call that event that's the same time. Such as,
+
+Unknown Speaker  1:05:50  
+any other suggestions.
+
+Speaker 14  1:05:54  
+One suggestion, I don't know how to articulate this in the best way, but possibly measuring the when the event occurs, the time it takes to actually get to like the end process related to that. So whether that's like a tasking from c2 to, you know, task more sensors, or wherever it is, or a response recommendation. And so if we could measure like, you know, the launch happened at this time. And there was, you know, these three processes that followed, and we got a response recommendation. You know, it would be good to know if it's happening 30 minutes after the launch happened. And then at that point, the response recommendation isn't even useful, or thing for sensor tasking. Or those are just the two examples that come to mind. So that's a little vague, but somehow kind of on the same vibe of with Verma, the measuring how long it took them to get the launch detection. But also we could probably do that like in between passing data to some kind of metric of, yeah, I think
+
+Speaker 3  1:07:03  
+you can also dispatch the message even we don't have any trigger, but make some kind of field. This is the assumption of prediction. Maybe it will update it when we get the trigger from other services.
+
+Speaker 4  1:07:22  
+If I can jump in for a second here, to your point Max. I think those are all very important metrics. I don't know if anybody from space protocol is here, if they're doing traceability studies, and thinking trigger times, as well as response times, might be tracked and reported by them, and maybe shouldn't be.
+
+Speaker 14  1:07:58  
+Yeah, and if they're available to do that, I think that would be great to report on, and they would kind of have a higher, higher level view of what, what's going On.
+
+Speaker 4  1:08:16  
+Yes, your time to critical, critical messages from launch, from the first trigger, might be very relevant and should be, should be tracked. I
+
+Speaker 2  1:08:44  
+I'm gonna characterize that as time covering the compound.
+
+Speaker 2  1:08:59  
+Next thing, unless anyone has any other ideas, we can continue to iterate on these. Some of these, I don't know how to answer in a way. I don't know if we can get that for this exercise, like time coverage. I guess we can estimate. We don't have traceability metric this time. I
+
+Speaker 2  1:09:27  
+message trace events don't have that at the moment event processing, so I guess everyone can sort of do that on their own events. So maybe that's something I should add here. The results is, how long did your processing take?
+
+Speaker 14  1:09:53  
+Yeah, I think that's a great or an easy thing to add that everyone could measure. I
+
+Speaker 2  1:10:05  
+sensor coverage that one's pretty hard to quantify, this one and quantify, I guess, John with the sensor access window. Can you guys get that?
+
+Speaker 11  1:10:25  
+Yes, we can do sensor access. And if you guys have specific sensors as well, specifically, they're available on the UDL and publishing at least lat long information, ideally, other constraint information, we can do access. Okay,
+
+Unknown Speaker  1:10:42  
+we might have something, but it might be intensive. I'll go fill in the contributing notes. I'll just count.
+
+Speaker 2  1:10:56  
+And then for time coverage, I guess I'll do first time steps, the last time step, which will probably be promoted your first message To the last thing we got was the request i
+
+Speaker 2  1:11:23  
+All right, next launches, if you guys have any good idea of launches that we can emulate. So it's al Soyo, MS, 27 April 7. I think a month out is a good agents business and time to regroup, try to implement any changes that we want, to overcome, any other suggestions.
+
+Unknown Speaker  1:11:56  
+Anything
+
+Speaker 3  1:11:58  
+French do, I think something like in the South America, what do you think? So we can have coverage for all the sensors, also New Zealand is also based,
+
+Speaker 2  1:12:15  
+yeah, so work for launches. There was just the launch out of French Guiana, earlier this week, I took a look at that like capability, catch it. So those could be good events. I
+
+Speaker 2  1:12:46  
+as any domestic guys, that might be interesting
+
+Speaker 3  1:12:55  
+next SpaceX, IFT eight or nine, I think it will be nine. Yeah, I to be more. I
+
+Speaker 2  1:13:06  
+just keep thinking about those things, and you can keep posting to the channel, alright? So what I'm going to do afterwards, I'll write out the summary about either the general discretion notes. These were some of the metrics that we're trying to capture. These are some of the launches that we're going to go after we can do this, try to capture this offline for the IFT eight launch, for these metrics and the artifacts. Sorry, we didn't get to that launch, but I think we had some good discussion and some of these other points with that. I guess I turn it back to anyone, if there's any other comments, anything else that wants to be said.
+
+Speaker 2  1:14:01  
+Thanks Greg for organizing this. Yeah, thank you everyone for contributing. I think these are fun to show what we can accomplish. So thank you all as well. Thank you. Talk to you all later.
+
+Unknown Speaker  1:14:21  
+Thank you. Bye, You.
+
+Transcribed by https://otter.ai

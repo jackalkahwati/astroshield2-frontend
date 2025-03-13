@@ -1,0 +1,1246 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Unified Data Library Services API",
+    "version": "1.30.0 Daiquiri",
+    "description": "Unified Data Library Services OpenAPI v3 documentation.",
+    "termsOfService": "storefront/storefront/appConfig/useragreement.html",
+    "contact": {
+      "name": "Sage Andorka, Deputy, Cross-Mission Ground",
+      "email": "unifieddatalibrary@bluestaq.com"
+    }
+  },
+  "tags": [
+    {
+      "name": "Ground Imagery",
+      "description": "This collection of services provides operations for querying and manipulation of ground imagery of terrestrial regions from on-orbit, air, and other sensors. Includes metadata on the image (time, region, source, etc) as well as binary content (typically GeoTIFF). Binary content must be downloaded individually by ID using the 'getFile' operation. Well-Known Text (WKT) and GeoJSON formats are used for GIS representation and query support (see https://www.opengeospatial.org/standards/wkt-crs and https://geojson.org/ for more information on these formats)."
+    }
+  ],
+  "externalDocs": {
+    "url": "udl/openapi.json"
+  },
+  "servers": [
+    {
+      "url": "https://unifieddatalibrary.com"
+    }
+  ],
+  "paths": {
+    "/filedrop/udl-groundimagery": {
+      "post": {
+        "servers": [
+          {
+            "url": "https://imagery.unifieddatalibrary.com",
+            "description": "Imagery upload server"
+          }
+        ],
+        "tags": [
+          "Ground Imagery"
+        ],
+        "description": "The ground imagery service allows for contribution of images. </br> This service operation requires a zip file in the body of the POST request.  The zip file must contain exactly two files. </br> <h3> 1) A json file with any file name that ends in .json  e.g. MyDataFile.json  The contents of the json file must be valid according to the schema for Ground Imagery. </br> 2) A binary image file of the specified types allowed for GroundImagery. </h3> The metadata and image files will be stored and associated with each other allowing queries of the data retrieval of the binary images. </br> This operation is intended to be used for automated feeds into UDL. A specific role is required to perform this service operation. Please contact the UDL team for assistance.\n",
+        "operationId": "filedrop_udl_groundimagery_post_id",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GroundImagery_Ingest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Accepted"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "415": {
+            "description": "Unsupported Media Type"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/udl/groundimagery": {
+      "get": {
+        "description": "Service operation to dynamically query data by a variety of query parameters not specified in this API documentation. See the queryhelp operation (/udl/&lt;datatype&gt;/queryhelp) for more details on valid/required query parameter information.",
+        "tags": [
+          "Ground Imagery"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GroundImagery_Abridged"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "406": {
+            "description": "MediaType Not Accepted by Request Headers"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "parameters": [
+          {
+            "name": "imageTime",
+            "description": "Timestamp the image was captured/produced. (YYYY-MM-DDTHH:MM:SS.ssssssZ)",
+            "required": true,
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            },
+            "in": "query"
+          }
+        ]
+      },
+      "post": {
+        "description": "Service operation to take a single GroundImagery object as a POST body and ingest into the database. A specific role is required to perform this service operation. Please contact the UDL team for assistance.",
+        "tags": [
+          "Ground Imagery"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GroundImagery_Ingest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "415": {
+            "description": "MediaType Unsupported"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/udl/groundimagery/{id}": {
+      "get": {
+        "description": "Service operation to get a single GroundImagery record by its unique ID passed as a path parameter. GroundImagery represents metadata about a ground image, as well as the actual binary image data.",
+        "tags": [
+          "Ground Imagery"
+        ],
+        "parameters": [
+          {
+            "description": "The ID of the GroundImagery to find.",
+            "required": true,
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GroundImagery_Full"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "404": {
+            "description": "Item Not Found"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "406": {
+            "description": "MediaType Not Accepted by Request Headers"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/udl/groundimagery/count": {
+      "get": {
+        "description": "Service operation to return the count of records satisfying the specified query parameters. This operation is useful to determine how many records pass a particular query criteria without retrieving large amounts of data. See the queryhelp operation (/udl/&lt;datatype&gt;/queryhelp) for more details on valid/required query parameter information.",
+        "tags": [
+          "Ground Imagery"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "406": {
+            "description": "MediaType Not Accepted by Request Headers"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "parameters": [
+          {
+            "name": "imageTime",
+            "description": "Timestamp the image was captured/produced. (YYYY-MM-DDTHH:MM:SS.ssssssZ)",
+            "required": true,
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            },
+            "in": "query"
+          }
+        ]
+      }
+    },
+    "/udl/groundimagery/getFile/{id}": {
+      "get": {
+        "description": "Service operation to get a single GroundImagery binary image by its unique ID passed as a path parameter. The image is returned as an attachment Content-Disposition.",
+        "tags": [
+          "Ground Imagery"
+        ],
+        "parameters": [
+          {
+            "description": "The ID of the binary GroundImagery to return.",
+            "required": true,
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/octet-stream": {}
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "404": {
+            "description": "Item Not Found"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "406": {
+            "description": "MediaType Not Accepted by Request Headers"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/udl/groundimagery/history": {
+      "get": {
+        "description": "Service operation to dynamically query historical data by a variety of query parameters not specified in this API documentation.  See the queryhelp operation (/udl/&lt;datatype&gt;/queryhelp) for more details on valid/required query parameter information.",
+        "tags": [
+          "Ground Imagery"
+        ],
+        "parameters": [
+          {
+            "description": "optional, fields for retrieval. When omitted, ALL fields are assumed. See the queryhelp operation (/udl/&lt;datatype&gt;/queryhelp) for more details on valid query fields that can be selected.",
+            "name": "columns",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "imageTime",
+            "description": "Timestamp the image was captured/produced. (YYYY-MM-DDTHH:MM:SS.ssssssZ)",
+            "required": true,
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            },
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GroundImagery_Full"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "406": {
+            "description": "MediaType Not Accepted by Request Headers"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/udl/groundimagery/history/aodr": {
+      "get": {
+        "description": "Service operation to dynamically query historical data by a variety of query parameters not specified in this API documentation, then write that data to the Secure Content Store.  See the queryhelp operation (/udl/&lt;datatype&gt;/queryhelp) for more details on valid/required query parameter information.",
+        "tags": [
+          "Ground Imagery"
+        ],
+        "parameters": [
+          {
+            "description": "optional, fields for retrieval. When omitted, ALL fields are assumed. See the queryhelp operation (/udl/&lt;datatype&gt;/queryhelp) for more details on valid query fields that can be selected.",
+            "name": "columns",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "optional, notification method for the created file link. When omitted, EMAIL is assumed. Current valid values are: EMAIL, SMS.",
+            "name": "notification",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "optional, field delimiter when the created file is not JSON. Must be a single character chosen from this set: (',', ';', ':', '|'). When omitted, \",\" is used. It is strongly encouraged that your field delimiter be a character unlikely to occur within the data.",
+            "name": "outputDelimiter",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "optional, output format for the file. When omitted, JSON is assumed. Current valid values are: JSON and CSV.",
+            "name": "outputFormat",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "imageTime",
+            "description": "Timestamp the image was captured/produced. (YYYY-MM-DDTHH:MM:SS.ssssssZ)",
+            "required": true,
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            },
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "406": {
+            "description": "MediaType Not Accepted by Request Headers"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/udl/groundimagery/history/count": {
+      "get": {
+        "description": "Service operation to return the count of records satisfying the specified query parameters. This operation is useful to determine how many records pass a particular query criteria without retrieving large amounts of data. See the queryhelp operation (/udl/&lt;datatype&gt;/queryhelp) for more details on valid/required query parameter information.",
+        "tags": [
+          "Ground Imagery"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "406": {
+            "description": "MediaType Not Accepted by Request Headers"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "parameters": [
+          {
+            "name": "imageTime",
+            "description": "Timestamp the image was captured/produced. (YYYY-MM-DDTHH:MM:SS.ssssssZ)",
+            "required": true,
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            },
+            "in": "query"
+          }
+        ]
+      }
+    },
+    "/udl/groundimagery/queryhelp": {
+      "get": {
+        "description": "Service operation to provide detailed information on available dynamic query parameters for a particular data type.",
+        "tags": [
+          "Ground Imagery"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "User Unauthorized"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "406": {
+            "description": "MediaType Not Accepted by Request Headers"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/udl/groundimagery/tuple": {
+      "get": {
+        "description": "Service operation to dynamically query data and only return specified columns/fields. Requested columns are specified by the 'columns' query parameter and should be a comma separated list of valid fields for the specified data type. classificationMarking is always returned. See the queryhelp operation (/udl/<datatype>/queryhelp) for more details on valid/required query parameter information. An example URI: /udl/elset/tuple?columns=satNo,period&epoch=>now-5 hours would return the satNo and period of elsets with an epoch greater than 5 hours ago.",
+        "tags": [
+          "Ground Imagery"
+        ],
+        "parameters": [
+          {
+            "description": "Comma-separated list of valid field names for this data type to be returned in the response. Only the fields specified will be returned as well as the classification marking of the data, if applicable. See the ‘queryhelp’ operation for a complete list of possible fields.",
+            "required": true,
+            "name": "columns",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "imageTime",
+            "description": "Timestamp the image was captured/produced. (YYYY-MM-DDTHH:MM:SS.ssssssZ)",
+            "required": true,
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            },
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GroundImagery_Full"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Invalid/Missing User Credentials"
+          },
+          "403": {
+            "description": "User Is Not Authorized"
+          },
+          "405": {
+            "description": "Method Not Allowed"
+          },
+          "406": {
+            "description": "MediaType Not Accepted by Request Headers"
+          },
+          "429": {
+            "description": "Rate of Requests Exceeds Allowed Limit"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "GroundImagery_Abridged": {
+        "description": "Imagery of terrestrial regions from on-orbit, air, and other sensors.",
+        "required": [
+          "classificationMarking",
+          "imageTime",
+          "filename",
+          "source",
+          "dataMode"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Unique identifier of the record, auto-generated by the system.",
+            "maxLength": 36,
+            "minLength": 1,
+            "type": "string",
+            "example": "GROUNDIMAGERY-ID"
+          },
+          "idSensor": {
+            "description": "Optional ID of the sensor that produced this ground image.",
+            "maxLength": 36,
+            "type": "string",
+            "example": "SENSOR-ID"
+          },
+          "classificationMarking": {
+            "description": "Classification marking of the data in IC/CAPCO Portion-marked format.",
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string",
+            "example": "U"
+          },
+          "imageTime": {
+            "format": "date-time",
+            "description": "Timestamp the image was captured/produced.",
+            "type": "string",
+            "example": "2021-01-01T01:01:01.123456Z"
+          },
+          "filename": {
+            "description": "Name of the image file.",
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string",
+            "example": "Example file name"
+          },
+          "regionText": {
+            "description": "Geographical region or polygon (lon/lat pairs), as depicted by the Well-Known Text representation of the geometry/geography, of the image as projected on the ground. WKT reference: https://www.opengeospatial.org/standards/wkt-crs. Ignored if included with a create operation that also specifies a valid region.",
+            "maxLength": 65535,
+            "type": "string",
+            "example": "POLYGON((67.3291113966927 26.156175339112,67.2580009640721 26.091022064271,67.1795862381682 26.6637992964562,67.2501237475598 26.730115808233,67.3291113966927 26.156175339112))"
+          },
+          "regionGeoJSON": {
+            "description": "Geographical region or polygon (lat/lon pairs), as depicted by the GeoJSON representation of the geometry/geography, of the image as projected on the ground. Reference: https://geojson.org/. Ignored if included with a create operation that also specifies a valid region or regionText.",
+            "maxLength": 65535,
+            "type": "string",
+            "example": "{\"type\":\"Polygon\",\"coordinates\":[ [ [ 67.3291113966927, 26.156175339112 ], [ 67.2580009640721, 26.091022064271 ], [ 67.1795862381682, 26.6637992964562 ], [ 67.2501237475598, 26.730115808233 ], [ 67.3291113966927, 26.156175339112 ] ] ] }"
+          },
+          "regionType": {
+            "description": "Type of region as projected on the ground.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "Polygon"
+          },
+          "regionNDims": {
+            "format": "int32",
+            "description": "Number of dimensions of the geometry depicted by region.",
+            "type": "integer",
+            "example": 2
+          },
+          "regionSRid": {
+            "format": "int32",
+            "description": "Geographical spatial_ref_sys for region.",
+            "type": "integer",
+            "example": 4326
+          },
+          "origSensorId": {
+            "description": "Optional identifier provided by source to indicate the sensor identifier used to detect this event. This may be an internal identifier and not necessarily a valid sensor ID.",
+            "maxLength": 36,
+            "type": "string",
+            "example": "ORIGSENSOR-ID"
+          },
+          "subjectId": {
+            "description": "Optional identifier of the subject/target of the image, useful for correlating multiple images of the same subject.",
+            "maxLength": 36,
+            "type": "string",
+            "example": "SUBJECT-ID"
+          },
+          "name": {
+            "description": "Optional name/description associated with this image.",
+            "maxLength": 128,
+            "type": "string",
+            "example": "Example name"
+          },
+          "source": {
+            "description": "Source of the data.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string",
+            "example": "Bluestaq"
+          },
+          "origin": {
+            "description": "Originating system or organization which produced the data, if different from the source. The origin may be different than the source if the source was a mediating system which forwarded the data on behalf of the origin system. If null, the source may be assumed to be the origin.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "THIRD_PARTY_DATASOURCE"
+          },
+          "origNetwork": {
+            "description": "The originating source network on which this record was created, auto-populated by the system.",
+            "maxLength": 32,
+            "minLength": 1,
+            "type": "string",
+            "readOnly": true,
+            "example": "ORIG"
+          },
+          "sourceDL": {
+            "description": "The source data library from which this record was received. This could be a remote or tactical UDL or another data library. If null, the record should be assumed to have originated from the primary Enterprise UDL.",
+            "maxLength": 64,
+            "type": "string",
+            "readOnly": true,
+            "example": "AXE"
+          },
+          "dataMode": {
+            "description": "Indicator of whether the data is EXERCISE, REAL, SIMULATED, or TEST data:\n\nEXERCISE:&nbsp;Data pertaining to a government or military exercise. The data may include both real and simulated data.\n\nREAL:&nbsp;Data collected or produced that pertains to real-world objects, events, and analysis.\n\nSIMULATED:&nbsp;Synthetic data generated by a model to mimic real-world datasets.\n\nTEST:&nbsp;Specific datasets used to evaluate compliance with specifications and requirements, and for validating technical, functional, and performance characteristics.\n\n",
+            "maxLength": 32,
+            "minLength": 1,
+            "enum": [
+              "REAL",
+              "TEST",
+              "SIMULATED",
+              "EXERCISE"
+            ],
+            "type": "string",
+            "example": "TEST"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "description": "Time the row was created in the database, auto-populated by the system.",
+            "type": "string",
+            "readOnly": true,
+            "example": "2018-01-01T16:00:00.123Z"
+          },
+          "createdBy": {
+            "description": "Application user who created the row in the database, auto-populated by the system.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string",
+            "readOnly": true,
+            "example": "some.user"
+          },
+          "transactionId": {
+            "description": "Optional identifier to track a commercial or marketplace transaction executed to produce this data.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "37bdef1f-5a4f-4776-bee4-7a1e0ec7d35a"
+          },
+          "notes": {
+            "description": "Description and notes of the image.",
+            "maxLength": 1024,
+            "type": "string",
+            "example": "Example notes"
+          },
+          "format": {
+            "description": "Optional, field indicating type of image, NITF, PNG, etc.",
+            "maxLength": 16,
+            "minLength": 1,
+            "type": "string",
+            "example": "PNG"
+          },
+          "filesize": {
+            "format": "int64",
+            "description": "Size of the image file. Units in bytes. If filesize is provided without an associated file, it defaults to 0.",
+            "type": "integer",
+            "example": 0
+          },
+          "checksumValue": {
+            "description": "MD5 value of the file. The ingest/create operation will automatically generate the value.",
+            "maxLength": 256,
+            "minLength": 1,
+            "type": "string",
+            "example": "120EA8A25E5D487BF68B5F7096440019"
+          }
+        }
+      },
+      "GroundImagery_Full": {
+        "description": "Imagery of terrestrial regions from on-orbit, air, and other sensors.",
+        "required": [
+          "classificationMarking",
+          "imageTime",
+          "filename",
+          "source",
+          "dataMode"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Unique identifier of the record, auto-generated by the system.",
+            "maxLength": 36,
+            "minLength": 1,
+            "type": "string",
+            "example": "GROUNDIMAGERY-ID"
+          },
+          "idSensor": {
+            "description": "Optional ID of the sensor that produced this ground image.",
+            "maxLength": 36,
+            "type": "string",
+            "example": "SENSOR-ID"
+          },
+          "classificationMarking": {
+            "description": "Classification marking of the data in IC/CAPCO Portion-marked format.",
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string",
+            "example": "U"
+          },
+          "imageTime": {
+            "format": "date-time",
+            "description": "Timestamp the image was captured/produced.",
+            "type": "string",
+            "example": "2021-01-01T01:01:01.123456Z"
+          },
+          "filename": {
+            "description": "Name of the image file.",
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string",
+            "example": "Example file name"
+          },
+          "region": {
+            "description": "Geographical region or polygon (lon/lat pairs) of the image as projected on the ground in geoJSON or geoText format. This is an optional convenience field only used for create operations. The system will auto-detect the format (Well Known Text or GeoJSON) and populate both regionText and regionGeoJSON fields appropriately. When omitted, regionText or regionGeoJSON is expected.",
+            "maxLength": 65535,
+            "type": "string",
+            "example": "POLYGON((26.156175339112 67.3291113966927,26.0910220642717 67.2580009640721,26.6637992964562 67.1795862381682,26.730115808233 67.2501237475598,26.156175339112 67.3291113966927))"
+          },
+          "regionText": {
+            "description": "Geographical region or polygon (lon/lat pairs), as depicted by the Well-Known Text representation of the geometry/geography, of the image as projected on the ground. WKT reference: https://www.opengeospatial.org/standards/wkt-crs. Ignored if included with a create operation that also specifies a valid region.",
+            "maxLength": 65535,
+            "type": "string",
+            "example": "POLYGON((67.3291113966927 26.156175339112,67.2580009640721 26.091022064271,67.1795862381682 26.6637992964562,67.2501237475598 26.730115808233,67.3291113966927 26.156175339112))"
+          },
+          "regionGeoJSON": {
+            "description": "Geographical region or polygon (lat/lon pairs), as depicted by the GeoJSON representation of the geometry/geography, of the image as projected on the ground. Reference: https://geojson.org/. Ignored if included with a create operation that also specifies a valid region or regionText.",
+            "maxLength": 65535,
+            "type": "string",
+            "example": "{\"type\":\"Polygon\",\"coordinates\":[ [ [ 67.3291113966927, 26.156175339112 ], [ 67.2580009640721, 26.091022064271 ], [ 67.1795862381682, 26.6637992964562 ], [ 67.2501237475598, 26.730115808233 ], [ 67.3291113966927, 26.156175339112 ] ] ] }"
+          },
+          "regionType": {
+            "description": "Type of region as projected on the ground.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "Polygon"
+          },
+          "regionNDims": {
+            "format": "int32",
+            "description": "Number of dimensions of the geometry depicted by region.",
+            "type": "integer",
+            "example": 2
+          },
+          "regionSRid": {
+            "format": "int32",
+            "description": "Geographical spatial_ref_sys for region.",
+            "type": "integer",
+            "example": 4326
+          },
+          "origSensorId": {
+            "description": "Optional identifier provided by source to indicate the sensor identifier used to detect this event. This may be an internal identifier and not necessarily a valid sensor ID.",
+            "maxLength": 36,
+            "type": "string",
+            "example": "ORIGSENSOR-ID"
+          },
+          "subjectId": {
+            "description": "Optional identifier of the subject/target of the image, useful for correlating multiple images of the same subject.",
+            "maxLength": 36,
+            "type": "string",
+            "example": "SUBJECT-ID"
+          },
+          "name": {
+            "description": "Optional name/description associated with this image.",
+            "maxLength": 128,
+            "type": "string",
+            "example": "Example name"
+          },
+          "source": {
+            "description": "Source of the data.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string",
+            "example": "Bluestaq"
+          },
+          "origin": {
+            "description": "Originating system or organization which produced the data, if different from the source. The origin may be different than the source if the source was a mediating system which forwarded the data on behalf of the origin system. If null, the source may be assumed to be the origin.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "THIRD_PARTY_DATASOURCE"
+          },
+          "origNetwork": {
+            "description": "The originating source network on which this record was created, auto-populated by the system.",
+            "maxLength": 32,
+            "minLength": 1,
+            "type": "string",
+            "readOnly": true,
+            "example": "ORIG"
+          },
+          "sourceDL": {
+            "description": "The source data library from which this record was received. This could be a remote or tactical UDL or another data library. If null, the record should be assumed to have originated from the primary Enterprise UDL.",
+            "maxLength": 64,
+            "type": "string",
+            "readOnly": true,
+            "example": "AXE"
+          },
+          "dataMode": {
+            "description": "Indicator of whether the data is EXERCISE, REAL, SIMULATED, or TEST data:\n\nEXERCISE:&nbsp;Data pertaining to a government or military exercise. The data may include both real and simulated data.\n\nREAL:&nbsp;Data collected or produced that pertains to real-world objects, events, and analysis.\n\nSIMULATED:&nbsp;Synthetic data generated by a model to mimic real-world datasets.\n\nTEST:&nbsp;Specific datasets used to evaluate compliance with specifications and requirements, and for validating technical, functional, and performance characteristics.\n\n",
+            "maxLength": 32,
+            "minLength": 1,
+            "enum": [
+              "REAL",
+              "TEST",
+              "SIMULATED",
+              "EXERCISE"
+            ],
+            "type": "string",
+            "example": "TEST"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "description": "Time the row was created in the database, auto-populated by the system.",
+            "type": "string",
+            "readOnly": true,
+            "example": "2018-01-01T16:00:00.123Z"
+          },
+          "createdBy": {
+            "description": "Application user who created the row in the database, auto-populated by the system.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string",
+            "readOnly": true,
+            "example": "some.user"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "description": "Read-only time the row was updated in the database, set automatically by the system on update.",
+            "type": "string",
+            "readOnly": true,
+            "example": "2018-01-02T16:00:00.123Z"
+          },
+          "updatedBy": {
+            "description": "Application user who last updated the row in the database, set by the system automatically and ignored on create/edit operations.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string",
+            "readOnly": true,
+            "example": "some.user"
+          },
+          "transactionId": {
+            "description": "Optional identifier to track a commercial or marketplace transaction executed to produce this data.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "37bdef1f-5a4f-4776-bee4-7a1e0ec7d35a"
+          },
+          "tags": {
+            "description": "Optional array of provider/source specific tags for this data, where each element is no longer than 32 characters, used for implementing data owner conditional access controls to restrict access to the data. Should be left null by data providers unless conditional access controls are coordinated with the UDL team.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "PROVIDER_TAG1",
+              "PROVIDER_TAG2"
+            ]
+          },
+          "keywords": {
+            "description": "Optional array of keywords for this image.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "KEYWORD1",
+              "KEYWORD2"
+            ]
+          },
+          "notes": {
+            "description": "Description and notes of the image.",
+            "maxLength": 1024,
+            "type": "string",
+            "example": "Example notes"
+          },
+          "format": {
+            "description": "Optional, field indicating type of image, NITF, PNG, etc.",
+            "maxLength": 16,
+            "minLength": 1,
+            "type": "string",
+            "example": "PNG"
+          },
+          "filesize": {
+            "format": "int64",
+            "description": "Size of the image file. Units in bytes. If filesize is provided without an associated file, it defaults to 0.",
+            "type": "integer",
+            "example": 0
+          },
+          "checksumValue": {
+            "description": "MD5 value of the file. The ingest/create operation will automatically generate the value.",
+            "maxLength": 256,
+            "minLength": 1,
+            "type": "string",
+            "example": "120EA8A25E5D487BF68B5F7096440019"
+          }
+        }
+      },
+      "GroundImagery_Ingest": {
+        "description": "Imagery of terrestrial regions from on-orbit, air, and other sensors.",
+        "required": [
+          "classificationMarking",
+          "imageTime",
+          "filename",
+          "source",
+          "dataMode"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Unique identifier of the record, auto-generated by the system.",
+            "maxLength": 36,
+            "minLength": 1,
+            "type": "string",
+            "example": "GROUNDIMAGERY-ID"
+          },
+          "idSensor": {
+            "description": "Optional ID of the sensor that produced this ground image.",
+            "maxLength": 36,
+            "type": "string",
+            "example": "SENSOR-ID"
+          },
+          "classificationMarking": {
+            "description": "Classification marking of the data in IC/CAPCO Portion-marked format.",
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string",
+            "example": "U"
+          },
+          "imageTime": {
+            "format": "date-time",
+            "description": "Timestamp the image was captured/produced.",
+            "type": "string",
+            "example": "2021-01-01T01:01:01.123456Z"
+          },
+          "filename": {
+            "description": "Name of the image file.",
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string",
+            "example": "Example file name"
+          },
+          "region": {
+            "description": "Geographical region or polygon (lon/lat pairs) of the image as projected on the ground in geoJSON or geoText format. This is an optional convenience field only used for create operations. The system will auto-detect the format (Well Known Text or GeoJSON) and populate both regionText and regionGeoJSON fields appropriately. When omitted, regionText or regionGeoJSON is expected.",
+            "maxLength": 65535,
+            "type": "string",
+            "example": "POLYGON((26.156175339112 67.3291113966927,26.0910220642717 67.2580009640721,26.6637992964562 67.1795862381682,26.730115808233 67.2501237475598,26.156175339112 67.3291113966927))"
+          },
+          "regionText": {
+            "description": "Geographical region or polygon (lon/lat pairs), as depicted by the Well-Known Text representation of the geometry/geography, of the image as projected on the ground. WKT reference: https://www.opengeospatial.org/standards/wkt-crs. Ignored if included with a create operation that also specifies a valid region.",
+            "maxLength": 65535,
+            "type": "string",
+            "example": "POLYGON((67.3291113966927 26.156175339112,67.2580009640721 26.091022064271,67.1795862381682 26.6637992964562,67.2501237475598 26.730115808233,67.3291113966927 26.156175339112))"
+          },
+          "regionGeoJSON": {
+            "description": "Geographical region or polygon (lat/lon pairs), as depicted by the GeoJSON representation of the geometry/geography, of the image as projected on the ground. Reference: https://geojson.org/. Ignored if included with a create operation that also specifies a valid region or regionText.",
+            "maxLength": 65535,
+            "type": "string",
+            "example": "{\"type\":\"Polygon\",\"coordinates\":[ [ [ 67.3291113966927, 26.156175339112 ], [ 67.2580009640721, 26.091022064271 ], [ 67.1795862381682, 26.6637992964562 ], [ 67.2501237475598, 26.730115808233 ], [ 67.3291113966927, 26.156175339112 ] ] ] }"
+          },
+          "regionType": {
+            "description": "Type of region as projected on the ground.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "Polygon"
+          },
+          "regionNDims": {
+            "format": "int32",
+            "description": "Number of dimensions of the geometry depicted by region.",
+            "type": "integer",
+            "example": 2
+          },
+          "regionSRid": {
+            "format": "int32",
+            "description": "Geographical spatial_ref_sys for region.",
+            "type": "integer",
+            "example": 4326
+          },
+          "origSensorId": {
+            "description": "Optional identifier provided by source to indicate the sensor identifier used to detect this event. This may be an internal identifier and not necessarily a valid sensor ID.",
+            "maxLength": 36,
+            "type": "string",
+            "example": "ORIGSENSOR-ID"
+          },
+          "subjectId": {
+            "description": "Optional identifier of the subject/target of the image, useful for correlating multiple images of the same subject.",
+            "maxLength": 36,
+            "type": "string",
+            "example": "SUBJECT-ID"
+          },
+          "name": {
+            "description": "Optional name/description associated with this image.",
+            "maxLength": 128,
+            "type": "string",
+            "example": "Example name"
+          },
+          "source": {
+            "description": "Source of the data.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string",
+            "example": "Bluestaq"
+          },
+          "origin": {
+            "description": "Originating system or organization which produced the data, if different from the source. The origin may be different than the source if the source was a mediating system which forwarded the data on behalf of the origin system. If null, the source may be assumed to be the origin.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "THIRD_PARTY_DATASOURCE"
+          },
+          "origNetwork": {
+            "description": "The originating source network on which this record was created, auto-populated by the system.",
+            "maxLength": 32,
+            "minLength": 1,
+            "type": "string",
+            "readOnly": true,
+            "example": "ORIG"
+          },
+          "sourceDL": {
+            "description": "The source data library from which this record was received. This could be a remote or tactical UDL or another data library. If null, the record should be assumed to have originated from the primary Enterprise UDL.",
+            "maxLength": 64,
+            "type": "string",
+            "readOnly": true,
+            "example": "AXE"
+          },
+          "dataMode": {
+            "description": "Indicator of whether the data is EXERCISE, REAL, SIMULATED, or TEST data:\n\nEXERCISE:&nbsp;Data pertaining to a government or military exercise. The data may include both real and simulated data.\n\nREAL:&nbsp;Data collected or produced that pertains to real-world objects, events, and analysis.\n\nSIMULATED:&nbsp;Synthetic data generated by a model to mimic real-world datasets.\n\nTEST:&nbsp;Specific datasets used to evaluate compliance with specifications and requirements, and for validating technical, functional, and performance characteristics.\n\n",
+            "maxLength": 32,
+            "minLength": 1,
+            "enum": [
+              "REAL",
+              "TEST",
+              "SIMULATED",
+              "EXERCISE"
+            ],
+            "type": "string",
+            "example": "TEST"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "description": "Time the row was created in the database, auto-populated by the system.",
+            "type": "string",
+            "readOnly": true,
+            "example": "2018-01-01T16:00:00.123Z"
+          },
+          "createdBy": {
+            "description": "Application user who created the row in the database, auto-populated by the system.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string",
+            "readOnly": true,
+            "example": "some.user"
+          },
+          "transactionId": {
+            "description": "Optional identifier to track a commercial or marketplace transaction executed to produce this data.",
+            "maxLength": 64,
+            "type": "string",
+            "example": "37bdef1f-5a4f-4776-bee4-7a1e0ec7d35a"
+          },
+          "tags": {
+            "description": "Optional array of provider/source specific tags for this data, where each element is no longer than 32 characters, used for implementing data owner conditional access controls to restrict access to the data. Should be left null by data providers unless conditional access controls are coordinated with the UDL team.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "PROVIDER_TAG1",
+              "PROVIDER_TAG2"
+            ]
+          },
+          "keywords": {
+            "description": "Optional array of keywords for this image.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "KEYWORD1",
+              "KEYWORD2"
+            ]
+          },
+          "notes": {
+            "description": "Description and notes of the image.",
+            "maxLength": 1024,
+            "type": "string",
+            "example": "Example notes"
+          },
+          "format": {
+            "description": "Optional, field indicating type of image, NITF, PNG, etc.",
+            "maxLength": 16,
+            "minLength": 1,
+            "type": "string",
+            "example": "PNG"
+          },
+          "filesize": {
+            "format": "int64",
+            "description": "Size of the image file. Units in bytes. If filesize is provided without an associated file, it defaults to 0.",
+            "type": "integer",
+            "example": 0
+          },
+          "checksumValue": {
+            "description": "MD5 value of the file. The ingest/create operation will automatically generate the value.",
+            "maxLength": 256,
+            "minLength": 1,
+            "type": "string",
+            "example": "120EA8A25E5D487BF68B5F7096440019"
+          }
+        }
+      }
+    }
+  }
+}

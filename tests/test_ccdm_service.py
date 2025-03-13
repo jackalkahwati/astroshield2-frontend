@@ -1,8 +1,10 @@
 """Tests for the enhanced CCDM service with ML capabilities."""
 import pytest
 import time
+import uuid
+import json
 from datetime import datetime, timedelta
-from unittest.mock import Mock, patch
+from unittest.mock import Mock, patch, MagicMock
 from services.ccdm_service import CCDMService
 from analysis.ml_evaluators import MLManeuverEvaluator, MLSignatureEvaluator, MLAMREvaluator
 from fastapi.testclient import TestClient
@@ -17,6 +19,46 @@ from app.models.ccdm import (
     CCDMUpdate,
     CCDMAssessment
 )
+
+# Import our traceability utilities if available
+try:
+    from src.asttroshield.common.message_headers import MessageFactory
+    from src.asttroshield.common.kafka_utils import KafkaConfig, AstroShieldProducer, AstroShieldConsumer
+    HAS_TRACEABILITY = True
+except ImportError:
+    HAS_TRACEABILITY = False
+    # Mock the message factory for testing
+    class MockMessageFactory:
+        @staticmethod
+        def create_message(message_type, source, payload):
+            return {
+                "header": {
+                    "messageId": str(uuid.uuid4()),
+                    "timestamp": datetime.utcnow().isoformat(),
+                    "source": source,
+                    "messageType": message_type,
+                    "traceId": str(uuid.uuid4()),
+                    "parentMessageIds": []
+                },
+                "payload": payload
+            }
+        
+        @staticmethod
+        def create_derived_message(parent_message, message_type, source, payload):
+            parent_header = parent_message.get("header", {})
+            return {
+                "header": {
+                    "messageId": str(uuid.uuid4()),
+                    "timestamp": datetime.utcnow().isoformat(),
+                    "source": source,
+                    "messageType": message_type,
+                    "traceId": parent_header.get("traceId", str(uuid.uuid4())),
+                    "parentMessageIds": [parent_header.get("messageId", "unknown")]
+                },
+                "payload": payload
+            }
+    
+    MessageFactory = MockMessageFactory
 
 # Test client setup
 client = TestClient(app)
@@ -311,3 +353,157 @@ def test_get_assessment():
     assert response.status_code == 200
     assessment = CCDMAssessment(**response.json())
     assert assessment.object_id == object_id
+
+@pytest.mark.traceability
+class TestCCDMTraceability:
+    """Test the message traceability features through the CCDM service."""
+    
+    @pytest.fixture
+    def mock_kafka(self):
+        """Mock Kafka producer and consumer."""
+        mock_producer = MagicMock()
+        mock_consumer = MagicMock()
+        
+        # Configure mocks
+        mock_producer.publish.return_value = True
+        
+        with patch('src.asttroshield.common.kafka_utils.AstroShieldProducer', 
+                  return_value=mock_producer), \
+             patch('src.asttroshield.common.kafka_utils.AstroShieldConsumer', 
+                  return_value=mock_consumer):
+            yield {
+                'producer': mock_producer,
+                'consumer': mock_consumer
+            }
+    
+    def test_message_tracing_basics(self):
+        """Test basic message tracing with the MessageFactory."""
+        # Create an initial message
+        initial_message = MessageFactory.create_message(
+            message_type="ss0.sensor.observation",
+            source="test_sensor",
+            payload={"observation": "test data", "timestamp": datetime.utcnow().isoformat()}
+        )
+        
+        # Check that the message has the correct structure
+        assert "header" in initial_message
+        assert "payload" in initial_message
+        assert "messageId" in initial_message["header"]
+        assert "traceId" in initial_message["header"]
+        assert initial_message["header"]["messageType"] == "ss0.sensor.observation"
+        
+        # The initial trace ID should match the message ID
+        assert initial_message["header"]["traceId"] == initial_message["header"]["messageId"]
+        
+        # Create a derived message (as if processed by a service)
+        derived_message = MessageFactory.create_derived_message(
+            parent_message=initial_message,
+            message_type="ss4.ccdm.detection",
+            source="ccdm_service",
+            payload={"detection": "anomaly", "confidence": 0.85}
+        )
+        
+        # Check the derived message structure
+        assert "header" in derived_message
+        assert "payload" in derived_message
+        assert derived_message["header"]["messageType"] == "ss4.ccdm.detection"
+        
+        # The trace ID should be maintained across messages
+        assert derived_message["header"]["traceId"] == initial_message["header"]["traceId"]
+        
+        # The parent message ID should be in the parentMessageIds array
+        assert initial_message["header"]["messageId"] in derived_message["header"]["parentMessageIds"]
+        
+        # Create a third-level derived message (as if processed by another service)
+        final_message = MessageFactory.create_derived_message(
+            parent_message=derived_message,
+            message_type="ss6.threat.assessment",
+            source="threat_assessor",
+            payload={"threat_level": "medium", "recommendation": "monitor"}
+        )
+        
+        # Check that the trace ID is still maintained
+        assert final_message["header"]["traceId"] == initial_message["header"]["traceId"]
+        
+        # The parent message ID should be in the parentMessageIds array
+        assert derived_message["header"]["messageId"] in final_message["header"]["parentMessageIds"]
+    
+    @pytest.mark.asyncio
+    async def test_ccdm_service_message_tracing(self, ccdm_service, test_object_id, mock_kafka):
+        """Test traceability through a simulated CCDM service workflow."""
+        # Create an initial observation message
+        observation_message = MessageFactory.create_message(
+            message_type="ss2.state.estimate",
+            source="state_estimator",
+            payload={
+                "objectId": test_object_id,
+                "timestamp": datetime.utcnow().isoformat(),
+                "position": [1000.5, 2000.3, 3000.1],
+                "velocity": [1.5, -0.3, 0.1],
+                "covariance": [[0.1, 0, 0], [0, 0.1, 0], [0, 0, 0.1]]
+            }
+        )
+        
+        # Store the trace ID for later verification
+        trace_id = observation_message["header"]["traceId"]
+        
+        # Simulate the CCDM service processing this message
+        # This would typically happen in your process_message method
+        with patch.object(ccdm_service, 'analyze_object', return_value={
+            "object_id": test_object_id,
+            "ccdm_indicators": ["shape_change", "thermal_anomaly"],
+            "confidence": 0.85
+        }):
+            # Process the message (in a real system, this would happen in the subsystem class)
+            detection_payload = {
+                "objectId": test_object_id,
+                "detectionTime": datetime.utcnow().isoformat(),
+                "ccdmType": "shape_change",
+                "confidence": 0.85,
+                "indicators": ["elongation", "brightness_change"],
+                "analysisMetadata": {
+                    "algorithmVersion": "1.2.3",
+                    "analysisTime": datetime.utcnow().isoformat()
+                }
+            }
+            
+            # Create a CCDM detection message
+            detection_message = MessageFactory.create_derived_message(
+                parent_message=observation_message,
+                message_type="ss4.ccdm.detection",
+                source="ccdm_service",
+                payload=detection_payload
+            )
+            
+            # Verify the detection message maintains the trace
+            assert detection_message["header"]["traceId"] == trace_id
+            assert observation_message["header"]["messageId"] in detection_message["header"]["parentMessageIds"]
+            
+            # In a real system, this message would be sent to Kafka
+            # mock_kafka['producer'].publish.assert_called_once()
+            
+            # Simulate the threat assessment service processing the detection
+            threat_payload = {
+                "objectId": test_object_id,
+                "assessmentTime": datetime.utcnow().isoformat(),
+                "threatLevel": "medium",
+                "confidence": 0.75,
+                "recommendations": ["increase_monitoring", "notify_operators"],
+                "relatedDetections": [detection_message["header"]["messageId"]]
+            }
+            
+            # Create a threat assessment message
+            threat_message = MessageFactory.create_derived_message(
+                parent_message=detection_message,
+                message_type="ss6.threat.assessment",
+                source="threat_service",
+                payload=threat_payload
+            )
+            
+            # Verify the threat message maintains the trace through the entire chain
+            assert threat_message["header"]["traceId"] == trace_id
+            assert detection_message["header"]["messageId"] in threat_message["header"]["parentMessageIds"]
+            
+            # We could now trace the lineage of messages
+            # In a real system, you could retrieve the complete trace using the trace_id
+            # For the test, we're just verifying the IDs are connected correctly

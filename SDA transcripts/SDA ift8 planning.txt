@@ -1,0 +1,401 @@
+Speaker 1  00:00
+To the Kafka messaging bus, if that's the main thing that we want to demonstrate that we're able to pass on those messages that they are consumed and received by the next portion in the chain, if that's dependent on things left in the chain, and also include like, if there's a unique ID that is put in the message left of you, we want to continue that trace all through the line and see how far we can get to say that this was the process that kicked off a lot of things that are able to maintain that Throughout the launch. So those are two main things at a system level. We should focus on some other things to fill out. Show this work demo I'm gonna spring it up again. Is we have some things in green that we've already demonstrated for the past launches. I know some people have talked about, while we do have these capabilities in the lab, just haven't really demonstrated them in a exercise yet. That's why I keep them in red. And also, I still I have some unknowns. I think we did send a UDL request. Someone pointed this out to me, but we weren't able to track the targets. I believe, since it was so low that none of the sensors were able to pick it up, it'd be great if we could get coverage, but it might not be optimal again, for the current flight mission,
+
+Speaker 2  01:44
+yeah, which would be a compelling case to look at the resupplies to the ISS, yeah,
+
+Speaker 1  01:51
+yeah. Those are really good one. It'd be cool if we got any eye on it as well. That's gonna happen. So we'll look at those other ones, like the resupply. Cindy also pushed out some other ones, like there's a launch coming out of Vanderburgh, a NASA Launch here this month that's going to a heliocentric orbit, which could be cool. So it's gonna leave the Earth system. The other I guess at this point, are there any questions?
+
+Speaker 2  02:35
+Same, the same flight profile as the previous two launches?
+
+Speaker 1  02:41
+I haven't found any public information yet. If anyone has any rumors or substantive information, please let us know. But what I've been reading is since, IFT seven, the upper stage unexpectedly rapidly disassembled, they might just try to redo the whole profile with the new upper stage, see if they can get to splash down in the Indian Ocean. I think there's a possible deployment of a test satellite too that could be unique. If the test satellite gets into a stable orbit. That could be something that the subsystem plays into. So it's going to be around for a lot longer. Maybe we can catch odds on that, but I think this is all I could scrape off the internet. Current launch date is no earlier than February 24 so we got a week and a half left. If they do launch on that date, it's always can be pushed to the right. They have demonstrated a static fire test on the booster two days ago. So it seems like they are continuing to march forward, but there's not much public information. Has anyone heard anything else?
+
+Speaker 2  04:12
+I'm curious, would it be beneficial to step through the list and see if folks here or if companies here are able and willing to support the particular aspects.
+
+Speaker 1  04:29
+Yeah, so I had this up, yeah. Let's go down the list. There are about 16 different portions of the kill chain at the moment. Of course, that can expand if people think that there's a compelling case to add another one. Did put in this system level proceed to, I don't know if is anyone up from Pacific Northwest on the line. I did reach out to Sean. I it hands on.
+
+Unknown Speaker  05:15
+Okay? Do
+
+Speaker 1  05:19
+we have a hot mic somewhere, or if we get the UI in at the system model that might be interesting and practice based protocol, they're interested about looking at the traceability aspect as well. So if we continue to publish those messages with the unique IDs. Let's go down the list. All right. Do we have anyone from Bruce Hamilton on? It's great.
+
+Speaker 3  05:53
+So I have one update about Booz Allen Hamilton is that they have not integrated into Kafka because of some security issues, but what I've suggested to them is to generate a message on their algorithm and then separately push it out into Kafka whenever they see one. Okay, yeah, would they have more this in the short timeline that I can reach back and ask?
+
+Unknown Speaker  06:21
+Yeah? Thanks, Julie,
+
+Speaker 4  06:32
+is there anyone consuming that message today? Or would be ready to consume that today?
+
+Speaker 3  06:42
+Tony, was asking about type messages to COVID on their site, and they would be the ones, and there was also other teams. I mean, for example, Greg would also use that message to request satellite imagery for a certain time. Like more important is if we drew this on a launch flow diagram, on dry or others, and there's, there's, I mean, maybe Greg will go over this more, but like Planet Labs, Booz Allen, Hamilton and CU Boulder, tech seven, Reich, and then we're more the ones that are producing the launch prediction messages, and they're Using various sources, and Booz Allen. Allen is not giving a particular time, but a broad window. They're just saying heavy seasides of a launch. But cannot give a particular time, same with Planet Labs. But for most launches, there will be publicly available information which gives a particular time of launch, using which I'm thinking Greg can request images, and Tony's team can take the white window and do co planar assessments within that window. And then IRT can use that message generate launch channels. Aloha can use that to generate launch trajectory predictions. Wait which
+
+Unknown Speaker  08:27
+message the launch prediction
+
+Unknown Speaker  08:29
+messages.
+
+Speaker 4  08:32
+So I don't know that. I'm not set up to do that yet. Taking the launch detection is like my first priority of taking those so from y'all to to generate nominals, and then I'm not sure about consuming any of the other left of launch messages at this point, but certainly something that can build up to,
+
+Unknown Speaker  08:57
+okay,
+
+Speaker 3  09:00
+maybe one idea there is, we can distill that prediction window by sending it through weather checks and hopefully in our assessments, and then we'll have much smaller windows and maybe even specific time points of when launch can happen. And maybe that could be easier unless processing on your site
+
+Speaker 4  09:30
+that seems the most doable, I'll have to think on it. And maybe we could. We could want to just spew out a ton of stuff. See twos trying to figure out what's, what's the most useful information. So trying to be, I don't know, maybe that's the impression first, just be out as much as you can. You just see, like, we test a million things, and no one knew what to do. I don't know, but I think the the detections are certainly like something where we have like, this is a very high value piece of information at this point, so we definitely want to act on that going further left of the chain. I'm not quite sure how to like, make those determinations yet.
+
+Speaker 1  10:21
+Yeah, so Julie to I think one of your points this is the basic workflow. I know we have more detailed workflows as well, like the hostility assessment has one. So think we could change that. Very sorry. Break this out a little bit more the coming weeks to sort of include that workflow, but we can go down the list as well, sort of see who's able to contribute for what, see if that, if there's anything left of them that we need as well. But I think one of the questions was, do we have POIs? And I don't think we have anyone issuing a POI at the moment. Is that incorrect?
+
+Unknown Speaker  11:19
+Would that be just we see some activity different space ports.
+
+Speaker 1  11:28
+Type of message, yeah, like activity has been observed at the spaceport.
+
+Speaker 3  11:37
+Planet Labs can provide that they're they're kind of going around the globe once or twice each day so they can generate that. They're currently just sending out launch prediction messages, more like even lower risk, just activity type of messages, probably they can do that. That'll be a conversation with them.
+
+Speaker 2  12:09
+Jubilee, are they set up to publish to the Kafka topic? Yeah, yeah. Yes, they are okay. And I know when we spoke with them a few weeks ago, they were hesitant to do more than like, a single sample. Message, are they still in that boat, or are they willing to participate more fully?
+
+Speaker 3  12:29
+I think that's where there's they still are. I would push them after that. They came to the demo and all that. Now I'm asking them if they can come to the two general Swiss, and they're trying to get permission for that, but I can also ask if, if they're willing to push messages or not. But a couple of teams are waiting on awards to miss that, probably including them
+
+Speaker 2  12:54
+if, I guess, a question for everyone here, will it make sense to generalize this to be both IFT eight and the launch for the ISS on the 27th Is that what you had Tony on the 27th Yeah, I Think so. Or are those two different of a launch site to be viable.
+
+Unknown Speaker  13:29
+Is that other channel D or is it at a Vanderburg?
+
+Unknown Speaker  13:42
+Do? Julie, or shaking your head, do you know I thought it
+
+Unknown Speaker  13:46
+was a foreign watch,
+
+Speaker 1  13:49
+okay, oh, is that the one out of South America, out of French Guiana,
+
+Speaker 3  13:56
+let me, I don't have the list in front of me. Tony probably has more information about where that launch has happened. Is it
+
+Unknown Speaker  14:05
+balcony or I think,
+
+Speaker 1  14:10
+yeah, that's what I see in the chat. Yeah, it's, I don't have a method to see by Ken or at the moment, I
+
+Unknown Speaker  14:23
+so we lack,
+
+Speaker 2  14:30
+we lack infrasound and segment detectors and any overhead imagery for those locations.
+
+Speaker 3  14:41
+I believe so the last time I checked, there weren't any exactly remember, but I think limited network there I can check again, but we will have a launch. Maybe planet left can provide a message for that, and also we will get that message from publicly available information by just breaking the internet that's
+
+Speaker 2  15:06
+that's what I was wondering. Can we trigger Chris's launch nominal at the appropriate time or over a period of or a window, and that be our start?
+
+Unknown Speaker  15:24
+Yeah, prama is here from Verma, and
+
+Speaker 5  15:26
+to do that, what did you say promote? Well, I'm saying I'm actually doing that
+
+Speaker 3  15:33
+thing, yes. So promote is doing publicly available information that's just basically a database of launches are on the internet of multiple sites. So he would go through that in seven days before all known launch, there would be a message on Kafka saying, hey, in seven days from this database, that is a launch. And then he's also doing launch detection from ground based cameras. So if there is a ground based camera, this might not work for all especially clandestine launches, but for general launches that are known, his crawlers go through YouTube and find live telecast of the launch and generate a launch detection message when the AI detects a launch in those images, so that could trigger IRP s launch nominal algorithm, okay.
+
+Speaker 2  16:35
+I mean, even if it's a little bit delayed, it's certainly better than nothing.
+
+Unknown Speaker  16:42
+Yeah, I can reconvene this.
+
+Speaker 2  16:46
+Chris, does that make sense to you? Do you have any do you foresee any issues on on your side? No,
+
+Speaker 4  16:50
+no, that's that sounds good. Are you publishing to the launch detection topic today?
+
+Speaker 5  17:02
+Well, so we are actually doing right now the topic name might be some different, but we are publishing the loan to anything that will happen within the seven days. We are actually publishing it and topic mail is detection, but actually it's both prediction and detection. So I have to divide these two messages into separate messages. And yeah, we can actually make it very clear right now we are just pushing all the list of the launches that will happen in the within the seven days each five minute.
+
+Speaker 3  17:44
+So to add some more information or cover, Thank you, Chris, like he's so we've discussed like a trigger based messages. Currently, his system is set up slightly differently, and I can work with promote to make it a trigger based system, and also send the launch prediction messages to the SS five dot launch, dot prediction topic, and then the detection messages to the SS five, dot launch, dot detection Topic. Does that sound all right to you first?
+
+Speaker 4  18:24
+Yeah, yeah, that sounds that sounds good. Thank you.
+
+Speaker 1  18:31
+All right, so it sounds like this ISS mission. Sounds like a good one to include for like, subsystem zero, subsystem to the catalog and subsystem for for CCDM. We don't anticipate any CCDM, but nonetheless, we can run some of the Al analysis on it. So we'll try to do both of these exercises coming up, keep others in mind. So we have until October next year for the victors. Hayes mission, I think there's a lot of good discussion, especially about sort of like, some of the kinks that we're going to encounter, like Chris was talking about, if we spam a lot of messages, do we dilute our capabilities, or the messaging chain. This has been a lot of good discussion, so let's go back to this slide and go down the line. And I just want to get sort of like a roll call. Steve is here who can contribute to either of these launches. So, anyone from Texas, you boulder like Cruz said? Andrew Leon,
+
+Unknown Speaker  19:52
+have a Planet Labs? Anyone from Max? Sorry. I All right, you're online, right? Anyone from break? Okay,
+
+Unknown Speaker  20:18
+thanks from K home, so can silicon mountain Earth cast,
+
+Speaker 2  20:32
+as long as Earth cast just continues to publish data to Kafka broker, we should have weather data available.
+
+Speaker 3  20:42
+Okay? Question that Alex, like I seen in Node red, like whether go, no go, type of analysis, is that solution that's available? I have not spoken to any team that's pushing that, but I think Kahan may have had that known in Node red. You know that they're doing that,
+
+Speaker 2  21:07
+so based on my recollection, you're correct. That is what cam was doing with Node red. I've not talked to them about updating their pipeline to make use of the Kafka messages. Actually, I haven't, haven't seen Matthew since, maybe very briefly on Demo Day.
+
+Unknown Speaker  21:27
+I can check in with them about these two months.
+
+Unknown Speaker  21:33
+Yeah, I can talk to smear too. I tried emailing Matthew and email Faust said that email address no longer works. BYU is not here. All right, Chris, anyone from saber Astros make them. I haven't
+
+Unknown Speaker  21:59
+heard from Nathan while I know they've kind of been participating,
+
+Speaker 1  22:08
+yeah, or in this type all right again, sorry, respect, I saw You're here.
+
+Speaker 6  22:18
+Yes, I'm here, and we've started integrating the ASAP screen. But my only worry is I'm not sure about which topic to publish to. I skim through the message topics and I'm not seeing the relevant message topic to which I could publish, to
+
+Unknown Speaker  22:45
+Jubilee, with that folder,
+
+Unknown Speaker  22:49
+I missed what message it was,
+
+Speaker 1  22:51
+ASAP. Screening the phone or Pez was yes, I will create
+
+Speaker 3  22:58
+a message topic on that there will be SSI dot launch dot ASAP. Assessment is that, is that fine with everybody? Yeah,
+
+Speaker 6  23:09
+that sounds good. And the launch nominals, where can I pull that from?
+
+Speaker 4  23:16
+I am not publishing those to coffee yet. So that's like, my number one priority is to get those publishing. Topic has been designated, assuming the SS five topic
+
+Speaker 3  23:33
+I will create and send you al the SS file. Dot, launch. Dot, nominal is that fine? Sounds
+
+Unknown Speaker  23:39
+good. Okay,
+
+Unknown Speaker  23:42
+okay, thank you.
+
+Speaker 3  23:45
+And for the launch ASAP assessment, it would be both for predicted as well as detect and launch, just like both types of ASAP assistance can wander that topic.
+
+Unknown Speaker  24:01
+Sounds good piece, okay,
+
+Speaker 1  24:07
+all right, Jack from Star, driver, user, Yep, here, anyone from lighthouse, here, John I
+
+Unknown Speaker  24:24
+here.
+
+Speaker 1  24:26
+Julie's here again. Bo, here. All right, I know it's early for Matt. Matt, are you sorry that you're having such an early warning. Saber, all
+
+Unknown Speaker  24:54
+right, yeah, it's not
+
+Speaker 1  25:00
+going to be in the field of view for IRT, but, yeah, sure, slingshot from slingshot?
+
+Speaker 2  25:14
+Yeah, the the sites that have the best shot at seeing it would be slingshot and our sky out of Namibia, if it follows the same trajectory, but he may still be too low.
+
+Unknown Speaker  25:28
+Yeah, this is Jack McGuigan on,
+
+Speaker 1  25:36
+sorry, did someone say they were from Quasar this here?
+
+Unknown Speaker  25:40
+No, it's been overnight for them, okay,
+
+Unknown Speaker  25:45
+sorry, Alex, I also saw your comment,
+
+Unknown Speaker  25:48
+yeah,
+
+Speaker 1  25:51
+yeah, but maybe we can for the other mission with the ISS resupply, that might be a good opportunity.
+
+Speaker 7  26:01
+Yeah, yeah. We're happy to support with nei. It's just we need, we need our droid two imager, which is going to be much better and allow for more capabilities. So that'll be early March that that launches.
+
+Speaker 2  26:13
+What we should do, Alex is go ahead and exercise the Collect request response messages, even if it is just say that you're rejecting the request. Yeah,
+
+Unknown Speaker  26:22
+that's exactly what I was thinking.
+
+Speaker 1  26:25
+Okay, where do those get stored? Is that on the UDL? Yeah? Okay, so there's a way that we can pull that off too and save that artifact?
+
+Unknown Speaker  26:37
+Yes, absolutely.
+
+Unknown Speaker  26:41
+All right. Point Pro,
+
+Unknown Speaker  26:44
+yeah, here, awesome.
+
+Unknown Speaker  26:49
+Have you guys been able to integrate into the new Kafka system? We're working on it. Okay, yeah, those PML, space protocol, do you have anyone from space protocol? Already talked about that? All right, anyone not on the list that I missed? Yeah, Greg, I think
+
+Unknown Speaker  27:28
+df and
+
+Speaker 1  27:30
+nn, I think we'd probably be at the system level. But yeah, this would be a great exercise for us to see there's some specific capabilities if the rep, hopefully we can make a response recommendation. So this will be good for us to see what's available for this launch, but it kind of depends on what is up and working.
+
+Speaker 2  27:52
+Assuming you get no observations, or that we get no observations from sensors, and all we have is the launch nominal as being the final step, what fun and a variety of predictions for re entry, what are you looking to potentially make use of?
+
+Unknown Speaker  28:13
+Yeah, great question. I think, in General, kind of What i i
+
+Unknown Speaker  29:28
+Hi Jack, Hi Jeff, how are you?
+
+Unknown Speaker  29:30
+Hi Ellie. Hi guys.
+
+Speaker 8  29:35
+Yeah, likewise for joining us, Jack, it's very nice to meet you. My name is Ellie. I lead the scouting and selection for our programs, and I also look after our US based activities, and Jeff is on our investment team.
+
+Unknown Speaker  29:51
+Great. Nice to meet you guys. Nice
+
+Speaker 8  29:53
+to meet you as well. Thank you for joining us so early in the morning. The way we normally structure these calls is if you have some slides that you can take us through that'll kick us off nicely, and then we can follow up with some questions and try and keep it to about maybe 10 or 15 minutes max. And then towards the end, you can ask us any questions about the program or anything like that.
+
+Speaker 9  30:17
+Okay, let me know if you can see these slides that I put up? Yes, you can see that. Okay, so I just put these kind of together at the last minute here. So apologize if there's some no worries, no
+
+Unknown Speaker  30:32
+worries, we can learn more about you. Yeah.
+
+Speaker 9  30:36
+So our company is called Star drive, and we've been working with the Space Defense Agency for the last six months, and we're helping them build welders arc, which is essentially kind of like the Iron Dome for the United States. And so we're specifically focusing on building the CCDM, which is the camouflage, concealment and detection system, and this is just kind of walking through kind of what the problem is. So we're really focusing on space domain, and you know, what it could apply to is really just tracking a bunch of uncorrelated tracks, so you have a lot of untracked debris that's in space, and we've built a platform that essentially allows you to to track all of that that that information, and then be able to make real time adjustments to your to your orbit, to maneuver away from collision. So yeah, kind of our solution is, is a real time monitoring system. We use AI to filter kind of all of the false alarms we have. Right now we're working with multiple different types of sensors. So we can do RF, we can do visual we can do lots of different types of sensors that we utilize. I think right now we're tracking 26 different types of indicators. And so we use machine learning for a bunch of them, but then others, we use kind of other types of methods to come up with, essentially, pass fail for those indicators. Yeah, what else can we say? Yeah. So we have predictive analytics too, so we were able to not just, you know, determine if there's some kind of collision that's going to happen, but we can predict, you know, the what's happening with these trajectories. It's a very large market. It's a $3 billion SDA kind of market opportunity right now. There's a lot of satellites, and essentially we can provide this service to all satellite manufacturers so they can get real time information. If we look at kind of the competitive landscape, I would say government systems are pretty old and manual, and our advantage is really just kind of AI powered, all sensor fusion, full awareness, all real time, and We're working directly with SDA to implement this system. And in fact, I was just in a meeting right before this one to implement our system into the IFT eight launch. So this is the next starship launch that's coming out in March. We're going to have our systems live. What we're able to do launch detection, and we're able to run our systems to be able to track some of these, track the whole launch in real time. So kind of our roadmap, you know, we already have the system running. We're going to be deploying it this year with with Space Force, they're going to be our first commercial revenue revenue customer. We're charging $200,000 annual recurring revenue for each indicator, for each endpoint that we put out for them. And so we have 26 endpoints right now, and then we're in discussions with with Air Force as well, to utilize our systems for attracting tracking things that are in the atmosphere, as opposed to space. And yeah, this is a SAS kind of data service subscription model, where we have, like, licensing from government mostly, but also private companies, and we have high level we're looking to raise some capital so that way we could build up our team and and run, kind of our whole infrastructure. Yeah, so that's kind of it at a high level. I mean, I know it's very brief, but yeah, I'm happy to dive into any more details.
+
+Speaker 8  35:40
+Thank you so much for this. So I was just looking at your website, and you also do a number of different products as well, in addition to us to Astro shield. Is that correct?
+
+Speaker 9  35:52
+Yeah. So our original company started off with the concept of trying to accelerate spacecraft using electromagnetics. And so we're, we're focusing on that as well. We have superconducting material that we got, which is really interesting, because we feel like there's a huge opportunity for that where there's, you know, the high speed train industry in China has created, you know, companies that are able to manufacture high temperature superconductors, very low cost. So, you know, they're making kilometers of the material. And there's a lot of applications that you can do with this, like one, you can use it to accelerate spacecraft using little runs force. But you could also use it for shielding and and, you know, the lots of applications for space so, so we, we're also focusing on, on developing that technology, along with our opportunity with with Space Force, to building this space domain awareness platform,
+
+Speaker 8  36:56
+right, right? So this is the kind of main thing that you're focusing on at the moment,
+
+Speaker 9  36:59
+yeah, right now it's software, you know, we're, we're helping these guys build out their systems. And so we've built, essentially, I'd say, 116, of the entire battle management platform. And we're, we're in this new cohort with them. We got invited back. And so with this new cohort, we're going to be focusing on atmospheric trajectory tracking and and so we're going to be adding that to Asper shield as well. Got it got and
+
+Speaker 8  37:35
+just because you went through it quite quickly, can you just explain to us in a bit more detail how it actually works, yeah,
+
+Speaker 9  37:41
+so I want to pull it up here, but I am afraid it's going to crash my computer so, but I can share with you guys. We have it deployed, so actually, let me see if I can pull it up because that might be nice to show you guys. I
+
+Unknown Speaker  38:06
+Okay, let me see if I can share this with you guys soon. I
+
+Unknown Speaker  38:38
+zoom where's my zoom thing? I
+
+Speaker 9  38:55
+okay, maybe I don't know where my video let me jump off here for a second and come back on. I
+
+Unknown Speaker  39:31
+Okay, okay, let me share this screen here.
+
+Unknown Speaker  39:37
+Sorry for making your system crash
+
+Speaker 9  39:41
+Jack. I'm like, running, like, I've got a lot of stuff going on, but this is so this is the dashboard, if you can see it. Okay, yeah. So this is just kind of give you a high level of what's going on with the different activities. And then these are all the different indicators that we have set up. So I think maybe the back end is not running, but we have a bunch of indicators on here. Here's the satellite tracks that you can do. This provides you kind of the stability analysis and maneuvers is where you would be able to set up your your different transfers. And then we have some analytics here where you can see what's going on. So this is kind of your visualization of the different systems that are going on. And then we have kind of all the APIs here, so you can set that up. So this is essentially what we're we're selling to the government. It's just APIs,
+
+Speaker 8  40:48
+okay, but then how does the actual technology work?
+
+Speaker 9  40:52
+So we get data from from the government, and we process it through our system, and then we're able to provide, essentially, like, you know, pass fail for some of these indicators. So, and then we provide those pass fails to the next subsystem, and then they, you know, to like the command and control subsystem, and then they'll decide what to do in the kill chain, so they'll either maneuver away, or they'll shoot the satellite down, or something like that. I see, okay, but you know, for other commercial applications, you know this, this could be kind of all in one with, with the front end here so they can kind of track and manage their own systems and make sure that everything is is not.
+
+Unknown Speaker  41:40
+Yeah. Do you have any questions on the on the tech?
+
+Speaker 10  41:45
+And I don't know if you talked about competition, but it feels like a lot of people are doing SBA. So if you can just talk about, you know, who we think are the biggest competitors? Yeah,
+
+Speaker 9  42:00
+I think Leo Labs is probably the biggest one. I think we're, you know, we're, why I think we can, you know, beat them out is that, you know, we're working closely with SDA and, you know, we're also, there's other, you know, companies that are essentially trying to do the same thing. And I feel like we're coming in from a real, like aI approach, where, you know, the team next to us, we're we're building a system. They had a team of 100 people, and they're building one indicator, and we built 26 indicators, and we did with one person. And, you know, so we did 100x you know, it was like, you know, it's over, like, you know, 2,000% you know, efficiency increase over, kind of the the traditional development flow that that our competitors were using. And so I think that's kind of like, the biggest, biggest change is that, you know, we, were building everything with AI and, and so it's just allows us to move a lot faster and and then we could cover a lot more ground. So this system here, you know, would would have normally taken years to build. You know, we built it in three months. And, you know, the full stack. So we built the front end, the back end, the API layer, all running, all connected to their systems, and all working so really tremendous compared to to our competitors.
+
+Unknown Speaker  43:30
+I don't think you told us much about the team, actually. Sorry,
+
+Speaker 9  43:35
+yeah. So I mean, the team mostly consists of myself on the software side, but we have a couple of other engineers that are that are pushing on the on the on the hardware components. So we have Gerardo, who's, who's on our team, who's, he's been like the CTO for multiple hardware companies. We've worked together for about 10 years, anything electronics he can, he can handle. And then we have Martin, who's an aerospace, PhD in aerospace, and he's also built multiple companies. I don't know if you're familiar with one of the blue smart was, like one of the first smart luggages that that came out that had, like, GPS. He was one of the founders of that company, and and then we have a few other folks that that are on the team, that are from my past work at Boeing. So I worked with a mechanical engineer that has designed all the landing lightning gear for Boeing and and then another guy neon, who's leading the performance for for Boeing aircraft, so he's more on the on the sales and aerodynamic side, so that kind of makes up our team. And, yeah, that's kind of it awesome. Thank
+
+Speaker 8  45:07
+you, Jeff, sorry. I didn't mean to interrupt you there. I think you might have had a follow
+
+Speaker 10  45:14
+up question. I see that you you have another charm of lattice. You've been working on it for like a decade plus, yeah, going, Yeah, lattice
+
+Speaker 9  45:25
+is in the process of being acquired, so we're, I'm kind of winding that down and selling it and then, but lattice was a fleet management platform, so we were using, oh, initially started as a hardware company. We built the first smart connected bike lock and brought that to market. And then because of COVID, we ended up pivoting to the fleet management, so it was kind of a software play, and then we built that out. And then, and then, recently we we upgraded the whole system to to be whole, like ai, ai. We rebuilt the whole thing with AI, and that system is kind of what we're selling. So it's called lattice Nexus. It's kind of like the next evolution, but it's doing this essentially the entire stack for for mobility.
+
+Speaker 8  46:28
+Very cool. Thank you so much. One more question for me, what is, what are your kind of milestones for the next six months to a year? And I guess, what would you like to gain out of our program?
+
+Speaker 9  46:41
+Well, right now we're, we're working closely with Space Force and space mission command, Space System command, to deploy Astro shield. But you know, we are, you know, looking to commercialize this software and and then, you know, provide it as a solution to other governments and other companies. So I think working with you guys to on the BD side would be really helpful to introduce us to more customers,
+
+Speaker 8  47:14
+right? Yeah. I mean, that's definitely something that we can help with. So as part of the program, the main thing that we focus on is kind of getting your investment ready, so giving all the tools to basically translate this product so that resonates with the investment community. But then we also introduce you to kind of everyone we know in the ecosystem.
+
+Speaker 9  47:35
+Yeah, cool. That sounds good. Where are you guys based? By the way,
+
+Speaker 8  47:41
+we're both in London, but I look after a US side of the program, so I travel back and forth twice a year.
+
+Speaker 9  47:49
+Okay, okay, great, yeah, I'm in I'm in San Francisco, but I travel to Colorado to work with with Space Force, like monthly.
+
+Speaker 8  48:02
+Yeah, so most of our so when we take the cohort to the US will be out on the West Coast, so it'll be very close for you if you do make it on the program. Nice, wonderful. Thank you so much, Jeff. I'm assuming you don't have any more questions. No, oh, good. Just so you know what the next steps are. So this is the second stage of the process. There'll be one more phase, which would be a call very similar to this. So quick presentation, which we followed by questions, but it would be with one of our managing partners, and we have a deliberation meeting to the site which companies are going through tomorrow, so I'll let you know early next week. Probably
+
+Speaker 9  48:47
+Okay, all right, guys. Well, thanks for the call. Sorry. It was a bit brief and rushed, and yeah, kind of juggling multiple things. But yeah, happy to follow up with any additional information. If you need it
+
+Unknown Speaker  49:03
+Sure, thank you So much.
+
+Unknown Speaker  49:05
+Okay, bye, thanks guys. Bye.
+
+
+Transcribed by https://otter.ai

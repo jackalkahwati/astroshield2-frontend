@@ -1,0 +1,2251 @@
+﻿Summary
+The UDL REST services provided are for the ingestion, provisioning, and on-demand exposure of data within the Unified Data Library. The UDL consists of data from multiple providers and is normalized into a consistent, common model representation to make mining and querying data across various sources simpler for consumers. These UDL RESTful services follow standard REST/JSON practices and include an extensive data-level security implementation to protect the dissemination of proprietary and sensitive data. 
+If your account has been suspended, please contact the UDL Support Team to understand why your account was suspended and how to prevent abusive usage of the UDL API going forward. If you require assistance pulling large amounts of data from the UDL, please contact the UDL Support Team here.
+
+
+Observation Corrections
+Best-Practices for Reporting Observations and Sensor Position for Space Surveillance Sensors
+This section outlines the different types of corrections for Observation data. The corrections that have been done for each provider will be listed on their card in the Provider Discovery section. 
+For additional information, please refer to the Space Situational Awareness Metric Data Integration Guidelines for Non-Traditional Sensors here. 
+All Observations
+* System applies leap second corrections when applicable.
+* System applies corrections for all known system biases (timing bias, shutter delay, mount models, etc).
+Electro-optical Observations
+* Observations are tagged with the photon arrival time (only applies to EO observations).
+* Observations are corrected for annual aberration (only applies to EO observations).
+* Observations are corrected for diurnal aberration (only applies to EO observations).
+* Observations are corrected for aberration caused by the orbital motion of the sensor (only applies to space-based EO observations).
+Light time should NOT be corrected.
+Radar Observations
+* Observations are time tagged at the midpoint of the send and receive times (only applies to Radar observations).
+* Observations are corrected for ionospheric and tropospheric delay (only applies to RF observations depending on signal frequency).
+Other
+* Observations are EOSSA Compliant.
+
+
+URI Mappings
+The base URI for the UDL RESTful services is /udl/<entity>. The entity or object type is lowercase and represents the type of object to query/create/update/delete, depending on HTTP operation (per REST standards). Create, update, and delete operations typically require a special security group/role for invocation – a 403 Forbidden error is returned if not authorized. The online Swagger/OpenAPI documentation (/udl/openapi.json) includes additional details about role requirements and available models/entities. Following are the basic URIs and HTTP operations and their effects (the sensor object type is used as an example): 
+1. Find All (GET  udl/sensor) 
+   * Get or find all sensors…dynamic query criteria may be supplied via query parameters (see the queryhelp operation for details on available parameters, descriptions, formats, and units of measure). An abridged JSON version of the model objects is typically returned for performance reasons. Some entities such as observations do not allow find all operations due to the massive volume of data. 
+2. Get Details (GET udl/sensor/sensorId) 
+   * Get all details for a single sensor in JSON format, specified by the unique identifier on the URI.
+3. Query (GET udl/sensor?sensorName=*EXO*&sensorNumber=500..600) 
+   * Dynamic query on sensor objects (name like EXO and sensor number between 500 and 600). An abridged JSON version of the model objects is typically returned for performance reasons. The API documentation and queryhelp operation provide details on entity-specific query parameters. 
+4. Query Help (GET udl/sensor/queryhelp) 
+   * Retrieves information on available parameters, descriptions, formats, and units of measure of the requested entity. 
+5. Create (POST udl/sensor) 
+   * Create sensor operation…body should contain JSON sensor representation per the UDL API.
+6. Update (PUT udl/sensor/sensorId) 
+   * Update sensor operation…body should contain full/complete JSON sensor representation per the UDL API. URI should have unique identifier of the sensor to update. 
+7. Delete (DELETE udl/sensor/sensorId) 
+   * Delete sensor operation…body is empty and URI should have unique identifier of sensor to delete.
+*Some links may require additional privileges
+
+
+Models
+Model JSON representations for data types within the UDL can be found within the online Swagger/OpenAPI documentation (/udl/openapi.json) and on the UDL storefront web application (/storefront). Each type of entity typically has an ‘abridged’ and ‘full’ variant. The abridged version is compact and contains only the most important information about the entity and the full version contains all details, including audit information (for example user IDs and timestamps of create/update), sub-collections, and relationships. Abridged versions of models are returned in operations such as ‘find all’ and queries to provide maximum performance when working with potentially large data sets. To obtain full details on an abridged entity, the ‘find’ operation can be invoked with the unique identifier of that entity. For additional performance, by default, null fields are omitted during marshalling and transfer for all entities in both abridged and full model representations. Similarly, when creating an entity, omitted fields are assumed to be set to null.
+
+
+Dynamic Query
+Most entities support extensive dynamic query capability, including wildcards, negation, ranges, multiple values, and greater than/less than operations. Due to limitations of the REST/HTTP specifications regarding query parameters, a custom syntax was adopted to provide this capability while remaining mostly compliant with standard query parameter key/value pairs. Below is a list of supported operations and their associated syntax: 
+Operator
+	Syntax
+	Example
+	Description
+	EQUAL
+	=XYZ
+	/udl/sensor?sensorName=XYZ
+	Standard query parameter equality syntax…applies to strings, dates, numbers, etc.
+	LIKE
+	=*XYZ*
+	/udl/sensor?sensorName=*XYZ*
+	Similar to equality, asterisks included in query parameter values are interpreted as wildcard characters allowing LIKE operations. 
+	BETWEEN/RANGE
+	=123..456
+	/udl/sensor?createdAt=2018-01-01T00:00:00Z..2018-01-02T00:00:00Z
+	A double period between two values is interpreted to be a range/between query. This is supported for all data types, although dates and numbers are the typical use case. The sample query above would return sensors created between Jan 1 2018 and Jan 2 2018. 
+	IN
+	=500,501,502
+	/udl/sensor?sensorNumber=500,501,502
+	Commas in a query parameter value are interpreted as multiple values and translated into an IN query. Data matching any one of the values is returned in this case. 
+	NOT
+	=~XYZ
+	/udl/sensor?sensorName=~XYZ
+	Returns all sensors that do not have a name of XYZ
+	GREATER THAN OR EQUAL TO
+	=>123
+	/udl/sensor?taskableRange=>20000
+	Returns sensors with a taskable range greater than or equal to 20000 km.
+	LESS THAN OR EQUAL TO
+	=<123
+	/udl/sensor?magnitudeLimit=<7
+	Returns sensors with a magnitude limit less than or equal to 7.
+	
+
+Each queryable entity has a ‘queryhelp’ operation (/udl/<entity>/queryhelp) which provides details on available query parameter names, descriptions, units of measure, and formats (e.g. date format). Some entities have required search parameters to help prevent queries of millions of objects. The storefront web application also includes a Query Help application to assist in constructing valid REST dynamic queries for the available entities. 
+In addition to entity specific query parameters, there are a few special/built-in query parameters which work across all entity queries: 
+1. Sort 
+   * /udl/sensor?taskableRange=>20000&sort=sensorName,DESC 
+Adding a sort query parameter sorts the result set on that field name (which must match a queryable parameter name). A comma separates the sort field from the specifier of ascending/descending. ASC and DESC are the valid values for ascending and descending sorts respectively. Omission of the comma and ASC/DESC specifier is also valid results in a default of ascending sort (e.g. ?sort=sensorName would sort by sensorName ascending). Currently sort is only supported on a single field. 
+   2. Max results 
+   * /udl/sensor?maxResults=100 
+Adding a maxResults query parameter limits the result set to the maximum number of objects specified. 
+      3. First result 
+      * /udl/sensor?firstResult=0&maxResults=100 
+Adding a firstResult query parameter returns the result set starting at the specified index. This is typically combined with maxResults to allow paging of large result sets. As an example, suppose a query has 1000 results. These could be paginated using the following sequence of calls: 
+         * /udl/sensor?firstResult=0&maxResults=100
+         * /udl/sensor?firstResult=100&maxResults=100
+         * /udl/sensor?firstResult=200&maxResults=100
+         4. Etc. 
+         5. disableCapcoExtensions 
+         * /udl/sensor?disableCapcoExtensions=true 
+Setting the disableCapcoExtensions query parameter to true disables the UDL extensions to CAPCO proprietary and limited distribution markings found in the 'classificationMarking' field, which provide additional information about the data owner and type. These markings on proprietary or limited distribution data typically follow this format: U//PR-OWNER-DATATYPE or U//DS-OWNER-DATATYPE. Setting the flag to true would modify all such markings to U//PR or U//DS respectively. Note that it is still the responsibility and liability of the user to protect any proprietary or limited distribution data in accordance with the data owner and UDL EULA if the extensions are disabled. 
+
+
+There is also special syntax for date query parameters to make relative dates and ranges easier to specify without providing a full ISO8601 date. 
+            * now – shorthand for the current datetime in UTC.
+            * -/+ allows for subtracting time durations from now
+            * days/hours/minutes/seconds – time units for offset
+These special tokens can be combined as follows: now-X units or now+X units -- where now is converted into the current time, X is an integer number of units, and ‘units’ is one of days/hours/minutes/seconds. 
+Examples:
+            * https://unifieddatalibrary.com/udl/elset?epoch=>now-1%20hour (retrieves elsets with an epoch date within the last hour. The %20 is the HTTP escape code for a space) 
+or an hour window 8 hours in the past:
+            * https://unifieddatalibrary.com/udl/elset?epoch=now-9%20hours..now-8%20hours
+or anything in the future:
+            * https://unifieddatalibrary.com/udl/elset?epoch=>now
+Security
+Authentication and authorization for the UDL RESTful services are currently proxied by an API Gateway which resides between the client and the application. All request/response data to/from the UDL is encrypted during transit using TLS, Transport Layer Security. The API Gateway uses an identity provider to authenticate users, either by HTTP Basic Authentication or, if the user has registered their certificate within the UDL, PKI/Client Certificate. 
+The API Gateway also performs some basic authorization checks for certain operations, such as creating or deleting data. If the authentication and authorization checks pass, the request is forwarded to the backend for processing along with a JWT, JSON Web Token, which contains security assertions or claims about the authenticated user. These claims are used by the backend application for additional fine-grained data-level access controls. For example, data tagged with a proprietary marking are restricted to only users with access granted to that marking. 
+PKI/Client Certificate Authentication
+PKI/Client Certificate, also known as mutual certificate authentication, is the preferred authentication mechanism for the UDL because it is a ‘Multi-Factor’ Authentication (MFA) mechanism. The user must ‘have’ something (the private key) and ‘know’ something (the PIN or passphrase for the key). This authentication occurs during the SSL/TLS protocol handshake and leverages X.509 digital certificates. 
+Currently, only US/DoD Issued client certificates are supported by the UDL. Users may link their PKI certificate by logging into the Account Management application here. 
+The figure below shows the client certificate handshake process:
+ Client certificate handshake process 
+
+HTTP Basic Authentication
+The UDL also supports HTTP Basic Authentication when PKI is not an option for a user. HTTP Basic Auth consists of a user id and a password joined by a colon which are base64-encoded and placed in the ‘Authorization’ HTTP header on a request. 
+There are numerous resources available on the internet which describe how to construct the HTTP Basic Auth header. This Authorization header must be provided on each request issued to the UDL or a 401 Unauthorized HTTP response error code will be returned to the user. Because all interaction with the UDL is over TLS/encrypted transport, the confidentiality of the credentials is preserved. 
+See the flow below for an example of the request without and then with the appropriate Authorization header. 
+ HTTP Basic Authorization flow 
+
+UDL Accounts with PKI
+Create Account 
+Add Cert to Account 
+1 
+Navigate to UDL Account Management. If you are prompted to select a PKI Certification or enter a PIN, refer to Step 3. Then refer back to Step 2.
+Account Management
+2 
+Click on PKI Certificate Users.
+  
+
+3 
+Select a certification from the pop-up box and input your pin. Now return to the previous step.
+  
+
+4 
+You will then be shown a window explaining that you are unable to log in using PKI Certificate. For users requesting a UDL account for the first time, this is a normal event. Continue by selecting "Request Account with PKI Certificate".
+  
+
+5 
+Fill out all three steps of the request account form. Enter all required fields. Although email may not be available in your current environment, you must still provide a valid email. The email with not be necessary when logging in with your PKI Certificate once this process is complete.
+On Step 1 of the request account form, open the PKI Certificate Information dropdown and verify that the information about the DOD PKI Certificate selected previously is correct.
+  
+
+6 
+Verify that the PKI certificate information dropdown is correct. Then, select the button that prompts you to go to the login page at the bottom of the screen.
+7 
+Log in to the Unified Data Library with your PKI certification by selecting PKI Certificate Users. You will automatically logged in using your PKI certificate.
+  
+
+Rest API Walk-through
+The UDL exposes many unique services that users can consume via the Rest API. Because of its simplicity and wide variety of data, the Rest API is the most popular mechanism for users to gather data from the UDL. Users request data via URL queries that can be used in a browser or applied through a process/script. These queries can be easily generated and customized through our 
+Rest API Query Builder
+. All responses are returned as JSON formatted strings. For examples of each services' endpoints, schemas, and JSON outputs please visit the 
+UDL API
+. 
+The following walk-through contains in-depth information regarding general use of the Rest API as well as information describing the options that users have available to customize the data that is returned to them. Further explanations of data customizations are shown after the Query Building Example below. 
+The following are example queries that showcase the customizability of the Rest API: 
+Gather all optical observations from the last 10 minutes.
+<host>/udl/observation?obTime=>now-10%20minutes
+
+
+Gather up to 100 of the most recent Two Line Element Sets (TLEs) gathered over the last 100 days for object 25544 (The International Space Station) 
+<host>/udl/elset?epoch=>now-100%20days&satNo=25544&maxResults=100
+
+
+Gather a count of all sensors that are stationed between 30 and -30 degrees of latitude and specifically display only the Sensor Name, latitude, longitude, and altitude or those sensors. 
+<host>/udl/sensor/tuple?columns=altitude,lat,lon,sensorName&lat=-30.0..30.0
+________________
+
+
+Query Building Example
+In the following example, we are going to demonstrate the process of using the 
+Rest API Query Builder
+ to build a simple query. We are going to construct the query: Gather up to 100 of the most recent Two Line Element Sets (TLEs) from December 31, 2022 for the object 25544 (The International Space Station).
+Lets start by specifying the kind of service we want to access. In this case, we are going to gather Two Line Element Set (TLE) data by specifying the "Query Elset" service. 
+ Rest API Step 1 
+
+Next, we are going to select our query parameters. These parameters are similar to search categories and key words when searching online. The list of query parameters will differ for each of the services. Every query parameter listed represents a field that exists within a given dataset. In our example, we want to find Two Line Element Sets for a specific satellite number. To accomplish this, we will select "satNo" from the list of available query parameters. We can find lots of helpful information about each query parameter in this table including a description of the parameter, the type of input value, its unit of measure, and whether or not it is a required field for our search. 
+ Rest API Step 2 
+
+After we have selected our query parameters, we need to configure them. In section 3, we can see the parameters we have selected as well as any required parameters in yellow. In the upper right-hand corner we see that only one required parameter is necessary for our query. In this case, we want to query TLEs for a certain satellite within a certain time-frame. Now we are left with the two parameters that we need in order to search by: the Satellite Number and Epoch Time. 
+ Rest API Step 3 
+
+Now that we have the proper selection of query parameters, we need to configure them to meet the requirements of our search. In this case, we want to query for a the satellite number of the International Space Station which happens to be 25544. Lets enter this value into the "satNo" value field and leave the operation as "Equal" because we want to only search specifically for 25544. Now we must specify the epoch value to search for. To access the date-time picker, we select the pencil icon next to the value field. 
+ Epoch Selection 
+ Epoch Calender 
+
+Since we want to search for a time relative to the current date and time, we can select the calendar icon. This will show a time specifier that will allow us to specify the number and amount of time we want. 
+For more information about the Date-Time picker functionality, refer to the Date-Time Parameter Walk-through below. 
+The final step to configuring our query parameters includes selecting the operation of our Epoch parameter. In our case, we want all TLEs since December 31st, 2022. This is represented by selecting the "Greater Than or Equal To" operation. 
+ Configured Query Parameters 
+
+Now, if we read our parameters from left to right, they can be interpreted as the following:
+Get TLEs with both an Epoch greater than or equal to the date of December 31, 2022 and with a Satellite Number (satNo) equal to 25544. 
+
+
+When these query parameters are combined, they create the basis of our query. We can now specify the ordering of our results and what is contained within them. These fields are optional, but provide a much greater customization in our query results. In our case, we aren't concerned with the ordering of our results. To do this, we will leave the two Sorting options as their default "None" value. 
+ Rest API Step 4 
+
+The last step in generating our query is specifying the fields that we want to be returned. By default, all data fields in our TLE query will be returned unless specified otherwise. We can also choose to simply have a count of the total number of returned TLEs by toggling the "Return Count" checkbox rather than getting to full dataset. In our case, we want to have all of the default TLE fields returned to us, thus we will leave the "Included Columns" field empty. We also want to specify that we only want a maximum of 100 results returned, so we put 100 in the "Max Results" field. "First Result" will be left blank. Most services enforce a maximum results of 10,000. If you expect your query to exceed this amount, try querying for smaller subsets of the data or use our Bulk Data Request API which is designed to handle large data volumes. 
+ Rest API Step 5 
+
+We have now generated our query URL. This URL can be clicked on directly or copy and pasted into the browser search bar to executed. You will be prompted for a UDL login when the query is executed unless the query is being invoked from a process wherein the authentication information is passed along with it. We can also choose to save this URL to our favorites by clicking on the star icon. 
+ Rest API Step 6 
+
+________________
+
+
+Date-Time Parameter Walk-through
+The following walk-through is an in-depth examination of the Date-Time picker's functionality as well as the implications of the "Operation" value for a parameter of type "LocalDateTime" The Date-Time picker can be accessed by clicking on the pencil icon of any parameter field of type "LocalDateTime" that has been selected as a query parameter. 
+ Date-Time Picker 
+
+When determining a date-time, there are four options that Users are presented with. The options can be seen in red in the picture to the left. From left to right, the options are:
+
+Manual Input - Users can enter their own time by hand.
+
+UTC Date and Time Picker - A calendar view for choosing a specific date-time and/or a range of date-times.
+
+Set Input Time To Now - This will set the date-time to the current date-time of the user.
+
+Relative Time - This option will allow a user to specify a number and interval with which to query. There is also the ability to choose whether or not the number and interval are prior to or after the current date.
+________________
+
+
+Result Sorting Walk-through
+The REST API offers options to customize how query results are shown to you. These options can effect the speed of a query. Operations such as sorting results will generally take longer to complete while operations that return a specified number of results will typically be faster. 
+ Rest API Result Sorting Walk Through 
+
+1 - The "Sort By" option is populated by the fields present in the particular service that you are querying. By selecting one of these fields, the results of your query will be sorted based off of the values in said field. 
+2 - The "Sort Order" option allows you to sort your results in either ascending "ASC" or descending "DESC" order. If the field that you selected in "Sort By" is alphanumeric, this will sort either alphabetically or reverse alphabetically respectively. 
+________________
+
+
+Output Options Walk-through
+Users can further customize the data returned to them from a query by choosing specific fields that they want to see in output options. 
+ Rest API Output Options Walk Through 
+
+1 - The "Return Count" option allows your query to return a count of the data objects that are returned rather than displaying the data itself. 
+2 - The "Max Results" option allows you to specify a maximum number of results that will be returned to you. There is typically a default maximum of 10,000 results. If you expect more than this, you should probably consider modifying your query to return smaller chunks of data or use our Bulk Data Request API which is designed to handle large data volumes. 
+3 - Users can further customize the data returned to them from a query by choosing specific fields that they want to see. These fields are selectable in the "Included Columns" field below. When building a query, the options shown in this dropdown window represent the specific fields that are present in the data you are querying. By default, all data fields are included. To reset any values you have selected in the dropdown, press the X icon next to it. This will reset it to include all values by default. 
+4 - The "First Result" option allows you to choose a specific number of results to be returned. A value of 1 will return the first result. 2 will return 2 results, etc.
+History Rest API Walk-through
+The History Rest API is the preferred mechanism for on-demand querying of historical UDL time series data such as Two Line Element Sets, Observations, Maneuvers, and State Vectors which span a large time range or researching this data into the past beyond the storage of the primary relational data store. As part of the UDL hybrid data store, an additional historical data storage tier is implemented using a document store for this purpose. All time series data is immediately stored in this repository and is available for broader queries across older time ranges. The same dynamic query syntax and capabilities are implemented in these services; however, the responses include full details of a particular record (the UDL REST API dynamic query responses typically include summary information for performance). For a complete listing of all services that are available, please visit our 
+History Rest API Query Builder
+ . Users request data via URL queries that can be used in a browser or applied through a process/script. These queries can be easily generated and customized through our 
+History Rest API Query Builder
+ . All responses are returned as JSON formatted strings. For examples of each services' endpoints, schemas, and JSON outputs please visit the 
+UDL API
+ . 
+The following walk-through contains in-depth information regarding general use of the History Rest API as well as information describing the options that users have available to customize the data that is returned to them. Further explanations of data customizations are shown after the Query Building Example below. 
+The following are example queries that showcase the customizability of the History Rest API:
+Gather up to 1000 Two Line Element Sets from the last 200 days for object 25544 (The International Space Station). 
+<host>/udl/elset/history?epoch=>now-200%20days&satNo=25544&maxResults=1000
+
+
+Gather all Two Line Element Sets between April 1st, 2018 and October 25th, 2019 for object 25544 (The International Space Station) where the Semi-Major Axis is greater than 67 Kilometers. 
+<host>/udl/elset/history?epoch=2018-04-01T00%3A00%3A00.000000Z..2019-10-25T00%3A00%3A00.000000Z&satNo=25544&semiMajorAxis=>67.0
+________________
+
+
+Query Building Example
+In the following example, we are going to demonstrate the process of using the 
+History Rest API Query Builder
+ to build a simple query. We are going to construct the query: Gather up to 100 of the most recent Two Line Element Sets (TLEs) from December 31, 2022 for the object 25544 (The International Space Station).
+Lets start by specifying the kind of service we want to access. In this case, we are going to gather Two Line Element Set (TLE) data by specifying the "Query Elset" service. 
+ History Rest API Step 1 
+
+Next, we are going to select our query parameters. These parameters are similar to search categories and key words when searching online. The list of query parameters will differ for each of the services. Every query parameter listed represents a field that exists within a given dataset. In our example, we want to find Two Line Element Sets for a specific satellite number. To accomplish this, we will select "satNo" from the list of available query parameters. We can find lots of helpful information about each query parameter in this table including a description of the parameter, the type of input value, its unit of measure, and whether or not it is a required field for our search. 
+ History Rest API Step 2 
+
+After we have selected our query parameters, we need to configure them. In section 3, we can see the parameters we have selected as well as any required parameters in yellow. In the upper right-hand corner we see that only one required parameter is necessary for our query. In this case, we want to query TLEs for a certain satellite within a certain time-frame. Now we are left with the two parameters that we need in order to search by: the Satellite Number and Epoch Time. 
+ History Rest API Step 3 
+
+Now that we have the proper selection of query parameters, we need to configure them to meet the requirements of our search. In this case, we want to query for a the satellite number of the International Space Station which happens to be 25544. Let's enter this value into the "satNo" value field and leave the operation as "Equal" because we want to only search specifically for 25544. Now we must specify the epoch value to search for. To access the date-time picker, we select the pencil icon next to the value field. 
+ Epoch Selection 
+ Epoch Calender 
+
+Since we want to search for a time relative to the current date and time, we can select the first icon (the calendar). This will show a time specifier that will allow us to specify the number and amount of time we want. 
+For more information about the Date-Time picker functionality, refer to the Date-Time Parameter Walk-through below. 
+The final step to configuring our query parameters includes selecting the operation of our Epoch parameter. In our case, we want all TLEs since December 31st, 2022. This is represented by selecting the "Greater Than or Equal To" operation. 
+ Configured Query Parameters 
+
+Now, if we read our parameters from left to right, they can be interpreted as the following:
+Get TLEs with both an Epoch greater than or equal to the date of December 31, 2022 and with a Satellite Number (satNo) equal to 25544. 
+
+
+The last step in generating our query is specifying the fields that we want to be returned. By default, all data fields in our TLE query will be returned unless specified otherwise. We can also choose to simply have a count of the total number of returned TLEs by toggling the "Return Count" checkbox rather than getting to full dataset. In our case, we want to have all of the default TLE fields returned to us, thus we will leave the "Included Columns" field empty. We also want to specify our maximum number of results. To accomplish this, we simply enter 100 in the "Max Results" field. Most services enforce a maximum results of 10,000. If you expect your query to exceed this amount, try querying for smaller subsets of the data or use our Bulk Data Request API which is designed to handle large data volumes. 
+ History Rest API Step 1 
+
+We have now generated our query URL. This URL can be clicked on directly or copy and pasted into the browser search bar to executed. You will be prompted for a UDL login when the query is executed unless the query is being invoked from a process wherein the authentication information is passed along with it. We can also choose to save this URL to our favorites by clicking on the star icon. 
+ History Rest API Step 5 
+
+________________
+
+
+Date-Time Parameter Walk-through
+The following walk-through is an in-depth examination of the Date-Time picker's functionality as well as the implications of the "Operation" value for a parameter of type "LocalDateTime" The Date-Time picker can be accessed by clicking on the pencil icon of any parameter field of type "LocalDateTime" that has been selected as a query parameter. 
+ Date-Time Picker 
+
+When determining a date-time, there are four options that Users are presented with. The options can be seen in red in the picture to the left. From left to right, the options are:
+
+Manual Input - Users can enter their own time by hand.
+
+UTC Date and Time Picker - A calendar view for choosing a specific date-time and/or a range of date-times.
+
+Set Input Time To Now - This will set the date-time to the current date-time of the user.
+
+Relative Time - This option will allow a user to specify a number and interval with which to query. There is also the ability to choose whether or not the number and interval are prior to or after the current date.
+________________
+
+
+Output Options Walk-through
+Users can further customize the data returned to them from a query by choosing specific fields that they want to see in output options. 
+ History Rest API Output Options Walk Through 
+
+1) The "Return Count" option allows your query to return a count of the data objects that are returned rather than displaying the data itself. 
+2) The "Max Results" option allows you to specify a maximum number of results that will be returned to you. There is typically a default maximum of 10,000 results. If you expect more than this, you should probably consider modifying your query to return smaller chunks of data or use our Bulk Data Request API which is designed to handle large data volumes. 
+3) Users can further customize the data returned to them from a query by choosing specific fields that they want to see. These fields are selectable in the "Included Columns" field below. When building a query, the options shown in this dropdown window represent the specific fields that are present in the data you are querying. By default, all data fields are included. To reset any values you have selected in the dropdown, press the X icon next to it, this will reset it to include all values by default.
+
+
+Bulk Data Request API Walk-through
+The Bulk Data Request API is the preferred mechanism for gathering large data sets that are typically required for in-depth analysis or Machine Learning. This API implementation is asynchronous because typical synchronous request/response APIs are not usually sufficient for the kind of large data requests that the Bulk Data Request API is optimized for. The Bulk Data Request API provides the same historical data and dynamic query syntax capabilities as the other APIs. In addition to these features, the Bulk Data Request API includes the ability to select the output format of the data, such as JSON or CSV. Field delimiters may be specified for CSV format, but the default is a comma. Users request data via URL queries that can be used in a browser or applied through a process/script. These queries can be easily generated and customized through our 
+Bulk Data Request API Query Builder
+. Once a query is requested, a response is immediately returned while the server processes the query. Once complete, the results are stored in the 
+Secure Content Store
+ and a notification is sent to the requester’s email address on file with links to download the zipped results. SMS/Text notifications are also available if the user has provided a mobile number for their account. For a complete listing of all services that are available, please visit our 
+Bulk Data Request API Query Builder
+. For examples of each services' endpoints, schemas, and JSON/CSV outputs please visit the 
+UDL API
+. 
+The following walk-through contains in-depth information regarding general use of the Bulk Data Request API as well as information describing the options that users have available to customize the data that is gathered for them. Further explanations of data customizations are shown after the Query Building Example below. 
+________________
+
+
+Query Building Example
+In the following example, we are going to construct a query that takes advantage of the query customization power that our 
+Bulk Data Request API Query Builder
+ provides. We are going to construct the following query: Gather up to 20,000 Two Line Element Sets from December 31, 2022, for object 25544 (The International Space Station) in comma separated CSV format. 
+Let's start by specifying the kind of service we want to access. In this case, we are going to gather Two Line Element Set (TLE) data by specifying the "Query Elset" service. 
+ Bulk Data Request API Step 1 
+
+Next, we are going to select our query parameters. These parameters are similar to search categories and key words when searching online. The list of query parameters will differ for each of the services. Every query parameter listed represents a field that exists within a given dataset. In our example, we want to find Two Line Element Sets for a specific satellite number. To accomplish this, we will select "satNo" from the list of available query parameters. We can find lots of helpful information about each query parameter in this table including a description of the parameter, the type of input value, its unit of measure, and whether or not it is a required field for our search. 
+ Bulk Data Request API Step 2 
+
+After we have selected our query parameters, we need to configure them. In section 3, we can see the parameters we have selected as well as any required parameters in yellow. In the upper right-hand corner we see that only one required parameter is necessary for our query. In this case, we want to query TLEs for a certain satellite within a certain time-frame. Now we are left with the two parameters that we need in order to search by: the Satellite Number and Epoch Time. 
+ Bulk Data Request API Step 3 
+
+Now that we have the proper selection of query parameters, we need to configure them to meet the requirements of our search. In this case, we want to query for a the satellite number of the International Space Station which happens to be 25544. Let's enter this value into the "satNo" value field and leave the operation as "Equal" because we want to only search specifically for 25544. Now we must specify the epoch value to search for. To access the date-time picker, we select the pencil icon next to the value field. 
+ Epoch Selection 
+ Epoch Calender 
+
+Since we want to search for a time relative to the current date and time, we can select the first icon (the calendar). This will show a time specifier that will allow us to specify the number and amount of time we want. 
+For more information about the Date-Time picker functionality, refer to the Date-Time Parameter Walk-through below. 
+The final step to configuring our query parameters includes selecting the operation of our Epoch parameter. In our case, we want all TLEs since December 31st, 2022. This is represented by selecting the "Greater Than or Equal To" operation. 
+ Configured Query Parameters 
+
+Now, if we read our parameters from left to right, they can be interpreted as the following:
+Get TLEs with both an Epoch greater than or equal to the date of December 31, 2022 and with a Satellite Number (satNo) equal to 25544. 
+
+
+When these query parameters are combined, they create the basis of our query. We now want to specify our maximum number of results. To accomplish this, we simply enter 1000 in the "Max Results" field. Most services enforce a default maximum results of 10,000. However, this is overridable by simply specifying a number greater than 10,000 if you so choose. 
+ Bulk Data API Max Results 
+
+The last step in generating our query is specifying the fields that we want to be returned. By default, all data fields in our TLE query will be returned unless specified otherwise. We can also choose to simply have a count of the total number of returned TLEs by toggling the "Return Count" checkbox rather than getting to full dataset. In our case, we want to have all of the default TLE fields returned to us, thus we will leave the "Included Columns" field empty. 
+ Bulk Data Request API Step 4 
+
+We have now generated a valid query. We know that the query is valid because the 'Execute' button in step 6 will become active. Upon selecting the 'Execute' button, the query will begin processing. Depending on the size of the returned data, this may take a while. When the query is completed, you will receive an email with the query results at the email address that is registered with your UDL account. Text/SMS notifications are also available is you have registered a phone number with your UDL account. 
+________________
+
+
+Date-Time Parameter Walk-through
+The following walk-through is an in-depth examination of the Date-Time picker's functionality as well as the implications of the "Operation" value for a parameter of type "LocalDateTime" The Date-Time picker can be accessed by clicking on the pencil icon of any parameter field of type "LocalDateTime" that has been selected as a query parameter. 
+ Date-Time Picker 
+
+When determining a date-time, there are four options that Users are presented with. The options can be seen in red in the picture to the left. From left to right, the options are:
+
+Manual Input - Users can enter their own time by hand.
+
+UTC Date and Time Picker - A calendar view for choosing a specific date-time and/or a range of date-times.
+
+Set Input Time To Now - This will set the date-time to the current date-time of the user.
+
+Relative Time - This option will allow a user to specify a number and interval with which to query. There is also the ability to choose whether or not the number and interval are prior to or after the current date.
+________________
+
+
+Bulk Data Output Options Walk-through
+Users can further customize the data returned to them from a query by choosing specific fields that they want to see. These fields are selectable in the "Included Columns" field below. When building a query, the options shown in this dropdown window represent the specific fields that are present in the data you are querying. By default, all data fields are included. To reset any values you have selected in the dropdown, press the X icon next to it, this will reset it to include all values by default. 
+ Bulk Data Request API Step 4 
+
+Another important piece of customization that is enabled with the Bulk Data Request API is the ability to select an output format for the data. Currently, the supported output formats are JSON or CSV. Certain output formats such as CSV require an output delimiter to separate values; this can be specified for appropriate output formats in the 'Output Delimiter' section. If this is left blank, it will default to comma as the output delimiter.
+
+
+Secure Messaging API Walk-through
+The UDL exposes real-time data streams that users can consume via the Secure Messaging service. Users must have the proper authorization to access Secure Messaging topics. Access can be requested in the 
+Secure Messaging API
+ section of the Help page. The Secure Messaging API is far superior in delivering real-time data to any of the dynamic query APIs. Time series data such as observations, element sets, state vectors, etc. each have a ‘topic’ assigned to them. Consumers use an offset when querying a topic to request data at a particular point or in a particular order. The consumer maintains the topic offset specific to their own needs. When retrieving data, the server returns a new offset indicating that the client should start at this offset for the next request. 
+The following walk-through contains information regarding general use of UDL Secure Messaging as well as information describing the options that users have available to customize the data that is returned to them. 
+________________
+
+
+Secure Messaging API Workflow
+In the following example, we are going to demonstrate the general workflow of using UDL Secure Messaging to gather streamed data. Begin by selecting a data topic from the "Choose a Topic" dropdown. Specific topics will only be shown if the user has prior permissions to access said topic. Access to Secure Messaging can be requested via the 
+Secure Messaging API
+ section of the Help page. 
+ Secure Messaging Step 1 
+
+Next, we are going to determine the offset that we will use to query the data topic with. The offsets are different for each topic and represent the position in the records that the user will request data. The number denoted as "Min Pos" represents the oldest record that is maintained for a particular topic. The number denoted as "Max Pos" represents the newest record for said topic. Remembering and maintaining a user's current offset is done at the behest of the user. The UDL only maintains the Minimum (Oldest), and Maximum (Newest) offsets for a topic. Once the user has input the offset within the Min and Max positions where they would like to begin requesting data, they can move on to the next step. 
+ Secure Messaging Step 2 
+
+Users can request a description of a particular topic that includes the minimum offset, maximum offset, as well as the latest offset for a given topic by using the describeTopic query which is shown above. 
+Next, we are going to select our query parameters. These parameters are similar to search categories and key words when searching online. The list of query parameters will differ for each of the services. Every query parameter listed represents a field that exists within a given dataset. In our example, we want to find Two Line Element Sets for a specific satellite number. To accomplish this, we will select "satNo" from the list of available query parameters. We can find lots of helpful information about each query parameter in this table including a description of the parameter, the type of input value, its unit of measure, and whether or not it is a required field for our search. 
+ Secure Messaging Step 3 
+
+After we have selected our query parameters, we need to configure them. In section 4, we can see the parameters we have selected as well as any required parameters in yellow with an asterisk. With a topic selected, the required parameters will be displayed in the upper right-hand corner. 
+ Secure Messaging Step 4 
+
+Some parameters can be configured using a date-time picker. To learn more about this functionality, please refer to the Date-Time Parameter Walk-through below. 
+The last step in utilizing a Secure Messaging topic is specifying the fields that the user wants to be returned. By default, all data fields of a particular topic will be returned, unless specified otherwise. 
+ Secure Messaging Step 5 
+
+If valid inputs are provided to the sections above, a URL will be shown in this section. This URL can be clicked on directly or copy and pasted into the browser search bar to be executed. You will be prompted for a UDL login when the query is executed unless the query is being invoked from a process wherein the authentication information is passed along with it. 
+ Secure Messaging Step 6 
+
+________________
+
+
+Date-Time Parameter Walk-through
+The following walk-through is an in-depth examination of the Date-Time picker's functionality as well as the implications of the "Operation" value for a parameter of type "LocalDateTime" The Date-Time picker can be accessed by clicking on the pencil icon of any parameter field of type "LocalDateTime" that has been selected as a query parameter. 
+ Date-Time Picker 
+
+When determining a date-time, there are four options that Users are presented with. The options can be seen in red in the picture to the left. From left to right, the options are:
+
+Manual Input - Users can enter their own time by hand.
+
+UTC Date and Time Picker - A calendar view for choosing a specific date-time and/or a range of date-times.
+
+Set Input Time To Now - This will set the date-time to the current date-time of the user.
+
+Relative Time - This option will allow a user to specify a number and interval with which to query. There is also the ability to choose whether or not the number and interval are prior to or after the current date.
+Data Integration
+Submitting a Data Integration Request Form initiates the process of adding your data to the UDL. After successful submission of the form, an entry will appear in the Open Requests table on the 
+Data Integration Dashboard
+. Selecting the three dots () next to an integration request, also known as an onboarding request, will open a dialog with a detailed view of the request. The sections of this dialog have been expanded here to provide additional information. 
+Legend Breakdown 
+ Incomplete 
+ In-Progress 
+ Complete 
+ Blocked 
+ On-Hold 
+ Not Approved 
+ Incomplete - Indicates that a stage has not been started. In special cases, if progress had previously begun on a stage but it now shows 'Incomplete', the request may have regressed back to a previous stage. 
+ In-Progress - Indicates that a stage is in progress. The current step is shown below the progress icon in the status section (see below). 
+ Complete - Indicates that a stage has been completed. 
+ Blocked - Indicates that progress on a stage has stopped. Progress cannot continue until an external condition is met. If customer action is needed to resume progress, 'Customer Action Needed' may be shown below the current step. Check the comments section for the reason for the blockage. 
+ On-Hold - Indicates that a data integration request has been put on hold while a known issue is being resolved. Check the comments section for the reason. 
+ Not Approved - Indicates that a data integration request has been not been approved and the requested data will not be integrated into the UDL at this time. Check the comments section for the reason. A new data integration form will likely need to be filled out should there be a change in decision regarding integrating the data. 
+Status Section 
+Onboarding Request
+Package Preparation
+Planning & Design
+Prioritization
+Implementation
+Form Review
+Pending Provider Materials | Technical Exchange Mtg.
+Assessment | Detailed Design
+Design Approval and Prioritization
+Awaiting Implementation | Implementation
+Stage names appear above the 'status icons' (see legend above). The current step appears below the status icon. For the stages that are complete, the last completed step will be displayed below the 'complete' status icon instead. 
+Stage Breakdown
+Onboarding Request: The onboarding request has been submitted to the UDL and is under review. Once approved, the request will be acknowledged and moved into Package Preparation. If the request is denied, a note will be placed in the comment section explaining the reason. 
+Package Preparation: The onboarding package is being prepared, artifacts are being collected, and a Technical Exchange Meeting ('TEM') is scheduled. Common artifacts required include data samples, provider card forms, service account forms, and sensor spreadsheets (if required). These materials will be referred to in an area below the current step in this stage if there are materials still missing. 
+Planning & Design: The data integration request is assessed for scope, complexity, data product alignment (fitment) and cost. Low lift requests will move to the design decision. Medium and High lift requests (requiring existing schema modifications or a new schema) will move into a detailed design phase where engineering design and analysis will be conducted. Once the lift is assessed and the onboarding request is approved, the request will move to Prioritization. 
+Prioritization: The work is prioritized against existing backlog items. Low lift requests move into Implementation immediately. Medium and High lift requests will be prioritized, attempting to align with the provider's milestones and desires where possible. 
+Implementation: For Low lift requests, implementation tasks include creating the service account (if not done so already) or, for accounts created, adding permissions to post, and validating posts. Most providers will start in the test environment before promoting to production. Once data has been validated in the intended/target environment, if requested, a provider card will be created. For Medium and High lift requests, the agreed design work will start with close coordination with the provider/requester as to when it will be complete. Once complete, accounts will be created and/or permissions added to an existing account, following the same validation steps and provider discovery card steps as above. For this stage, as our team starts progress on certain key areas, the started activities will be indicated in an area below the current step. 
+Comments & Activity Log 
+Comments from the UDL Data Integration Team
+Please make sure to read comments from the UDL Data Integration Team that appear in this section as they may contain important information. A new comment will overwrite the previous one, but a record of all comments can still be found in the activity log. 
+Activity Log
+Listed here will be a description of the changes to this data integration request, who made the change, and the date and time of the change. Changes include adding or removing members, adding or removing admins, or changes in status or progress. 
+Admins, Members, and Data Summary 
+Admins
+UDL users listed here are admins for this data integration. Admins have the ability to add and remove regular members. To request a change of admin(s), please contact the UDL Data Integration team at dataonboarding@bluestaq.com
+Members
+UDL users listed here are able to view the details of this data integration request. However, they do not have the ability to add or remove other members. 
+Form Responses: Data Details
+Information about your data that is based on your responses from the Data Integration form.
+UNCLASSIFIED
+TAK Federation
+TAK is the core of a suite of georeferenced imagery and communications tools that allow for scaled operational planning, data sharing, visualized elevation data, and target management. With TAK, your team can get oriented quickly, make better informed decisions and quickly respond to threats. Add TAK to your operations, and make sure when your team deploys, you have the unfair advantage. 
+Your account does not have access to federate new TAK servers.
+TRAX Federation
+For more information about TRAX Federation please reach out to UDL support.
+Your account does not have access to federate new TRAX servers.
+
+
+Querying Data
+This example demonstrates how to access data from the UDL via REST calls and shows some simple but powerful techniques for managing the received data. 
+           
+#Simple script to demonstrate pulling data from the Unified Data Library (UDL)
+#   and converting it into NumPy ndarray. This also demonstrates a useful
+#   method for removing unwanted columns (fields) from the returned data.
+
+
+import requests, base64, pandas as pd
+
+
+#Pick one of the two following lines to set up your UDL login credentials.
+#   The first option requires an open text username and password.
+#   The second (preferred) option uses the value from the UDL Base64 token
+#   utility (accessed via the Utility page of the UDL Storefront) to
+#   create the encoded string.
+basicAuth = "Basic " + base64.b64encode(("username:password").encode('utf-8')).decode("ascii")
+# OR (comment one of these lines out)
+basicAuth = "Basic aCharacterStringFromUDLutility=="
+
+
+#Copy the URL from the UDL Dynamic Query Tool into the line below.
+#   This sample query will return all element sets for the International
+#   Space Station (satellite number 25544) generated 11-1-2018 or later.
+url = "https://unifieddatalibrary.com/udl/elset?epoch=%3E2018-11-01T00:00:00.000000Z&satNo=25544"
+
+
+#Make the actual REST call (ignore the InsecureRequestWarning).
+result = requests.get(url, headers={'Authorization':basicAuth}, verify=False)
+
+
+#JSON decodes easily in Python, into a list of dictionaries.
+#   Uncomment the following 5 lines to pretty-print the JSON results.
+#   This is useful for finding the exact field names for filtering out
+#   unwanted columns.
+
+
+#obs = result.json()
+#for ob in obs:
+#   for key, value in ob.items():
+#     print(key, ":", value)
+#   print("\n")
+
+
+#There are more columns (fields) of data than we need, and rather than a list
+#   of dictionaries, we generally want a NumPy ndarray to work with most
+#   analytical and machine learning tools. We can use a Pandas DataFrame to do
+#   the heavy lifting of deleting unwanted columns and converting to a NumPy
+#   ndarray.
+elsetsDataFrame = pd.DataFrame(result.json())
+keepColumns = ['epoch','meanMotion','eccentricity','inclination','meanAnomaly']
+elsetsArray = elsetsDataFrame[keepColumns].values
+
+
+print(elsetsArray)
+
+
+#Insert analytical application code here.
+
+
+       
+Posting Data
+This example demonstrates how to post data to the UDL in the form of a State Vector.
+           
+import ssl
+import xmlrpc
+import xmlrpc.client
+import base64
+
+
+import requests
+import urllib3
+import json
+
+
+def post_to_udl_json_data(udl_endpoint, username, unecrypted_password, json_data):
+#
+# perform udl interaction
+#
+    key = username + ":" + unecrypted_password
+    basicAuth = base64.b64encode(key.encode('utf-8')).decode("ascii")
+
+
+    udl_headers = {'accept': 'application/json',
+                  'content-type': 'application/json',
+                  'Authorization': 'Basic {auth}'.format(auth=basicAuth)}
+    print("Invoking {url} endpoint".format(url=udl_endpoint))
+    print("calling with {data}".format(data=json_data))
+
+
+    response = requests.post(udl_endpoint,
+                             data=json.dumps(json_data),
+                             verify=True,
+                             headers=udl_headers)
+    response.raise_for_status()
+    if response.ok:
+        print("Completed data access at {url}".format(url=udl_endpoint))
+    return response
+
+
+def post_state_vector(udl_ep, udl_user, udl_pw):
+    try:
+        state_vector_data = {
+            "classificationMarking": "U",
+            "epoch": "2019-08-22T07:59:53.050000Z",
+            "pedigree": "ORBIT_UPDATE",
+            "idOnOrbit": "39574",
+            "xpos": -2828.238756,
+            "ypos": 1525.059531,
+            "zpos": 5968.427089,
+            "xvel": -0.5010466157,
+            "yvel": -7.462773307,
+            "zvel": 1.670278768,
+            "posUnc": 0.001515759293,
+            "velUnc": 0.000001592108957,
+            "solarRadPressCoeff": 0.006597212904,
+            "dragCoeff": 0.005059190077,
+            "geopotentialModel": "EGM-96 70Z,70T",
+            "dragModel": "MSIS00",
+            "lunarSolar": 1,
+            "solarRadPress": 1,
+            "solidEarthTides": 1,
+            "source": "OrganizationName",
+            "dataMode": "TEST"
+        }
+
+
+        print('Start executing UDL update for ' + udl_user)
+        res = post_to_udl_json_data(udl_ep, udl_user, udl_pw, state_vector_data)
+        print(res)
+        print('Finished executing UDL update...')
+    except xmlrpc.client.ProtocolError as err:
+        print("A protocol error occurred")
+        print("URL: %s" % err.url)
+        print("HTTP/HTTPS headers: %s" % err.headers)
+        print("Error code: %d" % err.errcode)
+        print("Error message: %s" % err.errmsg)
+
+
+if __name__=="__main__":
+    # define user and user password
+    user = 'udl username for the service call'
+    password = 'password of the user'
+    service_endpoint = 'https://unifieddatalibrary.com/udl/statevector'
+    post_state_vector(service_endpoint, user, password)
+       
+Posting Image Data
+This example demonstrates how to post image data to the UDL groundImagery endpoint.
+           
+import ssl
+import xmlrpc
+import xmlrpc.client
+import base64
+import os
+import sys
+
+
+import requests
+import urllib3
+import json
+
+
+def do_post(udl_endpoint, udl_headers, file_binary):
+#
+# perform udl interaction
+#
+
+
+    print("Invoking {url} endpoint".format(url=udl_endpoint))
+    response = requests.post(udl_endpoint,
+                            data=file_binary,
+                            verify=True,
+                            headers=udl_headers)
+
+
+    response.raise_for_status()
+    if response.ok:
+        print("Completed data access at {url}".format(url=udl_endpoint))
+    return response
+
+
+def convert_to_uri_encoded_timestamp(ts):
+    return ts.replace(":", "%3A")
+
+
+def post_image(udl_endpoint, udl_user, udl_pw):
+    try:
+        local_file_location = "YOUR_LOCAL_FILEPATH\\test.jpg"
+        filesize = os.path.getsize(local_file_location)
+        local_file_name = "test.jpg"
+        classification_marking = "U"
+        image_timestamp = convert_to_uri_encoded_timestamp("2019-05-01T00:00:00Z")
+
+
+        # For a listing of endpoint requirements and parameters please refer to the groundImagery UDL API in the Unified Data Library Storefront
+        udl_endpoint = udl_endpoint + "?filename=" + local_file_name + "&filesize=" + str(filesize) + "&classificationMarking=" + classification_marking + "&imageTime=" + image_timestamp
+
+
+        key = udl_user + ":" + udl_pw
+        basicAuth = base64.b64encode(key.encode('utf-8')).decode("ascii")
+
+
+        # The appropriate content type should be used depending on the type of binary image being POST'ed (e.g. image/jpeg, application/vnd.nitf, etc).
+        udl_headers = {'content-type': 'image/jpeg',
+                    'Authorization': 'Basic {auth}'.format(auth=basicAuth)}
+
+
+        with open(local_file_location, "rb") as local_file:
+            file_binary = local_file.read()
+
+
+        res = do_post(udl_endpoint, udl_headers, file_binary)
+        print(res)
+        print('Finished executing UDL post')
+    except xmlrpc.client.ProtocolError as err:
+        print("A protocol error occurred")
+        print("URL: %s" % err.url)
+        print("HTTP/HTTPS headers: %s" % err.headers)
+        print("Error code: %d" % err.errcode)
+        print("Error message: %s" % err.errmsg)
+
+
+if __name__=="__main__":
+
+
+    # define user and user password. For production code, Username and Password should be kept encrypted and never stored as their plaintext values.
+    user = 'YOUR_USERNAME'
+    password = 'YOUR_PASSWORD'
+
+
+    service_endpoint = 'https://unifieddatalibrary.com/udl/statevector'
+    post_image(service_endpoint, user, password)
+       
+
+
+C# Example
+To use the following C# code examples in this help page you will need to have the .NET Framework installed. The libraries used within the following scripts are installed as part of the .NET Framework. 
+Querying Data
+This example demonstrates how to access data from the UDL via a GET call:
+           
+public static void UDL_Get()
+{
+  using (var client = new HttpClient())
+  {
+
+
+    // -- Authentication Section -- //
+    // Authentication Information will need to be sent with each request for both GET'ing and POST'ing data.
+    string username = "YOUR_USERNAME";
+    string password = "YOUR_PASSWORD";
+    // For production code, Username and Password should be kept encrypted and never stored as their plaintext values.
+
+
+    var basicAuth = Encoding.ASCII.GetBytes($"{username}:{password}");
+    client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic",
+      Convert.ToBase64String(basicAuth));
+    // -- End Authentication Section -- //
+
+
+    String service_endpoint = "https://unifieddatalibrary.com/";
+
+
+    /*
+       This executes the actual call to the UDL which, in this example, returns the count of all Two-Line Element
+       Sets posted in the last two hours.
+    */
+    var response = client.GetAsync(service_endpoint + "udl/elset/count?epoch=>now-2%20hours").Result;
+
+
+    // Success error codes includes any response code from 200 - 299
+    if (response.IsSuccessStatusCode)
+    {   Console.WriteLine("Success!");
+      var responseContent = response.Content;
+      string responseString = responseContent.ReadAsStringAsync().Result;
+      Console.WriteLine(responseString);
+    } else {
+        /*
+           If your request fails, this will tell you why it failed.
+           A Response of "Forbidden" means that you do not have the proper permissions.
+           A Response of "Unauthorized means that your username and/or password is incorrect or incorrectly encoded.
+        */
+        Console.WriteLine("Request Failed. Response: " + response.StatusCode);
+        var responseContent = response.Content;
+        string responseString = responseContent.ReadAsStringAsync().Result;
+        Console.WriteLine(responseString);
+    }
+  }
+}
+       
+Posting Data
+This example demonstrates how to send data to the UDL via a POST call. The data being sent is a single State Vector. 
+           
+public static void UDL_Post()
+{
+  using (var client = new HttpClient())
+  {
+    // -- Authentication Section -- //
+    // Authentication Information will need to be sent with each request for both GET'ing and POST'ing data.
+    string username = "YOUR_USERNAME";
+    string password = "YOUR_PASSWORD";
+    // For production code, Username and Password should be kept encrypted and never stored as their plaintext values.
+
+
+    var basicAuth = Encoding.ASCII.GetBytes($"{username}:{password}");
+    client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic",
+    Convert.ToBase64String(basicAuth));
+    // -- End Authentication Section -- //
+
+
+    /*
+       This is an example of State Vector Data as JSON. Not every field listed here is required to POST a State Vector.
+       For a complete listing of all service descriptions including State Vectors, please visit the UDL API in
+       the Unified Data Library Storefront.
+    */
+    var example_state_vector_data = "{\"classificationMarking\": \"U\", \"source\": \"OrganizationName\", \"dataMode\": \"TEST\"," +
+        "\"epoch\": \"2020-01-01T01:10:10.101000Z\",  \"pedigree\": \"TEST\", \"idOnOrbit\": \"25544\", \"xpos\": -2828.238756," +
+        "\"ypos\": 1525.059531, \"zpos\": 5968.427089, \"xvel\": -0.5010466157, \"yvel\": -7.462773307, \"zvel\": 1.670278768," +
+        "\"posUnc\": 0.001515759293, \"velUnc\": 0.000001592108957, \"solarRadPressCoeff\": 0.006597212904, \"dragCoeff\": 0.005059190077," +
+        "\"geopotentialModel\": \"EGM-96 70Z,70T\", \"dragModel\": \"MSIS00\", \"lunarSolar\": 1, \"solarRadPress\": 1, \"solidEarthTides\": 1}";
+
+
+    string json_data = System.Web.HttpUtility.JavaScriptStringEncode(example_state_vector_data);
+
+
+    String service_endpoint = "https://unifieddatalibrary.com/";
+
+
+    //This encodes the example State Vector Data as valid HTTP JSON Content
+    var content = new StringContent(example_state_vector_data, Encoding.UTF8, "application/json");
+
+
+    /*
+       This executes the actual call to the Test UDL for POST'ing a new State Vector.
+       This will fail for your account if you do not have the proper permissions to post State Vector data.
+    */
+    var response = client.PostAsync(service_endpoint + "udl/statevector", content).Result;
+
+
+    // Success error codes includes any response code from 200 - 299
+    if (response.IsSuccessStatusCode)
+    {   Console.WriteLine("You have successfully posted to the State Vector Endpoint!");
+    } else {
+        /*
+           If your request fails, this will tell you why it failed.
+           A Response of "Forbidden" means that you do not have the proper permissions.
+           A Response of "Unauthorized means that your username and/or password is incorrect or incorrectly encoded.
+        */
+        Console.WriteLine("Request Failed. Response: " + response.StatusCode);
+        var responseContent = response.Content;
+        string responseString = responseContent.ReadAsStringAsync().Result;
+        Console.WriteLine(responseString);
+    }
+  }
+}
+       
+Posting Array of Data
+This example demonstrates how to send an array of data to the UDL via a POST call. The data being sent is an array of State Vectors. 
+          
+public static void UDL_Post_ARRAY(){
+  using (var client = new HttpClient())
+  {
+      // -- Authentication Section -- //
+      // Authentication Information will need to be sent with each request for both GET'ing and POST'ing data.
+      string username = "YOUR_USERNAME";
+      string password = "YOUR_PASSWORD";
+      // For production code Username and Password should be kept encrypted and never stored as their plaintext values.
+
+
+      var basicAuth = Encoding.ASCII.GetBytes($"{username}:{password}");
+      client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic",
+      Convert.ToBase64String(basicAuth));
+      // -- End Authentication Section -- //
+
+
+      /*
+         This is an example of an Array of State Vector Data as JSON. Not every field listed here is required to POST a State Vector.
+         For a complete listing of all service descriptions including State Vectors, please visit the UDL API in
+         the Unified Data Library Storefront.
+
+
+         To post multiple pieces of data with the same call, the data must be in the form of a valid JSON array.
+         JSON Array Example Syntax: [{data_1},{data_2},{data_3}]
+         The following example contains an array of 2 state vectors:
+      */
+      var example_state_vector_data_ARRAY = "[{\"classificationMarking\": \"U\", \"source\": \"OrganizationName\", \"dataMode\": \"TEST\"," +
+          "\"epoch\": \"2020-01-01T01:10:10.101000Z\",  \"pedigree\": \"TEST\", \"idOnOrbit\": \"25544\", \"xpos\": -2828.238756," +
+          "\"ypos\": 1525.059531, \"zpos\": 5968.427089, \"xvel\": -0.5010466157, \"yvel\": -7.462773307, \"zvel\": 1.670278768," +
+          "\"posUnc\": 0.001515759293, \"velUnc\": 0.000001592108957, \"solarRadPressCoeff\": 0.006597212904, \"dragCoeff\": 0.005059190077," +
+          "\"geopotentialModel\": \"EGM-96 70Z,70T\", \"dragModel\": \"MSIS00\", \"lunarSolar\": 1, \"solarRadPress\": 1, \"solidEarthTides\": 1}," +
+          "{\"classificationMarking\": \"U\", \"source\": \"OrganizationName\", \"dataMode\": \"TEST\"," +
+          "\"epoch\": \"2020-01-02T01:30:10.494000Z\",  \"pedigree\": \"TEST\", \"idOnOrbit\": \"25544\", \"xpos\": -3828.542756," +
+          "\"ypos\": 1875.059531, \"zpos\": 5002.343, \"xvel\": -0.643161347, \"yvel\": -8.231307, \"zvel\": 1.670278768," +
+          "\"posUnc\": 0.001515759293, \"velUnc\": 0.000001846258957, \"solarRadPressCoeff\": 0.069872212904, \"dragCoeff\": 0.005059134077," +
+          "\"geopotentialModel\": \"EGM-96 70Z,70T\", \"dragModel\": \"MSIS00\", \"lunarSolar\": 1, \"solarRadPress\": 1, \"solidEarthTides\": 0}]";
+      // NOTE: The entire JSON structure is surrounded by "[]" brackets, and the state vector objects are separated by a comma.
+
+
+      string json_data = System.Web.HttpUtility.JavaScriptStringEncode(example_state_vector_data_ARRAY);
+
+
+      String service_endpoint = "https://unifieddatalibrary.com/";
+
+
+      // This encodes the example State Vector Data as valid HTTP JSON Content
+      var content = new StringContent(example_state_vector_data_ARRAY, Encoding.UTF8, "application/json");
+
+
+      /*
+         This executes the actual call to the Test UDL for POST'ing multiple State Vectors with a single call.
+         This will fail for your account if you do not have the proper permissions to post State Vector data.
+
+
+         Unlike the endpoint for posting a single State Vector, we are now invoking the "/udl/statevector/createBulk"
+         endpoint which is used when posting an array containing multiple State Vectors. Information about specific
+         endpoints and their Create Bulk version can be found in the UDL API section of the Unified Data Library
+         Storefront.
+      */
+      var response = client.PostAsync(service_endpoint + "udl/statevector/createBulk", content).Result;
+
+
+      // Success error codes includes any response code from 200 - 299
+      if (response.IsSuccessStatusCode)
+      {   Console.WriteLine("You have successfully posted to the State Vector Create Bulk Endpoint!");
+      } else {
+          /*
+             If your request fails, this will tell you why it failed.
+             A Response of "Forbidden" means that you do not have the proper permissions.
+             A Response of "Unauthorized means that your username and/or password is incorrect or incorrectly encoded.
+          */
+          Console.WriteLine("Request Failed. Response: " + response.StatusCode);
+          var responseContent = response.Content;
+          string responseString = responseContent.ReadAsStringAsync().Result;
+          Console.WriteLine(responseString);
+      }
+  }
+}
+       
+ava Example
+To use the following Java code examples in this help page you will need to have a valid SDK installed. The libraries used within the following scripts are installed as part of the Java SDK. 
+Querying Data
+This example demonstrates how to access data from the UDL via a GET call:
+           
+public void UDL_Get() throws Exception {
+
+
+    String service_endpoint = "https://unifieddatalibrary.com/";
+
+
+
+
+    // In this example, the query will return the count of all Two-Line Element Sets posted in the last two hours.
+    URL two_line_element_set_query = new URL(service_endpoint + "udl/elset/count?epoch=%3Enow-2%20hours");
+
+
+    // -- Authentication Section -- //
+    // Authentication Information will need to be sent with each request for both GET'ing and POST'ing data.
+    String username = "YOUR_USERNAME";
+    String password = "YOUR_PASSWORD";
+    // For production code,  Username and Password should be kept encrypted and never stored as their plaintext values.
+
+
+    String userCredentials = username + ":" + password;
+    String basicAuth = "Basic " + new String(Base64.getEncoder().encode(userCredentials.getBytes()));
+    // -- End Authentication Section -- //
+
+
+    HttpURLConnection connection = (HttpURLConnection) two_line_element_set_query.openConnection();
+    connection.setRequestProperty("Authorization", basicAuth);
+    connection.setRequestMethod("GET");
+
+
+    int request_status = connection.getResponseCode();
+
+
+    // Success error codes includes any response code from 200 - 299
+    if (request_status >= 200 && request_status <= 299) {
+        System.out.println("Success!");
+        BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+        String inputLine;
+        while ((inputLine = in.readLine()) != null) {
+            System.out.println(inputLine);
+        }
+        in.close();
+    } else {
+      /*
+         If your request fails, this will tell you why it failed.
+         A Response of "Forbidden" means that you do not have the proper permissions.
+         A Response of "Unauthorized means that your username and/or password is incorrect or incorrectly encoded.
+      */
+        System.out.println("Request Failed. Response Code: " + request_status);
+        if (request_status == 401 || request_status == 407) {
+            System.out.println("Reason: Unauthorized, Authentication Failed");
+        } else {
+            System.out.println("Reason: ");
+            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
+            String inputLine;
+            while ((inputLine = in.readLine()) != null) {
+                System.out.println(inputLine);
+            }
+            in.close();
+        }
+    }
+    connection.disconnect();
+}
+       
+Posting Data
+This example demonstrates how to send data to the UDL via a POST call. The data being sent is a single State Vector. 
+           
+public void UDL_Post() throws Exception {
+
+
+     String service_endpoint = "https://unifieddatalibrary.com/";
+
+
+    /*
+       This executes the actual call to the Test UDL for POST'ing a new State Vector.
+       This will fail for your account if you do not have the proper permissions to post State Vector data.
+    */
+    URL two_line_element_set_query = new URL(service_endpoint + "udl/statevector");
+
+
+    // -- Authentication Section -- //
+    // Authentication Information will need to be sent with each request for both GET'ing and POST'ing data.
+    String username = "YOUR_USERNAME";
+    String password = "YOUR_PASSWORD";
+    // For production code, Username and Password should be kept encrypted and never stored as their plaintext values.
+
+
+    String userCredentials = username + ":" + password;
+    String basicAuth = "Basic " + new String(Base64.getEncoder().encode(userCredentials.getBytes()));
+    // -- End Authentication Section -- //
+
+
+    HttpURLConnection connection = (HttpURLConnection) two_line_element_set_query.openConnection();
+
+
+    connection.setRequestProperty("Authorization", basicAuth);
+    connection.setRequestMethod("POST");
+    connection.setRequestProperty("Content-Type", "application/json; utf-8");
+    connection.setDoOutput(true);
+
+
+    /*
+       This is an example of State Vector Data as JSON. Not every field listed here is required to POST a State Vector.
+       For a complete listing of all service descriptions including State Vectors, please visit the UDL API in
+       the Unified Data Library Storefront.
+    */
+    String example_state_vector_data = "{\"classificationMarking\": \"U\", \"source\": \"OrganizationName\", \"dataMode\": \"TEST\"," +
+            "\"epoch\": \"2020-01-01T01:10:10.101000Z\",  \"pedigree\": \"TEST\", \"idOnOrbit\": \"25544\", \"xpos\": -2828.238756," +
+            "\"ypos\": 1525.059531, \"zpos\": 5968.427089, \"xvel\": -0.5010466157, \"yvel\": -7.462773307, \"zvel\": 1.670278768," +
+            "\"posUnc\": 0.001515759293, \"velUnc\": 0.000001592108957, \"solarRadPressCoeff\": 0.006597212904, \"dragCoeff\": 0.005059190077," +
+            "\"geopotentialModel\": \"EGM-96 70Z,70T\", \"dragModel\": \"MSIS00\", \"lunarSolar\": 1, \"solarRadPress\": 1, \"solidEarthTides\": 1}";
+
+
+    try (OutputStream os = connection.getOutputStream()) {
+        os.write(example_state_vector_data.getBytes(StandardCharsets.UTF_8));
+    } catch (Exception e) {
+        System.out.println("Could not set output stream bytes: " + e.getMessage());
+        throw e;
+    }
+
+
+    int request_status = connection.getResponseCode();
+
+
+    // Success error codes includes any response code from 200 - 299
+    if (request_status >= 200 && request_status <= 299) {
+        System.out.println("You have successfully posted to the State Vector Endpoint!");
+    } else {
+        /*
+           If your request fails, this will tell you why it failed.
+           A Response of "Forbidden" means that you do not have the proper permissions.
+           A Response of "Unauthorized means that your username and/or password is incorrect or incorrectly encoded.
+        */
+        System.out.println("Request Failed. Response Code: " + request_status);
+        if (request_status == 401 || request_status == 407) {
+            System.out.println("Reason: Unauthorized, Authentication Failed");
+        } else {
+            System.out.println("Reason: ");
+            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
+            String inputLine;
+            while ((inputLine = in.readLine()) != null) {
+                System.out.println(inputLine);
+            }
+            in.close();
+        }
+    }
+    connection.disconnect();
+}
+       
+Posting Array of Data
+This example demonstrates how to send an array of data to the UDL via a POST call. The data being sent is an array of State Vectors. 
+           
+public void UDL_Post_ARRAY() throws Exception {
+
+
+    String service_endpoint = "https://unifieddatalibrary.com/";
+
+
+
+
+    /*
+        This example will execute a call to the Test UDL for POST'ing multiple State Vectors with a single call.
+        This will fail for your account if you do not have the proper permissions to post State Vector data.
+    */
+    URL two_line_element_set_query = new URL(service_endpoint + "udl/statevector/createBulk");
+
+
+    // -- Authentication Section -- //
+    // Authentication Information will need to be sent with each request for both GET'ing and POST'ing data.
+    String username = "YOUR_USERNAME";
+    String password = "YOUR_PASSWORD";
+    // For production code, Username and Password should be kept encrypted and never stored as their plaintext values.
+
+
+    String userCredentials = username + ":" + password;
+    String basicAuth = "Basic " + new String(Base64.getEncoder().encode(userCredentials.getBytes()));
+    // -- End Authentication Section -- //
+
+
+    HttpURLConnection connection = (HttpURLConnection) two_line_element_set_query.openConnection();
+
+
+    connection.setRequestProperty("Authorization", basicAuth);
+    connection.setRequestMethod("POST");
+    connection.setRequestProperty("Content-Type", "application/json; utf-8");
+    connection.setDoOutput(true);
+
+
+    /*
+       This is an example of an Array of State Vector Data as JSON. Not every field listed here is required to POST a State Vector.
+       For a complete listing of all service descriptions including State Vectors, please visit the UDL API in
+       the Unified Data Library Storefront.
+
+
+       To post multiple pieces of data with the same call, the data must be in the form of a valid JSON array.
+       JSON Array Example Syntax: [{data_1},{data_2},{data_3}]
+       The following example contains an array of 2 state vectors:
+    */
+    String example_state_vector_data_ARRAY = "[{\"classificationMarking\": \"U\", \"source\": \"OrganizationName\", \"dataMode\": \"TEST\"," +
+            "\"epoch\": \"2020-01-01T01:10:10.101000Z\",  \"pedigree\": \"TEST\", \"idOnOrbit\": \"25544\", \"xpos\": -2828.238756," +
+            "\"ypos\": 1525.059531, \"zpos\": 5968.427089, \"xvel\": -0.5010466157, \"yvel\": -7.462773307, \"zvel\": 1.670278768," +
+            "\"posUnc\": 0.001515759293, \"velUnc\": 0.000001592108957, \"solarRadPressCoeff\": 0.006597212904, \"dragCoeff\": 0.005059190077," +
+            "\"geopotentialModel\": \"EGM-96 70Z,70T\", \"dragModel\": \"MSIS00\", \"lunarSolar\": 1, \"solarRadPress\": 1, \"solidEarthTides\": 1}," +
+            "{\"classificationMarking\": \"U\", \"source\": \"OrganizationName\", \"dataMode\": \"TEST\"," +
+            "\"epoch\": \"2020-01-02T01:30:10.494000Z\",  \"pedigree\": \"TEST\", \"idOnOrbit\": \"25544\", \"xpos\": -3828.542756," +
+            "\"ypos\": 1875.059531, \"zpos\": 5002.343, \"xvel\": -0.643161347, \"yvel\": -8.231307, \"zvel\": 1.670278768," +
+            "\"posUnc\": 0.001515759293, \"velUnc\": 0.000001846258957, \"solarRadPressCoeff\": 0.069872212904, \"dragCoeff\": 0.005059134077," +
+            "\"geopotentialModel\": \"EGM-96 70Z,70T\", \"dragModel\": \"MSIS00\", \"lunarSolar\": 1, \"solarRadPress\": 1, \"solidEarthTides\": 0}]";
+    // NOTE: The entire JSON structure is surrounded by "[]" brackets, and the state vector objects are separated by a comma.
+
+
+    try (OutputStream os = connection.getOutputStream()) {
+        os.write(example_state_vector_data_ARRAY.getBytes(StandardCharsets.UTF_8));
+    } catch (Exception e) {
+        System.out.println("Could not set output stream bytes: " + e.getMessage());
+        throw e;
+    }
+
+
+    /*
+       Unlike the endpoint for posting a single State Vector, we are now invoking the "/udl/statevector/createBulk"
+       endpoint which is used when posting an array containing multiple State Vectors. Information about specific
+       endpoints and their Create Bulk version can be found in the UDL API section of the Unified Data Library
+       Storefront.
+    */
+    int request_status = connection.getResponseCode();
+
+
+    // Success error codes includes any response code from 200 - 299
+    if (request_status >= 200 && request_status <= 299) {
+        System.out.println("You have successfully posted to the State Vector Create Bulk Endpoint!");
+    } else {
+        /*
+           If your request fails, this will tell you why it failed.
+           A Response of "Forbidden" means that you do not have the proper permissions.
+           A Response of "Unauthorized means that your username and/or password is incorrect or incorrectly encoded.
+        */
+        System.out.println("Request Failed. Response Code: " + request_status);
+        if (request_status == 401 || request_status == 407) {
+            System.out.println("Reason: Unauthorized, Authentication Failed");
+        } else {
+            System.out.println("Reason: ");
+            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
+            String inputLine;
+            while ((inputLine = in.readLine()) != null) {
+                System.out.println(inputLine);
+            }
+            in.close();
+        }
+    }
+    connection.disconnect();
+}
+       
+Javascript Example
+To use the following Javascript code examples in this help page you will need to have the 'node-fetch' module installed. This module can be installed by running 'npm install node-fetch -g' from a terminal or command-line. 
+Querying Data
+This example demonstrates how to access data from the UDL via a GET call:
+           
+function UDL_Get(){
+
+
+    // Authentication Information will need to be sent with each request for both GET'ing and POST'ing data.
+    var username = "YOUR_USERNAME";
+    var password = "YOUR_PASSWORD";
+    var basicAuth = `Basic ${Buffer.from(`${username}:${password}`).toString('base64')}`;
+    // For production code Username and Password should be kept encrypted and never stored as their plaintext values.
+
+
+    // The Production Endpoint URL should be used for all production activities.
+    var service_endpoint = "https://unifieddatalibrary.com/";
+
+
+    const fetch = require('node-fetch');
+    global.Headers = fetch.Headers;
+
+
+    /*
+        This executes the actual call to the UDL which, in this example, returns the count of all Two-Line Element
+        Sets posted in the last two hours.
+    */
+    fetch(service_endpoint.concat('udl/elset/count?epoch=>now-2%20hours'), {
+        headers: new Headers({
+            "Authorization": basicAuth
+        }),
+    })
+    .then(
+        function(response) {
+            // Success error codes includes any response code from 200 - 299
+            if(response.status >= 200 && response.status <= 299){
+                console.log("Success!");
+                return response.json();
+            } else {
+                // If your request fails, this will tell you why it failed.
+                console.log("Request Failed. Response Code: " + response.status.toString())
+                console.log("Reason:")
+                if(response.status.toString() === '401' || response.status.toString() === '403' ){
+                    console.log("Authentication Failure");
+                    return "";
+                } else {
+                    return response.json();
+                }
+            }
+        }
+    ).then(
+        function(json){
+            if(!(json.toString() === "")){
+                console.log(json);
+            }
+        }
+    )
+}
+  
+       
+Posting Data
+This example demonstrates how to send data to the UDL via a POST call. The data being sent is a single State Vector. 
+           
+function UDL_Post(){
+
+
+    // Authentication Information will need to be sent with each request for both GET'ing and POST'ing data.
+    var username = "YOUR_USERNAME";
+    var password = "YOUR_PASSWORD";
+    var basicAuth = `Basic ${Buffer.from(`${username}:${password}`).toString('base64')}`;
+    // For production code Username and Password should be kept encrypted and never stored as their plaintext values.
+
+
+    /*
+        This is an example of State Vector Data as JSON. Not every field listed here is required to POST a State Vector.
+        For a complete listing of all services descriptions inclusing State Vectors, please visit the UDL API in
+        the Unified Data Library Storefront.
+    */
+   var example_state_vector_data = "{\"classificationMarking\": \"U\", \"source\": \"OrganizationName\", \"dataMode\": \"TEST\"," +
+   "\"epoch\": \"2020-01-01T01:10:10.101000Z\",  \"pedigree\": \"TEST\", \"idOnOrbit\": \"25544\", \"xpos\": -2828.238756," +
+   "\"ypos\": 1525.059531, \"zpos\": 5968.427089, \"xvel\": -0.5010466157, \"yvel\": -7.462773307, \"zvel\": 1.670278768," +
+   "\"posUnc\": 0.001515759293, \"velUnc\": 0.000001592108957, \"solarRadPressCoeff\": 0.006597212904, \"dragCoeff\": 0.005059190077," +
+   "\"geopotentialModel\": \"EGM-96 70Z,70T\", \"dragModel\": \"MSIS00\", \"lunarSolar\": 1, \"solarRadPress\": 1, \"solidEarthTides\": 1}";
+
+
+    /*
+        The Production Endpoint URL should be used for all production activities.
+        Please DO NOT POST test data into production UDL.
+    */
+    var service_endpoint = "https://unifieddatalibrary.com/";
+
+
+    const fetch = require('node-fetch');
+    global.Headers = fetch.Headers;
+
+
+    /*
+        This executes the actual call to the Test UDL for POST'ing a new State Vector.
+        This will fail for your account if you do not have the proper permissions to post State Vector data.
+    */
+    (async () => {
+        const rawResponse = await fetch(service_endpoint.concat('udl/statevector'), {
+            method: 'POST',
+            headers: new Headers({
+                "Authorization": basicAuth,
+                "Content-Type": 'application/json'
+            }),
+            body: example_state_vector_data
+        });
+        const responseStatus = await rawResponse.status;
+
+
+        // Success error codes includes any response code from 200 - 299
+        if(responseStatus >= 200 && responseStatus <= 299){
+            console.log("You have successfully posted to the State Vector Endpoint!");
+        } else {
+            /*
+                If your request fails, this will tell you why it failed.
+                A Response of "Forbidden" means that you do not have the proper permissions.
+                A Response of "Unauthorized means that your username and/or password is incorrect or incorrectly encoded.
+            */
+            console.log("Request Failed. Response Code: " + responseStatus.toString());
+            console.log("Reason:");
+            if(responseStatus.toString() === '401' || responseStatus.toString() === '403' ){
+                console.log("Authentication Failure");
+            } else {
+                const responseContent = await rawResponse.json();
+                console.log(responseContent);
+            }
+        }
+    })();
+}
+  
+       
+Posting Array of Data
+This example demonstrates how to send an array of data to the UDL via a POST call. The data being sent is an array of State Vectors. 
+           
+function UDL_Post_ARRAY(){
+
+
+    // Authentication Information will need to be sent with each request for both GET'ing and POST'ing data.
+    var username = "YOUR_USERNAME";
+    var password = "YOUR_PASSWORD";
+    var basicAuth = `Basic ${Buffer.from(`${username}:${password}`).toString('base64')}`;
+    // For production code Username and Password should be kept encrypted and never stored as their plaintext values.
+
+
+    /*
+        This is an example of State Vector Data as JSON. Not every field listed here is required to POST a State Vector.
+        For a complete listing of all services descriptions inclusing State Vectors, please visit the UDL API in
+        the Unified Data Library Storefront.
+    */
+    var example_state_vector_data_ARRAY = "[{\"classificationMarking\": \"U\", \"source\": \"OrganizationName\", \"dataMode\": \"TEST\"," +
+        "\"epoch\": \"2020-01-01T01:10:10.101000Z\",  \"pedigree\": \"TEST\", \"idOnOrbit\": \"25544\", \"xpos\": -2828.238756," +
+        "\"ypos\": 1525.059531, \"zpos\": 5968.427089, \"xvel\": -0.5010466157, \"yvel\": -7.462773307, \"zvel\": 1.670278768," +
+        "\"posUnc\": 0.001515759293, \"velUnc\": 0.000001592108957, \"solarRadPressCoeff\": 0.006597212904, \"dragCoeff\": 0.005059190077," +
+        "\"geopotentialModel\": \"EGM-96 70Z,70T\", \"dragModel\": \"MSIS00\", \"lunarSolar\": 1, \"solarRadPress\": 1, \"solidEarthTides\": 1}," +
+        "{\"classificationMarking\": \"U\", \"source\": \"OrganizationName\", \"dataMode\": \"TEST\"," +
+        "\"epoch\": \"2020-01-02T01:30:10.494000Z\",  \"pedigree\": \"TEST\", \"idOnOrbit\": \"25544\", \"xpos\": -3828.542756," +
+        "\"ypos\": 1875.059531, \"zpos\": 5002.343, \"xvel\": -0.643161347, \"yvel\": -8.231307, \"zvel\": 1.670278768," +
+        "\"posUnc\": 0.001515759293, \"velUnc\": 0.000001846258957, \"solarRadPressCoeff\": 0.069872212904, \"dragCoeff\": 0.005059134077," +
+        "\"geopotentialModel\": \"EGM-96 70Z,70T\", \"dragModel\": \"MSIS00\", \"lunarSolar\": 1, \"solarRadPress\": 1, \"solidEarthTides\": 0}]";
+    // NOTE: The entire JSON structure is surrounded by "[]" brackets, and the state vector objects are separated by a comma.
+
+
+    /*
+        The Production Endpoint URL should be used for all production activities.
+        Please DO NOT POST test data into production UDL.
+    */
+    var service_endpoint = "https://unifieddatalibrary.com/";
+
+
+    const fetch = require('node-fetch');
+    global.Headers = fetch.Headers;
+
+
+    /*
+        This executes the actual call to the Test UDL for POST'ing a new State Vector.
+        This will fail for your account if you do not have the proper permissions to post State Vector data.
+    */
+    (async () => {
+        const rawResponse = await fetch(service_endpoint.concat('udl/statevector/createBulk'), {
+            method: 'POST',
+            headers: new Headers({
+                "Authorization": basicAuth,
+                "Content-Type": 'application/json'
+            }),
+            body: example_state_vector_data_ARRAY
+        });
+        const responseStatus = await rawResponse.status;
+
+
+        // Success error codes includes any response code from 200 - 299
+        if(responseStatus >= 200 && responseStatus <= 299){
+            console.log("You have successfully posted to the State Vector Create Bulk Endpoint!");
+        } else {
+            /*
+                If your request fails, this will tell you why it failed.
+                A Response of "Forbidden" means that you do not have the proper permissions.
+                A Response of "Unauthorized means that your username and/or password is incorrect or incorrectly encoded.
+            */
+            console.log("Request Failed. Response Code: " + responseStatus.toString());
+            console.log("Reason:");
+            if(responseStatus.toString() === '401' || responseStatus.toString() === '403' ){
+                console.log("Authentication Failure");
+            } else {
+                const responseContent = await rawResponse.json();
+                console.log(responseContent);
+            }
+        }
+    })();
+}
+  
+       
+
+
+nterfacing with the UDL via WinTAK Plugin Client
+For polling functionality or getting realtime data, use the Secure Messaging endpoint. For historical data, use the History endpoint. For more information, please see the Secure Messaging API help tab and/or the History Rest API help tab. 
+Polling Functionality with Secure Messaging in C#
+Below, GetObjects is a simple function that performs a single get call on an API endpoint passed in as "path". 
+             
+//build your path with another function or use Secure Messaging Query Builder
+//target is the service you're hitting (ex. track)
+private string GetObjects(string target, string path)
+{
+    string objects = null;
+    HttpResponseMessage response = _httpClient.GetAsync(path).Result; //see helper functions for setting up httpClient
+    if (response.IsSuccessStatusCode)
+    {
+        objects = response.Content.ReadAsStringAsync().Result;
+        IObjectPreferences targetPreferences = ObjectPreferences[target]; //targetPreferences is an interface that contains metadata for Secure Messaging calls
+        IEnumerator<string> offsetHeaderEnumerator = response.Headers.GetValues("KAFKA_NEXT_OFFSET").GetEnumerator();
+        offsetHeaderEnumerator.MoveNext();
+        _ = long.TryParse(offsetHeaderEnumerator.Current, out long nextOffset);
+        targetPreferences.LastOffset = nextOffset; //The next offset is where the next call should start
+        targetPreferences.LastChecked = DateTime.UtcNow;
+    }
+    return objects;
+}
+  
+         
+Next, create a polling function that calls the GetObjects function and incorporates polling logic. The example provided is meant to run on its own thread. 
+             
+public void Poll(object sender, EventArgs args)
+{
+    DateTime now = DateTime.UtcNow;
+    foreach (string target in ObjectPreferences.Keys)
+    {
+        ObjectPreferences targetPreferences = ObjectPreferences[target];
+        if (!targetPreferences.PollingEnabled)
+        {
+            continue;
+        }
+        DateTime lastExecuted = targetPreferences.LastChecked;
+        TimeSpan ts = now - lastExecuted;
+        if (ts.TotalMilliseconds < targetPreferences.IntervalMilliseconds) //interval milliseconds sets time between calls, make sure to conform to the UDL EULA
+        {
+            continue;
+        }
+        targetPreferences.LastOffset = targetPreferences.LastOffset == 0 ? targetPreferences.Offset : targetPreferences.LastOffset;
+        string path = BuildURIPath(target, targetPreferences.Query, targetPreferences.LastOffset); //see helper functions for an example of how to build UDL URIs
+        string json = GetObjects(target, path);
+        if (target == UdlTypes.Track)
+        {
+            List<Track> tracks = JsonConvert.DeserializeObject<List<Track>>(json);
+            foreach (Track track in tracks)
+            {
+                _cotMessageSender.Send(BuildCotEvent(track, targetPreferences.UseUDLId).ToXml()); //Put UDL Data into Cot Message Format and Send to UI
+            }
+        }
+    }
+}
+  
+         
+You will need to implement a cot builder function to display the objects returned by the UDL. Below is an example of how this can be done for tracks. Please reference the 
+UDL API
+ schema for the service you're using to correctly map from UDL data to a cot message. 
+             
+private CotEvent BuildCotEvent(Track track, Boolean useUDLId)
+{
+    CotEvent cotEvent = new CotEvent();
+    cotEvent.Uid = useUDLId ? track.Id : track.TrkId; //track.Id is unique record in UDL (will show historic tracks) track.TrkId is specific to object path (will only show most recent track)
+    cotEvent.Type = BuildCotEventType(track);
+    CoordinatedTime time = new CoordinatedTime(DateTime.Parse(track.Ts));
+    cotEvent.Time = time;
+    cotEvent.Stale = new CoordinatedTime(time.DateTime.AddYears(1));
+    cotEvent.How = track.DataMode == "TEST" ? CotEvent.HOW_HUMAN_GARBAGE_IN_GARBAGE_OUT : CotEvent.HOW_MACHINE_GENERATED;
+    cotEvent.Point = new CotPoint(new GeoPoint(track.Lat, track.Lon, track.Alt, AltitudeReference.HAE));
+    switch (track.DataMode)
+    {
+        case "REAL": cotEvent.Opex = "o"; break;
+        case "EXERCISE": cotEvent.Opex = "e"; break;
+        default: cotEvent.Opex = "s"; break; // Includes TEST and SIMULATION, s denotes simulation
+    }
+    CotItem trk = new CotItem("track");
+    trk.SetAttribute("speed", track.Spd.ToString());
+    trk.SetAttribute("course", track.Hdng.ToString());
+    cotEvent.Detail.AddChild(trk);
+    if (track.CallSign != null)
+    {
+        CotItem contact = new CotItem("contact");
+        contact.SetAttribute("callsign", track.CallSign);
+        cotEvent.Detail.AddChild(contact);
+    }
+    return cotEvent;
+}
+
+
+private string BuildCotEventType(Track track)
+{
+    StringBuilder sb = new StringBuilder();
+    sb.Append("a-");
+    // affiliation
+    if (track.ObjIdent == null)
+    {
+        sb.Append("o"); // Not Specified
+    }
+    else
+    {
+        string value;
+        switch (track.ObjIdent)
+        {
+            case "ASSUMED FRIEND": value = "a"; break;
+            case "FRIEND": value = "f"; break;
+            case "HOSTILE": value = "h"; break;
+            case "NEUTRAL": value = "n"; break;
+            case "PENDING": value = "p"; break;
+            case "SUSPECT": value = "s"; break;
+            case "UNKNOWN": value = "u"; break;
+            default: value = "x"; break; // Other
+        }
+        if (value == "x" && track.IdentAmp != null)
+        {
+            switch (track.IdentAmp)
+            {
+                case "FAKER": value = "k"; break;
+                case "JOKER": value = "j"; break;
+                default: value = "x"; break;
+            }
+        }
+        sb.Append(value);
+    }
+    sb.Append("-");
+    // Battle dimension MIL-STD-2525B
+    switch (track.Env)
+    {
+        case "AIR": sb.Append("A"); break;
+        case "LAND": sb.Append("G"); break;
+        case "SPACE": sb.Append("P"); break;
+        case "SURFACE": sb.Append("S"); break;
+        case "SUBSURFACE": sb.Append("U"); break;
+        default: sb.Append("Z"); break; // UNKNOWN
+    }
+    return sb.ToString();
+}
+  
+         
+Helper Function Examples
+Below are a few helper functions to build the URIs, make the API calls, start and stop polling, and use the describeTopic endpoint to initialize several targetPreferences fields. 
+             
+public string BuildURIPath(string target, string query, long offset)
+    {
+        string queryString = ValidateQuery(query); //optional validation step
+        string path = $"sm/getMessages/{target}/{offset}{queryString}";
+        return path;
+    }
+
+
+public void Refresh(string target)
+{
+    IObjectPreferences targetPreferences = ObjectPreferences[target];
+    if (targetPreferences != null)
+    {
+        Init(); // builds new httpClient
+        DescribeObject metadata = GetDescribeObject(target);
+        targetPreferences.MaxOffset = metadata.MaxPos;
+        targetPreferences.MinOffset = metadata.MinPos;
+        targetPreferences.Offset = metadata.MaxPos;
+    }
+}
+
+
+public void StartPoll(string target)
+{
+    IObjectPreferences targetPreferences = ObjectPreferences[target];
+    if (targetPreferences == null)
+    {
+        Refresh(target);
+        targetPreferences = ObjectPreferences[target];
+    }
+    targetPreferences.LastOffset = targetPreferences.Offset;
+    targetPreferences.IntervalMilliseconds = targetPreferences.IntervalMilliseconds >= 500 ? targetPreferences.IntervalMilliseconds : 500; //Make sure to follow UDL rate limits
+    targetPreferences.LastChecked = DateTime.UtcNow.AddMilliseconds(-targetPreferences.IntervalMilliseconds);
+    targetPreferences.PollingEnabled = true;
+    LazyInitTimer();
+}
+
+
+public void StopPoll(string target)
+{
+    IObjectPreferences targetPreferences = ObjectPreferences[target];
+    if (targetPreferences == null)
+    {
+        Refresh(target);
+        targetPreferences = ObjectPreferences[target];
+    }
+    targetPreferences.PollingEnabled = false;
+}
+
+
+//describeTopic is an endpoint that returns offsets for the kafka topic associated with the service you're using
+private DescribeObject GetDescribeObject(string target)
+{
+    DescribeObject result = null;
+    HttpResponseMessage response = _httpClient.GetAsync($"sm/describeTopic/{target}").Result;
+    if (response.IsSuccessStatusCode)
+    {
+        string json = response.Content.ReadAsStringAsync().Result;
+        result = JsonConvert.DeserializeObject<DescribeObject>(json);
+    }
+    return result;
+}
+
+
+// your host can be https://unifieddatalibrary.com/ for PROD or https://test.unifieddatalibrary.com/ for TEST
+private HttpClient BuildHttpClient()
+{
+    string host = _preferences.Host.EndsWith("/") ? _preferences.Host : $"{_preferences.Host}/";
+    HttpClient httpClient = new HttpClient(BuildMessageHandler())
+    {
+        BaseAddress = new Uri($"{host}")
+    };
+    httpClient.DefaultRequestHeaders.Accept.Clear();
+    httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("*/*"));
+    return httpClient;
+}
+
+
+private HttpMessageHandler BuildMessageHandler()
+{
+    return new HttpClientHandler
+    {
+        AllowAutoRedirect = false,
+        PreAuthenticate = true,
+        Credentials = new NetworkCredential(_preferences.Username, _preferences.Password) //you will need a UDL account with Secure Messaging enabled
+    };
+}
+
+
+private void LazyInitTimer() //For running polling on its own thread
+{
+    if (_pollTimer == null)
+    {
+        _pollTimer = new DispatcherTimer();
+        _pollTimer.Tick += new EventHandler(Poll);
+        _pollTimer.Interval = new TimeSpan(0, 0, 0, 0, 250); // this timer must be at least as fast as targetPreferences.IntervalMilliseconds
+        _pollTimer.Start();
+    }
+}
+  
+         
+Visual Basic Example
+To use the following Visual Basic code examples in this help page you will need to have the .NET Framework installed. 
+Querying Data
+This example demonstrates how to access data from the UDL via a GET call:
+           
+Sub UDL_Get()
+
+
+  ' The following endpoints will query the UDL for a count of all Two-Line-Element Sets posted in
+  ' the last two hours.
+
+
+  Dim service_endpoint As New Uri("https://unifieddatalibrary.com/udl/elset/count?epoch=>now-2%20hours")
+
+
+  ' Authentication Information will need to be sent with each request for both GET'ing and POST'ing data.
+  Dim username As New String("YOUR_USERNAME")
+  Dim password As New String("YOUR_PASSWORD")
+  ' For production code Username and Password should be kept encrypted and never stored as their plaintext values.
+
+
+  ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12
+
+
+  Dim getRequest As System.Net.HttpWebRequest = System.Net.HttpWebRequest.Create(service_endpoint)
+
+
+  ' All authentication information must be sent as a Base64 encoded ASCII string.
+  Dim basicAuth As String = System.Convert.ToBase64String(System.Text.Encoding.ASCII.GetBytes(username + ":" + password))
+
+
+  getRequest.Headers.Add("Authorization", "Basic " + basicAuth)
+  Try
+
+
+  ' This executes the actual call to the UDL which, in this example, returns the count of
+  ' all Two-Line Element Sets posted in the last two hours.
+      Using response As System.Net.HttpWebResponse = getRequest.GetResponse()
+
+
+          ' Success error codes includes any response code from 200 - 299
+          If (response.StatusCode >= 200) And (response.StatusCode <= 299) Then
+              System.Console.WriteLine("Success!")
+              Dim sr As System.IO.StreamReader = New System.IO.StreamReader(response.GetResponseStream())
+              Dim responseBody As String = sr.ReadToEnd()
+              System.Console.WriteLine(responseBody)
+          End If
+      End Using
+  Catch exception As WebException
+
+
+      ' If your request fails, this will tell you why it failed.
+      ' A Response of "Forbidden" means that you do not have the proper permissions.
+      ' A Response of "Unauthorized means that your username and/or password is incorrect or incorrectly encoded.
+      System.Console.WriteLine("Request Failed. Reason: " + exception.Message)
+      If exception.Response IsNot Nothing Then
+          If exception.Response.ContentLength <> 0 Then
+              Using stream = exception.Response.GetResponseStream()
+                  Using reader = New System.IO.StreamReader(stream)
+                      Console.WriteLine(reader.ReadToEnd())
+                  End Using
+              End Using
+          End If
+      End If
+  End Try
+
+
+End Sub
+       
+Posting Data
+This example demonstrates how to send data to the UDL via a POST call. The data being sent is a single State Vector. 
+           
+Sub UDL_Post()
+
+
+  Dim service_endpoint As New Uri("https://unifieddatalibrary.com/udl/statevector")
+
+
+  ' Authentication Information will need to be sent with each request for both GET'ing and POST'ing data.
+  Dim username As New String("YOUR_USERNAME")
+  Dim password As New String("YOUR_PASSWORD")
+  ' For production code Username and Password should be kept encrypted and never stored as their plaintext values.
+
+
+  ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12
+
+
+  Dim postRequest As System.Net.HttpWebRequest = System.Net.HttpWebRequest.Create(service_endpoint)
+
+
+  ' All authentication information must be sent as a Base64 encoded ASCII string.
+  Dim basicAuth As String = System.Convert.ToBase64String(System.Text.Encoding.ASCII.GetBytes(username + ":" + password))
+
+
+  ' This Is an example of State Vector Data as JSON. Not every field listed here Is required to POST a State Vector.
+  ' For a complete listing of all service descriptions including State Vectors, please visit the UDL API in
+  ' the Unified Data Library Storefront.
+  Dim example_state_vector_data As New String("{""classificationMarking"": ""U"", ""source"": ""OrganizationName"", ""dataMode"": ""TEST""," +
+   """epoch"": ""2020-01-01T01:10:10.101000Z"",  ""pedigree"": ""TEST"", ""idOnOrbit"": ""25544"", ""xpos"": -2828.238756," +
+  """ypos"": 1525.059531, ""zpos"": 5968.427089, ""xvel"": -0.5010466157, ""yvel"": -7.462773307, ""zvel"": 1.670278768," +
+  """posUnc"": 0.001515759293, ""velUnc"": 0.000001592108957, ""solarRadPressCoeff"": 0.006597212904, ""dragCoeff"": 0.005059190077," +
+  """geopotentialModel"": ""EGM-96 70Z, 70T"", ""dragModel"": ""MSIS00"", ""lunarSolar"": 1, ""solarRadPress"": 1, ""solidEarthTides"": 1}")
+
+
+  Dim json_content = System.Text.Encoding.UTF8.GetBytes(example_state_vector_data)
+
+
+  postRequest.Headers.Add("Authorization", "Basic " + basicAuth)
+  postRequest.ContentType = "application/json"
+  postRequest.Method = "POST"
+
+
+  Dim requestStream = postRequest.GetRequestStream()
+  requestStream.Write(json_content, 0, json_content.Length)
+
+
+  Try
+
+
+      ' This executes the actual call to the Test UDL for POST'ing a new State Vector.
+      ' This will fail for your account if you do Not have the proper permissions to post State Vector data.
+      Using response As System.Net.HttpWebResponse = postRequest.GetResponse()
+
+
+          ' Success error codes includes any response code from 200 - 299
+          If (response.StatusCode >= 200) And (response.StatusCode <= 299) Then
+              System.Console.WriteLine("You have successfully posted to the State Vector Endpoint!")
+              Dim sr As System.IO.StreamReader = New System.IO.StreamReader(response.GetResponseStream())
+              Dim responseBody As String = sr.ReadToEnd()
+              System.Console.WriteLine(responseBody)
+          End If
+      End Using
+  Catch exception As WebException
+
+
+      ' If your request fails, this will tell you why it failed.
+      ' A Response of "Forbidden" means that you do not have the proper permissions.
+      ' A Response of "Unauthorized means that your username and/or password is incorrect or incorrectly encoded.
+
+
+      System.Console.WriteLine("Request Failed. Reason: " + exception.Message)
+      If exception.Response IsNot Nothing Then
+          If exception.Response.ContentLength <> 0 Then
+              Using stream = exception.Response.GetResponseStream()
+                  Using reader = New System.IO.StreamReader(stream)
+                      Console.WriteLine(reader.ReadToEnd())
+                  End Using
+              End Using
+          End If
+      End If
+  Finally
+      requestStream.Close()
+  End Try
+
+
+End Sub
+       
+Posting Array of Data
+This example demonstrates how to send an array of data to the UDL via a POST call. The data being sent is an array of State Vectors. 
+           
+Sub UDL_Post_ARRAY()
+
+
+  Dim service_endpoint As New Uri("https://unifieddatalibrary.com/udl/statevector/createBulk")
+
+
+  ' Authentication Information will need to be sent with each request for both GET'ing and POST'ing data.
+  Dim username As New String("YOUR_USERNAME")
+  Dim password As New String("YOUR_PASSWORD")
+  ' For production code Username and Password should be kept encrypted and never stored as their plaintext values.
+
+
+  ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12
+
+
+  Dim postRequest As System.Net.HttpWebRequest = System.Net.HttpWebRequest.Create(service_endpoint)
+
+
+  ' All authentication information must be sent as a Base64 encoded ASCII string.
+  Dim basicAuth As String = System.Convert.ToBase64String(System.Text.Encoding.ASCII.GetBytes(username + ":" + password))
+
+
+  ' This Is an example of State Vector Data as JSON. Not every field listed here Is required to POST a State Vector.
+  ' For a complete listing of all service descriptions including State Vectors, please visit the UDL API in
+  ' the Unified Data Library Storefront.
+  Dim example_state_vector_data_ARRAY As New String("[{""classificationMarking"":  ""U"", ""source"": ""OrganizationName"", ""dataMode"": ""TEST""," +
+              """epoch"": ""2020-01-01T01:10:10.101000Z"",  ""pedigree"": ""TEST"", ""idOnOrbit"": ""25544"", ""xpos"": -2828.238756," +
+              """ypos"": 1525.059531, ""zpos"": 5968.427089, ""xvel"": -0.5010466157, ""yvel"": -7.462773307, ""zvel"": 1.670278768," +
+              """posUnc"": 0.001515759293, ""velUnc"": 0.000001592108957, ""solarRadPressCoeff"": 0.006597212904, ""dragCoeff"": 0.005059190077," +
+              """geopotentialModel"": ""EGM-96 70Z,70T"", ""dragModel"": ""MSIS00"", ""lunarSolar"": 1, ""solarRadPress"": 1, ""solidEarthTides"": 1}," +
+              "{""classificationMarking"": ""U"", ""source"": ""OrganizationName"", ""dataMode"": ""TEST""," +
+              """epoch"": ""2020-01-02T01:30:10.494000Z"",  ""pedigree"": ""TEST"", ""idOnOrbit"": ""25544"", ""xpos"": -3828.542756," +
+              """ypos"": 1875.059531, ""zpos"": 5002.343, ""xvel"": -0.643161347, ""yvel"": -8.231307, ""zvel"": 1.670278768," +
+              """posUnc"": 0.001515759293, ""velUnc"": 0.000001846258957, ""solarRadPressCoeff"": 0.069872212904, ""dragCoeff"": 0.005059134077," +
+              """geopotentialModel"": ""EGM-96 70Z,70T"", ""dragModel"": ""MSIS00"", ""lunarSolar"": 1, ""solarRadPress"": 1, ""solidEarthTides"": 0}]")
+  ' NOTE: The entire JSON Structure Is surrounded by "[]" brackets, And the state vector objects are separated by a comma.
+
+
+
+
+  Dim json_content = System.Text.Encoding.UTF8.GetBytes(example_state_vector_data_ARRAY)
+
+
+  postRequest.Headers.Add("Authorization", "Basic " + basicAuth)
+  postRequest.ContentType = "application/json"
+  postRequest.Method = "POST"
+
+
+  Dim requestStream = postRequest.GetRequestStream()
+  requestStream.Write(json_content, 0, json_content.Length)
+
+
+  Try
+
+
+      ' This executes the actual call to the Test UDL for POST'ing a new State Vector.
+      ' This will fail for your account if you do Not have the proper permissions to post State Vector data.
+      Using response As System.Net.HttpWebResponse = postRequest.GetResponse()
+
+
+          ' Success error codes includes any response code from 200 - 299
+          If (response.StatusCode >= 200) And (response.StatusCode <= 299) Then
+              System.Console.WriteLine("You have successfully posted to the State Vector Create Bulk Endpoint!")
+              Dim sr As System.IO.StreamReader = New System.IO.StreamReader(response.GetResponseStream())
+              Dim responseBody As String = sr.ReadToEnd()
+              System.Console.WriteLine(responseBody)
+          End If
+      End Using
+  Catch exception As WebException
+
+
+      ' If your request fails, this will tell you why it failed.
+      ' A Response of "Forbidden" means that you do not have the proper permissions.
+      ' A Response of "Unauthorized means that your username and/or password is incorrect or incorrectly encoded.
+
+
+      System.Console.WriteLine("Request Failed. Reason: " + exception.Message)
+      If exception.Response IsNot Nothing Then
+          If exception.Response.ContentLength <> 0 Then
+              Using stream = exception.Response.GetResponseStream()
+                  Using reader = New System.IO.StreamReader(stream)
+                      Console.WriteLine(reader.ReadToEnd())
+                  End Using
+              End Using
+          End If
+      End If
+  Finally
+      requestStream.Close()
+  End Try
+
+
+End Sub
+Visual Basic For Applications Example
+To use the following Visual Basic For Applications (VBA) code examples in this help page you will need to have the .NET Framework installed. 
+Querying Data
+This example demonstrates how to access data from the UDL via a GET call:
+           
+Sub UDL_Get()
+
+
+  Dim service_endpoint As String
+  service_endpoint = "https://unifieddatalibrary.com/udl/statevector/count?epoch=%3Enow-2%20hours"
+
+
+  ' -- AUTHENTICATION SECTION --
+  ' Authentication Information will need to be sent with each request for both GET'ing and POST'ing data.
+  Dim username As String
+  username = "YOUR_USERNAME"
+
+
+  Dim password As String
+  password = "YOUR_PASSWORD"
+  ' For production code Username and Password should be kept encrypted and never stored as their plaintext values.
+
+
+  ' All authentication information must be sent as a Base64 encoded ASCII string.
+  Dim bytes() As Byte
+  bytes = VBA.StrConv(username + ":" + password, vbFromUnicode)
+
+
+  Dim objXML As MSXML2.DOMDocument60
+  Dim objNode As MSXML2.IXMLDOMElement
+
+
+  Set objXML = New MSXML2.DOMDocument60
+  Set objNode = objXML.createElement("b64")
+
+
+  objNode.DataType = "bin.base64"
+  objNode.nodeTypedValue = bytes
+
+
+  Dim basicAuth As String
+  basicAuth = "Basic " & objNode.Text
+  ' -- END AUTHENTICATION SECTION --
+
+
+  Set getRequest = CreateObject("WinHttp.WinHttpRequest.5.1")
+  ' This executes the actual call to the UDL which, in this example, returns the count of
+  ' all State Vectors posted in the last two hours.
+  With getRequest
+      .Open "GET", service_endpoint, VARIANT_FALSE
+      .setRequestHeader "Authorization", basicAuth
+      .send
+
+
+      If Err.Number <> 0 Then
+          MsgBox Err.Description
+      Else
+          ' Success error codes includes any response code from 200 - 299
+          Dim responseStatus As String
+          responseStatus = getRequest.Status
+          If (responseStatus >= 200) And (responseStatus <= 299) Then
+              MsgBox "Success! Statevector Count: " & getRequest.responseText
+          Else
+          ' If the request fails, this will show the reason
+              MsgBox "Request Failed. Error Code: " & responseStatus & " Reason: " & getRequest.statusText
+          End If
+      End If
+  End With
+End Sub
+       
+Posting Data
+This example demonstrates how to send data to the UDL via a POST call. The data being sent is a single State Vector. 
+            
+Sub UDL_Post_ARRAY()
+
+
+  Dim service_endpoint As String
+  service_endpoint = "https://unifieddatalibrary.com/udl/statevector/createBulk"
+
+
+  ' -- AUTHENTICATION SECTION --
+  ' Authentication Information will need to be sent with each request for both GET'ing and POST'ing data.
+  Dim username As String
+  username = "YOUR_USERNAME"
+
+
+  Dim password As String
+  password = "YOUR_PASSWORD"
+  ' For production code Username and Password should be kept encrypted and never stored as their plaintext values.
+
+
+  ' All authentication information must be sent as a Base64 encoded ASCII string.
+  Dim bytes() As Byte
+  bytes = VBA.StrConv(username + ":" + password, vbFromUnicode)
+
+
+  Dim objXML As MSXML2.DOMDocument60
+  Dim objNode As MSXML2.IXMLDOMElement
+
+
+  Set objXML = New MSXML2.DOMDocument60
+  Set objNode = objXML.createElement("b64")
+
+
+  objNode.DataType = "bin.base64"
+  objNode.nodeTypedValue = bytes
+
+
+  Dim basicAuth As String
+  basicAuth = "Basic " & objNode.Text
+  ' -- END AUTHENTICATION SECTION --
+
+
+  ' This Is an example of State Vector Data as JSON. Not every field listed here Is required to POST a State Vector.
+  ' For a complete listing of all service descriptions including State Vectors, please visit the UDL API in
+  ' the Unified Data Library Storefront.
+  Dim example_state_vector_data As String
+  example_state_vector_data_ARRAY = "{""classificationMarking"":  ""U"", ""source"": ""Your Organization"", ""dataMode"": ""TEST"","
+  example_state_vector_data_ARRAY = example_state_vector_data_ARRAY & """epoch"": ""2020-01-01T01:10:10.101000Z"",  ""pedigree"": ""TEST"", ""idOnOrbit"": ""25544"", ""xpos"": -2828.238756,"
+  example_state_vector_data_ARRAY = example_state_vector_data_ARRAY & """ypos"": 1525.059531, ""zpos"": 5968.427089, ""xvel"": -0.5010466157, ""yvel"": -7.462773307, ""zvel"": 1.670278768,"
+  example_state_vector_data_ARRAY = example_state_vector_data_ARRAY & """posUnc"": 0.001515759293, ""velUnc"": 0.000001592108957, ""solarRadPressCoeff"": 0.006597212904, ""dragCoeff"": 0.005059190077,"
+  example_state_vector_data_ARRAY = example_state_vector_data_ARRAY & """geopotentialModel"": ""EGM-96 70Z,70T"", ""dragModel"": ""MSIS00"", ""lunarSolar"": 1, ""solarRadPress"": 1, ""solidEarthTides"": 1}"
+
+
+  Dim json_content() As Byte
+  json_content = VBA.StrConv(example_state_vector_data, vbFromUnicode)
+
+
+  Set getRequest = CreateObject("WinHttp.WinHttpRequest.5.1")
+  ' This executes the actual call to the Test UDL for POST'ing a new State Vector.
+  ' This will fail for your account if you do Not have the proper permissions to post State Vector data.
+  With getRequest
+      .Open "POST", test_endpoint_url, VARIANT_FALSE
+      .setRequestHeader "Authorization", basicAuth
+      .setRequestHeader "Content-type", "application/json"
+      .send json_content
+
+
+      If Err.Number <> 0 Then
+          MsgBox Err.Description
+      Else
+          ' Success error codes includes any response code from 200 - 299
+          Dim responseStatus As String
+          responseStatus = getRequest.Status
+          If (responseStatus >= 200) And (responseStatus <= 299) Then
+              MsgBox "You have successfully posted to the State Vector Endpoint!"
+          Else
+          ' If the request fails, this will show the reason
+              MsgBox "Request Failed. Error Code: " & responseStatus & " Reason: " & getRequest.statusText
+          End If
+      End If
+  End With
+End Sub
+       
+Posting Array of Data
+This example demonstrates how to send an array of data to the UDL via a POST call. The data being sent is an array of State Vectors. 
+           
+Sub UDL_Post_ARRAY()
+
+
+  Dim service_endpoint As String
+  service_endpoint = "https://unifieddatalibrary.com/udl/statevector/createBulk"
+
+
+  ' -- AUTHENTICATION SECTION --
+  ' Authentication Information will need to be sent with each request for both GET'ing and POST'ing data.
+  Dim username As String
+  username = "YOUR_USERNAME"
+
+
+  Dim password As String
+  password = "YOUR_PASSWORD"
+  ' For production code Username and Password should be kept encrypted and never stored as their plaintext values.
+
+
+  ' All authentication information must be sent as a Base64 encoded ASCII string.
+  Dim bytes() As Byte
+  bytes = VBA.StrConv(username + ":" + password, vbFromUnicode)
+
+
+  Dim objXML As MSXML2.DOMDocument60
+  Dim objNode As MSXML2.IXMLDOMElement
+
+
+  Set objXML = New MSXML2.DOMDocument60
+  Set objNode = objXML.createElement("b64")
+
+
+  objNode.DataType = "bin.base64"
+  objNode.nodeTypedValue = bytes
+
+
+  Dim basicAuth As String
+  basicAuth = "Basic " & objNode.Text
+  ' -- END AUTHENTICATION SECTION --
+
+
+  ' This Is an example of State Vector Data as JSON. Not every field listed here Is required to POST a State Vector.
+  ' For a complete listing of all service descriptions including State Vectors, please visit the UDL API in
+  ' the Unified Data Library Storefront.
+  Dim example_state_vector_data_ARRAY As String
+  example_state_vector_data_ARRAY = "[{""classificationMarking"":  ""U"", ""source"": ""Your Organization"", ""dataMode"": ""TEST"","
+  example_state_vector_data_ARRAY = example_state_vector_data_ARRAY & """epoch"": ""2020-01-01T01:10:10.101000Z"",  ""pedigree"": ""TEST"", ""idOnOrbit"": ""25544"", ""xpos"": -2828.238756,"
+  example_state_vector_data_ARRAY = example_state_vector_data_ARRAY & """ypos"": 1525.059531, ""zpos"": 5968.427089, ""xvel"": -0.5010466157, ""yvel"": -7.462773307, ""zvel"": 1.670278768,"
+  example_state_vector_data_ARRAY = example_state_vector_data_ARRAY & """posUnc"": 0.001515759293, ""velUnc"": 0.000001592108957, ""solarRadPressCoeff"": 0.006597212904, ""dragCoeff"": 0.005059190077,"
+  example_state_vector_data_ARRAY = example_state_vector_data_ARRAY & """geopotentialModel"": ""EGM-96 70Z,70T"", ""dragModel"": ""MSIS00"", ""lunarSolar"": 1, ""solarRadPress"": 1, ""solidEarthTides"": 1},"
+  example_state_vector_data_ARRAY = example_state_vector_data_ARRAY & "{""classificationMarking"": ""U"", ""source"": ""Your Organization"", ""dataMode"": ""TEST"","
+  example_state_vector_data_ARRAY = example_state_vector_data_ARRAY & """epoch"": ""2020-01-02T01:30:10.494000Z"",  ""pedigree"": ""TEST"", ""idOnOrbit"": ""25544"", ""xpos"": -3828.542756,"
+  example_state_vector_data_ARRAY = example_state_vector_data_ARRAY & """ypos"": 1875.059531, ""zpos"": 5002.343, ""xvel"": -0.643161347, ""yvel"": -8.231307, ""zvel"": 1.670278768,"
+  example_state_vector_data_ARRAY = example_state_vector_data_ARRAY & """posUnc"": 0.001515759293, ""velUnc"": 0.000001846258957, ""solarRadPressCoeff"": 0.069872212904, ""dragCoeff"": 0.005059134077,"
+  example_state_vector_data_ARRAY = example_state_vector_data_ARRAY & """geopotentialModel"": ""EGM-96 70Z,70T"", ""dragModel"": ""MSIS00"", ""lunarSolar"": 1, ""solarRadPress"": 1, ""solidEarthTides"": 0}]"
+  ' NOTE: The entire JSON Structure Is surrounded by "[]" brackets, And the state vector objects are separated by a comma.
+
+
+  Dim json_content() As Byte
+  json_content = VBA.StrConv(example_state_vector_data_ARRAY, vbFromUnicode)
+
+
+  Set getRequest = CreateObject("WinHttp.WinHttpRequest.5.1")
+  ' This executes the actual call to the Test UDL for POST'ing an array of State Vectors.
+  ' This will fail for your account if you do Not have the proper permissions to post State Vector data.
+  With getRequest
+      .Open "POST", test_endpoint_url, VARIANT_FALSE
+      .setRequestHeader "Authorization", basicAuth
+      .setRequestHeader "Content-type", "application/json"
+      .send json_content
+
+
+      If Err.Number <> 0 Then
+          MsgBox Err.Description
+      Else
+          ' Success error codes includes any response code from 200 - 299
+          Dim responseStatus As String
+          responseStatus = getRequest.Status
+          If (responseStatus >= 200) And (responseStatus <= 299) Then
+              MsgBox "You have successfully posted to the State Vector Create Bulk Endpoint!"
+          Else
+          ' If the request fails, this will show the reason
+              MsgBox "Request Failed. Error Code: " & responseStatus & " Reason: " & getRequest.statusText
+          End If
+      End If
+  End With
+End Sub
+       
+Interface with Excel
+How to access Unified Data Library REST services from Excel:
+Microsoft Office has a set of built in features to pull data from the web. If you are using Office 365 Excel, there should be a button in the top left corner of the 'Data' tab as shown below. 
+ Excel help figure 0 
+
+Clicking the ‘From Web’ option underneath the ‘Data’ tab will bring up a new dialog where users can provide the query URL. This option also exists in older versions of Excel, however it may exist under the ‘Data’ tab with a slightly different title. A quick search across the options under the ‘Data’ tab should identify the option to retrieve data from the web. 
+ Excel help figure 1 
+
+Figure 1: Excel dialog for invoking a REST service
+Type the example URL from Figure 1 into the dialog box and click 'OK'.
+Interface with MATLAB
+MATLAB’s standard install includes a library for accessing data from the web. Appropriately, this library is referred to as the Web Access library and it enables users to access data across the web via RESTful webservices, email and FTP. The Web Access library includes the following commands, 
+Command
+	Description
+	webread
+	Read content from RESTful web service
+	webwrite
+	Write data to RESTful web service
+	websave
+	Save content from RESTful web service to file
+	weboptions
+	Specify parameters for RESTful web service
+	web
+	Open web page or file in browser
+	This tutorial provides an example for how to invoke a UDL service using the webread command. If you would like more information on MATLAB’s Web Access methods, please see the link here. 
+Using the webread command is very simple and it only requires 3 steps to ingest UDL data into MATLAB as a structure. 
+Step 1
+Create a variable containing the url for the UDL service you wish to execute
+Using the UDL’s dynamic query tool, identify the service and query parameters you want to utilize for your analysis. For this example, we will invoke the current elset service and we will limit the results returned from the service to 1000 records. The URL for this service is provided here. 
+In MATLAB, input the command below and hit enter:
+MATLAB>>service = 'https://unifieddatalibrary.com/udl/elset/current?maxResults=1000';
+This will create a string variable named ‘service’ that contains the url of the UDL data service.
+You should now be able to see this variable in your workspace window.
+ MATLAB help step 1 
+
+Step 2
+Set your service call options
+The webread command supports a number of different options. Documentation for each of those options can be found on MATLAB’s website. A link here provides more information about the various options supported by webread. 
+We will need to set 5 webread options for the service call
+Option
+	Value
+	Description
+	username
+	Your UDL username
+	Read content from RESTful web service
+	password
+	Your UDL password
+	Write data to RESTful web service
+	ContentType
+	‘json’
+	Save content from RESTful web service to file
+	ArrayFormat
+	‘json’
+	Specify parameters for RESTful web service
+	Timeout
+	‘100’
+	This is the number of seconds MATLAB should wait for a response. The more data you pull from the webservice the larger you should make this value. If you get a read error in MATLAB, we recommend increasing the timeout value 
+	CertificateFileName
+	‘’
+	If you have an embedded cert in MATLAB, you should provide the filepath of the cert here. If you do not have a cert, then you need to provide an empty string for this option. If an empty string is not provided, MATLAB will throw an error indicating it cannot find a valid cert. 
+	These options can be set using the following command:
+MATLAB>>options = weboptions('Username','jonDoe','Password','UDLR0cks!','CertificateFilename', '', 'ContentType','json', 'ArrayFormat', 'json', 'Timeout', 100) 
+Your workspace should now have two variables as shown in the below figure.
+ MATLAB help Step 2 
+
+Step 3
+Use the Webread command to invoke the service
+Now that you have the URL and Options variables you can execute the UDL data service with the below command: 
+MATLAB>>data = webread(service,options);
+Successful execution will result in a new variable in your workspace called ‘data’. This variable will be a MATLAB structure containing the results of the service call. The results can be seen in the below figure. 
+ MATLAB help Step 3 
+
+In summary, UDL services can be easily invoked within MATLAB with the following three steps and commands. 
+1. Set your URL
+MATLAB>>service = 'https://unifieddatalibrary.com/udl/elset/current?maxResults=1000';
+2. Set your Options
+MATLAB>>options = weboptions('Username','jonDoe','Password','UDLR0cks!','CertificateFilename', '', 'ContentType','json', 'ArrayFormat', 'json', 'Timeout', 100); 
+3. Invoke Webread
+MATLAB>>data = webread(service,options);
+
+
+ Excel help figure 2 
+
+Figure 2: Excel dialog for username and password
+Select the 'Basic' section on the left of the new dialog and enter your UDL username and password. Click 'Connect' and Excel will try to make a connection to the UDL service. If it cannot make the connection, double check your internet connection, the URL, and the username and password you entered. A successful connection will result in a new window as shown in Figure 3. 
+ Excel help figure 4 
+
+Figure 3: Returned JSON records inside of Excel
+Upon clicking the OK button on the popup dialog, the header of the column should change from ‘List’ to ‘Column1’ with a little expansion button. Clicking this button, then leaving the defaults and pressing 'OK' on the pop-up will expand all the columns and should result in a view that looks like Figure 4. 
+ Excel help figure 5 
+
+Figure 4: UDL service results inside of Excel
+Hitting the ‘Close and load’ button in the top left will import the results out of the utility and into the open spreadsheet. 
+ Excel help figure 6
