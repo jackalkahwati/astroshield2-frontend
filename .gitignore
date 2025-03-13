@@ -43,6 +43,7 @@ models/*.onnx
 models/*.pth
 models/*.pt
 checkpoints/
+!checkpoints/**/*.pt
 
 # Python cache
 **/__pycache__/
