@@ -245,37 +245,132 @@ integration.run_continuous_integration(
 
 | Feature | Secure Messaging API | REST API |
 |---------|---------------------|----------|
-| Real-time data | ✅ Continuous streaming | ❌ Periodic polling only |
-| Authorization | Requires special access | Standard UDL access |
-| Data freshness | Latest data as it arrives | May have delays between polls |
-| Rate limiting | 3 requests per second (0.34s) | Varies by endpoint |
-| Offset tracking | Maintains position in data stream | N/A |
-| Implementation | `UDLMessagingClient` class | `UDLClient` class |
-| Authentication | Username/password only | API key or username/password |
+| Data freshness | Real-time | Polling interval (typically minutes) |
+| Latency | Low (milliseconds) | Higher (seconds to minutes) |
+| Resource usage | Efficient (stream-based) | Less efficient (polling) |
+| Authorization | Special access required | Standard API access |
+| Implementation | `UDLMessagingClient` | `UDLClient` |
 
-### Supported Data Types
+## UDL Secure Messaging Client
 
-- **State Vectors**: Position and velocity information for space objects
-- **Conjunctions**: Close approach events between space objects
-- **Launch Events**: Information about detected launch events
-- **Tracks**: Tracking data for orbital objects over time
-- **Ephemeris**: Predicted positions of objects over specified time periods
-- **Maneuvers**: Spacecraft maneuver detection and characterization
-- **Observations**: Raw sensor observations of space objects
-- **Orbit Determination**: Detailed orbit determination results
-- **Sensor Data**: Information about sensor capabilities and status
-- **ELSETs/TLEs**: Two-line element sets for orbital objects
-- **Weather Data**: Weather information affecting space operations
-- **Sensor Tasking**: Sensor tasking requests and status
-- **Cyber Threats**: Cyber security threats and notifications
-- **Link Status**: Communication link status information
-- **Communications Data**: Data about communications between ground and space assets
-- **Mission Operations**: Information about mission operations and activities
-- **Vessel Tracking**: Maritime vessel tracking information
-- **Aircraft Tracking**: Aircraft tracking information
-- **Ground Imagery**: Ground-based imagery data
-- **Sky Imagery**: Sky/space imagery data
-- **Video Streaming**: Video streaming information for space monitoring
+The UDL Secure Messaging client (`UDLMessagingClient`) provides methods for interacting with the UDL Secure Messaging API, which offers real-time streaming access to UDL data. This client is designed for applications that require low-latency data access.
+
+### Client Initialization
+
+```python
+from asttroshield.udl_integration.messaging_client import UDLMessagingClient
+
+# Initialize the client
+client = UDLMessagingClient(
+    base_url="https://unifieddatalibrary.com",
+    username="your-username",
+    password="your-password",
+    timeout=30,
+    max_retries=3,
+    sample_period=0.34  # Rate limiting (3 requests per second)
+)
+```
+
+### Basic Usage
+
+```python
+# List available topics
+topics = client.list_topics()
+for topic in topics:
+    print(f"Topic: {topic['name']}, Partitions: {topic['partitions']}")
+
+# Get detailed information about a specific topic
+topic_info = client.describe_topic("statevector")
+print(f"Topic config: {topic_info['config']}")
+
+# Get the latest offset for a topic
+latest_offset = client.get_latest_offset("statevector")
+print(f"Latest offset: {latest_offset}")
+
+# Get messages from a topic
+messages, next_offset = client.get_messages("statevector", offset=0)
+print(f"Retrieved {len(messages)} messages, next offset: {next_offset}")
+```
+
+### Setting up a Message Consumer
+
+The Secure Messaging client provides a consumer mechanism that continuously receives messages from a topic in a background thread:
+
+```python
+# Define a callback function for received messages
+def message_callback(messages):
+    for message in messages:
+        print(f"Received message: {message}")
+        # Process the message...
+
+# Start consuming messages from a topic
+client.start_consumer(
+    topic="statevector",
+    callback_fn=message_callback,
+    start_from_latest=True,  # Start from the latest offset
+    process_historical=False  # Don't process historical data
+)
+
+# Let the consumer run for some time...
+time.sleep(60)
+
+# Stop the consumer when done
+client.stop_consumer("statevector")
+
+# Or stop all active consumers
+client.stop_all_consumers()
+```
+
+### Error Handling
+
+The client includes robust error handling for common issues:
+
+```python
+try:
+    # Try to access a topic
+    messages, next_offset = client.get_messages("restricted_topic", offset=0)
+except requests.exceptions.HTTPError as e:
+    if e.response.status_code == 403:
+        print("Access forbidden. You need special authorization for this topic.")
+    else:
+        print(f"HTTP error: {e}")
+except Exception as e:
+    print(f"Error: {e}")
+```
+
+### Latency Calculation
+
+The client automatically calculates message latency when a message includes a timestamp:
+
+```python
+# Define a callback that uses latency information
+def message_callback(messages):
+    for message in messages:
+        # Latency in milliseconds from when the message was produced to now
+        latency_ms = message.get("_latency_ms")
+        if latency_ms is not None:
+            print(f"Message latency: {latency_ms} ms")
+```
+
+### Rate Limiting
+
+The client respects API rate limits by enforcing a minimum time between requests:
+
+```python
+# Configure a slower rate (1 request per second)
+client = UDLMessagingClient(
+    # ... other parameters ...
+    sample_period=1.0  # 1 request per second
+)
+
+# Or a faster rate (10 requests per second)
+client = UDLMessagingClient(
+    # ... other parameters ...
+    sample_period=0.1  # 10 requests per second (use with caution)
+)
+```
+
+> **Note**: The default sample period is 0.34 seconds (about 3 requests per second), which should work well with the UDL API rate limits. Adjust with caution.
 
 ## Docker Deployment
 
