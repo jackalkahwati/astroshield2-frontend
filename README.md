@@ -17,6 +17,22 @@ The repository is organized into the following main components:
 
 This repository uses Git LFS (Large File Storage) to efficiently manage large files such as models and binary data. For details on working with Git LFS, see [GIT_LFS_GUIDE.md](GIT_LFS_GUIDE.md).
 
+### Git LFS
+
+Large files in this repository (models, checkpoints, etc.) are managed using Git LFS. When you clone this repository, you'll need to:
+
+1. Install Git LFS: https://git-lfs.github.com/
+2. Run `git lfs install` to set up Git LFS
+3. Run `git lfs pull` to download the large files
+
+### Backup Directory
+
+The `backup/` directory contains large files that were removed from the main repository to reduce its size. These files are not tracked by Git but are preserved for reference. To restore files from the backup directory, you can use the provided script:
+
+```bash
+./restore_from_backup.sh
+```
+
 For information on repository cleanup and restructuring, see [REPOSITORY_CLEANUP.md](REPOSITORY_CLEANUP.md).
 
 ## Core Architecture

@@ -1,71 +1,68 @@
 # Repository Cleanup and Restructuring
 
-This document provides instructions for cleaning up and restructuring the AstroShield repository to reduce its size and improve performance.
+This document outlines the cleanup and restructuring process that was performed on the AstroShield repository to improve its organization, reduce its size, and make it more maintainable.
 
-## Quick Fix (Immediate Size Reduction)
+## Cleanup Summary
 
-For an immediate size reduction, run the `quick_fix.sh` script:
+The repository was restructured to:
 
-```bash
-./quick_fix.sh
-```
+1. Reduce the overall repository size from **2.1GB** to **1.1GB** (48% reduction)
+2. Implement Git LFS for large files (models, checkpoints)
+3. Organize code into logical components
+4. Remove unnecessary files and dependencies
+5. Create a backup directory for large files that don't need version control
 
-This script will:
-1. Move Kafka binaries to a backup directory
-2. Remove node_modules directories
-3. Remove virtual environments
-4. Backup model binary files
-5. Remove Python cache files
-6. Create a .gitignore file to prevent these files from being added back
-7. Create a README in the backup directory with instructions for restoring files
+## Git LFS Implementation
 
-After running this script, your repository size should be significantly reduced, and your computer should perform better when working with the codebase.
+Large files are now managed using Git LFS, which stores the actual file content on a remote server while keeping lightweight references in the Git repository. This significantly reduces the repository size and improves clone/pull performance.
 
-## Comprehensive Restructuring
+Files tracked with Git LFS include:
+- Model files (*.onnx, *.pth, *.pt)
+- Checkpoint files (checkpoints/**/*.pt)
 
-For a more comprehensive restructuring, explore the options in the `restructure_plan` directory:
+For more details on working with Git LFS, see [GIT_LFS_GUIDE.md](GIT_LFS_GUIDE.md).
 
-### 1. Clean Repository
+## Backup Directory
 
-To clean the repository more thoroughly, including removing large files from Git history:
+The `backup/` directory contains large files that were removed from the main repository to reduce its size. These files include:
 
-```bash
-./restructure_plan/clean_repo.sh
-```
+- Kafka binaries and archives
+- Backup copies of model files
 
-### 2. Set Up Git LFS
-
-To set up Git Large File Storage for handling large files:
+To restore files from the backup directory, use the provided script:
 
 ```bash
-./restructure_plan/setup_git_lfs.sh
+./restore_from_backup.sh
 ```
 
-### 3. Split Repository
+## Excluded Files
 
-To split the monolithic repository into smaller, focused repositories:
+The following types of files are excluded from the repository:
 
-```bash
-./restructure_plan/split_repo.sh
-```
+1. Virtual environment directories (venv/, env/, .venv/)
+2. Node modules and build artifacts (node_modules/, dist/, .next/)
+3. Python cache files (__pycache__/, *.pyc, *.pyo)
+4. Large binary files that exceed GitHub's limit
+5. IDE-specific files (.idea/, .vscode/)
+6. Log files and OS-specific files (logs/, .DS_Store, Thumbs.db)
 
-## Best Practices for Repository Management
+See the `.gitignore` file for the complete list of excluded files.
 
-1. **Keep binary files out of Git**: Use Git LFS or external storage for large binary files.
-2. **Use .gitignore**: Ensure that build artifacts, virtual environments, and node_modules are excluded.
-3. **Split repositories**: Consider maintaining separate repositories for frontend, backend, models, etc.
-4. **Document dependencies**: Ensure that all dependencies are properly documented in requirements.txt or package.json.
-5. **Use shallow clones**: When cloning the repository, use `git clone --depth=1` to get only the latest version.
+## Maintenance Guidelines
 
-## Restoring Files
+To maintain the repository's organization and size:
 
-If you need to restore files that were removed during cleanup:
+1. Use Git LFS for any new large files (>10MB)
+2. Keep virtual environments outside the repository
+3. Don't commit build artifacts or compiled code
+4. Regularly clean up unnecessary files
+5. Follow the established directory structure for new code
 
-1. Check the `backup` directory for files moved there.
-2. For Kafka, download from: https://downloads.apache.org/kafka/3.9.0/kafka_2.13-3.9.0.tgz
-3. For node_modules, run `npm install` in the respective directories.
-4. For virtual environments, create new ones and install dependencies from requirements.txt.
+## Future Improvements
 
-## Questions or Issues
+Potential future improvements include:
 
-If you encounter any issues with the cleanup or restructuring process, please contact the repository maintainer. 
+1. Further modularization into separate repositories for specific components
+2. Implementing a CI/CD pipeline for automated testing and deployment
+3. Creating Docker containers for development and deployment environments
+4. Improving documentation with more examples and tutorials 
