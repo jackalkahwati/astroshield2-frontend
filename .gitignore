@@ -37,6 +37,7 @@ out/
 
 # Large files exceeding GitHub's limit
 node_modules/@next/swc-darwin-x64/next-swc.darwin-x64.node
+**/_rust.abi3.so
 
 # Large model files
 models/*.onnx
