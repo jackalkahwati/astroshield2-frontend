@@ -7,7 +7,7 @@ import { Box, Typography } from '@mui/material';
 // Dynamically import the TrajectoryAnalysis component with no SSR
 // This is necessary because mapbox-gl is a client-side library
 const TrajectoryAnalysis = dynamic(
-  () => import('../../../src/frontend/containers/TrajectoryAnalysis'),
+  () => import('@/src/frontend/containers/TrajectoryAnalysis'),
   { ssr: false }
 );
 
