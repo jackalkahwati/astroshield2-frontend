@@ -15,7 +15,7 @@ from asttroshield.api_client.config import (
     ORBITAL_CONFIG,
     MANEUVER_CONFIG
 )
-from asttroshield.models.indicator_models import (
+from asttroshield.analysis.indicator_models import (
     SpaceWeatherModel,
     ConjunctionModel,
     RFInterferenceModel,

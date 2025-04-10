@@ -1,10 +1,10 @@
 from flask import Blueprint, request, jsonify
-from models.indicator_models import (
+from asttroshield.analysis.indicator_models import (
     SystemInteraction, EclipsePeriod, TrackingData,
     UNRegistryEntry, OrbitOccupancyData, StimulationEvent,
     LaunchTrackingData
 )
-from analysis.advanced_indicators import (
+from asttroshield.analysis.advanced_indicators import (
     StimulationEvaluator, LaunchTrackingEvaluator,
     EclipseTrackingEvaluator, OrbitOccupancyEvaluator,
     UNRegistryEvaluator
