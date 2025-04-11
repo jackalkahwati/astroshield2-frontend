@@ -239,10 +239,10 @@ const TrajectoryViewer: React.FC<TrajectoryViewerProps> = ({
         coords.push(coords[0]); // Close the circle
         
         return {
-            type: 'Feature',
+            type: 'Feature' as const,
             properties: {},
             geometry: {
-                type: 'Polygon',
+                type: 'Polygon' as const,
                 coordinates: [coords]
             }
         };

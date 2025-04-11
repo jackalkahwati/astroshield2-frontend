@@ -9,7 +9,7 @@ import { PlanManeuverForm } from "@/components/maneuvers/plan-maneuver-form"
 import { Badge } from "@/components/ui/badge"
 import type { ManeuverData } from "@/lib/types"
 import { Input } from "@/components/ui/input"
-import { formatDate } from "@/lib/utils/date"
+import { formatDate } from "@/lib/utils"
 
 interface ManeuversState {
   data: ManeuverData[] | null
@@ -47,27 +47,81 @@ export default function ManeuversPage() {
   useEffect(() => {
     async function fetchData() {
       try {
+        console.log('Fetching maneuvers data...')
         const response = await getManeuvers()
+        console.log('Maneuvers API response:', response)
+        
+        // Check if there's real data from the API
         if (!response.data) {
-          setState(prev => ({
-            ...prev,
-            error: response.error?.message || 'No maneuvers data available',
-            isLoading: false
-          }))
+          console.warn('No maneuvers data from API, using fallback data')
+          // Import fallback data if the API fails
+          import('@/lib/fallback-data').then(module => {
+            const fallbackData = module.FALLBACK_MANEUVERS
+            console.log('Using fallback data:', fallbackData)
+            
+            setState(prev => ({
+              ...prev,
+              data: fallbackData,
+              isLoading: false
+            }))
+            setFilteredData(fallbackData)
+          }).catch(err => {
+            console.error('Failed to load fallback data:', err)
+            setState(prev => ({
+              ...prev,
+              error: 'Failed to fetch maneuvers data',
+              isLoading: false
+            }))
+          })
           return
         }
+        
+        console.log('Maneuvers data loaded:', response.data)
+        
+        // Create a properly typed set of data
+        const mappedData: ManeuverData[] = response.data.map(item => ({
+          id: item.id,
+          satellite_id: item.satellite_id,
+          type: item.type,
+          status: item.status,
+          scheduledTime: item.scheduledTime || '',
+          completedTime: item.completedTime || '',
+          details: {
+            delta_v: item.details?.delta_v,
+            duration: item.details?.duration,
+            fuel_required: item.details?.fuel_required || 0
+          },
+          created_by: item.created_by || '',
+          created_at: item.created_at || ''
+        }))
+        
         setState(prev => ({
           ...prev,
-          data: response.data,
+          data: mappedData,
           isLoading: false
         }))
-        setFilteredData(response.data)
+        setFilteredData(mappedData)
       } catch (err) {
-        setState(prev => ({
-          ...prev,
-          error: 'Failed to fetch maneuvers data',
-          isLoading: false
-        }))
+        console.error('Failed to fetch maneuvers:', err)
+        // Import fallback data on error
+        import('@/lib/fallback-data').then(module => {
+          const fallbackData = module.FALLBACK_MANEUVERS
+          console.log('Using fallback data due to error:', fallbackData)
+          
+          setState(prev => ({
+            ...prev,
+            data: fallbackData,
+            isLoading: false
+          }))
+          setFilteredData(fallbackData)
+        }).catch(fallbackErr => {
+          console.error('Failed to load fallback data:', fallbackErr)
+          setState(prev => ({
+            ...prev,
+            error: 'Failed to fetch maneuvers data',
+            isLoading: false
+          }))
+        })
       }
     }
 

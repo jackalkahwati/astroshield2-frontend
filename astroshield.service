@@ -1,0 +1,14 @@
+[Unit]
+Description=AstroShield Application
+After=network.target
+
+[Service]
+Type=forking
+User=ec2-user
+WorkingDirectory=/home/ec2-user/astroshield
+ExecStart=/home/ec2-user/astroshield/start.sh
+ExecStop=/home/ec2-user/astroshield/stop.sh
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target 

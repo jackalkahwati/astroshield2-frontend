@@ -104,43 +104,91 @@ class AstroShieldKafkaProducer:
             # Encode key if provided
             key_bytes = key.encode("utf-8") if key else None
             
-            # Produce message
+            # Extract UDL references for Kafka headers
+            headers = []
+            
+            # Check for UDL references in the header
+            if "header" in message and "UDL_References" in message["header"]:
+                udl_refs = message["header"]["UDL_References"]
+                if udl_refs and isinstance(udl_refs, list):
+                    # Create a header for each UDL reference
+                    for idx, ref in enumerate(udl_refs):
+                        if "topic" in ref and "id" in ref:
+                            # Format: UDL_REF_{index}_TOPIC, UDL_REF_{index}_ID
+                            headers.append(
+                                (f"UDL_REF_{idx}_TOPIC", ref["topic"].encode("utf-8"))
+                            )
+                            headers.append(
+                                (f"UDL_REF_{idx}_ID", ref["id"].encode("utf-8"))
+                            )
+                    
+                    # Add the count of references
+                    headers.append(
+                        ("UDL_REF_COUNT", str(len(udl_refs)).encode("utf-8"))
+                    )
+            
+            # Produce message with UDL reference headers
             self.producer.produce(
-                topic=topic, key=key_bytes, value=value, callback=self._delivery_callback
+                topic=topic, 
+                key=key_bytes, 
+                value=value, 
+                headers=headers,
+                callback=self._delivery_callback
             )
             
             # Poll to handle delivery reports
             self.producer.poll(0)
             
-            logger.info(f"Published message to topic {topic} with key {key}")
+            logger.info(f"Published message to topic {topic} with key {key} and {len(headers)} UDL reference headers")
         except Exception as e:
             logger.error(f"Error publishing message to topic {topic}: {e}")
             raise
 
     def publish_state_vectors(self, state_vectors: List[Dict[str, Any]]) -> None:
         """
-        Publish state vectors to the AstroShield state vector topic.
+        Publish state vectors to the appropriate AstroShield topic.
+        
+        Since state vectors aren't directly included in the provided topic list,
+        we'll determine the most appropriate topic based on context.
 
         Args:
             state_vectors: List of state vectors in AstroShield format
         """
+        # State vectors might be related to launch trajectories
+        # If they have a launch context, use the launch.trajectory topic
         for state_vector in state_vectors:
+            # Check if this is a launch-related state vector
+            is_launch_related = False
+            if "payload" in state_vector and "metadata" in state_vector["payload"]:
+                metadata = state_vector["payload"]["metadata"]
+                if "context" in metadata and "launch" in metadata["context"].lower():
+                    is_launch_related = True
+            
+            # Choose appropriate topic based on context
+            if is_launch_related:
+                topic = "ss5.launch.trajectory"
+            else:
+                # If no specific topic exists for state vectors in the provided list,
+                # we publish derived state vector data as part of heartbeat or analytics
+                topic = "ss5.service.heartbeat"
+                
             self.publish_message(
-                topic="ss2.data.state-vector",
+                topic=topic,
                 message=state_vector,
                 key=state_vector.get("header", {}).get("messageId")
             )
 
     def publish_conjunctions(self, conjunctions: List[Dict[str, Any]]) -> None:
         """
-        Publish conjunctions to the AstroShield conjunction events topic.
+        Publish conjunctions to the AstroShield PEZ-WEZ prediction topic.
 
         Args:
             conjunctions: List of conjunctions in AstroShield format
         """
         for conjunction in conjunctions:
+            # For conjunction data, we use the PEZ-WEZ prediction topic
             self.publish_message(
-                topic="ss5.conjunction.events",
+                topic="ss5.pez-wez-prediction.conjunction",
                 message=conjunction,
                 key=conjunction.get("header", {}).get("messageId")
             )
@@ -153,120 +201,233 @@ class AstroShieldKafkaProducer:
             launch_events: List of launch events in AstroShield format
         """
         for launch_event in launch_events:
+            # Determine if this is a detection or prediction
+            is_prediction = False
+            if "payload" in launch_event and "isHistorical" in launch_event["payload"]:
+                is_prediction = not launch_event["payload"]["isHistorical"]
+            
+            # Choose appropriate topic
+            if is_prediction:
+                topic = "ss5.launch.prediction"
+            else:
+                topic = "ss5.launch.detection"
+                
             self.publish_message(
-                topic="ss0.launch.detection",
+                topic=topic,
                 message=launch_event,
                 key=launch_event.get("header", {}).get("messageId")
             )
 
     def publish_tracks(self, tracks: List[Dict[str, Any]]) -> None:
         """
-        Publish tracks to the AstroShield track detection topic.
+        Publish tracks to the appropriate AstroShield topic based on context.
 
         Args:
             tracks: List of tracks in AstroShield format
         """
         for track in tracks:
+            # Determine the track type/context to select the appropriate topic
+            track_type = None
+            if "payload" in track and "metadata" in track["payload"]:
+                metadata = track["payload"]["metadata"]
+                track_type = metadata.get("trackType", "").lower()
+            
+            # Choose topic based on track type
+            if track_type == "eo" or track_type == "electrooptical":
+                topic = "ss5.pez-wez-analysis.eo"
+            elif track_type == "rf" or track_type == "radio":
+                # For RF tracks, we can use the RF prediction topic
+                topic = "ss5.pez-wez-prediction.rf"
+            else:
+                # Default to heartbeat for general tracks that don't fit elsewhere
+                topic = "ss5.service.heartbeat"
+                
             self.publish_message(
-                topic="ss1.track.detection",
+                topic=topic,
                 message=track,
                 key=track.get("header", {}).get("messageId")
             )
 
     def publish_ephemeris(self, ephemeris_list: List[Dict[str, Any]]) -> None:
         """
-        Publish ephemeris data to the AstroShield ephemeris topic.
+        Publish ephemeris data to the appropriate AstroShield topic.
 
         Args:
             ephemeris_list: List of ephemeris data in AstroShield format
         """
         for ephemeris in ephemeris_list:
+            # For ephemeris data, we typically use it for prediction or trajectory
+            # Check context to decide on the appropriate topic
+            if "payload" in ephemeris and "metadata" in ephemeris["payload"]:
+                metadata = ephemeris["payload"]["metadata"]
+                if "purpose" in metadata:
+                    purpose = metadata["purpose"].lower()
+                    if "reentry" in purpose:
+                        topic = "ss5.reentry.prediction"
+                    elif "launch" in purpose:
+                        topic = "ss5.launch.trajectory"
+                    else:
+                        # Default for general prediction
+                        topic = "ss5.service.heartbeat"
+                else:
+                    topic = "ss5.service.heartbeat"
+            else:
+                topic = "ss5.service.heartbeat"
+                
             self.publish_message(
-                topic="ss2.ephemeris",
+                topic=topic,
                 message=ephemeris,
                 key=ephemeris.get("header", {}).get("messageId")
             )
 
     def publish_maneuvers(self, maneuvers: List[Dict[str, Any]]) -> None:
         """
-        Publish maneuvers to the AstroShield maneuver detection topic.
+        Publish maneuvers to the appropriate AstroShield topic.
 
         Args:
             maneuvers: List of maneuvers in AstroShield format
         """
         for maneuver in maneuvers:
+            # Maneuvers might be related to separations or could indicate intent
+            # Determine the appropriate topic based on context
+            if "payload" in maneuver and "metadata" in maneuver["payload"]:
+                metadata = maneuver["payload"]["metadata"]
+                maneuver_type = metadata.get("maneuverType", "").lower()
+                
+                if "separation" in maneuver_type:
+                    topic = "ss5.separation.detection"
+                elif "intent" in maneuver_type or "suspicious" in maneuver_type:
+                    topic = "ss5.launch.intent-assessment"
+                else:
+                    # Default topic for general maneuvers
+                    topic = "ss5.service.heartbeat"
+            else:
+                topic = "ss5.service.heartbeat"
+                
             self.publish_message(
-                topic="ss2.maneuver.detection",
+                topic=topic,
                 message=maneuver,
                 key=maneuver.get("header", {}).get("messageId")
             )
 
     def publish_observations(self, observations: List[Dict[str, Any]]) -> None:
         """
-        Publish observations to the AstroShield observation topic.
+        Publish observations to the appropriate AstroShield topic based on type.
 
         Args:
             observations: List of observations in AstroShield format
         """
         for observation in observations:
+            # Determine observation type
+            obs_type = None
+            if "payload" in observation and "sensorInfo" in observation["payload"]:
+                sensor_info = observation["payload"]["sensorInfo"]
+                obs_type = sensor_info.get("sensorType", "").lower()
+            
+            # Map to the appropriate topic
+            if obs_type == "eo" or obs_type == "optical" or obs_type == "electrooptical":
+                topic = "ss5.pez-wez-analysis.eo"
+            elif obs_type == "rf" or obs_type == "radio":
+                topic = "ss5.pez-wez-prediction.rf"
+            elif "weather" in obs_type:
+                topic = "ss5.launch.weather-check"
+            else:
+                # Default for observations that don't fit elsewhere
+                topic = "ss5.service.heartbeat"
+                
             self.publish_message(
-                topic="ss0.observation",
+                topic=topic,
                 message=observation,
                 key=observation.get("header", {}).get("messageId")
             )
 
     def publish_sensor_data(self, sensor_data_list: List[Dict[str, Any]]) -> None:
         """
-        Publish sensor data to the AstroShield sensor info topic.
+        Publish sensor data to the AstroShield service heartbeat topic.
 
         Args:
             sensor_data_list: List of sensor data in AstroShield format
         """
         for sensor_data in sensor_data_list:
+            # Sensor information is typically published as heartbeats
             self.publish_message(
-                topic="ss0.sensor.info",
+                topic="ss5.service.heartbeat",
                 message=sensor_data,
                 key=sensor_data.get("header", {}).get("messageId")
             )
 
     def publish_orbit_determinations(self, orbit_determinations: List[Dict[str, Any]]) -> None:
         """
-        Publish orbit determinations to the AstroShield orbit determination topic.
+        Publish orbit determinations to appropriate AstroShield topics based on context.
 
         Args:
             orbit_determinations: List of orbit determinations in AstroShield format
         """
         for orbit_determination in orbit_determinations:
+            # Check context to determine if it's related to launch, reentry, etc.
+            if "payload" in orbit_determination and "metadata" in orbit_determination["payload"]:
+                metadata = orbit_determination["payload"]["metadata"]
+                context = metadata.get("context", "").lower()
+                
+                if "launch" in context:
+                    topic = "ss5.launch.trajectory"
+                elif "reentry" in context:
+                    topic = "ss5.reentry.prediction"
+                elif "separation" in context:
+                    topic = "ss5.separation.detection"
+                else:
+                    # Default for general orbit determinations
+                    topic = "ss5.service.heartbeat"
+            else:
+                topic = "ss5.service.heartbeat"
+                
             self.publish_message(
-                topic="ss2.orbit.determination",
+                topic=topic,
                 message=orbit_determination,
                 key=orbit_determination.get("header", {}).get("messageId")
             )
 
     def publish_elsets(self, elsets: List[Dict[str, Any]]) -> None:
         """
-        Publish ELSETs to the AstroShield ELSET topic.
+        Publish ELSETs to the appropriate AstroShield topic based on context.
 
         Args:
             elsets: List of ELSETs in AstroShield format
         """
         for elset in elsets:
+            # ELSET data is typically used for trajectory analysis or predictions
+            # Check for any context to determine the most appropriate topic
+            if "payload" in elset and "metadata" in elset["payload"]:
+                metadata = elset["payload"]["metadata"]
+                purpose = metadata.get("purpose", "").lower()
+                
+                if "launch" in purpose:
+                    topic = "ss5.launch.trajectory"
+                elif "reentry" in purpose:
+                    topic = "ss5.reentry.prediction"
+                else:
+                    # Default for general ELSET data
+                    topic = "ss5.service.heartbeat"
+            else:
+                topic = "ss5.service.heartbeat"
+                
             self.publish_message(
-                topic="ss2.elset",
+                topic=topic,
                 message=elset,
                 key=elset.get("header", {}).get("messageId")
             )
 
     def publish_weather_data(self, weather_data_list: List[Dict[str, Any]]) -> None:
         """
-        Publish weather data to the AstroShield weather topic.
+        Publish weather data to the AstroShield launch weather check topic.
 
         Args:
             weather_data_list: List of weather data in AstroShield format
         """
         for weather_data in weather_data_list:
+            # Weather data is relevant for launch assessments
             self.publish_message(
-                topic="ss0.weather",
+                topic="ss5.launch.weather-check",
                 message=weather_data,
                 key=weather_data.get("header", {}).get("messageId")
             )

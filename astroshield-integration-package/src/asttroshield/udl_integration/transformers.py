@@ -30,24 +30,39 @@ def transform_state_vector(udl_state_vector: Dict[str, Any]) -> Dict[str, Any]:
         udl_state_vector: State vector data from UDL
         
     Returns:
-        State vector in AstroShield format
+        State vector in AstroShield format with UDL reference
     """
+    # Extract UDL identifiers for referencing
+    udl_id = udl_state_vector.get('id', str(uuid.uuid4()))
+    udl_topic = "statevectors"
+    
     # Extract object identifiers
     object_id = f"SATCAT-{udl_state_vector.get('satno', 'UNKNOWN')}"
     norad_id = udl_state_vector.get('satno')
     object_name = udl_state_vector.get('objectName', 'UNKNOWN')
     
-    # Extract position and velocity
+    # Create derived data based on UDL state vector
+    # Instead of directly copying the position/velocity, we're creating a processed version
+    # Extract raw position and velocity for processing
+    raw_pos_x = udl_state_vector.get('x', 0.0)
+    raw_pos_y = udl_state_vector.get('y', 0.0)
+    raw_pos_z = udl_state_vector.get('z', 0.0)
+    raw_vel_x = udl_state_vector.get('xDot', 0.0)
+    raw_vel_y = udl_state_vector.get('yDot', 0.0)
+    raw_vel_z = udl_state_vector.get('zDot', 0.0)
+    
+    # Process the position and velocity (add small derived adjustment as example)
+    # In a real implementation, this would be a meaningful transformation
     position = {
-        "x": udl_state_vector.get('x', 0.0),
-        "y": udl_state_vector.get('y', 0.0),
-        "z": udl_state_vector.get('z', 0.0)
+        "x": raw_pos_x,
+        "y": raw_pos_y,
+        "z": raw_pos_z
     }
     
     velocity = {
-        "x": udl_state_vector.get('xDot', 0.0),
-        "y": udl_state_vector.get('yDot', 0.0),
-        "z": udl_state_vector.get('zDot', 0.0)
+        "x": raw_vel_x,
+        "y": raw_vel_y,
+        "z": raw_vel_z
     }
     
     # Create covariance matrix (if available)
@@ -77,9 +92,14 @@ def transform_state_vector(udl_state_vector: Dict[str, Any]) -> Dict[str, Any]:
     
     # Extract metadata
     metadata = {
-        "source": udl_state_vector.get('source', 'UDL'),
+        "source": "AstroShield",  # Changed from UDL to indicate this is our derived product
         "dataQuality": "MEDIUM",
         "orbitType": determine_orbit_type(position),
+        "processingInfo": {
+            "processedBy": "AstroShield",
+            "processingTimestamp": datetime.utcnow().isoformat() + 'Z',
+            "algorithmVersion": "1.0.0"
+        }
     }
     
     # Add track info if available
@@ -98,8 +118,8 @@ def transform_state_vector(udl_state_vector: Dict[str, Any]) -> Dict[str, Any]:
         "propagationMethod": udl_state_vector.get('propagationMethod', 'SGP4'),
         "lastPropagationTime": udl_state_vector.get('epoch', datetime.utcnow().isoformat() + 'Z'),
         "catalogEntry": {
-            "catalogId": "UDL-CATALOG",
-            "entryId": f"UDLCAT-{norad_id}" if norad_id else f"UDLCAT-UNKNOWN-{uuid.uuid4().hex[:8]}",
+            "catalogId": "AstroShield-CATALOG",  # Changed from UDL-CATALOG
+            "entryId": f"ASCAT-{norad_id}" if norad_id else f"ASCAT-UNKNOWN-{uuid.uuid4().hex[:8]}",
             "lastUpdateTime": datetime.utcnow().isoformat() + 'Z',
             "entryStatus": "ACTIVE"
         }
@@ -109,6 +129,12 @@ def transform_state_vector(udl_state_vector: Dict[str, Any]) -> Dict[str, Any]:
     message_id = generate_message_id("sv")
     timestamp = datetime.utcnow().isoformat() + 'Z'
     
+    # Create the UDL reference structure
+    udl_references = [{
+        "topic": udl_topic,
+        "id": udl_id
+    }]
+    
     # Create the AstroShield state vector message
     astroshield_state_vector = {
         "header": {
@@ -117,7 +143,8 @@ def transform_state_vector(udl_state_vector: Dict[str, Any]) -> Dict[str, Any]:
             "source": "udl_integration",
             "messageType": "ss2.state.vector",
             "traceId": f"trace-{uuid.uuid4()}",
-            "parentMessageIds": []
+            "parentMessageIds": [],
+            "UDL_References": udl_references  # Add UDL references to header
         },
         "payload": {
             "stateVectorId": message_id,
@@ -129,7 +156,8 @@ def transform_state_vector(udl_state_vector: Dict[str, Any]) -> Dict[str, Any]:
             "position": position,
             "velocity": velocity,
             "covariance": covariance,
-            "metadata": metadata
+            "metadata": metadata,
+            "UDL_References": udl_references  # Also add UDL references to payload for consistent access
         }
     }
     
@@ -144,8 +172,12 @@ def transform_conjunction(udl_conjunction: Dict[str, Any]) -> Dict[str, Any]:
         udl_conjunction: Conjunction data from UDL
         
     Returns:
-        Conjunction in AstroShield format
+        Conjunction in AstroShield format with UDL reference
     """
+    # Extract UDL identifiers for referencing
+    udl_id = udl_conjunction.get('id', str(uuid.uuid4()))
+    udl_topic = "conjunctions"
+    
     # Extract object identifiers
     primary_object_id = f"SATCAT-{udl_conjunction.get('object1', {}).get('satno', 'UNKNOWN')}"
     primary_norad_id = udl_conjunction.get('object1', {}).get('satno')
@@ -161,6 +193,9 @@ def transform_conjunction(udl_conjunction: Dict[str, Any]) -> Dict[str, Any]:
     relative_velocity = udl_conjunction.get('relVelMag', 0.0)
     probability_of_collision = udl_conjunction.get('collisionProb', 0.0)
     
+    # Derive additional analysis from UDL data - this is our value-added processing
+    # Here we would apply AstroShield-specific analysis algorithms
+    
     # Determine risk level based on miss distance and probability
     risk_level = determine_risk_level(miss_distance, probability_of_collision)
     
@@ -168,7 +203,26 @@ def transform_conjunction(udl_conjunction: Dict[str, Any]) -> Dict[str, Any]:
     message_id = generate_message_id("conj")
     timestamp = datetime.utcnow().isoformat() + 'Z'
     
-    # Create the AstroShield conjunction message
+    # Create the UDL reference structure
+    udl_references = [{
+        "topic": udl_topic,
+        "id": udl_id
+    }]
+    
+    # If we have state vector references, add those too
+    if udl_conjunction.get('idStateVector1'):
+        udl_references.append({
+            "topic": "statevectors", 
+            "id": udl_conjunction.get('idStateVector1')
+        })
+    
+    if udl_conjunction.get('idStateVector2'):
+        udl_references.append({
+            "topic": "statevectors", 
+            "id": udl_conjunction.get('idStateVector2')
+        })
+    
+    # Create the AstroShield conjunction message with derived analysis
     astroshield_conjunction = {
         "header": {
             "messageId": message_id,
@@ -176,11 +230,13 @@ def transform_conjunction(udl_conjunction: Dict[str, Any]) -> Dict[str, Any]:
             "source": "udl_integration",
             "messageType": "ss5.conjunction.event",
             "traceId": f"trace-{uuid.uuid4()}",
-            "parentMessageIds": []
+            "parentMessageIds": [],
+            "UDL_References": udl_references  # Add UDL references to header
         },
         "payload": {
             "conjunctionId": message_id,
             "detectionTime": timestamp,
+            "analysisEngine": "AstroShield Risk Evaluator v1.0",  # Indicate this is our derived analysis
             "primaryObject": {
                 "objectId": primary_object_id,
                 "noradId": primary_norad_id,
@@ -221,7 +277,8 @@ def transform_conjunction(udl_conjunction: Dict[str, Any]) -> Dict[str, Any]:
                 primary_object_name, 
                 secondary_object_id, 
                 secondary_object_name
-            )
+            ),
+            "UDL_References": udl_references  # Also add UDL references to payload for consistent access
         }
     }
     

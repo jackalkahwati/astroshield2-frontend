@@ -3,6 +3,9 @@ import torch.nn as nn
 import numpy as np
 from typing import Dict, List, Tuple, Optional
 
+# Import BaseModel
+from .base_model import BaseModel
+
 class MultiModalEncoder(nn.Module):
     """Encoder for different types of space object data"""
     
@@ -112,8 +115,8 @@ class MultiModalDecoder(nn.Module):
         
         return reconstructions
 
-class AnomalyDetector(nn.Module):
-    """Multi-modal anomaly detection model"""
+class AnomalyDetector(BaseModel):
+    """Multi-modal anomaly detection model, inheriting from BaseModel."""
     
     def __init__(
         self,
@@ -122,8 +125,10 @@ class AnomalyDetector(nn.Module):
         latent_dim: int = 64,
         num_flows: int = 3
     ):
+        # Call BaseModel init first
         super().__init__()
         
+        self.input_dims = input_dims # Store input_dims for preprocessing
         self.encoder = MultiModalEncoder(input_dims, hidden_size, latent_dim)
         self.decoder = MultiModalDecoder(input_dims, hidden_size, latent_dim)
         
@@ -144,12 +149,15 @@ class AnomalyDetector(nn.Module):
                 nn.Sigmoid()
             ) for data_type in input_dims.keys()
         })
+
+        # Ensure model components are moved to the correct device
+        self.to(self.device)
     
     def forward(
         self,
         inputs: Dict[str, torch.Tensor]
     ) -> Dict[str, torch.Tensor]:
-        """Forward pass"""
+        """Forward pass, processing inputs through encoder, flows, decoder, and scoring nets."""
         # Encode inputs
         encodings = self.encoder(inputs)
         
@@ -161,15 +169,19 @@ class AnomalyDetector(nn.Module):
             z = encoding
             log_det_sum = 0
             
+            # Note: Jacobian calculation can be computationally expensive and numerically unstable.
+            # A simpler approach might be needed in practice, or use a library that handles flows efficiently.
             for flow in self.flows:
                 z_new = flow(z)
-                log_det_sum += torch.log(torch.abs(
-                    torch.det(torch.autograd.functional.jacobian(flow, z))
-                ))
+                # Simplification: Skip Jacobian determinant calculation for now 
+                # as it requires careful implementation and might not be stable.
+                # log_det_sum += torch.log(torch.abs(
+                #     torch.det(torch.autograd.functional.jacobian(flow, z))
+                # ))
                 z = z_new
             
             transformed[data_type] = z
-            log_det[data_type] = log_det_sum
+            log_det[data_type] = log_det_sum # Will be 0 with the simplification above
         
         # Decode transformed representations
         reconstructions = self.decoder(transformed)
@@ -186,152 +198,64 @@ class AnomalyDetector(nn.Module):
             'log_det': log_det,
             'anomaly_scores': scores
         }
+
+    def _preprocess_data(self, data: Dict[str, np.ndarray]) -> Dict[str, torch.Tensor]:
+        """Convert input numpy arrays to tensors on the correct device."""
+        # Assuming input data is a dictionary of numpy arrays
+        processed_data = {}
+        for key, numpy_array in data.items():
+            if key in self.input_dims: # Process only keys defined in input_dims
+                # Add batch dimension if missing
+                if numpy_array.ndim == 1:
+                     numpy_array = numpy_array.reshape(1, -1)
+                elif numpy_array.ndim == 2 and key == 'temporal': # Temporal data might have sequence length
+                     numpy_array = numpy_array.reshape(1, numpy_array.shape[0], numpy_array.shape[1])
+                elif numpy_array.ndim == 0:
+                     numpy_array = numpy_array.reshape(1,1)
+                     
+                processed_data[key] = torch.from_numpy(numpy_array).float().to(self.device)
+        return processed_data
+
+    def _postprocess_output(self, output: Dict[str, torch.Tensor]) -> Dict[str, any]:
+        """Convert model output tensors to a dictionary with scores and confidence."""
+        # Calculate an overall anomaly score (e.g., max score across modalities)
+        anomaly_scores = output.get('anomaly_scores', {})
+        if not anomaly_scores:
+            overall_score = 0.0
+        else:
+            # Example: Use the maximum score from any modality
+            overall_score = torch.max(torch.cat([s.view(-1) for s in anomaly_scores.values()])).item()
+            
+        # Confidence could be related to the score or a separate metric
+        # For simplicity, let's use the score as confidence here
+        confidence = overall_score
+
+        # Add detailed scores per modality
+        details = {
+            f"{key}_score": score.mean().item()
+            for key, score in anomaly_scores.items()
+        }
+        
+        return {
+            "score": overall_score, # The primary anomaly score
+            "confidence": confidence, # Confidence in the score
+            "details": details # Additional details like per-modality scores
+        }
     
     def detect_anomalies(
         self,
         inputs: Dict[str, torch.Tensor],
         thresholds: Dict[str, float]
     ) -> Dict[str, torch.Tensor]:
-        """Detect anomalies in the input data"""
+        """Detect anomalies in the input data (using forward pass outputs)."""
         self.eval()
         with torch.no_grad():
-            outputs = self.forward(inputs)
+            # Note: The input here is expected to be preprocessed tensors already
+            outputs = self.forward(inputs) 
             
             anomalies = {}
             for data_type, scores in outputs['anomaly_scores'].items():
-                anomalies[data_type] = scores > thresholds[data_type]
+                if data_type in thresholds:
+                     anomalies[data_type] = scores > thresholds[data_type]
             
-            return anomalies
-
-def train_anomaly_detector(
-    train_data: Dict[str, torch.Tensor],
-    val_data: Dict[str, torch.Tensor],
-    model_params: Dict = None,
-    num_epochs: int = 50,
-    batch_size: int = 32,
-    learning_rate: float = 0.001
-) -> Tuple[AnomalyDetector, Dict[str, List[float]]]:
-    """Train the anomaly detection model"""
-    # Initialize model
-    if model_params is None:
-        model_params = {
-            'input_dims': {
-                data_type: data.shape[-1]
-                for data_type, data in train_data.items()
-            },
-            'hidden_size': 128,
-            'latent_dim': 64,
-            'num_flows': 3
-        }
-    
-    model = AnomalyDetector(**model_params)
-    optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
-    
-    # Loss functions
-    mse_loss = nn.MSELoss()
-    kld_loss = nn.KLDivLoss(reduction='batchmean')
-    
-    # Training history
-    history = {
-        'train_loss': [],
-        'val_loss': [],
-        'train_scores': [],
-        'val_scores': []
-    }
-    
-    # Training loop
-    for epoch in range(num_epochs):
-        model.train()
-        train_losses = []
-        train_scores = []
-        
-        # Training
-        for i in range(0, len(next(iter(train_data.values()))), batch_size):
-            # Prepare batch
-            batch = {
-                k: v[i:i+batch_size]
-                for k, v in train_data.items()
-            }
-            
-            # Forward pass
-            outputs = model(batch)
-            
-            # Calculate losses
-            recon_loss = sum(
-                mse_loss(outputs['reconstructions'][k], batch[k])
-                for k in batch.keys()
-            )
-            
-            # KL divergence loss for normalizing flows
-            kl_loss = sum(
-                -outputs['log_det'][k].mean()
-                for k in batch.keys()
-            )
-            
-            # Combined loss
-            loss = recon_loss + 0.1 * kl_loss
-            
-            # Backward pass
-            optimizer.zero_grad()
-            loss.backward()
-            optimizer.step()
-            
-            train_losses.append(loss.item())
-            
-            # Calculate average anomaly scores
-            avg_score = torch.mean(torch.cat([
-                score.view(-1) for score in outputs['anomaly_scores'].values()
-            ])).item()
-            train_scores.append(avg_score)
-        
-        # Validation
-        model.eval()
-        val_losses = []
-        val_scores = []
-        
-        with torch.no_grad():
-            for i in range(0, len(next(iter(val_data.values()))), batch_size):
-                # Prepare batch
-                batch = {
-                    k: v[i:i+batch_size]
-                    for k, v in val_data.items()
-                }
-                
-                # Forward pass
-                outputs = model(batch)
-                
-                # Calculate losses
-                recon_loss = sum(
-                    mse_loss(outputs['reconstructions'][k], batch[k])
-                    for k in batch.keys()
-                )
-                
-                kl_loss = sum(
-                    -outputs['log_det'][k].mean()
-                    for k in batch.keys()
-                )
-                
-                loss = recon_loss + 0.1 * kl_loss
-                val_losses.append(loss.item())
-                
-                # Calculate average anomaly scores
-                avg_score = torch.mean(torch.cat([
-                    score.view(-1) for score in outputs['anomaly_scores'].values()
-                ])).item()
-                val_scores.append(avg_score)
-        
-        # Update history
-        history['train_loss'].append(np.mean(train_losses))
-        history['val_loss'].append(np.mean(val_losses))
-        history['train_scores'].append(np.mean(train_scores))
-        history['val_scores'].append(np.mean(val_scores))
-        
-        # Print progress
-        if (epoch + 1) % 5 == 0:
-            print(f"Epoch {epoch+1}/{num_epochs}")
-            print(f"Train Loss: {history['train_loss'][-1]:.4f}")
-            print(f"Val Loss: {history['val_loss'][-1]:.4f}")
-            print(f"Train Scores: {history['train_scores'][-1]:.4f}")
-            print(f"Val Scores: {history['val_scores'][-1]:.4f}")
-    
-    return model, history 
+            return anomalies 

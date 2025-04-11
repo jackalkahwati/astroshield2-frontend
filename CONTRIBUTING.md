@@ -33,9 +33,8 @@ git checkout -b feature/your-feature-name
 
 1. Install dependencies:
 ```bash
-# Backend
-cd backend
-poetry install
+# Python dependencies
+pip install -e ".[dev]"  # Install with development extras
 
 # Frontend
 cd frontend
@@ -45,17 +44,30 @@ npm install
 2. Set up environment:
 ```bash
 cp .env.example .env
-cp frontend/.env.example frontend/.env
 ```
 
 3. Start development servers:
 ```bash
 # Backend
-poetry run uvicorn app.main:app --reload
+cd backend
+uvicorn app.main:app --reload
 
 # Frontend
+cd frontend
 npm run dev
 ```
+
+## Repository Structure
+
+The repository is organized into the following main directories:
+
+- `src/`: Core AstroShield subsystem architecture and components
+- `backend/`: FastAPI backend services
+- `frontend/`: Next.js frontend application
+- `ml/`: Machine learning models and training infrastructure
+- `infrastructure/`: Infrastructure components
+- `docs/`: Documentation
+- `k8s/`: Kubernetes configuration
 
 ## Code Style
 
@@ -69,11 +81,11 @@ npm run dev
 
 ```bash
 # Format code
-poetry run black .
-poetry run isort .
+black .
+isort .
 
 # Lint code
-poetry run ruff check .
+ruff check .
 ```
 
 ### TypeScript (Frontend)
@@ -96,13 +108,13 @@ npm run lint
 
 ```bash
 # Run all tests
-poetry run pytest
+pytest
 
 # Run with coverage
-poetry run pytest --cov=app
+pytest --cov=src
 
 # Run specific test file
-poetry run pytest tests/test_specific.py
+pytest src/tests/test_specific.py
 ```
 
 ### Frontend Tests
@@ -171,6 +183,30 @@ If applicable
 - Update API documentation
 - Update architecture docs if needed
 
+## Continuous Integration
+
+We use GitHub Actions for CI/CD. Every pull request triggers:
+
+1. Unit tests
+2. Integration tests
+3. Linting checks
+4. Type checking
+5. Security scans
+
+## Performance Considerations
+
+- Consider the performance impact of your changes
+- Profile code when making performance-critical changes
+- Document performance characteristics when relevant
+
+## Security Best Practices
+
+- Never commit sensitive information (keys, passwords, etc.)
+- Use proper authentication and authorization
+- Validate all inputs
+- Follow secure coding guidelines
+- Report security issues confidentially
+
 ## Reporting Issues
 
 ### Bug Reports
@@ -197,20 +233,6 @@ Include:
 3. Documentation review
 4. Final approval
 
-## Release Process
-
-1. Version bump
-2. Update CHANGELOG.md
-3. Create release PR
-4. Deploy to staging
-5. Deploy to production
-
-## Questions?
-
-- Open a discussion
-- Join our community chat
-- Contact maintainers
-
 ## License and Legal
 
 By contributing to this project, you agree that:
@@ -220,4 +242,4 @@ By contributing to this project, you agree that:
 3. You will maintain the confidentiality of the codebase
 4. Your contributions will be governed by our proprietary license
 
-For any legal questions, please contact legal@stardrive.com 
+For any legal questions, please contact legal@stardrive.com

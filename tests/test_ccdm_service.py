@@ -4,506 +4,1018 @@ import time
 import uuid
 import json
 from datetime import datetime, timedelta
-from unittest.mock import Mock, patch, MagicMock
-from services.ccdm_service import CCDMService
-from analysis.ml_evaluators import MLManeuverEvaluator, MLSignatureEvaluator, MLAMREvaluator
-from fastapi.testclient import TestClient
-from app.main import app
-from app.models.ccdm import (
-    ObservationData,
-    ObjectAnalysisRequest,
+from unittest.mock import Mock, patch, MagicMock, AsyncMock
+import asyncio
+
+# Import the CCDM service and models
+from backend.app.services.ccdm import CCDMService
+from backend.app.models.ccdm import (
+    ObjectAnalysisResponse,
     ShapeChangeResponse,
     ThermalSignatureResponse,
     PropulsiveCapabilityResponse,
-    ConfidenceLevel,
-    CCDMUpdate,
-    CCDMAssessment
+    HistoricalAnalysis,
+    ShapeChangeMetrics,
+    ThermalSignatureMetrics,
+    PropulsionMetrics,
+    PropulsionType,
+    CCDMAssessment,
+    AnomalyDetection
 )
 
-# Import our traceability utilities if available
-try:
-    from src.asttroshield.common.message_headers import MessageFactory
-    from src.asttroshield.common.kafka_utils import KafkaConfig, AstroShieldProducer, AstroShieldConsumer
-    HAS_TRACEABILITY = True
-except ImportError:
-    HAS_TRACEABILITY = False
-    # Mock the message factory for testing
-    class MockMessageFactory:
-        @staticmethod
-        def create_message(message_type, source, payload):
-            return {
-                "header": {
-                    "messageId": str(uuid.uuid4()),
-                    "timestamp": datetime.utcnow().isoformat(),
-                    "source": source,
-                    "messageType": message_type,
-                    "traceId": str(uuid.uuid4()),
-                    "parentMessageIds": []
-                },
-                "payload": payload
-            }
-        
-        @staticmethod
-        def create_derived_message(parent_message, message_type, source, payload):
-            parent_header = parent_message.get("header", {})
-            return {
-                "header": {
-                    "messageId": str(uuid.uuid4()),
-                    "timestamp": datetime.utcnow().isoformat(),
-                    "source": source,
-                    "messageType": message_type,
-                    "traceId": parent_header.get("traceId", str(uuid.uuid4())),
-                    "parentMessageIds": [parent_header.get("messageId", "unknown")]
-                },
-                "payload": payload
-            }
-    
-    MessageFactory = MockMessageFactory
+# Import threat analyzer classes
+from src.asttroshield.analysis.threat_analyzer import (
+    StabilityIndicator,
+    ManeuverIndicator,
+    RFIndicator,
+    SubSatelliteAnalyzer,
+    ITUComplianceChecker,
+    AnalystDisagreementChecker,
+    OrbitAnalyzer,
+    SignatureAnalyzer,
+    StimulationAnalyzer,
+    AMRAnalyzer,
+    ImagingManeuverAnalyzer,
+    LaunchAnalyzer,
+    EclipseAnalyzer,
+    RegistryChecker
+)
 
-# Test client setup
-client = TestClient(app)
+# Import ML models
+from ml.models.anomaly_detector import SpaceObjectAnomalyDetector
+from ml.models.track_evaluator import TrackEvaluator
+
+# Import needed clients
+from src.asttroshield.api_client.udl_client import UDLClient
+from src.asttroshield.udl_integration import USSFUDLIntegrator
+from src.kafka_client.kafka_consume import KafkaConsumer
 
 @pytest.fixture
-def mock_evaluators():
-    """Mock ML evaluators."""
-    with patch('services.ccdm_service.MLManeuverEvaluator') as mock_maneuver, \
-         patch('services.ccdm_service.MLSignatureEvaluator') as mock_signature, \
-         patch('services.ccdm_service.MLAMREvaluator') as mock_amr:
-        
-        # Configure mock returns
-        mock_maneuver.return_value.analyze_maneuvers.return_value = []
-        mock_signature.return_value.analyze_signatures.return_value = []
-        mock_amr.return_value.analyze_amr.return_value = []
-        
-        yield {
-            'maneuver': mock_maneuver,
-            'signature': mock_signature,
-            'amr': mock_amr
-        }
-
-@pytest.fixture
-def ccdm_service():
-    """Create CCDM service instance."""
-    return CCDMService()
-
-@pytest.fixture
-def test_observation_data():
-    return ObservationData(
-        timestamp=datetime.utcnow(),
-        sensor_id="test_sensor_1",
-        measurements={
-            "position_x": 100.0,
-            "position_y": 200.0,
-            "position_z": 300.0,
-            "velocity_x": 1.0,
-            "velocity_y": 2.0,
-            "velocity_z": 3.0
+def mock_space_object_data():
+    """
+    Fixture that provides mock space object data for testing.
+    """
+    return {
+        "object_id": "12345",
+        "state_vector": {
+            "position": {"x": 1000.0, "y": 2000.0, "z": 3000.0},
+            "velocity": {"x": 1.0, "y": 2.0, "z": 3.0},
+            "epoch": datetime.utcnow().isoformat()
         },
-        metadata={"source": "test"}
-    )
+        "state_history": [
+            {
+                "time": (datetime.utcnow() - timedelta(hours=1)).isoformat(),
+                "position": {"x": 900.0, "y": 1900.0, "z": 2900.0},
+                "velocity": {"x": 0.9, "y": 1.9, "z": 2.9}
+            },
+            {
+                "time": (datetime.utcnow() - timedelta(hours=2)).isoformat(),
+                "position": {"x": 800.0, "y": 1800.0, "z": 2800.0},
+                "velocity": {"x": 0.8, "y": 1.8, "z": 2.8}
+            }
+        ],
+        "maneuver_history": [
+            {
+                "time": (datetime.utcnow() - timedelta(days=1)).isoformat(),
+                "delta_v": 0.5,
+                "thrust_vector": {"x": 0.1, "y": 0.2, "z": 0.3},
+                "duration": 60.0,
+                "confidence": 0.85
+            },
+            {
+                "time": (datetime.utcnow() - timedelta(days=7)).isoformat(),
+                "delta_v": 0.8,
+                "thrust_vector": {"x": -0.1, "y": 0.3, "z": 0.2},
+                "duration": 90.0,
+                "confidence": 0.9
+            }
+        ],
+        "rf_history": [
+            {
+                "time": (datetime.utcnow() - timedelta(hours=6)).isoformat(),
+                "frequency": 2200.0,
+                "power": -90.0,
+                "duration": 300.0,
+                "bandwidth": 5.0,
+                "confidence": 0.75
+            }
+        ],
+        "radar_signature": {
+            "rcs": 1.5,
+            "timestamp": datetime.utcnow().isoformat(),
+            "sensor_id": "radar-001",
+            "confidence": 0.9
+        },
+        "optical_signature": {
+            "magnitude": 6.5,
+            "timestamp": datetime.utcnow().isoformat(),
+            "sensor_id": "optical-002",
+            "confidence": 0.85
+        },
+        "baseline_signatures": {
+            "radar": {
+                "rcs_mean": 1.2,
+                "rcs_std": 0.3,
+                "rcs_min": 0.5,
+                "rcs_max": 2.0
+            },
+            "optical": {
+                "magnitude_mean": 7.0,
+                "magnitude_std": 0.5,
+                "magnitude_min": 6.0,
+                "magnitude_max": 8.0
+            }
+        },
+        "baseline_pol": {
+            "rf": {
+                "max_power": -95.0,
+                "frequencies": [2200.0, 8400.0],
+                "duty_cycles": [0.1, 0.05]
+            },
+            "maneuvers": {
+                "typical_delta_v": 0.3,
+                "typical_intervals": [14, 30]
+            }
+        },
+        "orbit_data": {
+            "semi_major_axis": 7000.0,
+            "eccentricity": 0.001,
+            "inclination": 51.6,
+            "raan": 120.0,
+            "arg_perigee": 180.0,
+            "mean_anomaly": 0.0,
+            "mean_motion": 15.5
+        },
+        "parent_orbit_data": {
+            "parent_object_id": "12340",
+            "semi_major_axis": 7000.0,
+            "inclination": 51.6,
+            "eccentricity": 0.001
+        },
+        "population_data": {
+            "orbit_regime": "LEO",
+            "density": 15.0,
+            "mean_amr": 0.01,
+            "std_amr": 0.003
+        },
+        "anomaly_baseline": {
+            "thermal_profile": [270, 280, 275, 265],
+            "maneuver_frequency": 0.06
+        },
+        "object_events": [
+            {
+                "type": "maneuver",
+                "time": (datetime.utcnow() - timedelta(days=1)).isoformat(),
+                "data": {"delta_v": 0.5}
+            },
+            {
+                "type": "rf_emission",
+                "time": (datetime.utcnow() - timedelta(hours=6)).isoformat(),
+                "data": {"frequency": 2200.0, "power": -90.0}
+            },
+            {
+                "type": "conjunction",
+                "time": (datetime.utcnow() - timedelta(days=2)).isoformat(),
+                "data": {"miss_distance": 45.0, "secondary_object": "23456"}
+            }
+        ],
+        "filing_data": {
+            "itu_filing": "ABC123",
+            "authorized_frequencies": [2200.0, 8400.0]
+        },
+        "registry_data": {
+            "registered_ids": ["12345"],
+            "registry_authority": "UNOOSA"
+        }
+    }
 
 @pytest.fixture
-def test_object_id():
-    return "TEST_OBJ_001"
+def mock_udl_client():
+    """
+    Fixture that provides a mock UDL client.
+    """
+    client = MagicMock()
+    
+    # Set up mock return values for common methods
+    client.get_state_vector = AsyncMock(return_value={
+        "position": {"x": 1000.0, "y": 2000.0, "z": 3000.0},
+        "velocity": {"x": 1.0, "y": 2.0, "z": 3.0},
+        "epoch": datetime.utcnow().isoformat()
+    })
+    
+    client.get_state_vector_history = AsyncMock(return_value=[
+        {
+            "time": (datetime.utcnow() - timedelta(hours=i)).isoformat(),
+            "position": {"x": 1000.0 - i*100, "y": 2000.0 - i*100, "z": 3000.0 - i*100},
+            "velocity": {"x": 1.0 - i*0.1, "y": 2.0 - i*0.1, "z": 3.0 - i*0.1}
+        } for i in range(1, 24)
+    ])
+    
+    client.get_elset_data = AsyncMock(return_value={
+        "semi_major_axis": 7000.0,
+        "eccentricity": 0.001,
+        "inclination": 51.6,
+        "raan": 120.0,
+        "arg_perigee": 180.0,
+        "mean_anomaly": 0.0,
+        "mean_motion": 15.5
+    })
+    
+    client.get_maneuver_data = AsyncMock(return_value=[
+        {
+            "time": (datetime.utcnow() - timedelta(days=i*7)).isoformat(),
+            "delta_v": 0.5 + (i*0.1),
+            "thrust_vector": {"x": 0.1, "y": 0.2, "z": 0.3},
+            "duration": 60.0 + (i*10),
+            "confidence": 0.85
+        } for i in range(0, 3)
+    ])
+    
+    client.get_conjunction_data = AsyncMock(return_value={
+        "events": [
+            {
+                "timestamp": (datetime.utcnow() - timedelta(days=i)).isoformat(),
+                "miss_distance": 40.0 + (i*5),
+                "probability": 1e-6 * (i+1)
+            } for i in range(0, 5)
+        ]
+    })
+    
+    client.get_rf_interference = AsyncMock(return_value={
+        "measurements": [
+            {
+                "timestamp": (datetime.utcnow() - timedelta(hours=i*6)).isoformat(),
+                "frequency": 2200.0,
+                "power_level": -90.0 - (i*2),
+                "duration": 300.0,
+                "bandwidth": 5.0
+            } for i in range(0, 4)
+        ]
+    })
+    
+    return client
 
-def test_analyze_conjunction_success(ccdm_service, mock_evaluators):
-    """Test successful conjunction analysis."""
-    # Setup
-    spacecraft_id = "test_spacecraft_1"
-    other_spacecraft_id = "test_spacecraft_2"
+@pytest.fixture
+def mock_analyzers():
+    """
+    Fixture that provides mock analyzer instances.
+    """
+    mock_stability = MagicMock(spec=StabilityIndicator)
+    mock_maneuver = MagicMock(spec=ManeuverIndicator)
+    mock_rf = MagicMock(spec=RFIndicator)
+    mock_subsatellite = MagicMock(spec=SubSatelliteAnalyzer)
+    mock_itu = MagicMock(spec=ITUComplianceChecker)
+    mock_disagreement = MagicMock(spec=AnalystDisagreementChecker)
+    mock_orbit = MagicMock(spec=OrbitAnalyzer)
+    mock_signature = MagicMock(spec=SignatureAnalyzer)
+    mock_stimulation = MagicMock(spec=StimulationAnalyzer)
+    mock_amr = MagicMock(spec=AMRAnalyzer)
+    mock_imaging = MagicMock(spec=ImagingManeuverAnalyzer)
+    mock_launch = MagicMock(spec=LaunchAnalyzer)
+    mock_eclipse = MagicMock(spec=EclipseAnalyzer)
+    mock_registry = MagicMock(spec=RegistryChecker)
     
-    # Execute
-    result = ccdm_service.analyze_conjunction(spacecraft_id, other_spacecraft_id)
+    # Configure standard returns for analyzer methods
+    mock_stability.analyze_stability.return_value = {"stability_changed": False, "confidence": 0.8}
+    mock_maneuver.analyze_maneuvers.return_value = {"maneuvers_detected": True, "pol_violation": False, "confidence": 0.85}
+    mock_rf.analyze_rf_pattern.return_value = {"rf_detected": True, "pol_violation": False, "confidence": 0.7}
+    mock_subsatellite.detect_sub_satellites.return_value = {"subsatellites_detected": False, "confidence": 0.8}
+    mock_itu.check_itu_compliance.return_value = {"violates_filing": False, "confidence": 0.95}
+    mock_disagreement.check_disagreements.return_value = {"class_disagreement": False, "confidence": 0.9}
+    mock_orbit.analyze_orbit.return_value = {"orbit_out_of_family": False, "confidence": 0.85}
+    mock_signature.analyze_signatures.return_value = {"optical_out_of_family": False, "confidence": 0.8}
+    mock_stimulation.analyze_stimulation.return_value = {"stimulation_detected": False, "confidence": 0.7}
+    mock_amr.analyze_amr.return_value = {"amr_out_of_family": False, "confidence": 0.85}
+    mock_imaging.analyze_imaging_maneuvers.return_value = {"imaging_maneuver_detected": False, "confidence": 0.75}
+    mock_launch.analyze_launch.return_value = {"suspicious_source": False, "confidence": 0.9}
+    mock_eclipse.analyze_eclipse_behavior.return_value = {"uct_during_eclipse": False, "confidence": 0.8}
+    mock_registry.check_registry.return_value = {"registered": True, "confidence": 0.95}
     
-    # Verify
-    assert result['status'] == 'operational'
-    assert 'indicators' in result
-    assert 'analysis_timestamp' in result
-    assert 'risk_assessment' in result
+    return {
+        "stability": mock_stability,
+        "maneuver": mock_maneuver,
+        "rf": mock_rf,
+        "subsatellite": mock_subsatellite,
+        "itu": mock_itu,
+        "disagreement": mock_disagreement,
+        "orbit": mock_orbit,
+        "signature": mock_signature,
+        "stimulation": mock_stimulation,
+        "amr": mock_amr,
+        "imaging": mock_imaging,
+        "launch": mock_launch,
+        "eclipse": mock_eclipse,
+        "registry": mock_registry
+    }
 
-def test_analyze_conjunction_with_indicators(ccdm_service):
-    """Test conjunction analysis with mock indicators."""
-    # Setup
-    spacecraft_id = "test_spacecraft_1"
-    other_spacecraft_id = "test_spacecraft_2"
+@pytest.fixture
+def mock_ml_models():
+    """
+    Fixture that provides mock ML models.
+    """
+    mock_anomaly_detector = MagicMock(spec=SpaceObjectAnomalyDetector)
+    mock_track_evaluator = MagicMock(spec=TrackEvaluator)
     
-    # Mock indicators
-    mock_indicator = Mock()
-    mock_indicator.indicator_name = "test_maneuver"
-    mock_indicator.confidence_level = 0.9
-    mock_indicator.dict.return_value = {
-        'indicator_name': 'test_maneuver',
-        'confidence_level': 0.9
+    return {
+        "anomaly_detector": mock_anomaly_detector,
+        "track_evaluator": mock_track_evaluator
+    }
+
+@pytest.fixture
+def ccdm_service_instance(mock_udl_client, mock_analyzers, mock_ml_models):
+    """
+    Create a CCDM service instance with mocked dependencies.
+    """
+    # Create test config
+    config = {
+        "data_sources": {
+            "udl": {
+                "base_url": "https://test-udl.example.com/api",
+                "api_key_env": "TEST_UDL_API_KEY",
+                "timeout": 5
+            },
+            "space_track": {
+                "base_url": "https://test-space-track.example.com/query",
+                "timeout": 5
+            },
+            "tmdb": {
+                "base_url": "https://test-tmdb.example.com/api",
+                "timeout": 5
+            }
+        },
+        "kafka": {
+            "bootstrap_servers": "test-kafka:9092",
+            "group_id": "test-group",
+            "topics": {
+                "subscribe": ["test-topic-1", "test-topic-2"],
+                "publish": ["test-output-topic"]
+            },
+            "heartbeat_interval_ms": 1000
+        },
+        "ccdm": {
+            "indicators": {
+                "stability": {"threshold": 0.7, "weight": 1.0},
+                "maneuvers": {"threshold": 0.7, "weight": 1.0},
+                "rf": {"threshold": 0.7, "weight": 1.0},
+            },
+            "sensor_types": ["RADAR", "EO"],
+            "ml_filter_threshold": 0.7,
+            "assessment_interval_seconds": 60,
+            "anomaly_detection": {
+                "lookback_days": 7,
+                "anomaly_threshold": 0.7
+            }
+        },
+        "security": {
+            "data_classification": "TEST",
+            "access_control": {
+                "required_roles": ["test_analyst"]
+            }
+        }
     }
     
-    with patch.object(ccdm_service.maneuver_evaluator, 'analyze_maneuvers', return_value=[mock_indicator]):
-        # Execute
-        result = ccdm_service.analyze_conjunction(spacecraft_id, other_spacecraft_id)
-    
-    # Verify
-    assert result['status'] == 'operational'
-    assert len(result['indicators']) == 1
-    assert result['risk_assessment']['risk_level'] == 'critical'
+    # Create service with patched dependencies
+    with patch('src.asttroshield.api_client.udl_client.UDLClient', return_value=mock_udl_client), \
+         patch('src.asttroshield.udl_integration.USSFUDLIntegrator'), \
+         patch('src.kafka_client.kafka_consume.KafkaConsumer'), \
+         patch('ml.models.anomaly_detector.SpaceObjectAnomalyDetector', 
+               return_value=mock_ml_models["anomaly_detector"]), \
+         patch('ml.models.track_evaluator.TrackEvaluator', 
+               return_value=mock_ml_models["track_evaluator"]):
+        
+        service = CCDMService(config=config)
+        
+        # Replace analyzer instances with mocks
+        service.stability_analyzer = mock_analyzers["stability"]
+        service.maneuver_analyzer = mock_analyzers["maneuver"]
+        service.rf_analyzer = mock_analyzers["rf"]
+        service.subsatellite_analyzer = mock_analyzers["subsatellite"]
+        service.itu_checker = mock_analyzers["itu"]
+        service.disagreement_checker = mock_analyzers["disagreement"]
+        service.orbit_analyzer = mock_analyzers["orbit"]
+        service.signature_analyzer = mock_analyzers["signature"]
+        service.stimulation_analyzer = mock_analyzers["stimulation"]
+        service.amr_analyzer = mock_analyzers["amr"]
+        service.imaging_analyzer = mock_analyzers["imaging"]
+        service.launch_analyzer = mock_analyzers["launch"]
+        service.eclipse_analyzer = mock_analyzers["eclipse"]
+        service.registry_checker = mock_analyzers["registry"]
+        
+        return service
 
-def test_get_active_conjunctions(ccdm_service):
-    """Test getting active conjunctions."""
-    # Setup
-    spacecraft_id = "test_spacecraft"
-    mock_nearby = ["nearby_1", "nearby_2"]
-    
-    with patch.object(ccdm_service, '_get_nearby_spacecraft', return_value=mock_nearby):
-        # Execute
-        result = ccdm_service.get_active_conjunctions(spacecraft_id)
-    
-    # Verify
-    assert isinstance(result, list)
-    assert len(result) == len(mock_nearby)
 
-def test_analyze_conjunction_trends(ccdm_service):
-    """Test analyzing conjunction trends."""
-    # Setup
-    spacecraft_id = "test_spacecraft"
-    hours = 24
+class TestCCDMServiceInit:
+    """Test CCDM service initialization."""
     
-    # Execute
-    result = ccdm_service.analyze_conjunction_trends(spacecraft_id, hours)
-    
-    # Verify
-    assert 'total_conjunctions' in result
-    assert 'risk_levels' in result
-    assert 'temporal_metrics' in result
-    assert 'velocity_metrics' in result
-    assert 'ml_insights' in result
+    def test_service_init(self, ccdm_service_instance):
+        """Test that the service initializes correctly with all components."""
+        assert ccdm_service_instance is not None
+        assert ccdm_service_instance._config is not None
+        
+        # Check that critical components are available
+        assert hasattr(ccdm_service_instance, 'udl_client')
+        assert hasattr(ccdm_service_instance, 'udl_integrator')
+        assert hasattr(ccdm_service_instance, 'anomaly_detector')
+        assert hasattr(ccdm_service_instance, 'track_evaluator')
+        assert hasattr(ccdm_service_instance, 'kafka_consumer')
+        
+        # Check that all analyzers are present
+        assert hasattr(ccdm_service_instance, 'stability_analyzer')
+        assert hasattr(ccdm_service_instance, 'maneuver_analyzer')
+        assert hasattr(ccdm_service_instance, 'rf_analyzer')
+        assert hasattr(ccdm_service_instance, 'subsatellite_analyzer')
+        assert hasattr(ccdm_service_instance, 'itu_checker')
+        assert hasattr(ccdm_service_instance, 'orbit_analyzer')
+        
+        # Check that cache is initialized
+        assert isinstance(ccdm_service_instance._object_data_cache, dict)
+        assert isinstance(ccdm_service_instance._cache_ttl, int)
+        assert isinstance(ccdm_service_instance._cache_timestamps, dict)
 
-def test_risk_calculation():
-    """Test risk calculation logic."""
-    service = CCDMService()
-    
-    # Create mock indicators
-    indicators = [
-        Mock(indicator_name='maneuver_detected', confidence_level=0.9),
-        Mock(indicator_name='signature_anomaly', confidence_level=0.7),
-        Mock(indicator_name='amr_change', confidence_level=0.5)
-    ]
-    
-    # Calculate risk
-    risk = service._calculate_risk(indicators)
-    
-    # Verify
-    assert risk['overall_risk'] == 0.9
-    assert risk['risk_level'] == 'critical'
-    assert all(factor in risk['risk_factors'] for factor in ['maneuver', 'signature', 'amr'])
 
-def test_error_handling(ccdm_service):
-    """Test error handling in main methods."""
-    # Setup
-    spacecraft_id = "test_spacecraft"
-    other_spacecraft_id = "other_spacecraft"
+@pytest.mark.asyncio
+class TestCCDMServiceDataFetching:
+    """Test data fetching methods of CCDM service."""
     
-    # Test conjunction analysis error
-    with patch.object(ccdm_service, '_get_trajectory_data', side_effect=Exception("Test error")):
-        result = ccdm_service.analyze_conjunction(spacecraft_id, other_spacecraft_id)
-        assert result['status'] == 'error'
-        assert 'message' in result
+    async def test_fetch_udl_data(self, ccdm_service_instance, mock_udl_client):
+        """Test fetching data from UDL."""
+        # Configure mock return values
+        object_id = "test-sat-001"
+        
+        # Call the method
+        result = await ccdm_service_instance._fetch_udl_data(object_id)
+        
+        # Verify the result structure
+        assert "state_vector" in result
+        assert "state_history" in result
+        assert "maneuver_history" in result
+        assert "rf_history" in result
+        assert "conjunction_history" in result
+        assert "orbit_data" in result
+        
+        # Verify that UDL client methods were called with correct parameters
+        mock_udl_client.get_state_vector.assert_called_once_with(object_id)
+        mock_udl_client.get_elset_data.assert_called_once_with(object_id)
+        mock_udl_client.get_maneuver_data.assert_called_once_with(object_id)
+        mock_udl_client.get_conjunction_data.assert_called_once_with(object_id)
     
-    # Test trends analysis error
-    with patch.object(ccdm_service, '_get_historical_conjunctions', side_effect=Exception("Test error")):
-        result = ccdm_service.analyze_conjunction_trends(spacecraft_id)
-        assert result['status'] == 'error'
-        assert 'message' in result
+    async def test_fetch_space_track_data(self, ccdm_service_instance):
+        """Test fetching data from Space Track."""
+        object_id = "test-sat-001"
+        
+        # Call the method
+        result = await ccdm_service_instance._fetch_space_track_data(object_id)
+        
+        # Verify the result structure
+        assert "space_track_data" in result
+        assert "registry_data" in result
+        assert result["space_track_data"]["NORAD_CAT_ID"] == object_id if object_id.isdigit() else "99999"
+    
+    async def test_fetch_tmdb_data(self, ccdm_service_instance):
+        """Test fetching data from TMDB."""
+        object_id = "test-sat-001"
+        
+        # Call the method
+        result = await ccdm_service_instance._fetch_tmdb_data(object_id)
+        
+        # Verify the result structure
+        assert "baseline_signatures" in result
+        assert "baseline_pol" in result
+        assert "population_data" in result
+        assert "anomaly_baseline" in result
+    
+    async def test_fetch_kafka_data(self, ccdm_service_instance):
+        """Test fetching data from Kafka."""
+        object_id = "test-sat-001"
+        
+        # Call the method
+        result = await ccdm_service_instance._fetch_kafka_data(object_id)
+        
+        # Verify the result structure
+        assert "recent_observations" in result
+        assert "recent_conjunctions" in result
+        assert "recent_rf_events" in result
+        assert "last_update" in result
+    
+    async def test_get_object_data(self, ccdm_service_instance):
+        """Test getting comprehensive object data."""
+        object_id = "test-sat-001"
+        
+        # Patch the individual fetch methods
+        with patch.object(ccdm_service_instance, '_fetch_udl_data', 
+                        return_value={"state_vector": {}, "maneuver_history": []}), \
+             patch.object(ccdm_service_instance, '_fetch_space_track_data',
+                        return_value={"space_track_data": {}}), \
+             patch.object(ccdm_service_instance, '_fetch_tmdb_data',
+                        return_value={"baseline_signatures": {}}), \
+             patch.object(ccdm_service_instance, '_fetch_kafka_data',
+                        return_value={"recent_observations": []}):
+            
+            # Call the method
+            result = await ccdm_service_instance._get_object_data(object_id)
+            
+            # Verify the result
+            assert result["object_id"] == object_id
+            assert "state_vector" in result
+            assert "maneuver_history" in result
+            assert "rf_history" in result
+            
+            # Check that the result was cached
+            assert object_id in ccdm_service_instance._object_data_cache
+            assert object_id in ccdm_service_instance._cache_timestamps
+    
+    async def test_safe_fetch(self, ccdm_service_instance):
+        """Test safe fetch method for handling exceptions."""
+        # Test successful synchronous function
+        def success_func():
+            return {"success": True}
+        
+        result = await ccdm_service_instance._safe_fetch(success_func)
+        assert result == {"success": True}
+        
+        # Test successful async function
+        async def async_success_func():
+            return {"async_success": True}
+        
+        result = await ccdm_service_instance._safe_fetch(async_success_func)
+        assert result == {"async_success": True}
+        
+        # Test function that raises exception
+        def error_func():
+            raise ValueError("Test error")
+        
+        result = await ccdm_service_instance._safe_fetch(error_func)
+        assert isinstance(result, ValueError)
+        assert str(result) == "Test error"
+        
+        # Test async function that raises exception
+        async def async_error_func():
+            raise ValueError("Async test error")
+        
+        result = await ccdm_service_instance._safe_fetch(async_error_func)
+        assert isinstance(result, ValueError)
+        assert str(result) == "Async test error"
 
-class TestCCDMService:
-    @pytest.mark.asyncio
-    async def test_analyze_object(self, test_object_id, test_observation_data):
-        request = ObjectAnalysisRequest(
-            object_id=test_object_id,
-            observation_data=test_observation_data
-        )
-        response = client.post("/api/v1/ccdm/analyze_object", json=request.dict())
-        assert response.status_code == 200
-        data = response.json()
-        assert data["object_id"] == test_object_id
-        assert 0.0 <= data["confidence_level"] <= 1.0
 
-    @pytest.mark.asyncio
-    async def test_detect_shape_changes(self, test_object_id):
+@pytest.mark.asyncio
+class TestCCDMServiceAnalysis:
+    """Test CCDM analysis methods."""
+    
+    async def test_analyze_object(self, ccdm_service_instance, mock_space_object_data):
+        """Test analyzing an object."""
+        object_id = "test-sat-001"
+        
+        # Patch the data fetching and analysis methods
+        with patch.object(ccdm_service_instance, '_get_object_data', 
+                        return_value=mock_space_object_data), \
+             patch.object(ccdm_service_instance, '_analyze_shape_changes',
+                        return_value={"detected": True, "confidence": 0.85}), \
+             patch.object(ccdm_service_instance, '_analyze_thermal_signature',
+                        return_value={"detected": True, "confidence": 0.8}), \
+             patch.object(ccdm_service_instance, '_analyze_propulsive_capabilities',
+                        return_value={"detected": True, "confidence": 0.9, 
+                                      "propulsion_type": PropulsionType.CHEMICAL}):
+            
+            # Call the method
+            result = await ccdm_service_instance.analyze_object(object_id)
+            
+            # Verify the result
+            assert isinstance(result, ObjectAnalysisResponse)
+            assert result.object_id == object_id
+            assert result.analysis_complete is True
+            assert result.confidence_score > 0.8
+            assert result.shape_change.detected is True
+            assert result.thermal_signature.detected is True
+            assert result.propulsive_capability.detected is True
+    
+    async def test_analyze_shape_changes(self, ccdm_service_instance, mock_space_object_data):
+        """Test analyzing shape changes."""
+        object_id = "test-sat-001"
+        
+        # Make the radar signature significantly different from baseline
+        test_data = mock_space_object_data.copy()
+        test_data["radar_signature"]["rcs"] = 2.5  # Baseline mean is 1.2, std is 0.3
+        
+        # Call the method
+        result = await ccdm_service_instance._analyze_shape_changes(object_id, test_data)
+        
+        # Verify the result
+        assert "detected" in result
+        assert "confidence" in result
+        assert "radar_change" in result
+        assert result["detected"] is True
+        assert result["radar_change"] is True
+        assert result["confidence"] > 0.7
+    
+    async def test_analyze_thermal_signature(self, ccdm_service_instance, mock_space_object_data):
+        """Test analyzing thermal signature."""
+        object_id = "test-sat-001"
+        
+        # Add a recent maneuver event
+        test_data = mock_space_object_data.copy()
+        test_data["object_events"].insert(0, {
+            "type": "maneuver",
+            "time": datetime.utcnow().isoformat(),
+            "data": {"delta_v": 1.2}
+        })
+        
+        # Call the method
+        result = await ccdm_service_instance._analyze_thermal_signature(object_id, test_data)
+        
+        # Verify the result
+        assert "detected" in result
+        assert "confidence" in result
+        assert "temperature_kelvin" in result
+        assert "anomaly_score" in result
+        assert result["detected"] is True
+        assert result["confidence"] > 0.7
+        assert result["anomaly_score"] > 0.5
+    
+    async def test_analyze_propulsive_capabilities(self, ccdm_service_instance, mock_space_object_data):
+        """Test analyzing propulsive capabilities."""
+        object_id = "test-sat-001"
+        
+        # Add high delta-v maneuvers indicating chemical propulsion
+        test_data = mock_space_object_data.copy()
+        test_data["maneuver_history"] = [
+            {
+                "time": (datetime.utcnow() - timedelta(days=i*7)).isoformat(),
+                "delta_v": 0.6,
+                "thrust_vector": {"x": 0.1, "y": 0.2, "z": 0.3},
+                "duration": 60.0,
+                "confidence": 0.85
+            } for i in range(0, 3)
+        ]
+        
+        # Call the method
+        result = await ccdm_service_instance._analyze_propulsive_capabilities(object_id, test_data)
+        
+        # Verify the result
+        assert "detected" in result
+        assert "confidence" in result
+        assert "propulsion_type" in result
+        assert result["detected"] is True
+        assert result["propulsion_type"] == PropulsionType.CHEMICAL
+        assert result["confidence"] > 0.7
+    
+    async def test_detect_shape_changes(self, ccdm_service_instance, mock_space_object_data):
+        """Test the detect_shape_changes method."""
+        object_id = "test-sat-001"
+        start_time = datetime.utcnow() - timedelta(days=7)
         end_time = datetime.utcnow()
-        start_time = end_time - timedelta(hours=24)
-        response = client.post(
-            "/api/v1/ccdm/detect_shape_changes",
-            json={
-                "object_id": test_object_id,
-                "start_time": start_time.isoformat(),
-                "end_time": end_time.isoformat()
-            }
-        )
-        assert response.status_code == 200
-        data = response.json()
-        assert data["object_id"] == test_object_id
-        assert isinstance(data["detected_changes"], list)
-        assert data["analysis_confidence"] in [level.value for level in ConfidenceLevel]
-
-    @pytest.mark.asyncio
-    async def test_assess_thermal_signature(self, test_object_id):
+        
+        # Patch the data fetching and calculation methods
+        with patch.object(ccdm_service_instance, '_get_object_data', 
+                        return_value=mock_space_object_data), \
+             patch.object(ccdm_service_instance, '_calculate_shape_metrics',
+                        return_value=ShapeChangeMetrics(
+                            volume_change=0.3,
+                            surface_area_change=0.4,
+                            aspect_ratio_change=0.15,
+                            confidence=0.85
+                        )):
+            
+            # Call the method
+            result = await ccdm_service_instance.detect_shape_changes(object_id, start_time, end_time)
+            
+            # Verify the result
+            assert isinstance(result, ShapeChangeResponse)
+            assert result.detected is True
+            assert result.confidence > 0.7
+            assert isinstance(result.timestamp, datetime)
+            assert hasattr(result, 'metrics')
+            assert result.metrics.volume_change == 0.3
+            assert result.metrics.surface_area_change == 0.4
+            assert result.metrics.aspect_ratio_change == 0.15
+    
+    async def test_assess_thermal_signature(self, ccdm_service_instance, mock_space_object_data):
+        """Test the assess_thermal_signature method."""
+        object_id = "test-sat-001"
         timestamp = datetime.utcnow()
-        response = client.post(
-            "/api/v1/ccdm/assess_thermal_signature",
-            json={
-                "object_id": test_object_id,
-                "timestamp": timestamp.isoformat()
-            }
-        )
-        assert response.status_code == 200
-        data = response.json()
-        assert data["object_id"] == test_object_id
-        assert "temperature_kelvin" in data["metrics"]
-        assert 0.0 <= data["metrics"]["anomaly_score"] <= 1.0
+        
+        # Patch the data fetching and calculation methods
+        with patch.object(ccdm_service_instance, '_get_object_data', 
+                        return_value=mock_space_object_data), \
+             patch.object(ccdm_service_instance, '_calculate_thermal_metrics',
+                        return_value=ThermalSignatureMetrics(
+                            temperature_kelvin=285.0,
+                            anomaly_score=0.75
+                        )):
+            
+            # Call the method
+            result = await ccdm_service_instance.assess_thermal_signature(object_id, timestamp)
+            
+            # Verify the result
+            assert isinstance(result, ThermalSignatureResponse)
+            assert result.detected is True
+            assert result.confidence > 0.0
+            assert isinstance(result.timestamp, datetime)
+            assert hasattr(result, 'metrics')
+            assert result.metrics.temperature_kelvin == 285.0
+            assert result.metrics.anomaly_score == 0.75
+    
+    async def test_evaluate_propulsive_capabilities(self, ccdm_service_instance, mock_space_object_data):
+        """Test the evaluate_propulsive_capabilities method."""
+        object_id = "test-sat-001"
+        analysis_period = 30
+        
+        # Patch the data fetching and analysis methods
+        with patch.object(ccdm_service_instance, '_get_object_data', 
+                        return_value=mock_space_object_data), \
+             patch.object(ccdm_service_instance, '_analyze_propulsive_capabilities',
+                        return_value={
+                            "detected": True,
+                            "confidence": 0.8,
+                            "propulsion_type": PropulsionType.CHEMICAL,
+                            "thrust_estimate": 10.5,
+                            "fuel_reserve_estimate": 65.0
+                        }):
+            
+            # Call the method
+            result = await ccdm_service_instance.evaluate_propulsive_capabilities(object_id, analysis_period)
+            
+            # Verify the result
+            assert isinstance(result, PropulsiveCapabilityResponse)
+            assert result.detected is True
+            assert result.confidence > 0.7
+            assert isinstance(result.timestamp, datetime)
+            assert hasattr(result, 'metrics')
+            assert result.metrics.type == PropulsionType.CHEMICAL
+            assert result.metrics.thrust_estimate == 10.5
+            assert result.metrics.fuel_reserve_estimate == 65.0
+    
+    async def test_get_historical_analysis(self, ccdm_service_instance, mock_space_object_data):
+        """Test the get_historical_analysis method."""
+        object_id = "test-sat-001"
+        
+        # Patch the data fetching and analysis methods
+        with patch.object(ccdm_service_instance, '_get_object_data', 
+                        return_value=mock_space_object_data), \
+             patch.object(ccdm_service_instance, '_generate_historical_analyses',
+                        return_value=[
+                            HistoricalAnalysis(
+                                object_id=object_id,
+                                time_range={
+                                    "start": datetime.utcnow() - timedelta(days=5),
+                                    "end": datetime.utcnow()
+                                },
+                                patterns=[{"type": "orbital", "confidence": 0.8}],
+                                trend_analysis={"stability": 0.9},
+                                anomalies=[{"type": "maneuver", "confidence": 0.7}]
+                            )
+                        ]):
+            
+            # Call the method
+            result = await ccdm_service_instance.get_historical_analysis(object_id)
+            
+            # Verify the result
+            assert isinstance(result, list)
+            assert len(result) == 1
+            assert isinstance(result[0], HistoricalAnalysis)
+            assert result[0].object_id == object_id
+            assert len(result[0].patterns) > 0
+            assert len(result[0].anomalies) > 0
+            assert len(result[0].trend_analysis) > 0
+    
+    async def test_get_ccdm_assessment(self, ccdm_service_instance, mock_space_object_data, mock_analyzers):
+        """Test the get_ccdm_assessment method."""
+        object_id = "test-sat-001"
+        
+        # Configure mock analyzers with test return values
+        mock_analyzers["stability"].analyze_stability.return_value = {"stability_changed": True, "confidence": 0.8}
+        mock_analyzers["maneuver"].analyze_maneuvers.return_value = {"maneuvers_detected": True, "pol_violation": False, "confidence": 0.85}
+        
+        # Patch the data fetching method
+        with patch.object(ccdm_service_instance, '_get_object_data', 
+                        return_value=mock_space_object_data):
+            
+            # Call the method
+            result = await ccdm_service_instance.get_ccdm_assessment(object_id)
+            
+            # Verify the result
+            assert isinstance(result, CCDMAssessment)
+            assert result.object_id == object_id
+            assert result.assessment_type == "automated_ccdm_indicators"
+            assert isinstance(result.timestamp, datetime)
+            assert isinstance(result.results, dict)
+            assert isinstance(result.confidence_level, float)
+            assert isinstance(result.triggered_indicators, list)
+            assert isinstance(result.recommendations, list)
+            assert "stability" in result.triggered_indicators
+    
+    async def test_get_anomaly_detections(self, ccdm_service_instance):
+        """Test the get_anomaly_detections method."""
+        object_id = "test-sat-001"
+        days = 30
+        
+        # Call the method
+        result = await ccdm_service_instance.get_anomaly_detections(object_id, days)
+        
+        # Verify the result
+        assert isinstance(result, list)
+        for anomaly in result:
+            assert isinstance(anomaly, AnomalyDetection)
+            assert anomaly.object_id == object_id
+            assert isinstance(anomaly.timestamp, datetime)
+            assert isinstance(anomaly.anomaly_type, str)
+            assert isinstance(anomaly.details, dict)
+            assert isinstance(anomaly.confidence, float)
+            assert isinstance(anomaly.recommended_actions, list)
 
-    @pytest.mark.asyncio
-    async def test_evaluate_propulsive_capabilities(self, test_object_id):
-        response = client.post(
-            "/api/v1/ccdm/evaluate_propulsive_capabilities",
-            json={
-                "object_id": test_object_id,
-                "analysis_period": 24
-            }
-        )
-        assert response.status_code == 200
-        data = response.json()
-        assert data["object_id"] == test_object_id
-        assert "estimated_thrust" in data["metrics"]
-        assert data["metrics"]["maneuver_capability_score"] >= 0.0
 
-    @pytest.mark.asyncio
-    async def test_get_historical_analysis(self, test_object_id):
-        end_date = datetime.utcnow()
-        start_date = end_date - timedelta(days=7)
-        response = client.get(
-            f"/api/v1/ccdm/historical_analysis/{test_object_id}",
-            params={
-                "start_date": start_date.isoformat(),
-                "end_date": end_date.isoformat()
-            }
-        )
-        assert response.status_code == 200
-        data = response.json()
-        assert isinstance(data, list)
-
-@pytest.mark.performance
-class TestCCDMPerformance:
-    @pytest.mark.asyncio
-    async def test_concurrent_analysis(self, test_object_id, test_observation_data):
-        import asyncio
-        import time
-
-        request = ObjectAnalysisRequest(
-            object_id=test_object_id,
-            observation_data=test_observation_data
-        )
-
-        async def make_request():
-            response = client.post("/api/v1/ccdm/analyze_object", json=request.dict())
-            return response.status_code
-
-        start_time = time.time()
-        num_requests = 100
-        tasks = [make_request() for _ in range(num_requests)]
-        results = await asyncio.gather(*tasks)
-        end_time = time.time()
-
-        success_count = sum(1 for status in results if status == 200)
-        assert success_count >= num_requests * 0.95  # 95% success rate
-        assert end_time - start_time < 30  # Complete within 30 seconds
-
-    @pytest.mark.asyncio
-    async def test_shape_change_detection_performance(self, test_object_id):
+@pytest.mark.asyncio
+class TestCCDMServiceErrorHandling:
+    """Test error handling in CCDM service."""
+    
+    async def test_analyze_object_with_error(self, ccdm_service_instance):
+        """Test error handling in analyze_object method."""
+        object_id = "test-sat-001"
+        
+        # Make _get_object_data raise an exception
+        with patch.object(ccdm_service_instance, '_get_object_data', 
+                        side_effect=Exception("Test error")):
+            
+            # Call the method
+            result = await ccdm_service_instance.analyze_object(object_id)
+            
+            # Verify error response
+            assert isinstance(result, ObjectAnalysisResponse)
+            assert result.object_id == object_id
+            assert result.analysis_complete is False
+            assert result.confidence_score == 0.0
+            assert hasattr(result, 'error')
+            assert "Test error" in result.error
+    
+    async def test_detect_shape_changes_with_error(self, ccdm_service_instance):
+        """Test error handling in detect_shape_changes method."""
+        object_id = "test-sat-001"
+        start_time = datetime.utcnow() - timedelta(days=7)
         end_time = datetime.utcnow()
-        start_time = end_time - timedelta(days=30)
         
-        start_perf_time = time.time()
-        response = client.post(
-            "/api/v1/ccdm/detect_shape_changes",
-            json={
-                "object_id": test_object_id,
-                "start_time": start_time.isoformat(),
-                "end_time": end_time.isoformat()
-            }
-        )
-        end_perf_time = time.time()
-        
-        assert response.status_code == 200
-        assert end_perf_time - start_perf_time < 5  # Complete within 5 seconds
-
-def test_process_ccdm_update():
-    update = CCDMUpdate(
-        object_id="test-sat-001",
-        timestamp=time.time(),
-        update_type="position",
-        data={"x": 100, "y": 200, "z": 300},
-        confidence=ConfidenceLevel.HIGH,
-        severity="low"
-    )
-    response = client.post("/ccdm/update", json=update.dict())
-    assert response.status_code == 200
-    assert response.json()["status"] == "success"
-
-def test_get_assessment():
-    object_id = "test-sat-001"
-    response = client.get(f"/ccdm/assessment/{object_id}")
-    assert response.status_code == 200
-    assessment = CCDMAssessment(**response.json())
-    assert assessment.object_id == object_id
-
-@pytest.mark.traceability
-class TestCCDMTraceability:
-    """Test the message traceability features through the CCDM service."""
+        # Make _get_object_data raise an exception
+        with patch.object(ccdm_service_instance, '_get_object_data', 
+                        side_effect=Exception("Test error")):
+            
+            # Call the method
+            result = await ccdm_service_instance.detect_shape_changes(object_id, start_time, end_time)
+            
+            # Verify error response
+            assert isinstance(result, ShapeChangeResponse)
+            assert result.detected is False
+            assert result.confidence == 0.0
+            assert hasattr(result, 'error')
+            assert "Test error" in result.error
     
-    @pytest.fixture
-    def mock_kafka(self):
-        """Mock Kafka producer and consumer."""
-        mock_producer = MagicMock()
-        mock_consumer = MagicMock()
+    async def test_assess_thermal_signature_with_error(self, ccdm_service_instance):
+        """Test error handling in assess_thermal_signature method."""
+        object_id = "test-sat-001"
+        timestamp = datetime.utcnow()
         
-        # Configure mocks
-        mock_producer.publish.return_value = True
-        
-        with patch('src.asttroshield.common.kafka_utils.AstroShieldProducer', 
-                  return_value=mock_producer), \
-             patch('src.asttroshield.common.kafka_utils.AstroShieldConsumer', 
-                  return_value=mock_consumer):
-            yield {
-                'producer': mock_producer,
-                'consumer': mock_consumer
-            }
+        # Make _get_object_data raise an exception
+        with patch.object(ccdm_service_instance, '_get_object_data', 
+                        side_effect=Exception("Test error")):
+            
+            # Call the method
+            result = await ccdm_service_instance.assess_thermal_signature(object_id, timestamp)
+            
+            # Verify error response
+            assert isinstance(result, ThermalSignatureResponse)
+            assert result.detected is False
+            assert result.confidence == 0.0
+            assert hasattr(result, 'error')
+            assert "Test error" in result.error
     
-    def test_message_tracing_basics(self):
-        """Test basic message tracing with the MessageFactory."""
-        # Create an initial message
-        initial_message = MessageFactory.create_message(
-            message_type="ss0.sensor.observation",
-            source="test_sensor",
-            payload={"observation": "test data", "timestamp": datetime.utcnow().isoformat()}
-        )
+    async def test_evaluate_propulsive_capabilities_with_error(self, ccdm_service_instance):
+        """Test error handling in evaluate_propulsive_capabilities method."""
+        object_id = "test-sat-001"
+        analysis_period = 30
         
-        # Check that the message has the correct structure
-        assert "header" in initial_message
-        assert "payload" in initial_message
-        assert "messageId" in initial_message["header"]
-        assert "traceId" in initial_message["header"]
-        assert initial_message["header"]["messageType"] == "ss0.sensor.observation"
-        
-        # The initial trace ID should match the message ID
-        assert initial_message["header"]["traceId"] == initial_message["header"]["messageId"]
-        
-        # Create a derived message (as if processed by a service)
-        derived_message = MessageFactory.create_derived_message(
-            parent_message=initial_message,
-            message_type="ss4.ccdm.detection",
-            source="ccdm_service",
-            payload={"detection": "anomaly", "confidence": 0.85}
-        )
-        
-        # Check the derived message structure
-        assert "header" in derived_message
-        assert "payload" in derived_message
-        assert derived_message["header"]["messageType"] == "ss4.ccdm.detection"
-        
-        # The trace ID should be maintained across messages
-        assert derived_message["header"]["traceId"] == initial_message["header"]["traceId"]
-        
-        # The parent message ID should be in the parentMessageIds array
-        assert initial_message["header"]["messageId"] in derived_message["header"]["parentMessageIds"]
-        
-        # Create a third-level derived message (as if processed by another service)
-        final_message = MessageFactory.create_derived_message(
-            parent_message=derived_message,
-            message_type="ss6.threat.assessment",
-            source="threat_assessor",
-            payload={"threat_level": "medium", "recommendation": "monitor"}
-        )
-        
-        # Check that the trace ID is still maintained
-        assert final_message["header"]["traceId"] == initial_message["header"]["traceId"]
-        
-        # The parent message ID should be in the parentMessageIds array
-        assert derived_message["header"]["messageId"] in final_message["header"]["parentMessageIds"]
+        # Make _get_object_data raise an exception
+        with patch.object(ccdm_service_instance, '_get_object_data', 
+                        side_effect=Exception("Test error")):
+            
+            # Call the method
+            result = await ccdm_service_instance.evaluate_propulsive_capabilities(object_id, analysis_period)
+            
+            # Verify error response
+            assert isinstance(result, PropulsiveCapabilityResponse)
+            assert result.detected is False
+            assert result.confidence == 0.0
+            assert hasattr(result, 'error')
+            assert "Test error" in result.error
     
-    @pytest.mark.asyncio
-    async def test_ccdm_service_message_tracing(self, ccdm_service, test_object_id, mock_kafka):
-        """Test traceability through a simulated CCDM service workflow."""
-        # Create an initial observation message
-        observation_message = MessageFactory.create_message(
-            message_type="ss2.state.estimate",
-            source="state_estimator",
-            payload={
-                "objectId": test_object_id,
-                "timestamp": datetime.utcnow().isoformat(),
-                "position": [1000.5, 2000.3, 3000.1],
-                "velocity": [1.5, -0.3, 0.1],
-                "covariance": [[0.1, 0, 0], [0, 0.1, 0], [0, 0, 0.1]]
-            }
-        )
+    async def test_get_historical_analysis_with_error(self, ccdm_service_instance):
+        """Test error handling in get_historical_analysis method."""
+        object_id = "test-sat-001"
         
-        # Store the trace ID for later verification
-        trace_id = observation_message["header"]["traceId"]
+        # Make _get_object_data raise an exception
+        with patch.object(ccdm_service_instance, '_get_object_data', 
+                        side_effect=Exception("Test error")):
+            
+            # Call the method
+            result = await ccdm_service_instance.get_historical_analysis(object_id)
+            
+            # Verify error response
+            assert isinstance(result, list)
+            assert len(result) == 0
+
+
+class TestCCDMServiceDataFormatting:
+    """Test data formatting methods in CCDM service."""
+    
+    def test_format_maneuver_data(self, ccdm_service_instance):
+        """Test formatting maneuver data."""
+        raw_maneuvers = [
+            {"time": "2023-01-01T00:00:00Z", "delta_v": 0.5},
+            {"epoch": "2023-01-02T00:00:00Z", "delta_v": 0.6, "thrust_vector": {"x": 0.1, "y": 0.2, "z": 0.3}},
+            {"timestamp": "2023-01-03T00:00:00Z", "delta_v": 0.7}
+        ]
         
-        # Simulate the CCDM service processing this message
-        # This would typically happen in your process_message method
-        with patch.object(ccdm_service, 'analyze_object', return_value={
-            "object_id": test_object_id,
-            "ccdm_indicators": ["shape_change", "thermal_anomaly"],
-            "confidence": 0.85
-        }):
-            # Process the message (in a real system, this would happen in the subsystem class)
-            detection_payload = {
-                "objectId": test_object_id,
-                "detectionTime": datetime.utcnow().isoformat(),
-                "ccdmType": "shape_change",
-                "confidence": 0.85,
-                "indicators": ["elongation", "brightness_change"],
-                "analysisMetadata": {
-                    "algorithmVersion": "1.2.3",
-                    "analysisTime": datetime.utcnow().isoformat()
-                }
-            }
-            
-            # Create a CCDM detection message
-            detection_message = MessageFactory.create_derived_message(
-                parent_message=observation_message,
-                message_type="ss4.ccdm.detection",
-                source="ccdm_service",
-                payload=detection_payload
-            )
-            
-            # Verify the detection message maintains the trace
-            assert detection_message["header"]["traceId"] == trace_id
-            assert observation_message["header"]["messageId"] in detection_message["header"]["parentMessageIds"]
-            
-            # In a real system, this message would be sent to Kafka
-            # mock_kafka['producer'].publish.assert_called_once()
-            
-            # Simulate the threat assessment service processing the detection
-            threat_payload = {
-                "objectId": test_object_id,
-                "assessmentTime": datetime.utcnow().isoformat(),
-                "threatLevel": "medium",
-                "confidence": 0.75,
-                "recommendations": ["increase_monitoring", "notify_operators"],
-                "relatedDetections": [detection_message["header"]["messageId"]]
-            }
-            
-            # Create a threat assessment message
-            threat_message = MessageFactory.create_derived_message(
-                parent_message=detection_message,
-                message_type="ss6.threat.assessment",
-                source="threat_service",
-                payload=threat_payload
-            )
-            
-            # Verify the threat message maintains the trace through the entire chain
-            assert threat_message["header"]["traceId"] == trace_id
-            assert detection_message["header"]["messageId"] in threat_message["header"]["parentMessageIds"]
-            
-            # We could now trace the lineage of messages
-            # In a real system, you could retrieve the complete trace using the trace_id
-            # For the test, we're just verifying the IDs are connected correctly
+        # Call the method
+        result = ccdm_service_instance._format_maneuver_data(raw_maneuvers)
+        
+        # Verify the result
+        assert len(result) == 3
+        assert "time" in result[0]
+        assert "delta_v" in result[0]
+        assert "thrust_vector" in result[0]
+        assert "duration" in result[0]
+        assert "confidence" in result[0]
+        
+        # Check that different time fields are handled correctly
+        assert result[0]["time"] == "2023-01-01T00:00:00Z"
+        assert result[1]["time"] == "2023-01-02T00:00:00Z"
+        assert result[2]["time"] == "2023-01-03T00:00:00Z"
+    
+    def test_format_rf_data(self, ccdm_service_instance):
+        """Test formatting RF data."""
+        raw_rf = {
+            "measurements": [
+                {"time": "2023-01-01T00:00:00Z", "frequency": 2200.0, "power_level": -90.0},
+                {"timestamp": "2023-01-02T00:00:00Z", "frequency": 8400.0, "power_level": -95.0, "bandwidth": 10.0},
+                {"time": "2023-01-03T00:00:00Z", "frequency": 4500.0, "power_level": -85.0, "duration": 60.0}
+            ]
+        }
+        
+        # Call the method
+        result = ccdm_service_instance._format_rf_data(raw_rf)
+        
+        # Verify the result
+        assert len(result) == 3
+        assert "time" in result[0]
+        assert "frequency" in result[0]
+        assert "power" in result[0]
+        assert "duration" in result[0]
+        assert "bandwidth" in result[0]
+        assert "confidence" in result[0]
+        
+        # Check that different time fields are handled correctly
+        assert result[0]["time"] == "2023-01-01T00:00:00Z"
+        assert result[1]["time"] == "2023-01-02T00:00:00Z"
+        assert result[2]["time"] == "2023-01-03T00:00:00Z"
+        
+        # Check that power_level is mapped to power
+        assert result[0]["power"] == -90.0
+        assert result[1]["power"] == -95.0
+        assert result[2]["power"] == -85.0
+    
+    def test_extract_orbit_data(self, ccdm_service_instance):
+        """Test extracting orbit data."""
+        elset_data = {
+            "semi_major_axis": 7000.0,
+            "eccentricity": 0.001,
+            "inclination": 51.6,
+            "raan": 120.0,
+            "arg_perigee": 180.0,
+            "mean_anomaly": 0.0,
+            "mean_motion": 15.5
+        }
+        
+        state_vector = {
+            "position": {"x": 1000.0, "y": 2000.0, "z": 3000.0},
+            "velocity": {"x": 1.0, "y": 2.0, "z": 3.0},
+            "epoch": "2023-01-01T00:00:00Z"
+        }
+        
+        # Call the method
+        result = ccdm_service_instance._extract_orbit_data(elset_data, state_vector)
+        
+        # Verify the result
+        assert "semi_major_axis" in result
+        assert "eccentricity" in result
+        assert "inclination" in result
+        assert "raan" in result
+        assert "arg_perigee" in result
+        assert "mean_anomaly" in result
+        assert "mean_motion" in result
+        assert "position_vector" in result
+        assert "velocity_vector" in result
+        assert "epoch" in result
+        
+        # Check values
+        assert result["semi_major_axis"] == 7000.0
+        assert result["eccentricity"] == 0.001
+        assert result["inclination"] == 51.6
+        assert result["position_vector"] == {"x": 1000.0, "y": 2000.0, "z": 3000.0}
+        assert result["velocity_vector"] == {"x": 1.0, "y": 2.0, "z": 3.0}
+        assert result["epoch"] == "2023-01-01T00:00:00Z"

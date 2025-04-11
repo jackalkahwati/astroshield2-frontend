@@ -98,7 +98,7 @@ const INITIAL_RECONNECT_DELAY = 1000
 const MAX_RECONNECT_DELAY = 30000
 const HEARTBEAT_INTERVAL = 30000
 
-const WS_URL = process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:3001'
+const WS_URL = process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:3002'
 
 // Add message validation types
 type ValidationResult = {

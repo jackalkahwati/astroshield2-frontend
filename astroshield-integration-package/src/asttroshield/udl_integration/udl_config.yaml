@@ -1,0 +1,127 @@
+# UDL Integration Configuration
+
+# UDL API Configuration
+udl:
+  base_url: "https://unifieddatalibrary.com"
+  timeout: 30
+  max_retries: 3
+  backoff_factor: 0.5
+  retry_status_codes:
+    - 429  # Too Many Requests
+    - 500  # Internal Server Error
+    - 502  # Bad Gateway
+    - 503  # Service Unavailable
+    - 504  # Gateway Timeout
+  
+  # Rate limiting settings (UDL allows 3 requests per second)
+  rate_limit_requests: 3
+  rate_limit_period: 1.0
+  sample_period: 0.34
+  
+  # Circuit breaker pattern settings
+  circuit_breaker_threshold: 5
+  circuit_breaker_timeout: 60
+  
+  # Whether to use UDL Secure Messaging API
+  use_secure_messaging: true
+
+# Kafka configuration for data publishing
+kafka:
+  bootstrap_servers: "localhost:9092"
+  security_protocol: "PLAINTEXT"
+  client_id: "udl_integration"
+  
+  # Default topic configuration
+  default_topic_config:
+    retention_ms: 604800000  # 7 days
+    retention_bytes: 1073741824  # 1 GB
+    cleanup_policy: "delete"
+    compression_type: "gzip"
+
+# Monitoring configuration
+monitoring:
+  enabled: true
+  log_metrics: true
+  prometheus_port: 8000
+  metrics_interval: 60
+  health_check_interval: 60
+  
+  # Error threshold for alerts
+  error_threshold: 5
+  error_window_seconds: 300
+
+# Topic-specific configuration
+topics:
+  # Configuration for state vector data
+  state_vector:
+    udl_params:
+      maxResults: 100
+      epoch: "now"
+    transform_func: "transform_state_vector"
+    kafka_topic: "udl.state_vectors"
+    polling_interval: 60
+    cache_ttl: 300
+
+  # Configuration for conjunction data
+  conjunction:
+    udl_params:
+      maxResults: 50
+      probability: ">0.001"
+    transform_func: "transform_conjunction"
+    kafka_topic: "udl.conjunctions"
+    polling_interval: 300
+    cache_ttl: 600
+
+  # Configuration for launch events
+  launch_event:
+    udl_params:
+      maxResults: 10
+    transform_func: "transform_launch_event"
+    kafka_topic: "udl.launch_events"
+    polling_interval: 900
+    cache_ttl: 1800
+
+  # Configuration for track data
+  track:
+    udl_params:
+      maxResults: 100
+    transform_func: "transform_track"
+    kafka_topic: "udl.tracks"
+    polling_interval: 60
+    cache_ttl: 120
+
+  # Configuration for ephemeris data
+  ephemeris:
+    udl_params:
+      maxResults: 50
+    transform_func: "transform_ephemeris"
+    kafka_topic: "udl.ephemeris"
+    polling_interval: 300
+    cache_ttl: 600
+
+  # Configuration for ELSET data
+  elset:
+    udl_params:
+      maxResults: 100
+    transform_func: "transform_elset"
+    kafka_topic: "udl.elsets"
+    polling_interval: 600
+    cache_ttl: 1200
+
+# Secure Messaging configuration
+secure_messaging:
+  message_buffer_size: 1000
+  consumer_threads: 2
+  worker_threads: 2
+  
+  # Topics to consume via secure messaging
+  streaming_topics:
+    - name: "track"
+      start_from_latest: true
+      process_historical: false
+    - name: "conjunction"
+      start_from_latest: true
+      process_historical: false
+    - name: "statevector"
+      start_from_latest: true
+      process_historical: false 

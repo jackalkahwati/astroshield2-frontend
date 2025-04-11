@@ -1,490 +1,611 @@
-# Development Guide
+# AstroShield Development Guide
 
-## Overview
+This document provides comprehensive guidelines for developers working on the AstroShield platform.
 
-This guide provides instructions for setting up and developing the AstroShield platform locally.
+## Development Environment Setup
 
-## Prerequisites
+### Prerequisites
 
-### Required Software
+- Python 3.8+
+- Node.js 18+
+- Docker and Docker Compose
+- Git LFS
+- PostgreSQL 14+ (local or containerized)
+- Kafka (local or containerized)
 
-1. Development Tools
+### Setting Up Your Environment
+
+1. Clone the repository
    ```bash
-   # macOS (using Homebrew)
-   brew install git node python@3.11 poetry docker docker-compose kubectl
-
-   # Ubuntu/Debian
-   apt update && apt install -y git nodejs python3.11 python3-pip docker.io docker-compose kubectl
-   
-   # Install Poetry
-   curl -sSL https://install.python-poetry.org | python3 -
-   ```
-
-2. IDE Setup
-   - VSCode with extensions:
-     - Python
-     - TypeScript
-     - ESLint
-     - Prettier
-     - Docker
-     - Kubernetes
-     - GitLens
-
-3. Environment Setup
-   ```bash
-   # Clone repository
-   git clone https://github.com/your-org/astroshield.git
+   git clone https://github.com/your-organization/astroshield.git
    cd astroshield
-   
-   # Copy environment files
-   cp .env.example .env
-   cp frontend/.env.example frontend/.env
-   cp backend/.env.example backend/.env
    ```
 
-## Local Development
-
-### Backend Setup
-
-1. Install Dependencies
+2. Install Git LFS and pull large files
    ```bash
-   # Navigate to backend directory
-   cd backend
-   
-   # Install dependencies
-   poetry install
-   
-   # Activate virtual environment
-   poetry shell
+   git lfs install
+   git lfs pull
    ```
 
-2. Database Setup
+3. Install Python dependencies
    ```bash
-   # Start PostgreSQL
-   docker-compose up -d postgres
-   
-   # Apply migrations
-   poetry run alembic upgrade head
-   
-   # Seed initial data
-   poetry run python scripts/seed.py
+   # Install with development extras
+   pip install -e ".[dev]"
    ```
 
-3. Run Backend
+4. Install frontend dependencies
    ```bash
-   # Start backend server
-   poetry run uvicorn app.main:app --reload --port 8000
-   
-   # Run tests
-   poetry run pytest
-   
-   # Run linting
-   poetry run flake8
-   poetry run black .
-   ```
-
-### Frontend Setup
-
-1. Install Dependencies
-   ```bash
-   # Navigate to frontend directory
    cd frontend
-   
-   # Install dependencies
    npm install
    ```
 
-2. Development Server
+5. Set up environment variables
    ```bash
-   # Start development server
-   npm run dev
-   
-   # Run tests
-   npm test
-   
-   # Run linting
-   npm run lint
+   cp .env.example .env
+   # Edit .env with your configuration
    ```
 
-### Docker Development
-
-1. Build Images
+6. Start development services (optional)
    ```bash
-   # Build all services
-   docker-compose build
-   
-   # Build specific service
-   docker-compose build backend
-   docker-compose build frontend
+   docker-compose up -d postgres kafka redis
    ```
 
-2. Run Services
-   ```bash
-   # Start all services
-   docker-compose up -d
-   
-   # View logs
-   docker-compose logs -f
-   
-   # Stop services
-   docker-compose down
-   ```
+## Running the Application
+
+### Backend
+
+```bash
+cd backend
+uvicorn app.main:app --reload --host 0.0.0.0 --port 3001
+```
+
+The API will be available at http://localhost:3001 with documentation at http://localhost:3001/docs
+
+### Frontend
+
+```bash
+cd frontend
+npm run dev
+```
+
+The frontend will be available at http://localhost:3000
+
+## Project Structure
+
+### Backend Structure
+
+```
+backend/
+├── app/                       # Main application package
+│   ├── __init__.py           
+│   ├── main.py                # Application entry point
+│   ├── core/                  # Core utilities
+│   │   ├── config.py          # Configuration
+│   │   ├── security.py        # Authentication and authorization
+│   │   └── ...
+│   ├── db/                    # Database utilities
+│   │   ├── session.py         # Database session handling
+│   │   └── ...
+│   ├── models/                # SQLAlchemy models
+│   │   ├── user.py
+│   │   └── ...
+│   ├── routers/               # API route definitions
+│   │   ├── ccdm.py
+│   │   ├── dashboard.py
+│   │   └── ...
+│   ├── services/              # Business logic
+│   │   ├── ccdm.py
+│   │   └── ...
+│   └── middleware/            # Middleware components
+│       ├── auth.py
+│       └── ...
+├── migrations/                # Alembic migrations
+└── tests/                     # Backend tests
+```
+
+### Frontend Structure
+
+```
+frontend/
+├── app/                       # Next.js application
+│   ├── layout.tsx             # Root layout
+│   ├── page.tsx               # Home page
+│   ├── dashboard/             # Dashboard route
+│   │   └── page.tsx
+│   └── ...
+├── components/                # React components
+│   ├── dashboard/             # Dashboard components
+│   │   ├── overview.tsx
+│   │   └── ...
+│   ├── ui/                    # Shared UI components
+│   │   ├── button.tsx
+│   │   └── ...
+│   └── ...
+├── lib/                       # Utilities and helpers
+│   ├── api-client.ts          # API client
+│   └── ...
+└── public/                    # Static assets
+```
 
 ## Development Workflow
 
-### Git Workflow
+### Branching Strategy
 
-1. Branch Naming
+1. Create feature branches from `main`
    ```bash
-   # Feature branch
-   git checkout -b feature/add-new-endpoint
-   
-   # Bug fix branch
-   git checkout -b fix/resolve-auth-issue
-   
-   # Hotfix branch
-   git checkout -b hotfix/critical-security-fix
+   git checkout main
+   git pull
+   git checkout -b feature/my-feature
    ```
 
-2. Commit Messages
+2. Make small, focused commits
    ```bash
-   # Feature commit
-   git commit -m "feat: add new endpoint for satellite tracking"
-   
-   # Fix commit
-   git commit -m "fix: resolve authentication token expiry issue"
-   
-   # Docs commit
-   git commit -m "docs: update API documentation"
+   git add .
+   git commit -m "feat: Add spacecraft trajectory prediction"
+   ```
+
+3. Push your branch and create a pull request
+   ```bash
+   git push -u origin feature/my-feature
    ```
 
 ### Code Style
 
-1. Python Style
-   ```python
-   # Example function with type hints
-   def calculate_orbit(
-       satellite_id: str,
-       timestamp: datetime,
-       *,
-       include_velocity: bool = False
-   ) -> Dict[str, Any]:
-       """
-       Calculate satellite orbit parameters.
-       
-       Args:
-           satellite_id: Unique identifier of the satellite
-           timestamp: Time at which to calculate orbit
-           include_velocity: Whether to include velocity vectors
-           
-       Returns:
-           Dictionary containing orbit parameters
-       """
-       # Function implementation
-   ```
+#### Python (Backend)
 
-2. TypeScript Style
-   ```typescript
-   // Example interface and component
-   interface SatelliteData {
-     id: string;
-     name: string;
-     orbit: {
-       altitude: number;
-       inclination: number;
-     };
-   }
-   
-   const SatelliteDisplay: React.FC<{ data: SatelliteData }> = ({ data }) => {
-     const { name, orbit } = data;
-     
-     return (
-       <div className="satellite-info">
-         <h2>{name}</h2>
-         <p>Altitude: {orbit.altitude} km</p>
-         <p>Inclination: {orbit.inclination}°</p>
-       </div>
-     );
-   };
-   ```
+- Follow PEP 8 guidelines
+- Use type hints
+- Format code with Black
+- Sort imports with isort
+- Lint with ruff
 
-### Testing
+```python
+"""Example module docstring explaining purpose."""
 
-1. Backend Tests
-   ```python
-   # Example test case
-   def test_calculate_orbit():
-       # Arrange
-       satellite_id = "TEST-SAT-001"
-       timestamp = datetime.utcnow()
-       
-       # Act
-       result = calculate_orbit(satellite_id, timestamp)
-       
-       # Assert
-       assert "altitude" in result
-       assert "inclination" in result
-       assert isinstance(result["altitude"], float)
-   ```
+from datetime import datetime
+from typing import Dict, List, Optional
 
-2. Frontend Tests
-   ```typescript
-   // Example test case
-   describe('SatelliteDisplay', () => {
-     it('renders satellite information correctly', () => {
-       // Arrange
-       const testData = {
-         id: 'TEST-SAT-001',
-         name: 'Test Satellite',
-         orbit: {
-           altitude: 500,
-           inclination: 45,
-         },
-       };
-       
-       // Act
-       render(<SatelliteDisplay data={testData} />);
-       
-       // Assert
-       expect(screen.getByText('Test Satellite')).toBeInTheDocument();
-       expect(screen.getByText('Altitude: 500 km')).toBeInTheDocument();
-     });
-   });
-   ```
+import numpy as np
+from fastapi import Depends, HTTPException
 
-## API Development
+from app.core.config import settings
+from app.models.spacecraft import Spacecraft
 
-### Adding New Endpoints
 
-1. Router Setup
-   ```python
-   # backend/app/routers/satellites.py
-   from fastapi import APIRouter, Depends
-   from typing import List
-   
-   router = APIRouter(prefix="/satellites", tags=["satellites"])
-   
-   @router.get("/")
-   async def list_satellites(
-       orbit_type: str = None,
-       status: str = None
-   ) -> List[dict]:
-       """List all satellites with optional filtering."""
-       # Implementation
-   ```
+def calculate_trajectory(
+    spacecraft_id: str,
+    start_time: datetime,
+    duration_hours: float = 24.0
+) -> Dict[str, List[float]]:
+    """
+    Calculate spacecraft trajectory over time.
+    
+    Args:
+        spacecraft_id: Unique identifier of the spacecraft
+        start_time: Starting time for the calculation
+        duration_hours: Duration of trajectory prediction in hours
+        
+    Returns:
+        Dictionary containing position vectors at each time step
+        
+    Raises:
+        HTTPException: If spacecraft not found
+    """
+    # Implementation details here
+    return {"positions": [...], "velocities": [...]}
+```
 
-2. Schema Definition
-   ```python
-   # backend/app/schemas/satellite.py
-   from pydantic import BaseModel
-   from datetime import datetime
-   
-   class SatelliteBase(BaseModel):
-       name: str
-       norad_id: str
-       launch_date: datetime
-       
-   class SatelliteCreate(SatelliteBase):
-       pass
-       
-   class Satellite(SatelliteBase):
-       id: str
-       created_at: datetime
-       updated_at: datetime
-       
-       class Config:
-           orm_mode = True
-   ```
+#### TypeScript (Frontend)
 
-### Error Handling
+- Use ESLint and Prettier
+- Leverage TypeScript types
+- Use functional components with hooks
+- Follow React best practices
 
-1. Custom Exceptions
-   ```python
-   # backend/app/core/exceptions.py
-   from fastapi import HTTPException
-   
-   class SatelliteNotFound(HTTPException):
-       def __init__(self, satellite_id: str):
-           super().__init__(
-               status_code=404,
-               detail=f"Satellite {satellite_id} not found"
-           )
-   ```
+```typescript
+import { useState, useEffect } from 'react';
+import { TrajectoryData, Spacecraft } from '@/types';
+import { fetchTrajectory } from '@/lib/api-client';
 
-2. Error Handlers
-   ```python
-   # backend/app/core/handlers.py
-   from fastapi import Request
-   from fastapi.responses import JSONResponse
-   
-   async def satellite_not_found_handler(
-       request: Request,
-       exc: SatelliteNotFound
-   ) -> JSONResponse:
-       return JSONResponse(
-           status_code=exc.status_code,
-           content={"error": exc.detail}
-       )
-   ```
+interface TrajectoryViewerProps {
+  spacecraftId: string;
+  startTime: Date;
+  duration?: number;
+}
+
+export const TrajectoryViewer: React.FC<TrajectoryViewerProps> = ({
+  spacecraftId,
+  startTime,
+  duration = 24
+}) => {
+  const [trajectoryData, setTrajectoryData] = useState<TrajectoryData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  
+  useEffect(() => {
+    const loadTrajectory = async () => {
+      try {
+        setIsLoading(true);
+        const data = await fetchTrajectory(spacecraftId, startTime, duration);
+        setTrajectoryData(data);
+      } catch (err) {
+        setError('Failed to load trajectory data');
+        console.error(err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    loadTrajectory();
+  }, [spacecraftId, startTime, duration]);
+  
+  if (isLoading) return <div>Loading trajectory data...</div>;
+  if (error) return <div>Error: {error}</div>;
+  if (!trajectoryData) return <div>No trajectory data available</div>;
+  
+  return (
+    <div className="trajectory-viewer">
+      {/* Render trajectory visualization */}
+    </div>
+  );
+};
+```
+
+## Testing Guidelines
+
+### Backend Tests
+
+- Write unit tests using pytest
+- Aim for 85% code coverage
+- Test edge cases and error handling
+- Use fixtures and mocks for external dependencies
+
+Example test:
+```python
+import pytest
+from datetime import datetime
+from app.services.ccdm import CCDMService
+from unittest.mock import Mock, patch
+
+@pytest.fixture
+def ccdm_service():
+    """Fixture providing a CCDMService instance."""
+    return CCDMService()
+
+def test_analyze_conjunction(ccdm_service):
+    """Test successful conjunction analysis."""
+    spacecraft_id = "test_spacecraft_1"
+    other_spacecraft_id = "test_spacecraft_2"
+    
+    result = ccdm_service.analyze_conjunction(spacecraft_id, other_spacecraft_id)
+    
+    assert result['status'] == 'operational'
+    assert 'indicators' in result
+    assert 'analysis_timestamp' in result
+```
+
+### Frontend Tests
+
+- Write tests using Jest and React Testing Library
+- Focus on component behavior, not implementation details
+- Test user interactions and state changes
+
+Example test:
+```typescript
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { TrajectoryViewer } from '../components/TrajectoryViewer';
+import { fetchTrajectory } from '@/lib/api-client';
+
+// Mock API client
+jest.mock('@/lib/api-client', () => ({
+  fetchTrajectory: jest.fn()
+}));
+
+describe('TrajectoryViewer', () => {
+  const mockTrajectoryData = {
+    positions: [[1, 2, 3], [2, 3, 4]],
+    velocities: [[0.1, 0.2, 0.3], [0.2, 0.3, 0.4]]
+  };
+  
+  beforeEach(() => {
+    (fetchTrajectory as jest.Mock).mockResolvedValue(mockTrajectoryData);
+  });
+  
+  it('should render loading state initially', () => {
+    render(
+      <TrajectoryViewer 
+        spacecraftId="test-1" 
+        startTime={new Date()} 
+      />
+    );
+    
+    expect(screen.getByText(/loading trajectory data/i)).toBeInTheDocument();
+  });
+  
+  it('should render trajectory data when loaded', async () => {
+    render(
+      <TrajectoryViewer 
+        spacecraftId="test-1" 
+        startTime={new Date()} 
+      />
+    );
+    
+    // Wait for loading to complete
+    await waitFor(() => {
+      expect(screen.queryByText(/loading trajectory data/i)).not.toBeInTheDocument();
+    });
+    
+    // Verify correct data is displayed
+    expect(fetchTrajectory).toHaveBeenCalledWith(
+      'test-1', 
+      expect.any(Date), 
+      24
+    );
+  });
+});
+```
+
+## API Design Guidelines
+
+### RESTful API Principles
+
+- Use nouns for resource names, not verbs
+- Use plural forms for resource collections
+- Use proper HTTP methods:
+  - GET: Retrieve resources
+  - POST: Create resources
+  - PUT: Update resources (full update)
+  - PATCH: Update resources (partial update)
+  - DELETE: Remove resources
+
+### API Structure
+
+- Group related endpoints in routers
+- Version the API (e.g., `/api/v1/resource`)
+- Use consistent query parameter naming
+- Provide comprehensive documentation
+
+### Response Format
+
+Use a consistent response format:
+
+```json
+{
+  "data": {
+    // Resource data or collection
+  },
+  "meta": {
+    "pagination": {
+      "page": 1,
+      "per_page": 25,
+      "total": 100,
+      "total_pages": 4
+    }
+  },
+  "error": null
+}
+```
+
+For errors:
+
+```json
+{
+  "data": null,
+  "meta": {},
+  "error": {
+    "code": "resource_not_found",
+    "message": "The requested resource was not found",
+    "details": {
+      // Additional error details
+    }
+  }
+}
+```
 
 ## Database Management
 
 ### Migrations
 
-1. Create Migration
-   ```bash
-   # Generate new migration
-   poetry run alembic revision --autogenerate -m "add satellite table"
-   
-   # Apply migration
-   poetry run alembic upgrade head
-   
-   # Rollback migration
-   poetry run alembic downgrade -1
-   ```
+Using Alembic for database migrations:
 
-2. Migration Script
-   ```python
-   # backend/migrations/versions/xxx_add_satellite_table.py
-   def upgrade():
-       op.create_table(
-           'satellites',
-           sa.Column('id', sa.String(), nullable=False),
-           sa.Column('name', sa.String(), nullable=False),
-           sa.Column('norad_id', sa.String(), nullable=False),
-           sa.Column('launch_date', sa.DateTime(), nullable=False),
-           sa.PrimaryKeyConstraint('id')
-       )
-   
-   def downgrade():
-       op.drop_table('satellites')
-   ```
+```bash
+# Create a new migration
+alembic revision --autogenerate -m "Add spacecraft table"
 
-## Troubleshooting
+# Apply migrations
+alembic upgrade head
 
-### Common Issues
+# Rollback one migration
+alembic downgrade -1
+```
 
-1. Database Connection
-   ```bash
-   # Check database status
-   docker-compose ps postgres
-   
-   # View database logs
-   docker-compose logs postgres
-   
-   # Reset database
-   docker-compose down -v postgres
-   docker-compose up -d postgres
-   ```
+### ORM Usage
 
-2. Frontend Issues
-   ```bash
-   # Clear node modules
-   rm -rf node_modules
-   npm install
-   
-   # Clear next.js cache
-   rm -rf .next
-   npm run dev
-   ```
+Using SQLAlchemy:
 
-### Debugging
+```python
+from sqlalchemy import Column, Integer, String, ForeignKey, Float, DateTime
+from sqlalchemy.orm import relationship
+from app.db.base_class import Base
 
-1. Backend Debugging
-   ```python
-   # Add debug logging
-   import logging
-   
-   logger = logging.getLogger(__name__)
-   logger.setLevel(logging.DEBUG)
-   
-   logger.debug("Processing satellite data", extra={
-       "satellite_id": satellite_id,
-       "timestamp": timestamp
-   })
-   ```
+class Spacecraft(Base):
+    __tablename__ = "spacecraft"
+    
+    id = Column(String, primary_key=True, index=True)
+    name = Column(String, nullable=False)
+    norad_id = Column(String, unique=True, index=True)
+    launch_date = Column(DateTime, nullable=True)
+    mass_kg = Column(Float, nullable=True)
+    operator_id = Column(Integer, ForeignKey("operators.id"))
+    
+    # Relationships
+    operator = relationship("Operator", back_populates="spacecraft")
+    maneuvers = relationship("Maneuver", back_populates="spacecraft")
+    state_vectors = relationship("StateVector", back_populates="spacecraft")
+```
 
-2. Frontend Debugging
-   ```typescript
-   // Add debug logging
-   const debug = require('debug')('app:satellite');
-   
-   debug('Rendering satellite data', {
-     id: satellite.id,
-     name: satellite.name
-   });
-   ```
+## Message-Driven Architecture
+
+### Kafka Message Structure
+
+All messages should follow the standard format:
+
+```json
+{
+  "header": {
+    "messageId": "uuid-example-12345",
+    "traceId": "original-message-uuid-67890",
+    "source": "subsystem_name",
+    "messageType": "message_category.specific_type",
+    "parentMessageIds": ["parent-uuid-1", "parent-uuid-2"],
+    "timestamp": "2025-01-01T12:00:00Z"
+  },
+  "payload": {
+    // Message-specific data
+  }
+}
+```
+
+### Producing Messages
+
+```python
+from src.asttroshield.common.message_headers import MessageFactory
+from src.kafka_client.kafka_publish import KafkaProducer
+
+# Create a message
+message = MessageFactory.create_message(
+    message_type="ss2.state.estimate",
+    source="state_estimator",
+    payload={
+        "objectId": "spacecraft-1",
+        "timestamp": datetime.utcnow().isoformat(),
+        "position": [1000.5, 2000.3, 3000.1],
+        "velocity": [1.5, -0.3, 0.1]
+    }
+)
+
+# Publish the message
+producer = KafkaProducer(bootstrap_servers=settings.KAFKA_BOOTSTRAP_SERVERS)
+producer.publish(
+    topic="state-estimates",
+    key=message["payload"]["objectId"],
+    value=message
+)
+```
+
+### Consuming Messages
+
+```python
+from src.kafka_client.kafka_consume import KafkaConsumer
+
+# Create a consumer
+consumer = KafkaConsumer(
+    bootstrap_servers=settings.KAFKA_BOOTSTRAP_SERVERS,
+    group_id="ccdm-detection-group",
+    topics=["state-estimates"]
+)
+
+# Process messages
+for message in consumer.consume():
+    header = message.get("header", {})
+    payload = message.get("payload", {})
+    
+    # Process the message
+    object_id = payload.get("objectId")
+    position = payload.get("position")
+    
+    # Create a response message
+    response = MessageFactory.create_derived_message(
+        parent_message=message,
+        message_type="ss4.ccdm.detection",
+        source="ccdm_service",
+        payload={
+            "objectId": object_id,
+            "detectionTime": datetime.utcnow().isoformat(),
+            "detectionType": "maneuver",
+            "confidence": 0.95
+        }
+    )
+    
+    # Publish the response
+    producer.publish(
+        topic="ccdm-detections",
+        key=object_id,
+        value=response
+    )
+```
 
 ## Performance Optimization
 
 ### Backend Optimization
 
-1. Query Optimization
-   ```python
-   # Use select_related for related fields
-   satellites = (
-       db.query(Satellite)
-       .select_related("orbit")
-       .filter(Satellite.status == "active")
-       .all()
-   )
-   
-   # Use pagination
-   satellites = (
-       db.query(Satellite)
-       .offset(skip)
-       .limit(limit)
-       .all()
-   )
-   ```
-
-2. Caching
-   ```python
-   # Use Redis for caching
-   @router.get("/{satellite_id}")
-   async def get_satellite(
-       satellite_id: str,
-       redis: Redis = Depends(get_redis)
-   ):
-       # Check cache
-       cached = await redis.get(f"satellite:{satellite_id}")
-       if cached:
-           return json.loads(cached)
-           
-       # Fetch and cache
-       satellite = await get_satellite_data(satellite_id)
-       await redis.set(
-           f"satellite:{satellite_id}",
-           json.dumps(satellite),
-           ex=3600
-       )
-       return satellite
-   ```
+- Use async endpoints for I/O-bound operations
+- Implement caching for expensive operations
+- Use database indices for frequently queried fields
+- Implement pagination for large data sets
+- Profile endpoints to identify bottlenecks
 
 ### Frontend Optimization
 
-1. Component Optimization
-   ```typescript
-   // Use memo for expensive calculations
-   const orbitParameters = useMemo(() => {
-     return calculateOrbitParameters(satellite.data);
-   }, [satellite.data]);
-   
-   // Use callback for event handlers
-   const handleOrbitUpdate = useCallback(() => {
-     updateOrbit(satellite.id);
-   }, [satellite.id]);
-   ```
+- Implement code splitting for faster initial load
+- Use React.memo and useMemo for expensive components
+- Optimize bundle size with tree shaking
+- Use image optimization techniques
+- Implement virtualization for long lists
 
-2. Data Fetching
-   ```typescript
-   // Use SWR for data fetching
-   const { data, error } = useSWR(
-     `/api/satellites/${id}`,
-     fetcher,
-     {
-       revalidateOnFocus: false,
-       refreshInterval: 60000
-     }
-   );
-   ``` 
+## Security Guidelines
+
+### Authentication and Authorization
+
+- Implement JWT-based authentication
+- Define and enforce role-based access control
+- Use short-lived tokens with refresh mechanism
+- Implement proper logout mechanism
+
+### API Security
+
+- Validate all input
+- Implement rate limiting
+- Use secure headers
+- Implement CORS properly
+- Protect against common attacks (SQLi, XSS, CSRF)
+
+### Data Security
+
+- Encrypt sensitive data at rest
+- Use TLS for all communications
+- Implement proper data access controls
+- Follow the principle of least privilege
+
+## Troubleshooting and Common Issues
+
+### Database Issues
+
+- Connection pool exhaustion
+  - Check for unclosed connections
+  - Verify connection pool settings
+- Slow queries
+  - Check for missing indices
+  - Examine query plans with EXPLAIN
+- Migration errors
+  - Check for conflicts in migration history
+  - Use alembic history to diagnose issues
+
+### API Issues
+
+- Rate limiting
+  - Verify rate limit configuration
+  - Implement proper backoff in clients
+- Authentication failures
+  - Check token validity and expiration
+  - Verify secret keys
+- Performance issues
+  - Profile endpoints to identify bottlenecks
+  - Check for N+1 query problems
+
+## Additional Resources
+
+- [FastAPI Documentation](https://fastapi.tiangolo.com/)
+- [Next.js Documentation](https://nextjs.org/docs)
+- [SQLAlchemy Documentation](https://docs.sqlalchemy.org/)
+- [Kafka Documentation](https://kafka.apache.org/documentation/)

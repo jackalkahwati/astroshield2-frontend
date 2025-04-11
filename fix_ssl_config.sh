@@ -1,0 +1,116 @@
+#!/bin/bash
+
+# This script updates the Nginx configuration to fix the AstroShield SSL configuration
+# Must be run with sudo privileges
+
+echo "Backing up current configuration..."
+sudo cp /etc/nginx/conf.d/astroshield-ssl.conf /etc/nginx/conf.d/astroshield-ssl.conf.bak.$(date +%Y%m%d%H%M%S)
+
+echo "Creating new configuration..."
+sudo bash -c 'cat > /etc/nginx/conf.d/astroshield-ssl.conf << EOF
+server {
+    listen 443 ssl;
+    server_name astroshield.sdataplab.com;
+    
+    # SSL Configuration
+    ssl_certificate /etc/nginx/ssl/astroshield.crt;
+    ssl_certificate_key /etc/nginx/ssl/astroshield.key;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_prefer_server_ciphers on;
+    ssl_ciphers ECDHE-RSA-AES256-GCM-SHA512:DHE-RSA-AES256-GCM-SHA512:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384;
+    
+    # API endpoints
+    location /api/ {
+        proxy_pass http://127.0.0.1:8080/api/;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade \$http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+        proxy_cache_bypass \$http_upgrade;
+    }
+    
+    # Frontend static files
+    location / {
+        proxy_pass http://127.0.0.1:3000/;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade \$http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+        proxy_cache_bypass \$http_upgrade;
+    }
+    
+    # Status endpoint
+    location /status {
+        proxy_pass http://127.0.0.1:8080/status;
+        proxy_http_version 1.1;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+    }
+    
+    # Health endpoint
+    location /health {
+        proxy_pass http://127.0.0.1:8080/health;
+        proxy_http_version 1.1;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+    }
+    
+    # Additional API endpoints
+    location /maneuvers {
+        proxy_pass http://127.0.0.1:8080/maneuvers;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade \$http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+        proxy_cache_bypass \$http_upgrade;
+    }
+    
+    location /satellites {
+        proxy_pass http://127.0.0.1:8080/satellites;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade \$http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+        proxy_cache_bypass \$http_upgrade;
+    }
+    
+    # Security headers
+    add_header X-Frame-Options "DENY" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-XSS-Protection "1; mode=block" always;
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+}
+
+# Redirect HTTP to HTTPS
+server {
+    listen 80;
+    server_name astroshield.sdataplab.com;
+    return 301 https://\$host\$request_uri;
+}
+EOF'
+
+echo "Testing Nginx configuration..."
+sudo nginx -t
+
+if [ $? -eq 0 ]; then
+    echo "Configuration test successful. Restarting Nginx..."
+    sudo systemctl restart nginx
+    echo "Nginx restarted. Please check https://astroshield.sdataplab.com"
+else
+    echo "Configuration test failed. Please check the errors above."
+    echo "Reverting to the previous configuration..."
+    sudo cp "$(ls -t /etc/nginx/conf.d/astroshield-ssl.conf.bak.* | head -1)" /etc/nginx/conf.d/astroshield-ssl.conf
+    sudo systemctl restart nginx
+fi 

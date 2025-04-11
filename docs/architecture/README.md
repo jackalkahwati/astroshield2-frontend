@@ -1,198 +1,257 @@
-# AstroShield Architecture Documentation
+# AstroShield Architecture Overview
 
-## System Overview
+This document provides a comprehensive overview of the AstroShield platform architecture, including component interactions, data flows, and design decisions.
 
-AstroShield is a microservice-based application for spacecraft collision avoidance and space traffic management. The system is designed to be scalable, resilient, and maintainable.
+## System Architecture
 
-## Architecture Diagram
+AstroShield follows a microservices architecture organized around functional subsystems. The system is built on three core principles:
+
+1. **Message-driven communication**: All subsystems communicate through standardized Kafka messages
+2. **Observability**: Built-in monitoring, tracing, and logging throughout all components
+3. **Scalability**: Components can be independently scaled based on workload demands
 
 ```
-┌─────────────────┐     ┌──────────────┐     ┌─────────────┐
-│   Frontend      │────▶│   Backend    │────▶│  Database   │
-│   (Next.js)     │     │   (FastAPI)  │     │ (PostgreSQL)│
-└─────────────────┘     └──────────────┘     └─────────────┘
-         │                     │                    │
-         │                     │                    │
-         ▼                     ▼                    ▼
-┌─────────────────┐     ┌──────────────┐     ┌─────────────┐
-│    Monitoring   │     │    Cache     │     │   Backup    │
-│  (Prometheus)   │     │   (Redis)    │     │   (S3)      │
-└─────────────────┘     └──────────────┘     └─────────────┘
+┌─────────────────────────┐     ┌─────────────────────────┐     ┌─────────────────────────┐
+│                         │     │                         │     │                         │
+│    Frontend (Next.js)   │────▶│    Backend (FastAPI)    │────▶│   Database (PostgreSQL) │
+│                         │     │                         │     │                         │
+└─────────────────────────┘     └─────────────────────────┘     └─────────────────────────┘
+           │                                │                               │
+           │                                │                               │
+           ▼                                ▼                               ▼
+┌─────────────────────────┐     ┌─────────────────────────┐     ┌─────────────────────────┐
+│                         │     │                         │     │                         │
+│   Monitoring System     │     │    Message Broker       │     │     ML Infrastructure   │
+│   (Prometheus/Grafana)  │     │    (Kafka/Redis)        │     │     (PyTorch/Models)    │
+│                         │     │                         │     │                         │
+└─────────────────────────┘     └─────────────────────────┘     └─────────────────────────┘
 ```
 
-## Components
+## Core Subsystems
 
-### Frontend (Next.js)
+The platform is divided into subsystems based on the Space Domain Awareness (SDA) specification:
 
-- Server-side rendered React application
-- Material-UI for components
-- Sentry for error tracking
-- Client-side state management with React Query
-- TypeScript for type safety
+### Subsystem 0: Data Ingestion
+- **Purpose**: Ingests sensor data and external information
+- **Key Components**: 
+  - Sensor adapters
+  - Data validation pipeline 
+  - Format normalization
+- **Technologies**: 
+  - Kafka for message streaming
+  - Schema validation for data quality
 
-### Backend (FastAPI)
+### Subsystem 1: Target Modeling
+- **Purpose**: Creates and maintains models of tracked space objects
+- **Key Components**:
+  - Physical property estimators
+  - Object database
+  - History tracking
+- **Technologies**:
+  - PostgreSQL for object persistence
+  - Machine learning models for property estimation
 
-- RESTful API service
-- JWT authentication
-- Rate limiting
-- Request validation
-- Async database operations
-- Prometheus metrics
-- Structured logging
+### Subsystem 2: State Estimation
+- **Purpose**: Tracks and predicts object positions and velocities
+- **Key Components**:
+  - State estimators
+  - Trajectory predictors
+  - Uncertainty quantification
+- **Technologies**:
+  - Kalman filtering algorithms
+  - SGP4 and higher fidelity propagators
 
-### Database (PostgreSQL)
+### Subsystem 3: Command & Control (C2)
+- **Purpose**: Provides mission operations management
+- **Key Components**:
+  - Mission planning tools
+  - Tasking interfaces
+  - Decision support systems
+- **Technologies**:
+  - FastAPI backend
+  - Next.js frontend
 
-- Relational database for persistent storage
-- Alembic for migrations
-- SQLAlchemy ORM
-- Connection pooling
-- Read replicas for scaling
+### Subsystem 4: CCDM Detection
+- **Purpose**: Detects Camouflage, Concealment, Deception, and Maneuvering
+- **Key Components**:
+  - Anomaly detectors
+  - Shape change analyzers
+  - Maneuver detectors
+- **Technologies**:
+  - Machine learning models
+  - Pattern recognition algorithms
 
-### Cache (Redis)
+### Subsystem 5: Hostility Monitoring
+- **Purpose**: Monitors for potentially hostile actions
+- **Key Components**:
+  - Conjunction analysis
+  - Intent estimators
+  - Pattern of life analyzers
+- **Technologies**:
+  - Statistical analysis
+  - Game theory models
 
-- Session storage
-- Rate limiting data
-- Temporary data caching
-- Pub/sub for real-time updates
+### Subsystem 6: Threat Assessment
+- **Purpose**: Analyzes and assesses risks posed by space activities
+- **Key Components**:
+  - Risk calculators
+  - Recommendation engine
+  - Notification system
+- **Technologies**:
+  - Real-time prediction models
+  - Alert generation pipelines
 
-## Key Features
+## Technical Architecture
 
-### Stability Analysis
+### Backend Technology Stack
 
-- Real-time spacecraft stability monitoring
-- Machine learning models for prediction
-- Historical data analysis
-- Anomaly detection
+The backend is built on a modern Python stack:
 
-### Maneuver Planning
+- **Web Framework**: FastAPI
+- **Database**: PostgreSQL with SQLAlchemy ORM
+- **Messaging**: Kafka with custom tracing wrappers
+- **Authentication**: JWT-based authentication with role-based access control
+- **Caching**: Redis for high-performance data caching
+- **Deployment**: Kubernetes for orchestration
 
-- Collision avoidance calculations
-- Orbit optimization
-- Fuel efficiency analysis
-- Execution validation
+### Frontend Technology Stack
 
-### Analytics
+The frontend utilizes a React-based stack:
 
-- Performance metrics
-- Resource utilization
-- Trend analysis
-- Custom reporting
+- **Framework**: Next.js
+- **UI Components**: Custom component library with Radix UI
+- **State Management**: React Hooks and Context
+- **Styling**: Tailwind CSS
+- **Data Fetching**: Axios with custom hooks
+- **Visualization**: Chart.js and Mapbox GL
 
-### Tracking
+### Machine Learning Infrastructure
 
-- Real-time position tracking
-- Trajectory prediction
-- Collision risk assessment
-- Historical path analysis
+ML models are integrated throughout the platform:
 
-## Security Architecture
-
-### Authentication
-
-- JWT-based authentication
-- Token refresh mechanism
-- Role-based access control
-- Session management
-
-### Network Security
-
-- TLS encryption
-- WAF protection
-- VPC isolation
-- Security groups
-
-### Data Security
-
-- Encryption at rest
-- Encryption in transit
-- Regular backups
-- Data retention policies
-
-## Scalability
-
-### Horizontal Scaling
-
-- Stateless services
-- Load balancing
-- Auto-scaling groups
-- Database read replicas
-
-### Vertical Scaling
-
-- Resource optimization
-- Performance monitoring
-- Capacity planning
-- Load testing
-
-## Monitoring and Observability
-
-### Metrics
-
-- Application metrics
-- System metrics
-- Business metrics
-- Custom metrics
-
-### Logging
-
-- Structured JSON logging
-- Centralized log aggregation
-- Log retention policies
-- Error tracking
-
-### Alerting
-
-- Performance alerts
-- Error rate alerts
-- Resource utilization alerts
-- Custom alert conditions
-
-## Deployment Architecture
-
-### Infrastructure
-
-- AWS EKS for container orchestration
-- RDS for database
-- ElastiCache for Redis
-- CloudFront for CDN
-
-### CI/CD Pipeline
-
-- GitHub Actions
-- Automated testing
-- Security scanning
-- Deployment automation
+- **Model Development**: PyTorch for deep learning
+- **Model Serving**: FastAPI endpoints with model versioning
+- **Training Pipeline**: Custom training framework with experiment tracking
+- **Feature Store**: Centralized feature engineering and management
+- **Synthetic Data**: Advanced data generation for training and testing
 
 ## Data Flow
 
-### Request Flow
+### Message Traceability
 
-1. Client request → CloudFront
-2. CloudFront → Load Balancer
-3. Load Balancer → Backend Service
-4. Backend Service → Database/Cache
-5. Response back through chain
+All messages flowing through the system include traceability metadata:
 
-### Data Processing
+```json
+{
+  "header": {
+    "messageId": "uuid-example-12345",
+    "traceId": "original-message-uuid-67890",
+    "source": "subsystem_name",
+    "messageType": "message_category.specific_type",
+    "parentMessageIds": ["parent-uuid-1", "parent-uuid-2"],
+    "timestamp": "2025-01-01T12:00:00Z"
+  },
+  "payload": {
+    // Message-specific data
+  }
+}
+```
 
-1. Raw data ingestion
-2. Data validation
-3. Processing/Analysis
-4. Storage/Caching
-5. Client delivery
+This structure enables complete end-to-end tracing of all system operations.
 
-## Future Considerations
+### Typical Data Flows
 
-### Planned Improvements
+1. **Sensor to Analysis Flow**:
+   - Sensor produces observation data (SS0)
+   - Data is normalized and validated (SS0)
+   - State estimates are updated (SS2)
+   - CCDM analysis is performed if needed (SS4)
+   - Results are presented to operators (SS3)
 
-- GraphQL API
-- Real-time websocket support
-- Enhanced ML capabilities
-- Improved analytics
+2. **Conjunction Analysis Flow**:
+   - Conjunction is detected between objects (SS2)
+   - Risk assessment is performed (SS5)
+   - Threat analysis determines severity (SS6)
+   - Notifications are sent to operators (SS3)
+   - Maneuver recommendations are generated if needed (SS6)
 
-### Scalability Enhancements
+## Infrastructure Components
 
-- Global distribution
-- Multi-region support
-- Enhanced caching
-- Performance optimization 
+### Resiliency Patterns
+
+The system implements several resiliency patterns:
+
+- **Circuit Breaker**: Prevents cascade failures
+- **Bulkhead**: Isolates failures to specific components
+- **Rate Limiting**: Protects resources from overload
+- **Retry with Backoff**: Handles transient failures
+
+### Service Registry
+
+A central service registry maintains information about all running services:
+
+- Service capabilities and endpoints
+- Health status and performance metrics
+- Dependency relationships
+
+### Monitoring Infrastructure
+
+Comprehensive monitoring is built into the platform:
+
+- **Metrics**: Prometheus-based metrics collection
+- **Logging**: Structured logging with correlation IDs
+- **Tracing**: Distributed tracing with OpenTelemetry
+- **Alerts**: Automated alerting based on thresholds and anomalies
+
+## Deployment Architecture
+
+### Development Environment
+
+- Local development with Docker Compose
+- Hot reloading for rapid iteration
+- Integration testing against mock services
+
+### Testing Environment
+
+- Automated test pipelines
+- Performance testing with synthetic workloads
+- Security scanning and vulnerability testing
+
+### Production Environment
+
+- Kubernetes-based deployment
+- Horizontal scaling of components
+- Geographic distribution for redundancy
+- Blue/green deployment for zero-downtime updates
+
+## Security Architecture
+
+### Authentication and Authorization
+
+- JWT-based authentication
+- Role-based access control (RBAC)
+- API key management for integration partners
+
+### Network Security
+
+- TLS encryption for all communications
+- WAF protection for public-facing services
+- VPC isolation for internal services
+- Security groups and network policies
+
+### Data Security
+
+- Encryption at rest for all sensitive data
+- Encryption in transit (TLS)
+- Regular backups and disaster recovery
+- Data retention and purging policies
+
+## Future Architecture Evolution
+
+The architecture is designed to evolve in the following directions:
+
+1. **Enhanced ML Integration**: Deeper integration of ML models throughout all subsystems
+2. **Multi-cloud Deployment**: Support for deployment across multiple cloud providers
+3. **Edge Processing**: Moving critical processing closer to data sources
+4. **Enhanced Autonomy**: Reduced need for human intervention in routine operations
+5. **Extended Integration**: Additional interfaces with external SDA systems

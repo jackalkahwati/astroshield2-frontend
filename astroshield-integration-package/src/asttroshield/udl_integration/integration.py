@@ -10,8 +10,14 @@ import logging
 import os
 import sys
 import time
+import threading
+import uuid
+import yaml
 from datetime import datetime, timedelta
-from typing import Dict, List, Any, Optional, Callable, Set
+from typing import Dict, List, Any, Optional, Callable, Set, Tuple, Union
+from enum import Enum
+from dataclasses import dataclass
+import traceback
 
 # Import and load dotenv at the top level to ensure environment variables are loaded
 from dotenv import load_dotenv
@@ -51,25 +57,79 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+# Default configuration values
+DEFAULT_CONFIG = {
+    "udl": {
+        "base_url": "https://unifieddatalibrary.com",
+        "timeout": 30,
+        "max_retries": 3,
+        "sample_period": 0.34,  # Minimum time between requests (seconds)
+        "use_secure_messaging": False,
+    },
+    "kafka": {
+        "bootstrap_servers": "localhost:9092",
+        "security_protocol": "PLAINTEXT",
+        "client_id": "udl_integration",
+    },
+    "monitoring": {
+        "enabled": True,
+        "log_metrics": True,
+        "prometheus_port": 8000,
+        "metrics_interval": 60,  # Seconds between metrics collection
+    },
+    "topics": {
+        # Default topic mappings and configurations
+        "state_vector": {
+            "udl_params": {"maxResults": 100},
+            "transform_func": "transform_state_vector",
+            "kafka_topic": "udl.state_vectors",
+            "polling_interval": 60,  # seconds
+            "cache_ttl": 300,  # seconds
+        },
+    }
+}
+
+class IntegrationStatus(Enum):
+    """Status of the UDL Integration."""
+    INITIALIZED = "initialized"
+    RUNNING = "running"
+    ERROR = "error"
+    STOPPED = "stopped"
+
+@dataclass
+class TopicMetrics:
+    """Metrics for a UDL topic."""
+    requests: int = 0
+    successful_requests: int = 0
+    failed_requests: int = 0
+    data_items_processed: int = 0
+    data_items_published: int = 0
+    last_request_time: Optional[float] = None
+    last_successful_request_time: Optional[float] = None
+    last_error: Optional[str] = None
+    last_error_time: Optional[float] = None
+    processing_time_sum: float = 0.0
+    request_latency_sum: float = 0.0
 
 class UDLIntegration:
     """Main integration class for UDL and AstroShield."""
 
     def __init__(
         self,
-        udl_base_url: str = "https://unifieddatalibrary.com",
+        udl_base_url: Optional[str] = None,
         udl_api_key: Optional[str] = None,
         udl_username: Optional[str] = None,
         udl_password: Optional[str] = None,
-        udl_timeout: int = 30,
-        udl_max_retries: int = 3,
+        udl_timeout: Optional[int] = None,
+        udl_max_retries: Optional[int] = None,
         kafka_bootstrap_servers: Optional[str] = None,
-        kafka_security_protocol: str = "PLAINTEXT",
+        kafka_security_protocol: Optional[str] = None,
         kafka_sasl_mechanism: Optional[str] = None,
         kafka_sasl_username: Optional[str] = None,
         kafka_sasl_password: Optional[str] = None,
-        use_secure_messaging: bool = False,
-        sample_period: float = 0.34,
+        use_secure_messaging: Optional[bool] = None,
+        sample_period: Optional[float] = None,
+        config_file: Optional[str] = None,
     ):
         """
         Initialize the UDL Integration.
@@ -88,71 +148,388 @@ class UDLIntegration:
             kafka_sasl_password: SASL password for Kafka.
             use_secure_messaging: Whether to use the UDL Secure Messaging API.
             sample_period: Minimum time between requests (seconds) to respect rate limits.
+            config_file: Path to configuration file (YAML or JSON).
         """
-        # Initialize UDL client
-        self.udl_client = UDLClient(
-            base_url=udl_base_url,
-            api_key=udl_api_key,
-            username=udl_username,
-            password=udl_password,
-            timeout=udl_timeout,
-            max_retries=udl_max_retries,
+        # Load configuration
+        self.config = self._load_configuration(config_file)
+        
+        # Override with environment variables and constructor params
+        self._apply_overrides(
+            udl_base_url=udl_base_url,
+            udl_api_key=udl_api_key,
+            udl_username=udl_username,
+            udl_password=udl_password,
+            udl_timeout=udl_timeout,
+            udl_max_retries=udl_max_retries,
+            kafka_bootstrap_servers=kafka_bootstrap_servers,
+            kafka_security_protocol=kafka_security_protocol,
+            kafka_sasl_mechanism=kafka_sasl_mechanism,
+            kafka_sasl_username=kafka_sasl_username,
+            kafka_sasl_password=kafka_sasl_password,
+            use_secure_messaging=use_secure_messaging,
+            sample_period=sample_period,
         )
         
+        # Set up monitoring
+        self.metrics = {}
+        self.start_time = time.time()
+        self.status = IntegrationStatus.INITIALIZED
+        self.last_error = None
+        self.instance_id = str(uuid.uuid4())
+        
+        # Set up monitoring thread if enabled
+        self.monitoring_thread = None
+        self.monitoring_stop_event = threading.Event()
+        
+        if self.config["monitoring"]["enabled"]:
+            self._setup_monitoring()
+        
+        # Initialize UDL client with enhanced configuration
+        try:
+            self.udl_client = UDLClient(
+                base_url=self.config["udl"]["base_url"],
+                api_key=udl_api_key,
+                username=udl_username,
+                password=udl_password,
+                timeout=self.config["udl"]["timeout"],
+                max_retries=self.config["udl"]["max_retries"],
+            )
+            logger.info(f"UDL client initialized with base URL: {self.config['udl']['base_url']}")
+        except Exception as e:
+            self.status = IntegrationStatus.ERROR
+            self.last_error = f"Failed to initialize UDL client: {str(e)}"
+            logger.error(self.last_error)
+            # Don't raise - allow partial initialization
+            
         # Initialize UDL Secure Messaging client if enabled
         self.messaging_client = None
-        self.use_secure_messaging = use_secure_messaging
+        self.use_secure_messaging = self.config["udl"]["use_secure_messaging"]
         self.active_streaming_topics = set()
         
-        if use_secure_messaging:
+        if self.use_secure_messaging:
             try:
                 self.messaging_client = UDLMessagingClient(
-                    base_url=udl_base_url,
+                    base_url=self.config["udl"]["base_url"],
                     username=udl_username,
                     password=udl_password,
-                    timeout=udl_timeout,
-                    max_retries=udl_max_retries,
-                    sample_period=sample_period,
+                    timeout=self.config["udl"]["timeout"],
+                    max_retries=self.config["udl"]["max_retries"],
+                    sample_period=self.config["udl"]["sample_period"],
                 )
                 logger.info("UDL Secure Messaging client initialized successfully")
             except Exception as e:
-                logger.error(f"Failed to initialize UDL Secure Messaging client: {str(e)}")
+                error_msg = f"Failed to initialize UDL Secure Messaging client: {str(e)}"
+                logger.error(error_msg)
                 logger.warning("Secure Messaging will be disabled. Make sure you have proper authorization.")
                 self.use_secure_messaging = False
+                self.last_error = error_msg
+                # Don't change status to ERROR - this is a non-critical failure
         
         # Initialize topic to transformer and publisher mappings
         self.topic_transformers = {}
         self.topic_publishers = {}
         
+        # Set up topic metrics tracking
+        self._initialize_topic_metrics()
+        
         # Initialize Kafka producer if bootstrap servers are provided
         self.producer = None
-        if kafka_bootstrap_servers:
-            kafka_config = {
-                "bootstrap_servers": kafka_bootstrap_servers,
-                "client_id": "udl_integration",
-            }
-            
-            # Add security configuration if provided
-            if kafka_security_protocol != "PLAINTEXT":
-                kafka_config["security_protocol"] = kafka_security_protocol
-                
-                if "SASL" in kafka_security_protocol:
-                    if not kafka_sasl_mechanism or not kafka_sasl_username or not kafka_sasl_password:
-                        raise ValueError("SASL mechanism, username, and password are required for SASL authentication")
-                    
-                    kafka_config["sasl_mechanism"] = kafka_sasl_mechanism
-                    kafka_config["sasl_plain_username"] = kafka_sasl_username
-                    kafka_config["sasl_plain_password"] = kafka_sasl_password
-            
-            # Initialize Kafka producer
-            from kafka import KafkaProducer
-            self.producer = KafkaProducer(**kafka_config)
+        self._initialize_kafka_producer()
         
-        logger.info("UDL Integration initialized successfully")
-        if self.use_secure_messaging:
-            logger.info("Secure Messaging is enabled")
+        # Initialize topic configurations from the config
+        self._initialize_topic_configurations()
+    
+    def _load_configuration(self, config_file: Optional[str]) -> Dict[str, Any]:
+        """
+        Load configuration from file and environment.
+        
+        Args:
+            config_file: Path to configuration file
+            
+        Returns:
+            Merged configuration dictionary
+        """
+        # Start with default configuration
+        config = DEFAULT_CONFIG.copy()
+        
+        # Load from config file if provided
+        if config_file and os.path.exists(config_file):
+            try:
+                with open(config_file, 'r') as f:
+                    if config_file.endswith('.yaml') or config_file.endswith('.yml'):
+                        file_config = yaml.safe_load(f)
+                    else:
+                        file_config = json.load(f)
+                
+                # Deep merge the configurations
+                self._deep_update(config, file_config)
+                logger.info(f"Loaded configuration from {config_file}")
+            except Exception as e:
+                logger.error(f"Error loading configuration from {config_file}: {str(e)}")
+        
+        # Load from environment variables
+        self._load_from_environment(config)
+        
+        return config
+    
+    def _load_from_environment(self, config: Dict[str, Any]) -> None:
+        """
+        Override configuration with environment variables.
+        
+        Args:
+            config: Configuration dictionary to update
+        """
+        # Environment variable mapping
+        env_mappings = {
+            "UDL_BASE_URL": ["udl", "base_url"],
+            "UDL_TIMEOUT": ["udl", "timeout"],
+            "UDL_MAX_RETRIES": ["udl", "max_retries"],
+            "UDL_SAMPLE_PERIOD": ["udl", "sample_period"],
+            "UDL_USE_SECURE_MESSAGING": ["udl", "use_secure_messaging"],
+            
+            "KAFKA_BOOTSTRAP_SERVERS": ["kafka", "bootstrap_servers"],
+            "KAFKA_SECURITY_PROTOCOL": ["kafka", "security_protocol"],
+            "KAFKA_CLIENT_ID": ["kafka", "client_id"],
+            
+            "MONITORING_ENABLED": ["monitoring", "enabled"],
+            "MONITORING_LOG_METRICS": ["monitoring", "log_metrics"],
+            "MONITORING_PROMETHEUS_PORT": ["monitoring", "prometheus_port"],
+            "MONITORING_METRICS_INTERVAL": ["monitoring", "metrics_interval"],
+        }
+        
+        for env_var, config_path in env_mappings.items():
+            if env_var in os.environ:
+                # Navigate to the nested config value
+                current = config
+                for i, key in enumerate(config_path):
+                    if i == len(config_path) - 1:
+                        # Convert value to the appropriate type
+                        env_value = os.environ[env_var]
+                        current_value = current[key]
+                        
+                        if isinstance(current_value, bool):
+                            current[key] = env_value.lower() in ('true', 'yes', '1')
+                        elif isinstance(current_value, int):
+                            current[key] = int(env_value)
+                        elif isinstance(current_value, float):
+                            current[key] = float(env_value)
+                        elif isinstance(current_value, list):
+                            current[key] = json.loads(env_value)
+                        else:
+                            current[key] = env_value
+                    else:
+                        current = current[key]
+    
+    def _deep_update(self, target: Dict[str, Any], source: Dict[str, Any]) -> None:
+        """
+        Deep update a nested dictionary.
+        
+        Args:
+            target: Target dictionary to update
+            source: Source dictionary with updates
+        """
+        for key, value in source.items():
+            if key in target and isinstance(target[key], dict) and isinstance(value, dict):
+                self._deep_update(target[key], value)
+            else:
+                target[key] = value
+    
+    def _apply_overrides(self, **kwargs) -> None:
+        """Apply configuration overrides from constructor parameters."""
+        # UDL configuration overrides
+        if kwargs.get("udl_base_url"):
+            self.config["udl"]["base_url"] = kwargs["udl_base_url"]
+        if kwargs.get("udl_timeout"):
+            self.config["udl"]["timeout"] = kwargs["udl_timeout"]
+        if kwargs.get("udl_max_retries"):
+            self.config["udl"]["max_retries"] = kwargs["udl_max_retries"]
+        if kwargs.get("sample_period"):
+            self.config["udl"]["sample_period"] = kwargs["sample_period"]
+        if kwargs.get("use_secure_messaging") is not None:
+            self.config["udl"]["use_secure_messaging"] = kwargs["use_secure_messaging"]
+            
+        # Kafka configuration overrides
+        if kwargs.get("kafka_bootstrap_servers"):
+            self.config["kafka"]["bootstrap_servers"] = kwargs["kafka_bootstrap_servers"]
+        if kwargs.get("kafka_security_protocol"):
+            self.config["kafka"]["security_protocol"] = kwargs["kafka_security_protocol"]
+            
+        # Store auth credentials separately (not in config)
+        self.udl_api_key = kwargs.get("udl_api_key")
+        self.udl_username = kwargs.get("udl_username")
+        self.udl_password = kwargs.get("udl_password")
+        self.kafka_sasl_mechanism = kwargs.get("kafka_sasl_mechanism")
+        self.kafka_sasl_username = kwargs.get("kafka_sasl_username")
+        self.kafka_sasl_password = kwargs.get("kafka_sasl_password")
+
+    def _setup_monitoring(self) -> None:
+        """Set up monitoring for the integration."""
+        if self.config["monitoring"]["enabled"]:
+            # Set up Prometheus metrics if requested
+            prometheus_port = self.config["monitoring"].get("prometheus_port")
+            if prometheus_port:
+                try:
+                    # Lazy import to avoid dependency if not used
+                    import prometheus_client
+                    prometheus_client.start_http_server(prometheus_port)
+                    logger.info(f"Prometheus metrics server started on port {prometheus_port}")
+                except ImportError:
+                    logger.warning("prometheus_client module not found. Prometheus monitoring disabled.")
+                except Exception as e:
+                    logger.error(f"Error starting Prometheus server: {str(e)}")
+            
+            # Start monitoring thread
+            self.monitoring_thread = threading.Thread(
+                target=self._monitoring_loop,
+                daemon=True,
+                name="udl-monitoring"
+            )
+            self.monitoring_thread.start()
+            logger.info("UDL Integration monitoring started")
+        
+    def _monitoring_loop(self) -> None:
+        """Background thread that periodically logs metrics."""
+        interval = self.config["monitoring"]["metrics_interval"]
+        
+        while not self.monitoring_stop_event.is_set():
+            try:
+                # Collect and log metrics if configured
+                if self.config["monitoring"]["log_metrics"]:
+                    metrics = self.get_metrics()
+                    logger.info(f"UDL Integration metrics: {json.dumps(metrics['summary'])}")
+                
+                # Check UDL API health
+                self._check_udl_health()
+                
+            except Exception as e:
+                logger.error(f"Error in monitoring loop: {str(e)}")
+            
+            # Wait for next interval or until stop is requested
+            self.monitoring_stop_event.wait(interval)
+                
+    def _check_udl_health(self) -> None:
+        """Check UDL API health and log status."""
+        try:
+            health = self.udl_client.get_health_status()
+            if health["status"] == "ok":
+                logger.debug(f"UDL API health check: OK, response time: {health['response_time']:.3f}s")
+            else:
+                logger.warning(f"UDL API health check failed: {health.get('error', 'Unknown error')}")
+        except Exception as e:
+            logger.error(f"Error checking UDL API health: {str(e)}")
+    
+    def _initialize_topic_metrics(self) -> None:
+        """Initialize metrics tracking for each topic."""
+        self.metrics = {}
+        
+        # Add metrics for each topic in the configuration
+        for topic in self.config["topics"]:
+            self.metrics[topic] = TopicMetrics()
+        
+        # Add system-wide metrics
+        self.metrics["_system"] = {
+            "start_time": self.start_time,
+            "status": self.status.value,
+            "instance_id": self.instance_id,
+        }
+
+    def _initialize_kafka_producer(self) -> None:
+        """Initialize the Kafka producer based on configuration."""
+        bootstrap_servers = self.config["kafka"]["bootstrap_servers"]
+        
+        if bootstrap_servers:
+            try:
+                kafka_config = {
+                    "bootstrap_servers": bootstrap_servers,
+                    "client_id": self.config["kafka"]["client_id"],
+                }
+                
+                # Add security configuration if provided
+                security_protocol = self.config["kafka"]["security_protocol"]
+                if security_protocol != "PLAINTEXT":
+                    kafka_config["security_protocol"] = security_protocol
+                    
+                    if "SASL" in security_protocol:
+                        if not self.kafka_sasl_mechanism or not self.kafka_sasl_username or not self.kafka_sasl_password:
+                            logger.warning("SASL parameters missing. Kafka producer will not be initialized.")
+                            return
+                        
+                        kafka_config["sasl_mechanism"] = self.kafka_sasl_mechanism
+                        kafka_config["sasl_plain_username"] = self.kafka_sasl_username
+                        kafka_config["sasl_plain_password"] = self.kafka_sasl_password
+                
+                # Initialize Kafka producer with error handling
+                try:
+                    from kafka import KafkaProducer
+                    self.producer = KafkaProducer(**kafka_config)
+                    logger.info(f"Kafka producer initialized with bootstrap servers: {bootstrap_servers}")
+                except ImportError:
+                    logger.error("kafka-python not installed. Please install it to enable Kafka integration.")
+                except Exception as e:
+                    logger.error(f"Failed to initialize Kafka producer: {str(e)}")
+                    self.last_error = f"Kafka producer initialization failed: {str(e)}"
+            except Exception as e:
+                logger.error(f"Error setting up Kafka producer: {str(e)}")
         else:
-            logger.info("Secure Messaging is disabled")
+            logger.info("No Kafka bootstrap servers provided. Kafka integration disabled.")
+
+    def _initialize_topic_configurations(self) -> None:
+        """Initialize topic configurations from the config file."""
+        # Register transformers for each configured topic
+        for topic_name, topic_config in self.config["topics"].items():
+            transform_func_name = topic_config.get("transform_func")
+            
+            if transform_func_name:
+                # Look up the transformer function
+                transform_func = self._get_transformer_function(transform_func_name)
+                
+                if transform_func:
+                    # Register the topic with its transformer
+                    self.register_topic(
+                        topic_name,
+                        transform_func,
+                        topic_config.get("kafka_topic", f"udl.{topic_name}"),
+                        topic_config.get("udl_params", {})
+                    )
+                    logger.info(f"Registered topic {topic_name} with transformer {transform_func_name}")
+                else:
+                    logger.warning(f"Transformer function {transform_func_name} not found for topic {topic_name}")
+
+    def _get_transformer_function(self, function_name: str) -> Optional[Callable]:
+        """
+        Get a transformer function by name.
+        
+        Args:
+            function_name: Name of the transformer function
+            
+        Returns:
+            Transformer function or None if not found
+        """
+        # Map of transformer function names to actual functions
+        transformer_map = {
+            "transform_state_vector": transform_state_vector,
+            "transform_conjunction": transform_conjunction,
+            "transform_launch_event": transform_launch_event,
+            "transform_track": transform_track,
+            "transform_ephemeris": transform_ephemeris,
+            "transform_maneuver": transform_maneuver,
+            "transform_observation": transform_observation,
+            "transform_sensor": transform_sensor,
+            "transform_orbit_determination": transform_orbit_determination,
+            "transform_elset": transform_elset,
+            "transform_weather": transform_weather,
+            "transform_cyber_threat": transform_cyber_threat,
+            "transform_link_status": transform_link_status,
+            "transform_comm_data": transform_comm_data,
+            "transform_mission_ops": transform_mission_ops,
+            "transform_vessel": transform_vessel,
+            "transform_aircraft": transform_aircraft,
+            "transform_ground_imagery": transform_ground_imagery,
+            "transform_sky_imagery": transform_sky_imagery,
+            "transform_video_streaming": transform_video_streaming,
+        }
+        
+        return transformer_map.get(function_name)
 
     def process_state_vectors(self, epoch: Optional[str] = None) -> None:
         """

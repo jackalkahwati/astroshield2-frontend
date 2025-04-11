@@ -1,0 +1,992 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "AstroShield API",
+    "description": "The AstroShield API provides access to satellite data, collision avoidance maneuvers, and space domain awareness analytics.",
+    "version": "1.0.0",
+    "contact": {
+      "email": "support@astroshield.com"
+    },
+    "license": {
+      "name": "MIT License",
+      "url": "https://opensource.org/licenses/MIT"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.astroshield.com/api/v1",
+      "description": "Production server"
+    },
+    {
+      "url": "https://api-staging.astroshield.com/api/v1",
+      "description": "Staging server"
+    },
+    {
+      "url": "http://localhost:3001/api/v1",
+      "description": "Development server"
+    }
+  ],
+  "tags": [
+    {
+      "name": "satellites",
+      "description": "Satellite management and information"
+    },
+    {
+      "name": "maneuvers",
+      "description": "Satellite maneuver planning and execution"
+    },
+    {
+      "name": "analytics",
+      "description": "Data analysis and reporting"
+    },
+    {
+      "name": "auth",
+      "description": "Authentication endpoints"
+    }
+  ],
+  "paths": {
+    "/token": {
+      "post": {
+        "tags": ["auth"],
+        "summary": "Obtain an access token",
+        "description": "Authenticate with username and password to get a JWT token",
+        "operationId": "getToken",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["username", "password"],
+                "properties": {
+                  "username": {
+                    "type": "string",
+                    "example": "user@example.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "password123"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "access_token": {
+                      "type": "string",
+                      "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                    },
+                    "token_type": {
+                      "type": "string",
+                      "example": "bearer"
+                    },
+                    "expires_at": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-06-22T12:00:00Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/satellites": {
+      "get": {
+        "tags": ["satellites"],
+        "summary": "List satellites",
+        "description": "Get a list of all satellites the user has access to",
+        "operationId": "listSatellites",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number",
+            "schema": {
+              "type": "integer",
+              "default": 1,
+              "minimum": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Items per page",
+            "schema": {
+              "type": "integer",
+              "default": 20,
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          {
+            "name": "orbit_type",
+            "in": "query",
+            "description": "Filter by orbit type",
+            "schema": {
+              "type": "string",
+              "enum": ["LEO", "MEO", "GEO", "HEO"]
+            }
+          },
+          {
+            "name": "operational_status",
+            "in": "query",
+            "description": "Filter by operational status",
+            "schema": {
+              "type": "string",
+              "enum": ["ACTIVE", "INACTIVE", "DECOMMISSIONED", "UNKNOWN"]
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of satellites",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Satellite"
+                      }
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/PaginationMeta"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["satellites"],
+        "summary": "Create satellite",
+        "description": "Create a new satellite record",
+        "operationId": "createSatellite",
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SatelliteCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Satellite created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Satellite"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/satellites/{satellite_id}": {
+      "get": {
+        "tags": ["satellites"],
+        "summary": "Get satellite",
+        "description": "Get detailed information about a specific satellite",
+        "operationId": "getSatellite",
+        "parameters": [
+          {
+            "name": "satellite_id",
+            "in": "path",
+            "description": "Satellite ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Satellite details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Satellite"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Satellite not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["satellites"],
+        "summary": "Update satellite",
+        "description": "Update an existing satellite's information",
+        "operationId": "updateSatellite",
+        "parameters": [
+          {
+            "name": "satellite_id",
+            "in": "path",
+            "description": "Satellite ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SatelliteUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Satellite updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Satellite"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Satellite not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/maneuvers": {
+      "get": {
+        "tags": ["maneuvers"],
+        "summary": "List maneuvers",
+        "description": "Get a list of maneuvers, optionally filtered by satellite ID and status",
+        "operationId": "listManeuvers",
+        "parameters": [
+          {
+            "name": "satellite_id",
+            "in": "query",
+            "description": "Filter by satellite ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "description": "Filter by maneuver status",
+            "schema": {
+              "type": "string",
+              "enum": ["SCHEDULED", "IN_PROGRESS", "COMPLETED", "FAILED", "CANCELLED"]
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number",
+            "schema": {
+              "type": "integer",
+              "default": 1,
+              "minimum": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Items per page",
+            "schema": {
+              "type": "integer",
+              "default": 20,
+              "minimum": 1,
+              "maximum": 100
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of maneuvers",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Maneuver"
+                      }
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/PaginationMeta"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["maneuvers"],
+        "summary": "Create maneuver",
+        "description": "Create a new maneuver for a satellite",
+        "operationId": "createManeuver",
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ManeuverCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Maneuver created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Maneuver"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Satellite not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "OrbitType": {
+        "type": "string",
+        "enum": ["LEO", "MEO", "GEO", "HEO"],
+        "description": "Type of orbit"
+      },
+      "OperationalStatus": {
+        "type": "string",
+        "enum": ["ACTIVE", "INACTIVE", "DECOMMISSIONED", "UNKNOWN"],
+        "description": "Operational status of a satellite"
+      },
+      "ManeuverType": {
+        "type": "string",
+        "enum": ["COLLISION_AVOIDANCE", "STATION_KEEPING", "ORBIT_RAISING", "ORBIT_LOWERING", "DEORBIT", "INCLINATION_CHANGE", "PHASING"],
+        "description": "Type of satellite maneuver"
+      },
+      "ManeuverStatus": {
+        "type": "string",
+        "enum": ["SCHEDULED", "IN_PROGRESS", "COMPLETED", "FAILED", "CANCELLED"],
+        "description": "Status of a maneuver"
+      },
+      "OrbitalParameters": {
+        "type": "object",
+        "required": [
+          "semi_major_axis",
+          "eccentricity",
+          "inclination",
+          "raan",
+          "argument_of_perigee",
+          "mean_anomaly",
+          "epoch"
+        ],
+        "properties": {
+          "semi_major_axis": {
+            "type": "number",
+            "format": "float",
+            "description": "Semi-major axis in kilometers",
+            "example": 7000
+          },
+          "eccentricity": {
+            "type": "number",
+            "format": "float",
+            "description": "Orbital eccentricity (0-1)",
+            "example": 0.0001
+          },
+          "inclination": {
+            "type": "number",
+            "format": "float",
+            "description": "Inclination in degrees (0-180)",
+            "example": 51.6
+          },
+          "raan": {
+            "type": "number",
+            "format": "float",
+            "description": "Right Ascension of Ascending Node in degrees (0-360)",
+            "example": 235.7
+          },
+          "argument_of_perigee": {
+            "type": "number",
+            "format": "float",
+            "description": "Argument of perigee in degrees (0-360)",
+            "example": 90.0
+          },
+          "mean_anomaly": {
+            "type": "number",
+            "format": "float",
+            "description": "Mean anomaly in degrees (0-360)",
+            "example": 0.0
+          },
+          "epoch": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Reference time for orbital elements (ISO 8601)",
+            "example": "2023-05-15T12:00:00Z"
+          }
+        }
+      },
+      "DirectionVector": {
+        "type": "object",
+        "required": ["x", "y", "z"],
+        "properties": {
+          "x": {
+            "type": "number",
+            "format": "float",
+            "description": "X component of direction vector",
+            "example": 0.1
+          },
+          "y": {
+            "type": "number",
+            "format": "float",
+            "description": "Y component of direction vector",
+            "example": 0.0
+          },
+          "z": {
+            "type": "number",
+            "format": "float",
+            "description": "Z component of direction vector",
+            "example": -0.1
+          }
+        }
+      },
+      "TargetOrbit": {
+        "type": "object",
+        "properties": {
+          "altitude": {
+            "type": "number",
+            "format": "float",
+            "description": "Target altitude in kilometers",
+            "example": 500.2
+          },
+          "inclination": {
+            "type": "number",
+            "format": "float",
+            "description": "Target inclination in degrees",
+            "example": 45.0
+          },
+          "eccentricity": {
+            "type": "number",
+            "format": "float",
+            "description": "Target eccentricity",
+            "example": 0.001
+          }
+        }
+      },
+      "ManeuverParameters": {
+        "type": "object",
+        "required": ["delta_v", "burn_duration", "direction"],
+        "properties": {
+          "delta_v": {
+            "type": "number",
+            "format": "float",
+            "description": "Change in velocity (km/s)",
+            "example": 0.02
+          },
+          "burn_duration": {
+            "type": "number",
+            "format": "float",
+            "description": "Duration of thruster burn (seconds)",
+            "example": 15.0
+          },
+          "direction": {
+            "$ref": "#/components/schemas/DirectionVector"
+          },
+          "target_orbit": {
+            "$ref": "#/components/schemas/TargetOrbit"
+          }
+        }
+      },
+      "ManeuverResources": {
+        "type": "object",
+        "properties": {
+          "fuel_remaining": {
+            "type": "number",
+            "format": "float",
+            "description": "Fuel remaining after maneuver (kg)",
+            "example": 24.5
+          },
+          "power_available": {
+            "type": "number",
+            "format": "float",
+            "description": "Power available during maneuver (W)",
+            "example": 1800.0
+          },
+          "thruster_status": {
+            "type": "string",
+            "description": "Status of thrusters",
+            "example": "NOMINAL"
+          }
+        }
+      },
+      "SatelliteBase": {
+        "type": "object",
+        "required": [
+          "name",
+          "norad_id",
+          "international_designator",
+          "orbit_type",
+          "launch_date",
+          "operational_status",
+          "owner"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the satellite",
+            "example": "AstroShield-1"
+          },
+          "norad_id": {
+            "type": "string",
+            "description": "NORAD Catalog Number",
+            "example": "43657"
+          },
+          "international_designator": {
+            "type": "string",
+            "description": "International designator (YYYY-NNNP)",
+            "example": "2018-099A"
+          },
+          "orbit_type": {
+            "$ref": "#/components/schemas/OrbitType"
+          },
+          "launch_date": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Launch date and time (ISO 8601)",
+            "example": "2023-05-15T00:00:00Z"
+          },
+          "operational_status": {
+            "$ref": "#/components/schemas/OperationalStatus"
+          },
+          "owner": {
+            "type": "string",
+            "description": "Organization that owns the satellite",
+            "example": "AstroShield Inc."
+          },
+          "mission": {
+            "type": "string",
+            "description": "Primary mission of the satellite",
+            "example": "Space Domain Awareness"
+          }
+        }
+      },
+      "SatelliteCreate": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/SatelliteBase"
+          },
+          {
+            "type": "object",
+            "required": ["orbital_parameters"],
+            "properties": {
+              "orbital_parameters": {
+                "$ref": "#/components/schemas/OrbitalParameters"
+              }
+            }
+          }
+        ]
+      },
+      "SatelliteUpdate": {
+        "allOf": [
+          {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Name of the satellite",
+                "example": "AstroShield-1 Updated"
+              },
+              "operational_status": {
+                "$ref": "#/components/schemas/OperationalStatus"
+              },
+              "orbital_parameters": {
+                "$ref": "#/components/schemas/OrbitalParameters"
+              }
+            }
+          }
+        ]
+      },
+      "Satellite": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/SatelliteBase"
+          },
+          {
+            "type": "object",
+            "required": ["id", "orbital_parameters", "created_at", "updated_at"],
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "Unique identifier for the satellite",
+                "example": "sat-001"
+              },
+              "orbital_parameters": {
+                "$ref": "#/components/schemas/OrbitalParameters"
+              },
+              "created_at": {
+                "type": "string",
+                "format": "date-time",
+                "description": "When the record was created",
+                "example": "2023-05-14T10:30:00Z"
+              },
+              "updated_at": {
+                "type": "string",
+                "format": "date-time",
+                "description": "When the record was last updated",
+                "example": "2023-05-14T10:30:00Z"
+              }
+            }
+          }
+        ]
+      },
+      "ManeuverCreate": {
+        "type": "object",
+        "required": ["satellite_id", "type", "scheduled_start_time", "parameters"],
+        "properties": {
+          "satellite_id": {
+            "type": "string",
+            "description": "ID of the satellite performing the maneuver",
+            "example": "sat-001"
+          },
+          "type": {
+            "$ref": "#/components/schemas/ManeuverType"
+          },
+          "scheduled_start_time": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Planned start time (ISO 8601)",
+            "example": "2023-06-15T20:00:00Z"
+          },
+          "parameters": {
+            "$ref": "#/components/schemas/ManeuverParameters"
+          }
+        }
+      },
+      "Maneuver": {
+        "type": "object",
+        "required": [
+          "id",
+          "satellite_id",
+          "type",
+          "status",
+          "scheduled_start_time",
+          "parameters",
+          "created_at",
+          "updated_at"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for the maneuver",
+            "example": "mnv-001"
+          },
+          "satellite_id": {
+            "type": "string",
+            "description": "ID of the satellite performing the maneuver",
+            "example": "sat-001"
+          },
+          "type": {
+            "$ref": "#/components/schemas/ManeuverType"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ManeuverStatus"
+          },
+          "scheduled_start_time": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Planned start time (ISO 8601)",
+            "example": "2023-06-15T20:00:00Z"
+          },
+          "actual_start_time": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Actual start time if executed",
+            "example": "2023-06-15T20:00:15Z"
+          },
+          "end_time": {
+            "type": "string",
+            "format": "date-time",
+            "description": "End time if completed",
+            "example": "2023-06-15T20:00:30Z"
+          },
+          "parameters": {
+            "$ref": "#/components/schemas/ManeuverParameters"
+          },
+          "resources": {
+            "$ref": "#/components/schemas/ManeuverResources"
+          },
+          "created_by": {
+            "type": "string",
+            "description": "User who created the maneuver",
+            "example": "operator@astroshield.com"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the record was created",
+            "example": "2023-06-10T15:30:00Z"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the record was last updated",
+            "example": "2023-06-10T15:30:00Z"
+          }
+        }
+      },
+      "PaginationMeta": {
+        "type": "object",
+        "required": ["page", "limit", "total", "pages"],
+        "properties": {
+          "page": {
+            "type": "integer",
+            "description": "Current page number",
+            "example": 1
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Items per page",
+            "example": 20
+          },
+          "total": {
+            "type": "integer",
+            "description": "Total number of items",
+            "example": 45
+          },
+          "pages": {
+            "type": "integer",
+            "description": "Total number of pages",
+            "example": 3
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "required": ["detail", "status_code"],
+        "properties": {
+          "detail": {
+            "type": "string",
+            "description": "Human-readable error message",
+            "example": "Satellite with ID 'sat-999' not found"
+          },
+          "status_code": {
+            "type": "integer",
+            "description": "HTTP status code",
+            "example": 404
+          },
+          "error_code": {
+            "type": "string",
+            "description": "Machine-readable error code",
+            "example": "resource_not_found"
+          },
+          "path": {
+            "type": "string",
+            "description": "Path that caused the error",
+            "example": "/api/v1/satellites/sat-999"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Time when the error occurred",
+            "example": "2023-06-18T14:25:30Z"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "JWT token obtained from the /token endpoint"
+      },
+      "apiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-API-Key",
+        "description": "API key provided by AstroShield"
+      }
+    }
+  }
+} 

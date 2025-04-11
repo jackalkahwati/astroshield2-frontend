@@ -6,67 +6,93 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 from pydantic import BaseModel
 from app.models.user import User, UserBase
-from cryptography.hazmat.primitives import serialization
-from cryptography.hazmat.primitives.asymmetric import rsa
-from cryptography.hazmat.backends import default_backend
-import json
 import os
+import logging
 
-# Security configuration
-SECRET_KEY = "your-secret-key"  # Change this in production
+logger = logging.getLogger(__name__)
+
+# Security configuration - in production, these should be in environment variables
+SECRET_KEY = os.environ.get("SECRET_KEY", "your-secret-key-for-development-only")
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.environ.get("ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token", auto_error=False)
 
 class Token(BaseModel):
     access_token: str
     token_type: str
+    expires_at: datetime
 
 class TokenData(BaseModel):
     email: Optional[str] = None
     is_superuser: bool = False
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
+    """Verify a password against a hash"""
     return pwd_context.verify(plain_password, hashed_password)
 
 def get_password_hash(password: str) -> str:
+    """Get password hash"""
     return pwd_context.hash(password)
 
-def create_access_token(data: dict) -> str:
+def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
+    """Create a new JWT access token"""
     to_encode = data.copy()
-    expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    
+    # Default expiration to 30 minutes if not specified
+    if expires_delta:
+        expire = datetime.utcnow() + expires_delta
+    else:
+        expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+        
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
-def get_current_user(token: str = Depends(oauth2_scheme)) -> User:
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
+async def get_current_user(token: Optional[str] = Depends(oauth2_scheme)) -> Optional[User]:
+    """
+    Get the current user from the token.
+    Returns None if no token or invalid token provided.
+    """
+    if not token:
+        return None
+        
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         email: str = payload.get("sub")
         if email is None:
-            raise credentials_exception
-    except JWTError:
-        raise credentials_exception
+            return None
+            
+        token_data = TokenData(email=email, is_superuser=payload.get("is_superuser", False))
+    except JWTError as e:
+        logger.warning(f"JWT token validation error: {str(e)}")
+        return None
         
     # Mock user for development - replace with database lookup in production
     user = User(
         id=1,
-        email=email,
+        email=token_data.email,
         is_active=True,
-        is_superuser=True,
-        full_name="Test User"
+        is_superuser=token_data.is_superuser,
+        full_name="Test User",
+        created_at=datetime.utcnow() - timedelta(days=30)
     )
     return user
 
 def check_roles(required_roles: Optional[List[str]] = None):
-    def role_checker(user: User = Depends(get_current_user)) -> bool:
+    """
+    Dependency to check if the current user has the required roles.
+    If no roles are required, just checks that the user is authenticated.
+    """
+    async def role_checker(user: Optional[User] = Depends(get_current_user)) -> User:
+        if user is None:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Not authenticated",
+                headers={"WWW-Authenticate": "Bearer"}
+            )
+            
         if not user.is_active:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
@@ -74,7 +100,7 @@ def check_roles(required_roles: Optional[List[str]] = None):
             )
             
         if required_roles is None:
-            return True
+            return user
             
         if "admin" in required_roles and not user.is_superuser:
             raise HTTPException(
@@ -82,85 +108,41 @@ def check_roles(required_roles: Optional[List[str]] = None):
                 detail="Admin privileges required"
             )
             
-        return True
+        # In a real implementation, you would check for specific roles here
+        # For now, we just check for "active" as a sample role
+        if "active" in required_roles and not user.is_active:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Active role required"
+            )
+            
+        return user
     return role_checker
 
-# Key management classes
-class KeyVersion(BaseModel):
-    key_id: str
-    key: str
-    created_at: datetime
-    expires_at: datetime
-    is_active: bool
-
-class KeyRotation:
-    def __init__(self):
-        self.keys: List[KeyVersion] = []
-        self.rotation_interval = timedelta(days=30)
-        self._initialize_keys()
-
-    def _initialize_keys(self):
-        current_time = datetime.utcnow()
-        self.add_key(current_time)
-
-    def add_key(self, current_time: datetime):
-        key_id = f"key_{len(self.keys) + 1}"
-        private_key = rsa.generate_private_key(
-            public_exponent=65537,
-            key_size=2048,
-            backend=default_backend()
+# Auth handler functions
+async def authenticate_user(username: str, password: str) -> Optional[User]:
+    """
+    Authenticate a user by username/email and password.
+    In a real implementation, you would look up the user in the database.
+    """
+    # Mock user for development - replace with database lookup in production
+    if username == "test@example.com" and password == "password":
+        return User(
+            id=1,
+            email=username,
+            is_active=True,
+            is_superuser=False,
+            full_name="Test User",
+            created_at=datetime.utcnow() - timedelta(days=30)
         )
-        key = private_key.private_bytes(
-            encoding=serialization.Encoding.PEM,
-            format=serialization.PrivateFormat.PKCS8,
-            encryption_algorithm=serialization.NoEncryption()
-        ).decode('utf-8')
+    elif username == "admin@example.com" and password == "admin":
+        return User(
+            id=2,
+            email=username,
+            is_active=True,
+            is_superuser=True,
+            full_name="Admin User",
+            created_at=datetime.utcnow() - timedelta(days=30)
+        )
         
-        new_key = KeyVersion(
-            key_id=key_id,
-            key=key,
-            created_at=current_time,
-            expires_at=current_time + self.rotation_interval,
-            is_active=True
-        )
-        self.keys.append(new_key)
-        return new_key
-
-    def get_active_key(self) -> KeyVersion:
-        current_time = datetime.utcnow()
-        active_key = next(
-            (key for key in self.keys if key.is_active and key.expires_at > current_time),
-            None
-        )
-        if not active_key:
-            active_key = self.add_key(current_time)
-        return active_key
-
-    def rotate_keys(self):
-        current_time = datetime.utcnow()
-        for key in self.keys:
-            if key.expires_at <= current_time:
-                key.is_active = False
-        self.add_key(current_time)
-
-key_rotation = KeyRotation()
-
-class KeyStore:
-    def __init__(self):
-        self.current_version = 1
-        self._keys = {}
-        self.rotate_keys()
-
-    def rotate_keys(self):
-        self.current_version += 1
-        self._keys[self.current_version] = jwt.encode(
-            {"version": self.current_version, "created": datetime.utcnow().isoformat()},
-            SECRET_KEY,
-            algorithm=ALGORITHM
-        )
-
-    def get_current_key(self):
-        return self._keys.get(self.current_version)
-
-# Global key store instance
-key_store = KeyStore() 
+    return None
