@@ -1,0 +1,626 @@
+openapi: 3.0.3
+info:
+  title: AstroShield API
+  description: API for AstroShield satellite threat assessment platform
+  version: 1.0.0
+  contact:
+    name: AstroShield Support
+    email: support@asttroshield.com
+    url: https://asttroshield.com/support
+  license:
+    name: Proprietary
+    url: https://asttroshield.com/license
+
+servers:
+  - url: https://asttroshield.com/api/v1
+    description: Production server
+  - url: http://localhost:3001/api/v1
+    description: Development server
+
+tags:
+  - name: Health
+    description: Health check endpoints
+  - name: Satellites
+    description: Satellite tracking and information
+  - name: CCDM
+    description: Conjunction and Collision Detection and Mitigation
+  - name: Analytics
+    description: Data analytics and advanced querying
+
+paths:
+  /health:
+    get:
+      tags:
+        - Health
+      summary: Check service health
+      description: Returns the health status of the API and its dependencies
+      operationId: healthCheck
+      responses:
+        '200':
+          description: Service health information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /satellites:
+    get:
+      tags:
+        - Satellites
+      summary: List all satellites
+      description: Returns a list of all satellites in the system
+      operationId: listSatellites
+      parameters:
+        - name: status
+          in: query
+          description: Filter satellites by status
+          required: false
+          schema:
+            type: string
+            enum: [active, inactive, all]
+            default: active
+        - name: limit
+          in: query
+          description: Maximum number of items to return
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: offset
+          in: query
+          description: Number of items to skip for pagination
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+      responses:
+        '200':
+          description: List of satellites
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SatelliteList'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /satellites/{id}:
+    get:
+      tags:
+        - Satellites
+      summary: Get satellite by ID
+      description: Returns a single satellite by its ID
+      operationId: getSatellite
+      parameters:
+        - name: id
+          in: path
+          description: Satellite ID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Satellite details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Satellite'
+        '404':
+          description: Satellite not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /ccdm/historical/{noradId}:
+    get:
+      tags:
+        - CCDM
+      summary: Get historical analysis for a satellite
+      description: Returns historical threat analysis data for a specified satellite
+      operationId: getHistoricalAnalysis
+      parameters:
+        - name: noradId
+          in: path
+          description: NORAD ID of the satellite
+          required: true
+          schema:
+            type: integer
+        - name: startDate
+          in: query
+          description: Start date for the analysis (ISO format)
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: endDate
+          in: query
+          description: End date for the analysis (ISO format)
+          required: false
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: Historical analysis data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HistoricalAnalysis'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Satellite not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /ccdm/historical/{noradId}/recent:
+    get:
+      tags:
+        - CCDM
+      summary: Get recent analysis for a satellite
+      description: Returns last week's historical threat analysis data for a specified satellite
+      operationId: getLastWeekAnalysis
+      parameters:
+        - name: noradId
+          in: path
+          description: NORAD ID of the satellite
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Recent analysis data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HistoricalAnalysis'
+        '404':
+          description: Satellite not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /ccdm/threat-assessment/{noradId}:
+    get:
+      tags:
+        - CCDM
+      summary: Get current threat assessment
+      description: Returns the current threat assessment for a specified satellite
+      operationId: getThreatAssessment
+      parameters:
+        - name: noradId
+          in: path
+          description: NORAD ID of the satellite
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Threat assessment data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ThreatAssessment'
+        '404':
+          description: Satellite not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /ccdm/shape-detection/{noradId}:
+    get:
+      tags:
+        - CCDM
+      summary: Get shape change detection
+      description: Returns shape change detection data for a specified satellite
+      operationId: getShapeDetection
+      parameters:
+        - name: noradId
+          in: path
+          description: NORAD ID of the satellite
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Shape detection data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShapeDetection'
+        '404':
+          description: Satellite not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    HealthResponse:
+      type: object
+      required:
+        - status
+        - timestamp
+      properties:
+        status:
+          type: string
+          enum: [healthy, degraded, unhealthy]
+          description: Overall health status
+        timestamp:
+          type: number
+          format: float
+          description: Current timestamp
+        uptime:
+          type: number
+          format: float
+          description: Server uptime in seconds
+        version:
+          type: string
+          description: Application version
+        environment:
+          type: string
+          description: Current environment
+        system:
+          type: object
+          properties:
+            cpu_usage:
+              type: number
+              format: float
+              description: CPU usage percentage
+            memory_usage:
+              type: number
+              format: float
+              description: Memory usage percentage
+            disk_usage:
+              type: number
+              format: float
+              description: Disk usage percentage
+        database:
+          type: object
+          properties:
+            status:
+              type: string
+              enum: [connected, error]
+              description: Database connection status
+            message:
+              type: string
+              description: Error message if status is error
+        response_time_ms:
+          type: number
+          format: float
+          description: Response time in milliseconds
+
+    SatelliteList:
+      type: object
+      required:
+        - items
+        - total
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Satellite'
+        total:
+          type: integer
+          description: Total number of satellites matching the query
+        offset:
+          type: integer
+          description: Current offset value
+        limit:
+          type: integer
+          description: Current limit value
+
+    Satellite:
+      type: object
+      required:
+        - id
+        - name
+        - status
+      properties:
+        id:
+          type: string
+          description: Unique identifier
+        name:
+          type: string
+          description: Satellite name
+        norad_id:
+          type: integer
+          description: NORAD ID
+        status:
+          type: string
+          enum: [active, inactive]
+          description: Current status
+        last_update:
+          type: string
+          format: date-time
+          description: Last update timestamp
+        created_at:
+          type: string
+          format: date-time
+          description: Creation timestamp
+        description:
+          type: string
+          description: Optional description
+
+    HistoricalAnalysis:
+      type: object
+      required:
+        - norad_id
+        - analysis_points
+      properties:
+        norad_id:
+          type: integer
+          description: NORAD ID of the satellite
+        start_date:
+          type: string
+          format: date-time
+          description: Start date of analysis period
+        end_date:
+          type: string
+          format: date-time
+          description: End date of analysis period
+        trend_summary:
+          type: string
+          description: Summary of trends in the analysis period
+        analysis_points:
+          type: array
+          items:
+            $ref: '#/components/schemas/AnalysisPoint'
+        metadata:
+          $ref: '#/components/schemas/AnalysisMetadata'
+
+    AnalysisPoint:
+      type: object
+      required:
+        - timestamp
+        - threat_level
+        - confidence
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+          description: Timestamp of the analysis point
+        threat_level:
+          type: string
+          enum: [NONE, LOW, MEDIUM, HIGH, CRITICAL]
+          description: Assessed threat level
+        confidence:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 1
+          description: Confidence score (0-1)
+        details:
+          type: object
+          properties:
+            anomaly_score:
+              type: number
+              format: float
+              description: Detected anomaly score
+            velocity_change:
+              type: boolean
+              description: Whether velocity changes were detected
+
+    AnalysisMetadata:
+      type: object
+      properties:
+        data_source:
+          type: string
+          description: Source of the analysis data
+        processing_version:
+          type: string
+          description: Version of the processing system
+        confidence_threshold:
+          type: number
+          format: float
+          description: Threshold used for confidence scores
+
+    ThreatAssessment:
+      type: object
+      required:
+        - norad_id
+        - timestamp
+        - threat_level
+      properties:
+        norad_id:
+          type: integer
+          description: NORAD ID of the satellite
+        timestamp:
+          type: string
+          format: date-time
+          description: Timestamp of the assessment
+        threat_level:
+          type: string
+          enum: [NONE, LOW, MEDIUM, HIGH, CRITICAL]
+          description: Current threat level
+        confidence:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 1
+          description: Confidence score (0-1)
+        details:
+          type: object
+          properties:
+            anomaly_indicators:
+              type: array
+              items:
+                $ref: '#/components/schemas/AnomalyIndicator'
+            related_events:
+              type: array
+              items:
+                $ref: '#/components/schemas/RelatedEvent'
+
+    AnomalyIndicator:
+      type: object
+      required:
+        - type
+        - score
+      properties:
+        type:
+          type: string
+          description: Type of anomaly
+        score:
+          type: number
+          format: float
+          description: Anomaly score
+        details:
+          type: string
+          description: Detailed description
+
+    RelatedEvent:
+      type: object
+      required:
+        - id
+        - type
+      properties:
+        id:
+          type: string
+          description: Event ID
+        type:
+          type: string
+          description: Event type
+        timestamp:
+          type: string
+          format: date-time
+          description: Event timestamp
+        description:
+          type: string
+          description: Event description
+
+    ShapeDetection:
+      type: object
+      required:
+        - norad_id
+        - timestamp
+        - shape_change_detected
+      properties:
+        norad_id:
+          type: integer
+          description: NORAD ID of the satellite
+        timestamp:
+          type: string
+          format: date-time
+          description: Timestamp of the detection
+        shape_change_detected:
+          type: boolean
+          description: Whether a shape change was detected
+        confidence:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 1
+          description: Confidence score (0-1)
+        previous_dimensions:
+          $ref: '#/components/schemas/SatelliteDimensions'
+        current_dimensions:
+          $ref: '#/components/schemas/SatelliteDimensions'
+        change_type:
+          type: string
+          enum: [NONE, EXTENSION, CONTRACTION, SEPARATION, ATTACHMENT, UNKNOWN]
+          description: Type of shape change detected
+
+    SatelliteDimensions:
+      type: object
+      properties:
+        length:
+          type: number
+          format: float
+          description: Length in meters
+        width:
+          type: number
+          format: float
+          description: Width in meters
+        height:
+          type: number
+          format: float
+          description: Height in meters
+        radar_cross_section:
+          type: number
+          format: float
+          description: Radar cross section in square meters
+        observed_at:
+          type: string
+          format: date-time
+          description: When these dimensions were observed
+
+    Error:
+      type: object
+      required:
+        - status
+        - message
+      properties:
+        status:
+          type: integer
+          description: HTTP status code
+        message:
+          type: string
+          description: Error message
+        details:
+          type: object
+          description: Additional error details
+        path:
+          type: string
+          description: Request path that caused the error
+        timestamp:
+          type: string
+          format: date-time
+          description: Error timestamp 

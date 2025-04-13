@@ -1,4 +1,4 @@
-version: '3'
+version: '3.8'
 
 services:
   # Backend API
@@ -9,53 +9,93 @@ services:
     ports:
       - "3001:3001"
     volumes:
-      - ./minimal_backend.py:/app/main.py
+      - ./backend/app:/app/app
     restart: always
     networks:
       - astroshield-network
-    environment:
-      - PORT=3001
-      - DATABASE_URL=postgresql://postgres:password@postgres:5432/astroshield
     depends_on:
       - postgres
-    command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "3001"]
+      - redis
+    environment:
+      - PORT=3001
+      - DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD:-password}@postgres:5432/astroshield
+      - SECRET_KEY=${SECRET_KEY:-astrosecret2024notforrealproduction}
+      - ACCESS_TOKEN_EXPIRE_MINUTES=30
+      - UDL_BASE_URL=${UDL_BASE_URL:-https://mock-udl-service.local/api/v1}
+      - UDL_USERNAME=${UDL_USERNAME:-mockuser}
+      - UDL_PASSWORD=${UDL_PASSWORD:-mockpass}
+      - ENVIRONMENT=${ENVIRONMENT:-production}
+      - CORS_ORIGINS=${CORS_ORIGINS:-https://asttroshield.com}
+      - DEFAULT_ADMIN_USER_PASSWORD=${ADMIN_PASSWORD:-admin123}
+      - DEFAULT_TEST_USER_PASSWORD=${TEST_PASSWORD:-user123}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "3001", "--workers", "4", "--proxy-headers"]
 
   # Frontend
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      args:
+        - NEXT_PUBLIC_API_URL=${API_URL:-https://asttroshield.com/api/v1}
+        - NODE_ENV=production
     ports:
       - "3000:3000"
     restart: always
     networks:
       - astroshield-network
     environment:
-      - NEXT_PUBLIC_API_URL=http://backend:3001/api/v1
+      - NEXT_PUBLIC_API_URL=${API_URL:-https://asttroshield.com/api/v1}
       - NODE_ENV=production
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
     depends_on:
       - backend
 
   # PostgreSQL Database
   postgres:
-    image: postgres:14
+    image: postgres:14-alpine
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     restart: always
+    networks:
+      - astroshield-network
     environment:
       - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=password
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-password}
       - POSTGRES_DB=astroshield
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   # Redis Cache
   redis:
-    image: redis:7
+    image: redis:7-alpine
     ports:
       - "6379:6379"
     volumes:
       - redis_data:/data
+    networks:
+      - astroshield-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    command: ["redis-server", "--appendonly", "yes"]
 
   # Kafka Messaging
   zookeeper:
@@ -119,8 +159,9 @@ services:
     depends_on:
       - prometheus
 
+  # Nginx
   nginx:
-    image: nginx:latest
+    image: nginx:stable-alpine
     ports:
       - "80:80"
       - "443:443"
@@ -133,10 +174,16 @@ services:
     restart: always
     networks:
       - astroshield-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "https://localhost/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
 
 volumes:
   postgres_data:
   redis_data:
+  backend_node_modules:
   prometheus_data:
   grafana_data:
 

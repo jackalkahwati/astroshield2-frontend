@@ -1,0 +1,122 @@
+[
+  {
+    "primary": {
+      "satNo": "12340"
+    },
+    "secondary": {
+      "satNo": "56780"
+    },
+    "tca": "2025-03-20T10:00:00Z",
+    "pc": 0.0001,
+    "missDistance": 500,
+    "screeningEntity": "18 SPCS"
+  },
+  {
+    "primary": {
+      "satNo": "12341"
+    },
+    "secondary": {
+      "satNo": "56781"
+    },
+    "tca": "2025-03-21T10:00:00Z",
+    "pc": 0.0002,
+    "missDistance": 490,
+    "screeningEntity": "18 SPCS"
+  },
+  {
+    "primary": {
+      "satNo": "12342"
+    },
+    "secondary": {
+      "satNo": "56782"
+    },
+    "tca": "2025-03-22T10:00:00Z",
+    "pc": 0.00030000000000000003,
+    "missDistance": 480,
+    "screeningEntity": "18 SPCS"
+  },
+  {
+    "primary": {
+      "satNo": "12343"
+    },
+    "secondary": {
+      "satNo": "56783"
+    },
+    "tca": "2025-03-23T10:00:00Z",
+    "pc": 0.0004,
+    "missDistance": 470,
+    "screeningEntity": "18 SPCS"
+  },
+  {
+    "primary": {
+      "satNo": "12344"
+    },
+    "secondary": {
+      "satNo": "56784"
+    },
+    "tca": "2025-03-24T10:00:00Z",
+    "pc": 0.0005,
+    "missDistance": 460,
+    "screeningEntity": "18 SPCS"
+  },
+  {
+    "primary": {
+      "satNo": "12345"
+    },
+    "secondary": {
+      "satNo": "56785"
+    },
+    "tca": "2025-03-25T10:00:00Z",
+    "pc": 0.0006000000000000001,
+    "missDistance": 450,
+    "screeningEntity": "18 SPCS"
+  },
+  {
+    "primary": {
+      "satNo": "12346"
+    },
+    "secondary": {
+      "satNo": "56786"
+    },
+    "tca": "2025-03-26T10:00:00Z",
+    "pc": 0.0007,
+    "missDistance": 440,
+    "screeningEntity": "18 SPCS"
+  },
+  {
+    "primary": {
+      "satNo": "12347"
+    },
+    "secondary": {
+      "satNo": "56787"
+    },
+    "tca": "2025-03-27T10:00:00Z",
+    "pc": 0.0008,
+    "missDistance": 430,
+    "screeningEntity": "18 SPCS"
+  },
+  {
+    "primary": {
+      "satNo": "12348"
+    },
+    "secondary": {
+      "satNo": "56788"
+    },
+    "tca": "2025-03-28T10:00:00Z",
+    "pc": 0.0009000000000000001,
+    "missDistance": 420,
+    "screeningEntity": "18 SPCS"
+  },
+  {
+    "primary": {
+      "satNo": "12349"
+    },
+    "secondary": {
+      "satNo": "56789"
+    },
+    "tca": "2025-03-29T10:00:00Z",
+    "pc": 0.001,
+    "missDistance": 410,
+    "screeningEntity": "18 SPCS"
+  }
+]

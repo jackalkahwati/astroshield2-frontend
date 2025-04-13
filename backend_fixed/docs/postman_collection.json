@@ -1,0 +1,660 @@
+{
+  "info": {
+    "_postman_id": "b78e4efa-3d82-4ef7-8b25-57a58e63a724",
+    "name": "AstroShield API",
+    "description": "# AstroShield API Collection\n\nThis Postman collection provides a complete set of requests for interacting with the AstroShield API. The API allows you to manage satellites, maneuvers, and access various analytics related to space domain awareness.\n\n## Authentication\n\nMost endpoints require authentication. Use the token endpoint to get a JWT token, then add it to subsequent requests.\n\n## Organization\n\nRequests are organized by resource type (satellites, maneuvers, etc.)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Get Access Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"your_username\",\n  \"password\": \"your_password\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/token",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "token"
+              ]
+            },
+            "description": "Get an access token for authenticating with protected endpoints."
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"admin123\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/token",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "token"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"access_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBleGFtcGxlLmNvbSIsImlzX3N1cGVydXNlciI6dHJ1ZSwiZXhwIjoxNjc5NDg2MDAwfQ.4x5-E3eI6HrGV-ZKAjUfSQNLJ-GXGWnf8f0PmqQzHtk\",\n  \"token_type\": \"bearer\",\n  \"expires_at\": \"2023-03-22T12:00:00Z\"\n}",
+              "cookie": []
+            },
+            {
+              "name": "Unauthorized",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"username\": \"invalid\",\n  \"password\": \"wrong\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/token",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "token"
+                  ]
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"detail\": \"Incorrect username or password\"\n}",
+              "cookie": []
+            }
+          ]
+        },
+        {
+          "name": "Get Current User",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "me"
+              ]
+            },
+            "description": "Get information about the currently authenticated user."
+          },
+          "response": []
+        }
+      ],
+      "description": "Authentication-related endpoints"
+    },
+    {
+      "name": "Satellites",
+      "item": [
+        {
+          "name": "List Satellites",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/satellites",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "satellites"
+              ]
+            },
+            "description": "Get a list of all satellites the user has access to."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Satellite",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/satellites/sat-001",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "satellites",
+                "sat-001"
+              ]
+            },
+            "description": "Get detailed information about a specific satellite."
+          },
+          "response": []
+        },
+        {
+          "name": "Create Satellite",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"AstroShield-1\",\n  \"norad_id\": \"43657\",\n  \"international_designator\": \"2018-099A\",\n  \"orbit_type\": \"LEO\",\n  \"launch_date\": \"2023-05-15T00:00:00Z\",\n  \"operational_status\": \"active\",\n  \"owner\": \"AstroShield Inc.\",\n  \"mission\": \"Space Domain Awareness\",\n  \"orbital_parameters\": {\n    \"semi_major_axis\": 7000.0,\n    \"eccentricity\": 0.0001,\n    \"inclination\": 51.6,\n    \"raan\": 235.7,\n    \"argument_of_perigee\": 90.0,\n    \"mean_anomaly\": 0.0,\n    \"epoch\": \"2023-05-15T12:00:00Z\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/satellites",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "satellites"
+              ]
+            },
+            "description": "Create a new satellite record in the system."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Satellite",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"AstroShield-1 Updated\",\n  \"operational_status\": \"inactive\",\n  \"orbital_parameters\": {\n    \"semi_major_axis\": 7200.0,\n    \"eccentricity\": 0.0002,\n    \"inclination\": 52.0,\n    \"raan\": 235.7,\n    \"argument_of_perigee\": 90.0,\n    \"mean_anomaly\": 0.0,\n    \"epoch\": \"2023-06-15T12:00:00Z\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/satellites/sat-001",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "satellites",
+                "sat-001"
+              ]
+            },
+            "description": "Update an existing satellite's information."
+          },
+          "response": []
+        }
+      ],
+      "description": "Endpoints for managing satellites"
+    },
+    {
+      "name": "Maneuvers",
+      "item": [
+        {
+          "name": "List Maneuvers",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/maneuvers?satellite_id=sat-001&status=scheduled",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "maneuvers"
+              ],
+              "query": [
+                {
+                  "key": "satellite_id",
+                  "value": "sat-001",
+                  "description": "Filter by satellite ID"
+                },
+                {
+                  "key": "status",
+                  "value": "scheduled",
+                  "description": "Filter by maneuver status"
+                }
+              ]
+            },
+            "description": "Get a list of maneuvers, optionally filtered by satellite ID and status."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Maneuver",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/maneuvers/mnv-001",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "maneuvers",
+                "mnv-001"
+              ]
+            },
+            "description": "Get detailed information about a specific maneuver."
+          },
+          "response": []
+        },
+        {
+          "name": "Create Maneuver",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"satellite_id\": \"sat-001\",\n  \"type\": \"collision_avoidance\",\n  \"scheduled_start_time\": \"2023-06-15T20:00:00Z\",\n  \"parameters\": {\n    \"delta_v\": 0.02,\n    \"burn_duration\": 15.0,\n    \"direction\": {\n      \"x\": 0.1,\n      \"y\": 0.0,\n      \"z\": -0.1\n    },\n    \"target_orbit\": {\n      \"altitude\": 500.2,\n      \"inclination\": 45.0,\n      \"eccentricity\": 0.001\n    }\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/maneuvers",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "maneuvers"
+              ]
+            },
+            "description": "Create a new maneuver for a satellite."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Maneuver",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"scheduled_start_time\": \"2023-06-16T20:00:00Z\",\n  \"parameters\": {\n    \"delta_v\": 0.025,\n    \"burn_duration\": 16.0\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/maneuvers/mnv-001",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "maneuvers",
+                "mnv-001"
+              ]
+            },
+            "description": "Update an existing maneuver."
+          },
+          "response": []
+        },
+        {
+          "name": "Cancel Maneuver",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/maneuvers/mnv-001/cancel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "maneuvers",
+                "mnv-001",
+                "cancel"
+              ]
+            },
+            "description": "Cancel a scheduled maneuver."
+          },
+          "response": []
+        },
+        {
+          "name": "Simulate Maneuver",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"satellite_id\": \"sat-001\",\n  \"type\": \"collision_avoidance\",\n  \"scheduled_start_time\": \"2023-06-15T20:00:00Z\",\n  \"parameters\": {\n    \"delta_v\": 0.02,\n    \"burn_duration\": 15.0,\n    \"direction\": {\n      \"x\": 0.1,\n      \"y\": 0.0,\n      \"z\": -0.1\n    }\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/simulate",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "simulate"
+              ]
+            },
+            "description": "Simulate a maneuver to see expected results without actually performing it."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Satellite Resources",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/satellites/sat-001/resources",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "satellites",
+                "sat-001",
+                "resources"
+              ]
+            },
+            "description": "Get current maneuver resources for a satellite."
+          },
+          "response": []
+        }
+      ],
+      "description": "Endpoints for planning and executing satellite maneuvers"
+    },
+    {
+      "name": "Analytics",
+      "item": [
+        {
+          "name": "Get Analytics Dashboard",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/analytics/dashboard",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "analytics",
+                "dashboard"
+              ]
+            },
+            "description": "Get overview analytics for all satellites."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Satellite Analytics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/analytics/satellites/sat-001",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "analytics",
+                "satellites",
+                "sat-001"
+              ]
+            },
+            "description": "Get detailed analytics for a specific satellite."
+          },
+          "response": []
+        }
+      ],
+      "description": "Endpoints for analytics and reporting"
+    },
+    {
+      "name": "System",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "health"
+              ]
+            },
+            "description": "Check if the API is running correctly."
+          },
+          "response": []
+        },
+        {
+          "name": "System Info",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/system-info",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "system-info"
+              ]
+            },
+            "description": "Get system information including version and environment."
+          },
+          "response": []
+        }
+      ],
+      "description": "System-related endpoints"
+    },
+    {
+      "name": "Root",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            ""
+          ]
+        },
+        "description": "Root endpoint providing basic API information."
+      },
+      "response": []
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{accessToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3001",
+      "type": "string",
+      "description": "Base URL for the API"
+    },
+    {
+      "key": "accessToken",
+      "value": "your_token_here",
+      "type": "string",
+      "description": "Access token for authentication"
+    }
+  ]
+} 

@@ -1,0 +1,52 @@
+[
+  {
+    "id": "mock-elset-0",
+    "timestamp": "2025-03-20T10:00:00Z",
+    "data": "Mock elset data 0"
+  },
+  {
+    "id": "mock-elset-1",
+    "timestamp": "2025-03-21T10:00:00Z",
+    "data": "Mock elset data 1"
+  },
+  {
+    "id": "mock-elset-2",
+    "timestamp": "2025-03-22T10:00:00Z",
+    "data": "Mock elset data 2"
+  },
+  {
+    "id": "mock-elset-3",
+    "timestamp": "2025-03-23T10:00:00Z",
+    "data": "Mock elset data 3"
+  },
+  {
+    "id": "mock-elset-4",
+    "timestamp": "2025-03-24T10:00:00Z",
+    "data": "Mock elset data 4"
+  },
+  {
+    "id": "mock-elset-5",
+    "timestamp": "2025-03-25T10:00:00Z",
+    "data": "Mock elset data 5"
+  },
+  {
+    "id": "mock-elset-6",
+    "timestamp": "2025-03-26T10:00:00Z",
+    "data": "Mock elset data 6"
+  },
+  {
+    "id": "mock-elset-7",
+    "timestamp": "2025-03-27T10:00:00Z",
+    "data": "Mock elset data 7"
+  },
+  {
+    "id": "mock-elset-8",
+    "timestamp": "2025-03-28T10:00:00Z",
+    "data": "Mock elset data 8"
+  },
+  {
+    "id": "mock-elset-9",
+    "timestamp": "2025-03-29T10:00:00Z",
+    "data": "Mock elset data 9"
+  }
+]

@@ -9,7 +9,13 @@
     "lint": "next lint",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
+    "test:coverage": "jest --coverage",
+    "test:skip-canvas": "cross-env SKIP_CANVAS_TESTS=true jest",
+    "test:nocanvas": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --no-cache --testPathIgnorePatterns=canvas",
+    "test:safe": "node safeTest.js",
+    "test:all": "node run_all_tests.js",
+    "test:isolated-canvas": "node isolated_canvas_test.js",
+    "test:canvas": "node run_canvas_tests.js"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -55,7 +61,7 @@
     "lucide-react": "^0.454.0",
     "mapbox-gl": "^3.10.0",
     "next": "14.2.16",
-    "next-themes": "^0.4.4",
+    "next-themes": "^0.4.6",
     "react": "^18",
     "react-chartjs-2": "^5.3.0",
     "react-day-picker": "8.10.1",
@@ -70,10 +76,17 @@
     "zod": "^3.24.1"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^6.1.4",
+    "@testing-library/react": "^14.0.0",
+    "@testing-library/user-event": "^14.5.1",
     "@types/node": "^22",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "autoprefixer": "^10.4.20",
+    "cross-env": "^7.0.3",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "next-router-mock": "^0.9.10",
     "postcss": "^8.5.1",
     "tailwindcss": "^3.4.17",
     "typescript": "5.8.2"

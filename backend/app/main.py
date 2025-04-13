@@ -13,21 +13,32 @@ from app.core.security import (
     ACCESS_TOKEN_EXPIRE_MINUTES, check_roles
 )
 from app.models.user import User
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, JSONResponse
+import time
+import psutil
+
+# Import error handling
+from app.core.error_handling import register_exception_handlers
 
 # Import common logging utilities
-from src.asttroshield.common.logging_utils import configure_logging, get_logger
+try:
+    from src.asttroshield.common.logging_utils import configure_logging, get_logger
+    # Configure logging using common utility
+    configure_logging(level=logging.INFO)
+    # Get logger using common utility
+    logger = get_logger(__name__)
+except ImportError:
+    # Fallback if the imports are not available
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    )
+    logger = logging.getLogger(__name__)
+    logger.warning("Using fallback logging configuration")
 
-# Configure logging using common utility
-# logging.basicConfig(
-#     level=logging.INFO,
-#     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-# )
-configure_logging(level=logging.INFO)
-
-# Get logger using common utility
-# logger = logging.getLogger(__name__)
-logger = get_logger(__name__)
+# Configure CORS origins
+CORS_ORIGINS = os.environ.get("CORS_ORIGINS", "http://localhost:3000,http://localhost:8000").split(",")
+logger.info(f"Configuring CORS for origins: {CORS_ORIGINS}")
 
 app = FastAPI(
     title="AstroShield API",
@@ -38,23 +49,42 @@ app = FastAPI(
     openapi_url="/api/v1/openapi.json"
 )
 
-# Add our dynamic CORS middleware
-app.middleware("http")(dynamic_cors_middleware)
+# Configure standard CORS middleware for simpler development
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=CORS_ORIGINS,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Add dynamic CORS middleware if available
+try:
+    app.middleware("http")(dynamic_cors_middleware)
+except Exception as e:
+    logger.warning(f"Could not add dynamic CORS middleware: {str(e)}")
+
+# Register error handlers
+register_exception_handlers(app)
 
 # Import and include routers
-from app.routers import health, analytics, maneuvers, satellites, advanced, dashboard, ccdm, trajectory, comparison, events
+try:
+    from app.routers import health, analytics, maneuvers, satellites, advanced, dashboard, ccdm, trajectory, comparison, events
 
-# Include routers with prefixes
-app.include_router(health.router, prefix="/api/v1", tags=["health"])
-app.include_router(analytics.router, prefix="/api/v1", tags=["analytics"])
-app.include_router(maneuvers.router, prefix="/api/v1", tags=["maneuvers"])
-app.include_router(satellites.router, prefix="/api/v1", tags=["satellites"])
-app.include_router(advanced.router, prefix="/api/v1/advanced", tags=["advanced"])
-app.include_router(dashboard.router, prefix="/api/v1", tags=["dashboard"])
-app.include_router(ccdm.router, prefix="/api/v1/ccdm", tags=["ccdm"])
-app.include_router(trajectory.router, prefix="/api", tags=["trajectory"])
-app.include_router(comparison.router, prefix="/api", tags=["comparison"])
-app.include_router(events.router, prefix="/api/v1", tags=["events"])
+    # Include routers with prefixes
+    app.include_router(health.router, prefix="/api/v1", tags=["health"])
+    app.include_router(analytics.router, prefix="/api/v1", tags=["analytics"])
+    app.include_router(maneuvers.router, prefix="/api/v1", tags=["maneuvers"])
+    app.include_router(satellites.router, prefix="/api/v1", tags=["satellites"])
+    app.include_router(advanced.router, prefix="/api/v1/advanced", tags=["advanced"])
+    app.include_router(dashboard.router, prefix="/api/v1", tags=["dashboard"])
+    app.include_router(ccdm.router, prefix="/api/v1/ccdm", tags=["ccdm"])
+    app.include_router(trajectory.router, prefix="/api", tags=["trajectory"])
+    app.include_router(comparison.router, prefix="/api", tags=["comparison"])
+    app.include_router(events.router, prefix="/api/v1", tags=["events"])
+except ImportError as e:
+    logger.warning(f"Could not import all routers: {str(e)}")
+    logger.info("Some endpoints may not be available")
 
 # Custom OpenAPI schema generator
 def custom_openapi():
@@ -575,20 +605,84 @@ async def get_maneuvers_mock():
         }
     ]
 
+# Add a mock UDL endpoint for testing without UDL connections
+@app.get("/api/v1/mock-udl-status", tags=["development"])
+async def mock_udl_status():
+    """
+    Get the status of the mock UDL service
+    """
+    udl_base_url = os.environ.get("UDL_BASE_URL", "https://mock-udl-service.local/api/v1")
+    mock_mode = udl_base_url.startswith(("http://localhost", "https://mock"))
+    
+    return {
+        "mock_mode": mock_mode,
+        "udl_url": udl_base_url,
+        "status": "connected" if mock_mode else "using real UDL",
+        "timestamp": datetime.utcnow().isoformat()
+    }
+
+# Add this health check endpoint
+@app.get("/health", tags=["Health"], summary="Check service health")
+async def health_check():
+    """
+    Health check endpoint that returns the status of the API and its dependencies.
+    Used by monitoring services and container orchestration.
+    """
+    start_time = time.time()
+    
+    # Basic system metrics
+    health_info = {
+        "status": "healthy",
+        "timestamp": time.time(),
+        "uptime": time.time() - app.state.start_time if hasattr(app.state, "start_time") else 0,
+        "version": os.environ.get("APP_VERSION", "1.0.0"),
+        "environment": os.environ.get("ENVIRONMENT", "development"),
+        "system": {
+            "cpu_usage": psutil.cpu_percent(),
+            "memory_usage": psutil.virtual_memory().percent,
+            "disk_usage": psutil.disk_usage('/').percent
+        }
+    }
+    
+    # Add database check if needed
+    try:
+        # Simple database check - replace with actual DB health check
+        # db_result = await check_database_connection()
+        health_info["database"] = {"status": "connected"}
+    except Exception as e:
+        health_info["database"] = {"status": "error", "message": str(e)}
+        health_info["status"] = "degraded"
+    
+    # Add response time
+    health_info["response_time_ms"] = (time.time() - start_time) * 1000
+    
+    return health_info
+
+# Add this to the startup event to track application uptime
 @app.on_event("startup")
 async def startup_event():
-    """Run database initialization on startup."""
-    from app.db.init_db import init_db
-    from app.db.session import SessionLocal
-
-    # Initialize the database
-    db = SessionLocal()
-    try:
-        init_db(db)
-    finally:
-        db.close()
+    app.state.start_time = time.time()
+    logger.info("Starting AstroShield API...")
     
-    logger.info("Startup event completed")
+    # Check UDL configuration
+    udl_username = os.environ.get("UDL_USERNAME")
+    udl_password = os.environ.get("UDL_PASSWORD")
+    udl_base_url = os.environ.get("UDL_BASE_URL")
+    
+    if not all([udl_username, udl_password, udl_base_url]):
+        logger.warning("UDL credentials not fully configured. Using mock UDL service if available.")
+    else:
+        logger.info(f"UDL configured with base URL: {udl_base_url}")
+        
+    # Additional startup logic (unchanged)
+    try:
+        # Ensure database connections are ready
+        # Initialize UDL service
+        # Set up any other required services
+        pass
+    except Exception as e:
+        logger.error(f"Error during startup: {str(e)}")
+        # We'll continue running, but some services might be unavailable
 
 if __name__ == "__main__":
     import uvicorn

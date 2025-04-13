@@ -1,0 +1,201 @@
+openapi: 3.0.0
+info:
+  title: AstroShield CCDM API
+  description: Advanced CCDM (Concealment, Camouflage, Deception, and Maneuvering) capabilities for space object analysis
+  version: 1.0.0
+servers:
+  - url: /api
+    description: Main API server
+
+components:
+  schemas:
+    SystemInteraction:
+      type: object
+      properties:
+        system_id:
+          type: string
+        interaction_type:
+          type: string
+          enum: [RF, OPTICAL]
+        interaction_time:
+          type: string
+          format: date-time
+        frequency:
+          type: number
+          nullable: true
+        wavelength:
+          type: number
+          nullable: true
+        power:
+          type: number
+        duration:
+          type: number
+        location:
+          type: object
+      required:
+        - system_id
+        - interaction_type
+        - interaction_time
+        - power
+        - duration
+        - location
+
+    EclipsePeriod:
+      type: object
+      properties:
+        start_time:
+          type: string
+          format: date-time
+        end_time:
+          type: string
+          format: date-time
+        eclipse_type:
+          type: string
+          enum: [UMBRA, PENUMBRA]
+        spacecraft_id:
+          type: string
+        orbit_position:
+          type: object
+      required:
+        - start_time
+        - end_time
+        - eclipse_type
+        - spacecraft_id
+        - orbit_position
+
+    TrackingData:
+      type: object
+      properties:
+        object_id:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        position:
+          type: object
+        velocity:
+          type: object
+        tracking_source:
+          type: string
+        confidence:
+          type: number
+          minimum: 0
+          maximum: 1
+        uncorrelated_tracks:
+          type: array
+          items:
+            type: object
+      required:
+        - object_id
+        - timestamp
+        - position
+        - velocity
+        - tracking_source
+        - confidence
+
+paths:
+  /advanced/stimulation/{spacecraft_id}:
+    post:
+      summary: Analyze system stimulation events
+      parameters:
+        - name: spacecraft_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SystemInteraction'
+      responses:
+        '200':
+          description: Successful analysis
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  spacecraft_id:
+                    type: string
+                  indicators:
+                    type: array
+                    items:
+                      type: object
+
+  /advanced/tracking/eclipse/{spacecraft_id}:
+    post:
+      summary: Analyze tracking during eclipse periods
+      parameters:
+        - name: spacecraft_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                eclipse_data:
+                  $ref: '#/components/schemas/EclipsePeriod'
+                tracking_data:
+                  $ref: '#/components/schemas/TrackingData'
+      responses:
+        '200':
+          description: Successful analysis
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  spacecraft_id:
+                    type: string
+                  indicators:
+                    type: array
+                    items:
+                      type: object
+
+  /advanced/batch/analyze:
+    post:
+      summary: Perform batch analysis of multiple indicators
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                stimulation:
+                  type: object
+                launch_tracking:
+                  type: object
+                eclipse_tracking:
+                  type: object
+                orbit_occupancy:
+                  type: object
+                un_registry:
+                  type: object
+      responses:
+        '200':
+          description: Successful batch analysis
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  results:
+                    type: object
+                    additionalProperties:
+                      type: array
+                      items:
+                        type: object

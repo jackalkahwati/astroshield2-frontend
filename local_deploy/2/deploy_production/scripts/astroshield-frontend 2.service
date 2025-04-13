@@ -1,0 +1,19 @@
+[Unit]
+Description=AstroShield Frontend Service
+After=network.target
+
+[Service]
+User=stardrive
+Group=stardrive
+WorkingDirectory=/home/stardrive/astroshield/frontend
+ExecStart=/usr/bin/npm run dev
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+Environment="NODE_ENV=production"
+Environment="PORT=3000"
+Environment="NEXT_PUBLIC_API_URL=http://astroshield.sdataplab.com/api/v1"
+
+[Install]
+WantedBy=multi-user.target

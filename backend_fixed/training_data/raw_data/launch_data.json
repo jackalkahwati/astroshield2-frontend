@@ -1,0 +1,27 @@
+[
+  {
+    "id": "mock-launch-0",
+    "timestamp": "2025-03-20T10:00:00Z",
+    "data": "Mock launch data 0"
+  },
+  {
+    "id": "mock-launch-1",
+    "timestamp": "2025-03-21T10:00:00Z",
+    "data": "Mock launch data 1"
+  },
+  {
+    "id": "mock-launch-2",
+    "timestamp": "2025-03-22T10:00:00Z",
+    "data": "Mock launch data 2"
+  },
+  {
+    "id": "mock-launch-3",
+    "timestamp": "2025-03-23T10:00:00Z",
+    "data": "Mock launch data 3"
+  },
+  {
+    "id": "mock-launch-4",
+    "timestamp": "2025-03-24T10:00:00Z",
+    "data": "Mock launch data 4"
+  }
+]

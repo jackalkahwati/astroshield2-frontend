@@ -1,0 +1,214 @@
+[
+  {
+    "text_input": "What type of aircraft is tail number AF17000?",
+    "output": "According to UDL data, tail number AF17000 is a F-15 EAGLE aircraft. It falls under the M category. It is operated by USAF."
+  },
+  {
+    "text_input": "What are the speed capabilities of the F-15 EAGLE with tail number AF17000?",
+    "output": "The F-15 EAGLE with tail number AF17000 has the following performance characteristics: Cruise speed: 800 km/h. Maximum speed: 1200 km/h."
+  },
+  {
+    "text_input": "What type of aircraft is tail number AF17001?",
+    "output": "According to UDL data, tail number AF17001 is a F-16 FALCON aircraft. It falls under the C category. It is operated by US NAVY."
+  },
+  {
+    "text_input": "What are the speed capabilities of the F-16 FALCON with tail number AF17001?",
+    "output": "The F-16 FALCON with tail number AF17001 has the following performance characteristics: Cruise speed: 820 km/h. Maximum speed: 1230 km/h."
+  },
+  {
+    "text_input": "What type of aircraft is tail number AF17002?",
+    "output": "According to UDL data, tail number AF17002 is a F-22 RAPTOR aircraft. It falls under the M category. It is operated by US ARMY."
+  },
+  {
+    "text_input": "What are the speed capabilities of the F-22 RAPTOR with tail number AF17002?",
+    "output": "The F-22 RAPTOR with tail number AF17002 has the following performance characteristics: Cruise speed: 840 km/h. Maximum speed: 1260 km/h."
+  },
+  {
+    "text_input": "What type of aircraft is tail number AF17003?",
+    "output": "According to UDL data, tail number AF17003 is a F-35 LIGHTNING II aircraft. It falls under the C category. It is operated by ANG."
+  },
+  {
+    "text_input": "What are the speed capabilities of the F-35 LIGHTNING II with tail number AF17003?",
+    "output": "The F-35 LIGHTNING II with tail number AF17003 has the following performance characteristics: Cruise speed: 860 km/h. Maximum speed: 1290 km/h."
+  },
+  {
+    "text_input": "What type of aircraft is tail number AF17004?",
+    "output": "According to UDL data, tail number AF17004 is a A-10 THUNDERBOLT II aircraft. It falls under the M category. It is operated by AFRC."
+  },
+  {
+    "text_input": "What are the speed capabilities of the A-10 THUNDERBOLT II with tail number AF17004?",
+    "output": "The A-10 THUNDERBOLT II with tail number AF17004 has the following performance characteristics: Cruise speed: 880 km/h. Maximum speed: 1320 km/h."
+  },
+  {
+    "text_input": "What type of aircraft is tail number AF17005?",
+    "output": "According to UDL data, tail number AF17005 is a B-1 LANCER aircraft. It falls under the C category. It is operated by USAF."
+  },
+  {
+    "text_input": "What are the speed capabilities of the B-1 LANCER with tail number AF17005?",
+    "output": "The B-1 LANCER with tail number AF17005 has the following performance characteristics: Cruise speed: 900 km/h. Maximum speed: 1350 km/h."
+  },
+  {
+    "text_input": "What type of aircraft is tail number AF17006?",
+    "output": "According to UDL data, tail number AF17006 is a B-2 SPIRIT aircraft. It falls under the M category. It is operated by US NAVY."
+  },
+  {
+    "text_input": "What are the speed capabilities of the B-2 SPIRIT with tail number AF17006?",
+    "output": "The B-2 SPIRIT with tail number AF17006 has the following performance characteristics: Cruise speed: 920 km/h. Maximum speed: 1380 km/h."
+  },
+  {
+    "text_input": "What type of aircraft is tail number AF17007?",
+    "output": "According to UDL data, tail number AF17007 is a B-52 STRATOFORTRESS aircraft. It falls under the C category. It is operated by US ARMY."
+  },
+  {
+    "text_input": "What are the speed capabilities of the B-52 STRATOFORTRESS with tail number AF17007?",
+    "output": "The B-52 STRATOFORTRESS with tail number AF17007 has the following performance characteristics: Cruise speed: 940 km/h. Maximum speed: 1410 km/h."
+  },
+  {
+    "text_input": "What type of aircraft is tail number AF17008?",
+    "output": "According to UDL data, tail number AF17008 is a C-17 GLOBEMASTER III aircraft. It falls under the M category. It is operated by ANG."
+  },
+  {
+    "text_input": "What are the speed capabilities of the C-17 GLOBEMASTER III with tail number AF17008?",
+    "output": "The C-17 GLOBEMASTER III with tail number AF17008 has the following performance characteristics: Cruise speed: 960 km/h. Maximum speed: 1440 km/h."
+  },
+  {
+    "text_input": "What type of aircraft is tail number AF17009?",
+    "output": "According to UDL data, tail number AF17009 is a C-130 HERCULES aircraft. It falls under the C category. It is operated by AFRC."
+  },
+  {
+    "text_input": "What are the speed capabilities of the C-130 HERCULES with tail number AF17009?",
+    "output": "The C-130 HERCULES with tail number AF17009 has the following performance characteristics: Cruise speed: 980 km/h. Maximum speed: 1470 km/h."
+  },
+  {
+    "text_input": "What's the status of the conjunction between satellites 12340 and 56780?",
+    "output": "UDL data shows a conjunction between satellites 12340 and 56780 with a time of closest approach (TCA) at 2025-03-20T10:00:00Z. The probability of collision is 0.0001, with a miss distance of 500 meters. This conjunction was reported by 18 SPCS."
+  },
+  {
+    "text_input": "What's the status of the conjunction between satellites 12341 and 56781?",
+    "output": "UDL data shows a conjunction between satellites 12341 and 56781 with a time of closest approach (TCA) at 2025-03-21T10:00:00Z. The probability of collision is 0.0002, with a miss distance of 490 meters. This conjunction was reported by 18 SPCS."
+  },
+  {
+    "text_input": "What's the status of the conjunction between satellites 12342 and 56782?",
+    "output": "UDL data shows a conjunction between satellites 12342 and 56782 with a time of closest approach (TCA) at 2025-03-22T10:00:00Z. The probability of collision is 0.00030000000000000003, with a miss distance of 480 meters. This conjunction was reported by 18 SPCS."
+  },
+  {
+    "text_input": "What's the status of the conjunction between satellites 12343 and 56783?",
+    "output": "UDL data shows a conjunction between satellites 12343 and 56783 with a time of closest approach (TCA) at 2025-03-23T10:00:00Z. The probability of collision is 0.0004, with a miss distance of 470 meters. This conjunction was reported by 18 SPCS."
+  },
+  {
+    "text_input": "What's the status of the conjunction between satellites 12344 and 56784?",
+    "output": "UDL data shows a conjunction between satellites 12344 and 56784 with a time of closest approach (TCA) at 2025-03-24T10:00:00Z. The probability of collision is 0.0005, with a miss distance of 460 meters. This conjunction was reported by 18 SPCS."
+  },
+  {
+    "text_input": "What's the status of the conjunction between satellites 12345 and 56785?",
+    "output": "UDL data shows a conjunction between satellites 12345 and 56785 with a time of closest approach (TCA) at 2025-03-25T10:00:00Z. The probability of collision is 0.0006000000000000001, with a miss distance of 450 meters. This conjunction was reported by 18 SPCS."
+  },
+  {
+    "text_input": "What's the status of the conjunction between satellites 12346 and 56786?",
+    "output": "UDL data shows a conjunction between satellites 12346 and 56786 with a time of closest approach (TCA) at 2025-03-26T10:00:00Z. The probability of collision is 0.0007, with a miss distance of 440 meters. This conjunction was reported by 18 SPCS."
+  },
+  {
+    "text_input": "What's the status of the conjunction between satellites 12347 and 56787?",
+    "output": "UDL data shows a conjunction between satellites 12347 and 56787 with a time of closest approach (TCA) at 2025-03-27T10:00:00Z. The probability of collision is 0.0008, with a miss distance of 430 meters. This conjunction was reported by 18 SPCS."
+  },
+  {
+    "text_input": "What's the status of the conjunction between satellites 12348 and 56788?",
+    "output": "UDL data shows a conjunction between satellites 12348 and 56788 with a time of closest approach (TCA) at 2025-03-28T10:00:00Z. The probability of collision is 0.0009000000000000001, with a miss distance of 420 meters. This conjunction was reported by 18 SPCS."
+  },
+  {
+    "text_input": "What's the status of the conjunction between satellites 12349 and 56789?",
+    "output": "UDL data shows a conjunction between satellites 12349 and 56789 with a time of closest approach (TCA) at 2025-03-29T10:00:00Z. The probability of collision is 0.001, with a miss distance of 410 meters. This conjunction was reported by 18 SPCS."
+  },
+  {
+    "text_input": "Our analysts detected a possible maneuver by satellite 12340. Can you provide details about this maneuver?",
+    "output": "UDL data confirms that satellite 12340 performed a stationkeeping maneuver on 2025-03-20T12:00:00Z. The maneuver had a delta-V of approximately 0.05 m/s. The assessed purpose of this maneuver was Maintain orbital position. This maneuver was detected with 85% confidence."
+  },
+  {
+    "text_input": "Our analysts detected a possible maneuver by satellite 12341. Can you provide details about this maneuver?",
+    "output": "UDL data confirms that satellite 12341 performed a collision_avoidance maneuver on 2025-03-21T12:00:00Z. The maneuver had a delta-V of approximately 0.060000000000000005 m/s. The assessed purpose of this maneuver was Avoid conjunction. This maneuver was detected with 86% confidence."
+  },
+  {
+    "text_input": "Our analysts detected a possible maneuver by satellite 12342. Can you provide details about this maneuver?",
+    "output": "UDL data confirms that satellite 12342 performed a stationkeeping maneuver on 2025-03-22T12:00:00Z. The maneuver had a delta-V of approximately 0.07 m/s. The assessed purpose of this maneuver was Maintain orbital position. This maneuver was detected with 87% confidence."
+  },
+  {
+    "text_input": "Our analysts detected a possible maneuver by satellite 12343. Can you provide details about this maneuver?",
+    "output": "UDL data confirms that satellite 12343 performed a collision_avoidance maneuver on 2025-03-23T12:00:00Z. The maneuver had a delta-V of approximately 0.08 m/s. The assessed purpose of this maneuver was Avoid conjunction. This maneuver was detected with 88% confidence."
+  },
+  {
+    "text_input": "Our analysts detected a possible maneuver by satellite 12344. Can you provide details about this maneuver?",
+    "output": "UDL data confirms that satellite 12344 performed a stationkeeping maneuver on 2025-03-24T12:00:00Z. The maneuver had a delta-V of approximately 0.09 m/s. The assessed purpose of this maneuver was Maintain orbital position. This maneuver was detected with 89% confidence."
+  },
+  {
+    "text_input": "Our analysts detected a possible maneuver by satellite 12345. Can you provide details about this maneuver?",
+    "output": "UDL data confirms that satellite 12345 performed a collision_avoidance maneuver on 2025-03-25T12:00:00Z. The maneuver had a delta-V of approximately 0.1 m/s. The assessed purpose of this maneuver was Avoid conjunction. This maneuver was detected with 90% confidence."
+  },
+  {
+    "text_input": "Our analysts detected a possible maneuver by satellite 12346. Can you provide details about this maneuver?",
+    "output": "UDL data confirms that satellite 12346 performed a stationkeeping maneuver on 2025-03-26T12:00:00Z. The maneuver had a delta-V of approximately 0.11 m/s. The assessed purpose of this maneuver was Maintain orbital position. This maneuver was detected with 91% confidence."
+  },
+  {
+    "text_input": "Our analysts detected a possible maneuver by satellite 12347. Can you provide details about this maneuver?",
+    "output": "UDL data confirms that satellite 12347 performed a collision_avoidance maneuver on 2025-03-27T12:00:00Z. The maneuver had a delta-V of approximately 0.12000000000000001 m/s. The assessed purpose of this maneuver was Avoid conjunction. This maneuver was detected with 92% confidence."
+  },
+  {
+    "text_input": "Our analysts detected a possible maneuver by satellite 12348. Can you provide details about this maneuver?",
+    "output": "UDL data confirms that satellite 12348 performed a stationkeeping maneuver on 2025-03-28T12:00:00Z. The maneuver had a delta-V of approximately 0.13 m/s. The assessed purpose of this maneuver was Maintain orbital position. This maneuver was detected with 93% confidence."
+  },
+  {
+    "text_input": "Our analysts detected a possible maneuver by satellite 12349. Can you provide details about this maneuver?",
+    "output": "UDL data confirms that satellite 12349 performed a collision_avoidance maneuver on 2025-03-29T12:00:00Z. The maneuver had a delta-V of approximately 0.14 m/s. The assessed purpose of this maneuver was Avoid conjunction. This maneuver was detected with 94% confidence."
+  },
+  {
+    "text_input": "Our analysts detected a possible maneuver by satellite 12340. Can you provide details about this maneuver?",
+    "output": "UDL data confirms that satellite 12340 performed a stationkeeping maneuver on 2025-03-20T12:00:00Z. The maneuver had a delta-V of approximately 0.05 m/s. The assessed purpose of this maneuver was Maintain orbital position. This maneuver was detected with 85% confidence."
+  },
+  {
+    "text_input": "Our analysts detected a possible maneuver by satellite 12341. Can you provide details about this maneuver?",
+    "output": "UDL data confirms that satellite 12341 performed a collision_avoidance maneuver on 2025-03-21T12:00:00Z. The maneuver had a delta-V of approximately 0.060000000000000005 m/s. The assessed purpose of this maneuver was Avoid conjunction. This maneuver was detected with 86% confidence."
+  },
+  {
+    "text_input": "Our analysts detected a possible maneuver by satellite 12342. Can you provide details about this maneuver?",
+    "output": "UDL data confirms that satellite 12342 performed a stationkeeping maneuver on 2025-03-22T12:00:00Z. The maneuver had a delta-V of approximately 0.07 m/s. The assessed purpose of this maneuver was Maintain orbital position. This maneuver was detected with 87% confidence."
+  },
+  {
+    "text_input": "Our analysts detected a possible maneuver by satellite 12343. Can you provide details about this maneuver?",
+    "output": "UDL data confirms that satellite 12343 performed a collision_avoidance maneuver on 2025-03-23T12:00:00Z. The maneuver had a delta-V of approximately 0.08 m/s. The assessed purpose of this maneuver was Avoid conjunction. This maneuver was detected with 88% confidence."
+  },
+  {
+    "text_input": "Our analysts detected a possible maneuver by satellite 12344. Can you provide details about this maneuver?",
+    "output": "UDL data confirms that satellite 12344 performed a stationkeeping maneuver on 2025-03-24T12:00:00Z. The maneuver had a delta-V of approximately 0.09 m/s. The assessed purpose of this maneuver was Maintain orbital position. This maneuver was detected with 89% confidence."
+  },
+  {
+    "text_input": "Our analysts detected a possible maneuver by satellite 12345. Can you provide details about this maneuver?",
+    "output": "UDL data confirms that satellite 12345 performed a collision_avoidance maneuver on 2025-03-25T12:00:00Z. The maneuver had a delta-V of approximately 0.1 m/s. The assessed purpose of this maneuver was Avoid conjunction. This maneuver was detected with 90% confidence."
+  },
+  {
+    "text_input": "Our analysts detected a possible maneuver by satellite 12346. Can you provide details about this maneuver?",
+    "output": "UDL data confirms that satellite 12346 performed a stationkeeping maneuver on 2025-03-26T12:00:00Z. The maneuver had a delta-V of approximately 0.11 m/s. The assessed purpose of this maneuver was Maintain orbital position. This maneuver was detected with 91% confidence."
+  },
+  {
+    "text_input": "Our analysts detected a possible maneuver by satellite 12347. Can you provide details about this maneuver?",
+    "output": "UDL data confirms that satellite 12347 performed a collision_avoidance maneuver on 2025-03-27T12:00:00Z. The maneuver had a delta-V of approximately 0.12000000000000001 m/s. The assessed purpose of this maneuver was Avoid conjunction. This maneuver was detected with 92% confidence."
+  },
+  {
+    "text_input": "Our analysts detected a possible maneuver by satellite 12348. Can you provide details about this maneuver?",
+    "output": "UDL data confirms that satellite 12348 performed a stationkeeping maneuver on 2025-03-28T12:00:00Z. The maneuver had a delta-V of approximately 0.13 m/s. The assessed purpose of this maneuver was Maintain orbital position. This maneuver was detected with 93% confidence."
+  },
+  {
+    "text_input": "Our analysts detected a possible maneuver by satellite 12349. Can you provide details about this maneuver?",
+    "output": "UDL data confirms that satellite 12349 performed a collision_avoidance maneuver on 2025-03-29T12:00:00Z. The maneuver had a delta-V of approximately 0.14 m/s. The assessed purpose of this maneuver was Avoid conjunction. This maneuver was detected with 94% confidence."
+  },
+  {
+    "text_input": "Can you provide a comprehensive analysis of all sensor observations for satellite 12340 from the last week?",
+    "output": "Analysis of UDL data for satellite 12340 shows the following observation patterns:\n\nElectro-Optical Observations: 12 observations recorded. The most recent EO observation was at 2025-03-29T20:00:00Z. The satellite had a visual magnitude of 7.6. \n\nRadar Observations: 12 observations recorded. The most recent radar observation was at 2025-03-29T18:00:00Z. The radar cross section was measured at 1.4 square meters. \n\nRF Observations: 8 observations recorded. The most recent RF observation was at 2025-03-29T22:00:00Z. The detected signal frequency was 1450 MHz. "
+  },
+  {
+    "text_input": "Can you provide a comprehensive analysis of all sensor observations for satellite 12341 from the last week?",
+    "output": "Analysis of UDL data for satellite 12341 shows the following observation patterns:\n\nElectro-Optical Observations: 9 observations recorded. The most recent EO observation was at 2025-03-27T20:00:00Z. The satellite had a visual magnitude of 7.8. \n\nRadar Observations: 9 observations recorded. The most recent radar observation was at 2025-03-27T18:00:00Z. The radar cross section was measured at 1.2000000000000002 square meters. \n\nRF Observations: 6 observations recorded. The most recent RF observation was at 2025-03-27T22:00:00Z. The detected signal frequency was 1350 MHz. "
+  },
+  {
+    "text_input": "Can you provide a comprehensive analysis of all sensor observations for satellite 12342 from the last week?",
+    "output": "Analysis of UDL data for satellite 12342 shows the following observation patterns:\n\nElectro-Optical Observations: 9 observations recorded. The most recent EO observation was at 2025-03-28T20:00:00Z. The satellite had a visual magnitude of 7.7. \n\nRadar Observations: 9 observations recorded. The most recent radar observation was at 2025-03-28T18:00:00Z. The radar cross section was measured at 1.3 square meters. \n\nRF Observations: 6 observations recorded. The most recent RF observation was at 2025-03-28T22:00:00Z. The detected signal frequency was 1400 MHz. "
+  }
+]

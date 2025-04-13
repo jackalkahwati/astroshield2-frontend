@@ -258,3 +258,4 @@ backend/backend.pid
 # Logs
 *.log
 logs/
+node_modules

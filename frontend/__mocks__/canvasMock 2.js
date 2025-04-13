@@ -1,0 +1,53 @@
+// Mock implementation for canvas module
+module.exports = {
+  createCanvas: jest.fn((width, height) => ({
+    width,
+    height,
+    getContext: jest.fn(() => ({
+      fillRect: jest.fn(),
+      clearRect: jest.fn(),
+      getImageData: jest.fn(() => ({
+        data: new Array(width * height * 4),
+      })),
+      putImageData: jest.fn(),
+      createImageData: jest.fn(() => []),
+      setTransform: jest.fn(),
+      drawImage: jest.fn(),
+      save: jest.fn(),
+      scale: jest.fn(),
+      restore: jest.fn(),
+      rotate: jest.fn(),
+      translate: jest.fn(),
+      transform: jest.fn(),
+      fillText: jest.fn(),
+      strokeText: jest.fn(),
+      measureText: jest.fn(() => ({ width: 0 })),
+      createLinearGradient: jest.fn(() => ({
+        addColorStop: jest.fn(),
+      })),
+      createRadialGradient: jest.fn(() => ({
+        addColorStop: jest.fn(),
+      })),
+      createPattern: jest.fn(() => ({})),
+      beginPath: jest.fn(),
+      closePath: jest.fn(),
+      moveTo: jest.fn(),
+      lineTo: jest.fn(),
+      bezierCurveTo: jest.fn(),
+      arc: jest.fn(),
+      arcTo: jest.fn(),
+      clip: jest.fn(),
+      fill: jest.fn(),
+      stroke: jest.fn(),
+    })),
+    toDataURL: jest.fn(() => ''),
+    toBuffer: jest.fn(() => Buffer.from('')),
+  })),
+  loadImage: jest.fn(() => Promise.resolve({
+    width: 0,
+    height: 0,
+  })),
+  Image: jest.fn(() => ({})),
+  createImageData: jest.fn(() => ({})),
+  ImageData: jest.fn(() => ({})),
+}; 

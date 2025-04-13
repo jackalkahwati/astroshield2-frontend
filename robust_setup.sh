@@ -116,7 +116,6 @@ pkgs.mkShell {
   buildInputs = [
     pkgs.python3
     pkgs.python3Packages.pip
-    pkgs.python3Packages.venv
   ];
   
   shellHook = ''
@@ -136,8 +135,9 @@ EOF
     if [ -z "$NIX_SHELL_ACTIVE" ]; then
       export NIX_SHELL_ACTIVE=1
       log "Re-executing setup in Nix shell..."
-      exec nix-shell --run "NIX_SHELL_ACTIVE=1 $0 $*"
-      # This will exit the current script and continue in the Nix shell
+      # Use absolute path to the script for re-execution
+      SCRIPT_PATH="$(pwd)/$(basename $0)"
+      exec nix-shell --run "NIX_SHELL_ACTIVE=1 $SCRIPT_PATH $*"
     else
       success "Nix shell is active"
     fi

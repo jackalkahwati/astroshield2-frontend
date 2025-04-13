@@ -1,0 +1,11 @@
+fastapi==0.109.0
+uvicorn==0.25.0
+python-dotenv==1.0.0
+starlette==0.35.1
+pydantic==2.5.3
+typing_extensions==4.12.2
+sqlalchemy==2.0.25
+psycopg2-binary==2.9.9
+redis==5.0.1
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4 
