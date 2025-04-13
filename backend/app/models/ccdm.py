@@ -82,13 +82,21 @@ class CCDMAssessment(BaseModel):
     confidence_level: float = Field(..., ge=0.0, le=1.0)
     recommendations: List[str]
 
+class AnalysisPoint(BaseModel):
+    """Model for a single analysis point in historical data"""
+    timestamp: str
+    threat_level: str
+    confidence: float = Field(..., ge=0.0, le=1.0)
+    details: Dict[str, Any]
+
 class HistoricalAnalysis(BaseModel):
     """Model for historical analysis results"""
-    object_id: str
-    time_range: Dict[str, datetime]
-    patterns: List[Dict[str, Any]]
-    trend_analysis: Dict[str, Any]
-    anomalies: List[Dict[str, Any]]
+    norad_id: int
+    start_date: str
+    end_date: str
+    trend_summary: str
+    analysis_points: List[AnalysisPoint]
+    metadata: Dict[str, Any]
 
 class CorrelationResult(BaseModel):
     """Model for correlation analysis results"""
