@@ -454,8 +454,8 @@ class CCDMService:
             # in-memory cache of recent messages for this object
             
             # For the prototype, return structured placeholder data
-        now = datetime.utcnow()
-        
+            now = datetime.utcnow()
+            
             # Recent observations
             observations = [
                 {
@@ -750,7 +750,7 @@ class CCDMService:
             now = datetime.utcnow()
             
             # Create 10 days of history
-        for i in range(10):
+            for i in range(10):
                 timestamp = (now - timedelta(days=i)).isoformat()
                 # Add small random variations
                 amr = baseline_amr * (1 + random.uniform(-0.05, 0.05))
