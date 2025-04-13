@@ -1,11 +1,11 @@
 // API Configuration
 export const API_CONFIG = {
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002/api/v1',
+  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000',
   timeout: 30000,
   headers: {
     'Content-Type': 'application/json'
   },
-  withCredentials: false // Disabled for mock server
+  withCredentials: true
 }
 
 // Rate limiting configuration
@@ -31,7 +31,7 @@ export const SECURITY_CONFIG = {
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: https:",
       "font-src 'self'",
-      "connect-src 'self' http://localhost:3001",
+      "connect-src 'self'",
       "report-uri /api/csp-report"
     ].join('; '),
     'Strict-Transport-Security': 'max-age=63072000; includeSubDomains; preload',
@@ -52,7 +52,7 @@ export const MONITORING_CONFIG = {
 }
 
 export const WS_CONFIG = {
-  url: process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:3002/ws',
+  url: process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:3001/ws',
   reconnectInterval: 1000,
   maxReconnectAttempts: 5,
-}
+} 

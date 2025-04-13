@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Progress } from '@/components/ui/progress'
+import { getSecurityMetrics } from '@/lib/api-client'
+import { LineChart } from '@/components/ui/charts'
 
 interface SecurityMetricsState {
   httpsPercentage: number
@@ -21,30 +23,27 @@ export function SecurityDashboard() {
   useEffect(() => {
     const fetchMetrics = async () => {
       try {
-        // Mock security metrics since the real API isn't available
-        const mockMetrics: SecurityMetricsState = {
-          httpsPercentage: 98,
-          cspViolations: 2,
-          blockedRequests: 5,
-          rateLimited: 0,
-          sanitizedErrors: 12,
-          potentialLeaks: 0,
-          timestamp: new Date().toISOString()
-        };
+        const response = await getSecurityMetrics()
+        if (!response.data) {
+          setError(response.error?.message || 'No security data available')
+          setMetrics(null)
+          return
+        }
         
-        setMetrics(mockMetrics);
-        setError(null);
+        const current = response.data.security.current[0]
+        setMetrics(current || null)
+        setError(null)
       } catch (err) {
-        setError('Failed to fetch security metrics');
-        console.error('Security metrics error:', err);
+        setError('Failed to fetch security metrics')
+        console.error('Security metrics error:', err)
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
     }
 
-    fetchMetrics();
-    const interval = setInterval(fetchMetrics, 30000); // Update every 30s
-    return () => clearInterval(interval);
+    fetchMetrics()
+    const interval = setInterval(fetchMetrics, 30000) // Update every 30s
+    return () => clearInterval(interval)
   }, [])
 
   if (loading) {

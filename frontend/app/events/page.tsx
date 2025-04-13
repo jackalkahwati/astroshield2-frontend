@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Activity, AlertTriangle, Rocket, Orbit, Radio, Compass, ArrowDownCircle, SatelliteIcon } from "lucide-react"
-import { formatDate } from "@/lib/utils"
+// import { formatDate } from "@/lib/utils"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
@@ -345,7 +345,7 @@ export default function EventsPage() {
                           </div>
                         </td>
                         <td className="px-4 py-3">{event.object_id}</td>
-                        <td className="px-4 py-3">{formatDate(event.creation_time)}</td>
+                        <td className="px-4 py-3">{event.creation_time}</td>
                         <td className="px-4 py-3">
                           <span className={`capitalize px-2 py-1 rounded-full text-xs ${STATUS_COLORS[event.status]}`}>
                             {event.status.replace('_', ' ')}
@@ -416,19 +416,19 @@ export default function EventsPage() {
                     <div className="space-y-2">
                       <div className="grid grid-cols-2 gap-2 border-b pb-2">
                         <span className="text-sm font-medium">Detection Time:</span>
-                        <span className="text-sm">{formatDate(selectedEvent.creation_time)}</span>
+                        <span className="text-sm">{selectedEvent?.creation_time}</span>
                       </div>
                       <div className="grid grid-cols-2 gap-2 border-b pb-2">
                         <span className="text-sm font-medium">Last Updated:</span>
-                        <span className="text-sm">{formatDate(selectedEvent.update_time)}</span>
+                        <span className="text-sm">{selectedEvent?.update_time}</span>
                       </div>
                       <div className="grid grid-cols-2 gap-2 border-b pb-2">
                         <span className="text-sm font-medium">Status:</span>
-                        <span className="text-sm capitalize">{selectedEvent.status.replace('_', ' ')}</span>
+                        <span className="text-sm capitalize">{selectedEvent?.status?.replace('_', ' ')}</span>
                       </div>
                       <div className="grid grid-cols-2 gap-2 border-b pb-2">
                         <span className="text-sm font-medium">Threat Level:</span>
-                        <span className="text-sm capitalize">{selectedEvent.threat_level || "Pending"}</span>
+                        <span className="text-sm capitalize">{selectedEvent?.threat_level || "Pending"}</span>
                       </div>
                     </div>
                   </div>

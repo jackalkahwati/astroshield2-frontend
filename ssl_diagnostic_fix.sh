@@ -1,4 +1,39 @@
 #!/bin/bash
+set -e
+
+echo "=== AstroShield Connection Helper ==="
+echo "This script will fix SSH tunneling and SSL certificate issues"
+
+# Kill any existing SSH tunnels
+echo "Closing any existing SSH tunnels..."
+pids=$(lsof -ti:8080,8888,9000,7777,8443,7443,9001,9002 2>/dev/null) || true
+if [ -n "$pids" ]; then
+  echo "Killing processes: $pids"
+  kill $pids 2>/dev/null || true
+fi
+
+# Wait a moment for ports to be released
+sleep 1
+
+# Create a fresh SSH tunnel
+echo "Creating a new SSH tunnel on port 7777..."
+ssh -L 7777:localhost:80 astroshield &
+tunnel_pid=$!
+
+echo ""
+echo "=== Connection Instructions ==="
+echo "1. Wait 3 seconds for the tunnel to establish"
+echo "2. Open your browser and go to: http://127.0.0.1:7777"
+echo ""
+echo "If you still see 'Unable to connect' errors:"
+echo "  - Check Firefox network permissions in Security settings"
+echo "  - Try using Chrome or Safari instead"
+echo ""
+echo "SSH tunnel process ID: $tunnel_pid"
+echo "To stop the tunnel when done: kill $tunnel_pid"
+
+# Wait for user to read instructions
+sleep 3
 
 # This script diagnoses and fixes SSL issues with Nginx configuration
 # Must be run with sudo privileges

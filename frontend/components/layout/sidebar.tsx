@@ -19,8 +19,7 @@ import {
   AlertCircle,
   BarChart3,
   Gauge,
-  Navigation,
-  Calendar
+  Navigation
 } from "lucide-react"
 
 interface SidebarProps extends React.HTMLAttributes<HTMLElement> {
@@ -32,11 +31,6 @@ const routes = [
     label: "Dashboard",
     icon: LayoutDashboard,
     href: "/dashboard",
-  },
-  {
-    label: "Events",
-    icon: Calendar,
-    href: "/events",
   },
   {
     label: "Indicators",

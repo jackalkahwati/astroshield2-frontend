@@ -4,28 +4,37 @@ services:
   # Backend API
   backend:
     build:
-      context: .
-      dockerfile: ./Dockerfile.backend
+      context: ./backend
+      dockerfile: Dockerfile
     ports:
       - "3001:3001"
     volumes:
-      - ./minimal_server.py:/app/minimal_server.py
+      - ./minimal_backend.py:/app/main.py
     restart: always
     networks:
       - astroshield-network
+    environment:
+      - PORT=3001
+      - DATABASE_URL=postgresql://postgres:password@postgres:5432/astroshield
+    depends_on:
+      - postgres
+    command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "3001"]
 
   # Frontend
   frontend:
     build:
       context: ./frontend
-      dockerfile: ./Dockerfile.frontend
+      dockerfile: Dockerfile
     ports:
       - "3000:3000"
-    depends_on:
-      - backend
     restart: always
     networks:
       - astroshield-network
+    environment:
+      - NEXT_PUBLIC_API_URL=http://backend:3001/api/v1
+      - NODE_ENV=production
+    depends_on:
+      - backend
 
   # PostgreSQL Database
   postgres:
@@ -34,9 +43,10 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    restart: always
     environment:
       - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_PASSWORD=password
       - POSTGRES_DB=astroshield
 
   # Redis Cache
@@ -115,10 +125,11 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/ssl:/etc/nginx/ssl
     depends_on:
-      - backend
       - frontend
+      - backend
     restart: always
     networks:
       - astroshield-network
@@ -128,3 +139,7 @@ volumes:
   redis_data:
   prometheus_data:
   grafana_data:
+
+networks:
+  astroshield-network:
+    driver: bridge

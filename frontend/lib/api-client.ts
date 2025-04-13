@@ -1,6 +1,3 @@
-// API client for the AstroShield backend
-import { API_CONFIG } from './api-config';
-import type { ManeuverData } from './types';
 import axios, { AxiosError, AxiosResponse } from 'axios'
 import { toast } from '@/components/ui/use-toast'
 import type { 
@@ -14,13 +11,12 @@ import type {
   SatelliteData,
   SystemHealth,
   TelemetryData,
+  ManeuverData,
   SecurityHeaders as SecurityHeadersType,
-  MonitoringMetrics as MonitoringMetricsType,
-  TrajectoryRequest,
-  TrajectoryResult,
-  TrajectoryConfig
+  MonitoringMetrics as MonitoringMetricsType
 } from './types'
 import { 
+  API_CONFIG, 
   RATE_LIMIT_CONFIG, 
   SECURITY_CONFIG, 
   MONITORING_CONFIG 
@@ -51,59 +47,10 @@ interface CircuitBreakerMetrics {
   errorRate: number
 }
 
-// Helper function to handle fetch responses
-const handleResponse = async (response: Response) => {
-  try {
-    const data = await response.json();
-    if (!response.ok) {
-      return {
-        data: null,
-        error: { message: data.message || `Error: ${response.status}` }
-      };
-    }
-    return { data, status: response.status };
-  } catch (error) {
-    return {
-      data: null,
-      error: { message: 'Failed to parse response' }
-    };
-  }
-};
-
-// Initialize API client with configuration
-const apiClient = axios.create({
-  ...API_CONFIG,
-  withCredentials: false // Disable credentials for mock server
-})
-
-// Add request interceptor with debugging
-apiClient.interceptors.request.use(
-  (config) => {
-    console.log('Making request to:', config.url)
-    return config
-  },
-  (error) => {
-    console.error('Request error:', error)
-    return Promise.reject(error)
-  }
-)
-
-// Add response interceptor with debugging
-apiClient.interceptors.response.use(
-  (response) => {
-    console.log('Received response from:', response.config.url, response.status)
-    return response
-  },
-  async (error) => {
-    console.error('Response error:', error.message, error?.response?.status, error?.config?.url)
-    return Promise.reject(error)
-  }
-)
-
 // API endpoints with strong typing
 export const getSatellites = async (): Promise<ApiResponse<SatelliteData[]>> => {
   try {
-    const response = await apiClient.get<SatelliteData[]>('/satellites')
+    const response = await apiClient.get<SatelliteData[]>('/api/v1/satellites')
     return {
       data: response.data,
       status: response.status
@@ -113,7 +60,7 @@ export const getSatellites = async (): Promise<ApiResponse<SatelliteData[]>> => 
     return {
       data: null,
       error: {
-        message: 'Failed to fetch satellites data'
+        message: 'Failed to fetch satellites'
       }
     }
   }
@@ -121,7 +68,7 @@ export const getSatellites = async (): Promise<ApiResponse<SatelliteData[]>> => 
 
 export const getSystemHealth = async (): Promise<ApiResponse<SystemHealth>> => {
   try {
-    const response = await apiClient.get<SystemHealth>('/health')
+    const response = await apiClient.get<SystemHealth>('/api/v1/health')
     return {
       data: response.data,
       status: response.status
@@ -137,9 +84,9 @@ export const getSystemHealth = async (): Promise<ApiResponse<SystemHealth>> => {
   }
 }
 
-export const getComprehensiveData = async (): Promise<ApiResponse<ComprehensiveData>> => {
+export async function getComprehensiveData(): Promise<ApiResponse<ComprehensiveData>> {
   try {
-    const response = await apiClient.get<ComprehensiveData>('/comprehensive')
+    const response = await apiClient.get<ComprehensiveData>('/api/v1/comprehensive')
     return {
       data: response.data,
       status: response.status
@@ -157,23 +104,9 @@ export const getComprehensiveData = async (): Promise<ApiResponse<ComprehensiveD
 
 export async function getManeuvers(): Promise<ApiResponse<ManeuverData[]>> {
   try {
-    // Use direct fetch for simpler debugging
-    console.log('Fetching maneuvers via direct fetch')
-    const url = `${API_CONFIG.baseURL}/maneuvers`
-    console.log('Fetch URL:', url)
-    
-    const response = await fetch(url)
-    console.log('Fetch response status:', response.status)
-    
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`)
-    }
-    
-    const data = await response.json()
-    console.log('Maneuvers data received:', data)
-    
+    const response = await apiClient.get<ManeuverData[]>('/api/v1/maneuvers')
     return {
-      data: data,
+      data: response.data,
       status: response.status
     }
   } catch (error) {
@@ -181,7 +114,7 @@ export async function getManeuvers(): Promise<ApiResponse<ManeuverData[]>> {
     return {
       data: null,
       error: {
-        message: `Failed to fetch maneuvers: ${error instanceof Error ? error.message : 'Unknown error'}`
+        message: 'Failed to fetch maneuvers'
       }
     }
   }
@@ -189,7 +122,7 @@ export async function getManeuvers(): Promise<ApiResponse<ManeuverData[]>> {
 
 export async function createManeuver(maneuverData: Partial<ManeuverData>): Promise<ApiResponse<ManeuverData>> {
   try {
-    const response = await apiClient.post<ManeuverData>('/maneuvers', maneuverData)
+    const response = await apiClient.post<ManeuverData>('/api/v1/maneuvers', maneuverData)
     return {
       data: response.data,
       status: response.status
@@ -205,226 +138,61 @@ export async function createManeuver(maneuverData: Partial<ManeuverData>): Promi
   }
 }
 
-// Event API calls
-export const eventsApi = {
-  // Get dashboard data with optional date range
-  getDashboardData: async (startTime?: string, endTime?: string) => {
-    let url = `${API_CONFIG.baseURL}/events/dashboard`;
-    
-    // Add query parameters if provided
-    if (startTime || endTime) {
-      const params = new URLSearchParams();
-      if (startTime) params.append('start_time', startTime);
-      if (endTime) params.append('end_time', endTime);
-      url += `?${params.toString()}`;
+export async function getSecurityMetrics(): Promise<ApiResponse<{
+  security: {
+    current: Array<{
+      httpsPercentage: number
+      cspViolations: number
+      blockedRequests: number
+      rateLimited: number
+      sanitizedErrors: number
+      potentialLeaks: number
+      timestamp: string
+    }>
+  }
+}>> {
+  try {
+    const response = await apiClient.get('/api/v1/security/metrics')
+    return {
+      data: response.data,
+      status: response.status
     }
-    
-    const response = await fetch(url);
-    return handleResponse(response);
-  },
-  
-  // Query events with filters
-  queryEvents: async (filters: any) => {
-    const response = await fetch(`${API_CONFIG.baseURL}/events/query`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(filters),
-    });
-    return handleResponse(response);
-  },
-  
-  // Get a specific event by ID
-  getEvent: async (eventId: string) => {
-    const response = await fetch(`${API_CONFIG.baseURL}/events/${eventId}`);
-    return handleResponse(response);
-  },
-  
-  // Submit sensor data for event detection
-  detectEvent: async (sensorData: any) => {
-    const response = await fetch(`${API_CONFIG.baseURL}/events/detect`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(sensorData),
-    });
-    return handleResponse(response);
-  },
-  
-  // Process pending events
-  processPendingEvents: async () => {
-    const response = await fetch(`${API_CONFIG.baseURL}/events/process-pending`, {
-      method: 'POST',
-    });
-    return handleResponse(response);
-  },
-  
-  // Get all event types
-  getEventTypes: async () => {
-    const response = await fetch(`${API_CONFIG.baseURL}/events/types`);
-    return handleResponse(response);
-  },
-  
-  // Get all event status values
-  getEventStatuses: async () => {
-    const response = await fetch(`${API_CONFIG.baseURL}/events/status`);
-    return handleResponse(response);
-  },
-  
-  // Get all threat levels
-  getThreatLevels: async () => {
-    const response = await fetch(`${API_CONFIG.baseURL}/events/threat-levels`);
-    return handleResponse(response);
-  },
-};
-
-// Export a default API client that contains all sub-APIs
-// Trajectory API functions
-export const trajectoryApi = {
-  // Analyze trajectory with given configuration and initial state
-  analyzeTrajectory: async (request: TrajectoryRequest): Promise<ApiResponse<TrajectoryResult>> => {
-    try {
-      const response = await apiClient.post<TrajectoryResult>('/trajectory/analyze', request)
-      return {
-        data: response.data,
-        status: response.status
-      }
-    } catch (error) {
-      console.error('Error analyzing trajectory:', error)
-      
-      const errorMsg = error instanceof Error ? error.message : 'Unknown error'
-      
-      // Show toast notification for error
-      toast({
-        title: "Trajectory Analysis Failed",
-        description: `Could not analyze trajectory: ${errorMsg}`,
-        variant: "destructive",
-      })
-      
-      return {
-        data: null,
-        error: {
-          message: `Failed to analyze trajectory: ${errorMsg}`
-        }
-      }
-    }
-  },
-  
-  // Get saved trajectories
-  getSavedTrajectories: async (): Promise<ApiResponse<any[]>> => {
-    try {
-      const response = await apiClient.get<any[]>('/trajectories/')
-      return {
-        data: response.data,
-        status: response.status
-      }
-    } catch (error) {
-      console.error('Error fetching saved trajectories:', error)
-      return {
-        data: null,
-        error: {
-          message: 'Failed to fetch saved trajectories'
-        }
-      }
-    }
-  },
-  
-  // Get trajectory by ID
-  getTrajectoryById: async (id: number): Promise<ApiResponse<any>> => {
-    try {
-      const response = await apiClient.get<any>(`/trajectories/${id}`)
-      return {
-        data: response.data,
-        status: response.status
-      }
-    } catch (error) {
-      console.error(`Error fetching trajectory ${id}:`, error)
-      return {
-        data: null,
-        error: {
-          message: `Failed to fetch trajectory ${id}`
-        }
-      }
-    }
-  },
-  
-  // Save trajectory
-  saveTrajectory: async (data: any): Promise<ApiResponse<any>> => {
-    try {
-      const response = await apiClient.post<any>('/trajectories/', data)
-      return {
-        data: response.data,
-        status: response.status
-      }
-    } catch (error) {
-      console.error('Error saving trajectory:', error)
-      return {
-        data: null,
-        error: {
-          message: 'Failed to save trajectory'
-        }
-      }
-    }
-  },
-  
-  // Update trajectory
-  updateTrajectory: async (id: number, data: any): Promise<ApiResponse<any>> => {
-    try {
-      const response = await apiClient.put<any>(`/trajectories/${id}`, data)
-      return {
-        data: response.data,
-        status: response.status
-      }
-    } catch (error) {
-      console.error(`Error updating trajectory ${id}:`, error)
-      return {
-        data: null,
-        error: {
-          message: `Failed to update trajectory ${id}`
-        }
-      }
-    }
-  },
-  
-  // Delete trajectory
-  deleteTrajectory: async (id: number): Promise<ApiResponse<void>> => {
-    try {
-      const response = await apiClient.delete(`/trajectories/${id}`)
-      return {
-        data: null,
-        status: response.status
-      }
-    } catch (error) {
-      console.error(`Error deleting trajectory ${id}:`, error)
-      return {
-        data: null,
-        error: {
-          message: `Failed to delete trajectory ${id}`
-        }
-      }
-    }
-  },
-  
-  // Compare trajectories
-  compareTrajectories: async (data: any): Promise<ApiResponse<any>> => {
-    try {
-      const response = await apiClient.post<any>('/trajectory/compare', data)
-      return {
-        data: response.data,
-        status: response.status
-      }
-    } catch (error) {
-      console.error('Error comparing trajectories:', error)
-      return {
-        data: null,
-        error: {
-          message: 'Failed to compare trajectories'
-        }
+  } catch (error) {
+    console.error('Error fetching security metrics:', error)
+    return {
+      data: null,
+      error: {
+        message: 'Failed to fetch security metrics'
       }
     }
   }
 }
 
-export default apiClient
+// Initialize API client with configuration
+const apiClient = axios.create(API_CONFIG)
+
+// Add request interceptor for authentication
+apiClient.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token')
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`
+    }
+    return config
+  },
+  (error) => Promise.reject(error)
+)
+
+// Add response interceptor for error handling
+apiClient.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem('token')
+      window.location.href = '/login'
+    }
+    return Promise.reject(error)
+  }
+)
+
+export default apiClient 
