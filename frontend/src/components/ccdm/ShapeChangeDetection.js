@@ -49,8 +49,8 @@ const ShapeChangeDetection = ({ noradId }) => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center p-8">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      <div className="flex justify-center items-center p-8" role="status">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500" data-testid="loading-spinner"></div>
       </div>
     );
   }
@@ -126,6 +126,7 @@ const ShapeChangeDetection = ({ noradId }) => {
                   selectedChange === change ? 'border-blue-500 bg-blue-50' : ''
                 }`}
                 onClick={() => setSelectedChange(change)}
+                data-testid="shape-change-item"
               >
                 <div className="flex justify-between items-center">
                   <span className="text-sm font-medium">
