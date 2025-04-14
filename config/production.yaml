@@ -1,0 +1,76 @@
+# Production environment configuration for CCDM Service
+
+service:
+  name: ccdm_service
+  version: "1.0.0"
+
+logging:
+  level: "INFO"
+  structured: true
+  log_file: "/var/log/astroshield/ccdm_service.log"
+  rotation:
+    max_bytes: 52428800  # 50MB
+    backup_count: 20
+
+database:
+  # URL should be set via DATABASE_URL environment variable in production
+  url: ""
+  echo: false
+  pool_size: 20
+  max_overflow: 30
+  timeout: 30
+
+rate_limiting:
+  enabled: true
+  default_limit: 100  # Per minute
+  endpoints:
+    get_historical_analysis: 60
+    analyze_conjunction: 120
+    get_assessment: 240
+
+caching:
+  enabled: true
+  default_ttl: 300  # 5 minutes
+  endpoints:
+    get_historical_analysis: 600  # 10 minutes
+    get_assessment: 300  # 5 minutes
+
+api:
+  port: 8000
+  host: "0.0.0.0"
+  cors:
+    enabled: true
+    origins: 
+      - "https://astroshield.space"
+      - "https://www.astroshield.space"
+      - "https://app.astroshield.space"
+  authentication:
+    enabled: true
+    # jwt_secret should be set via JWT_SECRET environment variable
+    jwt_secret: ""
+    token_expiry_seconds: 86400  # 24 hours
+
+alerting:
+  enabled: true
+  email:
+    enabled: true
+    smtp_server: "smtp.example.com"
+    smtp_port: 587
+    # username and password should be set via environment variables
+    from_address: "alerts@astroshield.space"
+    to_addresses: 
+      - "ops@astroshield.space"
+      - "sysadmin@astroshield.space"
+  slack:
+    enabled: true
+    # webhook_url should be set via SLACK_WEBHOOK_URL environment variable
+
+external_services:
+  space_track:
+    # Credentials should be set via environment variables
+    base_url: "https://www.space-track.org/basicspacedata/query"
+    timeout: 30
+  udl:
+    base_url: "https://udl.sda.mil/api"
+    # API key should be set via UDL_API_KEY environment variable
+    timeout: 30 

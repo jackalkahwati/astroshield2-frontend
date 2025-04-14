@@ -18,25 +18,23 @@ from sqlalchemy.orm import Session
 from sqlalchemy import text
 from app.db.session import get_db
 from app.routers import ccdm
+from app.core.config import settings
+from app.middlewares.rate_limiter import add_rate_limit_middleware
+from app.middlewares.request_id import add_request_id_middleware
+from app.core.errors import register_exception_handlers
 
 # Import error handling
-from app.core.error_handling import register_exception_handlers
+from fastapi.exceptions import RequestValidationError
+from fastapi import status, Request
 
-# Import common logging utilities
-try:
-    from src.asttroshield.common.logging_utils import configure_logging, get_logger
-    # Configure logging using common utility
-    configure_logging(level=logging.INFO)
-    # Get logger using common utility
-    logger = get_logger(__name__)
-except ImportError:
-    # Fallback if the imports are not available
-    logging.basicConfig(
-        level=logging.INFO,
-        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    )
-    logger = logging.getLogger(__name__)
-    logger.warning("Using fallback logging configuration")
+# Add imports for graceful shutdown
+import signal
+import sys
+import threading
+import time
+
+# Configure logging
+logger = logging.getLogger(__name__)
 
 # Configure CORS origins
 CORS_ORIGINS = os.environ.get("CORS_ORIGINS", "http://localhost:3000,http://localhost:8000").split(",")
@@ -66,8 +64,136 @@ except Exception as e:
 # Register error handlers
 register_exception_handlers(app)
 
+# Add request ID middleware (must be first to track all requests)
+add_request_id_middleware(app)
+
+# Add rate limiting middleware
+add_rate_limit_middleware(app)
+
 # Include routers
 app.include_router(ccdm.router)
+
+# Track active requests for graceful shutdown
+active_requests = 0
+active_requests_lock = threading.Lock()
+shutdown_event = threading.Event()
+
+@app.middleware("http")
+async def track_requests(request: Request, call_next):
+    """Middleware to track active requests for graceful shutdown"""
+    global active_requests
+    
+    # Increment active request counter
+    with active_requests_lock:
+        active_requests += 1
+    
+    try:
+        # Check if server is shutting down
+        if shutdown_event.is_set():
+            return {
+                "status": "error",
+                "message": "Server is shutting down, please try again later"
+            }
+        
+        # Process the request normally
+        response = await call_next(request)
+        return response
+    finally:
+        # Decrement active request counter
+        with active_requests_lock:
+            active_requests -= 1
+
+# Database connection pool
+db_pool = {}
+db_pool_lock = threading.Lock()
+
+def close_db_connections():
+    """Close all database connections in the pool"""
+    with db_pool_lock:
+        for session_id, session in db_pool.items():
+            try:
+                logger.info(f"Closing database session {session_id}")
+                session.close()
+            except Exception as e:
+                logger.error(f"Error closing database session {session_id}: {str(e)}")
+        
+        # Clear the pool
+        db_pool.clear()
+
+def graceful_shutdown(signum, frame):
+    """
+    Handle graceful shutdown of the application
+    
+    This ensures:
+    1. No new requests are accepted
+    2. Existing requests are allowed to complete
+    3. Database connections are properly closed
+    4. Any cleanup operations are performed
+    """
+    logger.info(f"Received signal {signum}, initiating graceful shutdown")
+    
+    # Set shutdown event to prevent new requests
+    shutdown_event.set()
+    
+    # Wait for active requests to complete (max 30 seconds)
+    max_wait = 30
+    wait_step = 0.5
+    total_waited = 0
+    
+    logger.info(f"Waiting for {active_requests} active requests to complete")
+    
+    while active_requests > 0 and total_waited < max_wait:
+        time.sleep(wait_step)
+        total_waited += wait_step
+        if total_waited % 5 == 0:  # Log every 5 seconds
+            logger.info(f"Still waiting for {active_requests} requests to complete ({total_waited}/{max_wait}s)")
+    
+    # Close database connections
+    logger.info("Closing database connections")
+    close_db_connections()
+    
+    # Log shutdown complete
+    logger.info("Graceful shutdown complete")
+    
+    # Exit the application
+    sys.exit(0)
+
+# Register shutdown handlers
+signal.signal(signal.SIGTERM, graceful_shutdown)
+signal.signal(signal.SIGINT, graceful_shutdown)
+
+@app.on_event("startup")
+async def startup_event():
+    """Handle application startup"""
+    logger.info("Starting AstroShield API...")
+    
+    # Check UDL configuration
+    udl_username = os.environ.get("UDL_USERNAME")
+    udl_password = os.environ.get("UDL_PASSWORD")
+    udl_base_url = os.environ.get("UDL_BASE_URL")
+    
+    if not all([udl_username, udl_password, udl_base_url]):
+        logger.warning("UDL credentials not fully configured. Using mock UDL service if available.")
+    else:
+        logger.info(f"UDL configured with base URL: {udl_base_url}")
+        
+    # Additional startup logic (unchanged)
+    try:
+        # Ensure database connections are ready
+        # Initialize UDL service
+        # Set up any other required services
+        pass
+    except Exception as e:
+        logger.error(f"Error during startup: {str(e)}")
+        # We'll continue running, but some services might be unavailable
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    """Handle application shutdown"""
+    logger.info("AstroShield API shutting down")
+    
+    # Close any remaining database connections
+    close_db_connections()
 
 @app.get("/health")
 def health_check():
@@ -650,32 +776,6 @@ async def mock_udl_status():
         "status": "connected" if mock_mode else "using real UDL",
         "timestamp": datetime.utcnow().isoformat()
     }
-
-# Startup event enhancement for UDL service connection testing
-@app.on_event("startup")
-async def startup_event():
-    """Enhanced startup event handler"""
-    logger.info("Starting AstroShield API...")
-    
-    # Check UDL configuration
-    udl_username = os.environ.get("UDL_USERNAME")
-    udl_password = os.environ.get("UDL_PASSWORD")
-    udl_base_url = os.environ.get("UDL_BASE_URL")
-    
-    if not all([udl_username, udl_password, udl_base_url]):
-        logger.warning("UDL credentials not fully configured. Using mock UDL service if available.")
-    else:
-        logger.info(f"UDL configured with base URL: {udl_base_url}")
-        
-    # Additional startup logic (unchanged)
-    try:
-        # Ensure database connections are ready
-        # Initialize UDL service
-        # Set up any other required services
-        pass
-    except Exception as e:
-        logger.error(f"Error during startup: {str(e)}")
-        # We'll continue running, but some services might be unavailable
 
 if __name__ == "__main__":
     import uvicorn

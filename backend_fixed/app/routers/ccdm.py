@@ -83,25 +83,94 @@ def assess_threat(
 @router.post("/historical", response_model=HistoricalAnalysisResponse)
 def get_historical_analysis(
     request: HistoricalAnalysisRequest,
+    page: int = Query(1, ge=1, description="Page number for paginated results"),
+    page_size: int = Query(50, ge=10, le=500, description="Number of data points per page"),
     db: Session = Depends(get_db)
 ):
     """
     Get historical analysis data for a space object
+    
+    Returns paginated results for large datasets. Default page size is 50 data points.
+    Maximum page size is 500 to prevent memory issues with large result sets.
     """
     try:
+        # Validate norad_id (must be a positive integer)
+        if request.norad_id <= 0:
+            raise HTTPException(
+                status_code=400,
+                detail={
+                    "error": "INVALID_INPUT",
+                    "message": "NORAD ID must be a positive integer",
+                    "field": "norad_id",
+                    "value": request.norad_id
+                }
+            )
+            
+        # Validate that dates are not in the future
+        current_time = datetime.utcnow()
+        if request.start_date > current_time:
+            raise HTTPException(
+                status_code=400,
+                detail={
+                    "error": "INVALID_INPUT",
+                    "message": "Start date cannot be in the future",
+                    "field": "start_date",
+                    "value": request.start_date.isoformat()
+                }
+            )
+            
+        if request.end_date > current_time:
+            raise HTTPException(
+                status_code=400,
+                detail={
+                    "error": "INVALID_INPUT",
+                    "message": "End date cannot be in the future",
+                    "field": "end_date",
+                    "value": request.end_date.isoformat()
+                }
+            )
+            
         # Validate that end_date is after start_date
         if request.end_date <= request.start_date:
             raise HTTPException(
                 status_code=400, 
-                detail="End date must be after start date"
+                detail={
+                    "error": "INVALID_INPUT",
+                    "message": "End date must be after start date",
+                    "field": "end_date",
+                    "value": request.end_date.isoformat()
+                }
             )
             
+        # Validate that the date range isn't too large (e.g., limit to 90 days)
+        max_range_days = 90
+        date_range_days = (request.end_date - request.start_date).days
+        if date_range_days > max_range_days:
+            raise HTTPException(
+                status_code=400,
+                detail={
+                    "error": "INVALID_INPUT",
+                    "message": f"Date range too large. Maximum allowed range is {max_range_days} days",
+                    "field": "date_range",
+                    "value": date_range_days
+                }
+            )
+            
+        # Process the request with pagination parameters
         ccdm_service = CCDMService(db)
-        return ccdm_service.get_historical_analysis(request)
+        return ccdm_service.get_historical_analysis(request, page, page_size)
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error getting historical analysis: {str(e)}")
+        logger.error(f"Error getting historical analysis: {str(e)}")
+        raise HTTPException(
+            status_code=500, 
+            detail={
+                "error": "SERVER_ERROR",
+                "message": f"Error getting historical analysis: {str(e)}",
+                "type": str(type(e).__name__)
+            }
+        )
 
 @router.post("/shape-changes", response_model=ShapeChangeResponse)
 def detect_shape_changes(

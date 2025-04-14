@@ -20,6 +20,12 @@ import psutil
 # Import error handling
 from app.core.error_handling import register_exception_handlers
 
+# Import security middleware
+from app.middleware.security import add_security_middleware
+
+# Import compression middleware
+from app.middleware.compression import add_compression_middleware
+
 # Import common logging utilities
 try:
     from src.asttroshield.common.logging_utils import configure_logging, get_logger
@@ -63,6 +69,12 @@ try:
     app.middleware("http")(dynamic_cors_middleware)
 except Exception as e:
     logger.warning(f"Could not add dynamic CORS middleware: {str(e)}")
+
+# Add security headers middleware
+add_security_middleware(app)
+
+# Add compression middleware for large responses
+add_compression_middleware(app)
 
 # Register error handlers
 register_exception_handlers(app)

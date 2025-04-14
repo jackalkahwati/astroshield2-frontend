@@ -396,4 +396,411 @@ API-Version: 1.0
      },
      "webhook_id": "WHK-001"
    }
-   ``` 
+   ```
+
+# CCDM Service API Documentation
+
+## Overview
+
+The Conjunction and Collision Data Management (CCDM) service provides a RESTful API for accessing space object conjunction data, collision risk assessments, and related space situational awareness information. This document outlines the available endpoints, request/response formats, authentication methods, and usage examples.
+
+## Base URL
+
+```
+https://api.ccdm.example.com/v1
+```
+
+## Authentication
+
+The API uses JWT (JSON Web Token) authentication. Include the token in the Authorization header:
+
+```
+Authorization: Bearer <your_jwt_token>
+```
+
+To obtain a token, use the authentication endpoint:
+
+```
+POST /auth/login
+```
+
+### Authentication Request
+
+```json
+{
+  "username": "your_username",
+  "password": "your_password"
+}
+```
+
+### Authentication Response
+
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "expiresIn": 3600
+}
+```
+
+## Rate Limiting
+
+API requests are rate-limited to prevent abuse. The current limits are:
+
+- 100 requests per minute for standard users
+- 300 requests per minute for premium users
+
+Rate limit information is included in the response headers:
+
+```
+X-RateLimit-Limit: 100
+X-RateLimit-Remaining: 95
+X-RateLimit-Reset: 1620000000
+```
+
+## API Endpoints
+
+### Conjunction Data
+
+#### Get Conjunction Events
+
+```
+GET /conjunctions
+```
+
+Query Parameters:
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| startTime | ISO8601 | Start time for conjunction events |
+| endTime | ISO8601 | End time for conjunction events |
+| minPc | number | Minimum probability of collision |
+| primaryNorad | string | NORAD ID of primary object |
+| limit | number | Maximum number of results (default: 100, max: 1000) |
+| offset | number | Result offset for pagination |
+
+Response:
+
+```json
+{
+  "data": [
+    {
+      "id": "conj-12345",
+      "tca": "2023-06-15T08:22:15Z",
+      "primaryObject": {
+        "noradId": "25544",
+        "name": "ISS (ZARYA)",
+        "type": "PAYLOAD"
+      },
+      "secondaryObject": {
+        "noradId": "48274",
+        "name": "COSMOS 2251 DEB",
+        "type": "DEBRIS"
+      },
+      "missDistance": 325,
+      "probabilityOfCollision": 0.00015,
+      "relativeVelocity": 14.2
+    },
+    // Additional conjunction events...
+  ],
+  "pagination": {
+    "total": 2345,
+    "limit": 100,
+    "offset": 0,
+    "nextOffset": 100
+  }
+}
+```
+
+#### Get Conjunction Event Details
+
+```
+GET /conjunctions/{id}
+```
+
+Response:
+
+```json
+{
+  "id": "conj-12345",
+  "tca": "2023-06-15T08:22:15Z",
+  "primaryObject": {
+    "noradId": "25544",
+    "name": "ISS (ZARYA)",
+    "type": "PAYLOAD",
+    "size": 109.43,
+    "mass": 420000,
+    "rcs": 399.1
+  },
+  "secondaryObject": {
+    "noradId": "48274",
+    "name": "COSMOS 2251 DEB",
+    "type": "DEBRIS",
+    "size": 0.1,
+    "mass": 0.5,
+    "rcs": 0.02
+  },
+  "missDistance": 325,
+  "probabilityOfCollision": 0.00015,
+  "relativeVelocity": 14.2,
+  "covariance": {
+    "primary": [[0.001, 0, 0], [0, 0.001, 0], [0, 0, 0.001]],
+    "secondary": [[0.05, 0, 0], [0, 0.05, 0], [0, 0, 0.05]]
+  },
+  "createdAt": "2023-06-14T10:15:22Z",
+  "updatedAt": "2023-06-14T16:20:15Z",
+  "source": "JSpOC"
+}
+```
+
+### Space Objects
+
+#### Get Space Object
+
+```
+GET /objects/{noradId}
+```
+
+Response:
+
+```json
+{
+  "noradId": "25544",
+  "name": "ISS (ZARYA)",
+  "internationalDesignator": "1998-067A",
+  "type": "PAYLOAD",
+  "size": 109.43,
+  "mass": 420000,
+  "rcs": 399.1,
+  "launchDate": "1998-11-20T00:00:00Z",
+  "country": "ISS",
+  "orbit": {
+    "type": "LEO",
+    "semiMajorAxis": 6783.4,
+    "eccentricity": 0.0004768,
+    "inclination": 51.6426,
+    "raan": 247.4627,
+    "argOfPerigee": 130.5360,
+    "meanAnomaly": 325.0288,
+    "epoch": "2023-06-15T06:00:00Z"
+  },
+  "status": "ACTIVE"
+}
+```
+
+#### Search Space Objects
+
+```
+GET /objects
+```
+
+Query Parameters:
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| name | string | Object name (partial match) |
+| type | string | Object type (PAYLOAD, DEBRIS, ROCKET_BODY) |
+| orbit | string | Orbit type (LEO, MEO, GEO, HEO) |
+| status | string | Object status (ACTIVE, INACTIVE) |
+| launchDateStart | ISO8601 | Minimum launch date |
+| launchDateEnd | ISO8601 | Maximum launch date |
+| limit | number | Maximum number of results (default: 100, max: 1000) |
+| offset | number | Result offset for pagination |
+
+Response:
+
+```json
+{
+  "data": [
+    {
+      "noradId": "25544",
+      "name": "ISS (ZARYA)",
+      "internationalDesignator": "1998-067A",
+      "type": "PAYLOAD",
+      "orbit": {
+        "type": "LEO"
+      },
+      "status": "ACTIVE"
+    },
+    // Additional space objects...
+  ],
+  "pagination": {
+    "total": 23456,
+    "limit": 100,
+    "offset": 0,
+    "nextOffset": 100
+  }
+}
+```
+
+### Maneuver Planning
+
+#### Calculate Avoidance Maneuver
+
+```
+POST /maneuvers/calculate
+```
+
+Request:
+
+```json
+{
+  "conjunctionId": "conj-12345",
+  "maneuverType": "PROGRADE",
+  "maneuverTime": "2023-06-14T18:00:00Z",
+  "deltaV": 0.1
+}
+```
+
+Response:
+
+```json
+{
+  "id": "man-6789",
+  "conjunctionId": "conj-12345",
+  "maneuverType": "PROGRADE",
+  "maneuverTime": "2023-06-14T18:00:00Z",
+  "deltaV": 0.1,
+  "fuelConsumption": 0.75,
+  "newProbabilityOfCollision": 0.000001,
+  "newMissDistance": 2450,
+  "postManeuverOrbit": {
+    "semiMajorAxis": 6783.6,
+    "eccentricity": 0.0004772,
+    "inclination": 51.6426,
+    "raan": 247.4627,
+    "argOfPerigee": 130.5360,
+    "meanAnomaly": 325.0300
+  }
+}
+```
+
+### Reporting
+
+#### Generate Conjunction Summary Report
+
+```
+GET /reports/conjunction-summary
+```
+
+Query Parameters:
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| startTime | ISO8601 | Start time for report period |
+| endTime | ISO8601 | End time for report period |
+| minPc | number | Minimum probability of collision |
+| format | string | Output format (JSON, CSV, PDF) |
+
+Response (JSON format):
+
+```json
+{
+  "reportId": "rep-34567",
+  "generatedAt": "2023-06-15T10:00:00Z",
+  "period": {
+    "start": "2023-06-01T00:00:00Z",
+    "end": "2023-06-15T00:00:00Z"
+  },
+  "summary": {
+    "totalConjunctions": 156,
+    "highRiskConjunctions": 3,
+    "objectsInvolved": 212,
+    "maneuversPlanned": 2,
+    "maneuversExecuted": 1
+  },
+  "highRiskEvents": [
+    {
+      "id": "conj-12345",
+      "tca": "2023-06-15T08:22:15Z",
+      "primaryObject": {
+        "noradId": "25544",
+        "name": "ISS (ZARYA)"
+      },
+      "secondaryObject": {
+        "noradId": "48274",
+        "name": "COSMOS 2251 DEB"
+      },
+      "probabilityOfCollision": 0.00015,
+      "status": "MONITORING"
+    },
+    // Additional high-risk events...
+  ],
+  "downloadUrl": "https://api.ccdm.example.com/v1/reports/downloads/rep-34567"
+}
+```
+
+## Error Handling
+
+The API uses standard HTTP status codes and returns error details in the response body:
+
+```json
+{
+  "error": {
+    "code": "INVALID_PARAMETER",
+    "message": "Invalid value for parameter 'minPc': must be a number between 0 and 1",
+    "details": {
+      "parameter": "minPc",
+      "value": "xyz",
+      "constraint": "0 <= minPc <= 1"
+    }
+  }
+}
+```
+
+Common error codes:
+
+- `AUTHENTICATION_REQUIRED`: Authentication is required but was not provided
+- `INVALID_CREDENTIALS`: The provided credentials are invalid
+- `INSUFFICIENT_PERMISSIONS`: The user lacks required permissions
+- `RESOURCE_NOT_FOUND`: The requested resource does not exist
+- `INVALID_PARAMETER`: A request parameter has an invalid value
+- `RATE_LIMIT_EXCEEDED`: The user has exceeded their rate limit
+- `INTERNAL_ERROR`: An internal server error occurred
+
+## Webhooks
+
+The CCDM service supports webhooks for real-time notifications. Configure webhooks in the user dashboard.
+
+Available event types:
+
+- `conjunction.new`: A new conjunction event is detected
+- `conjunction.updated`: An existing conjunction's data is updated
+- `conjunction.risk_increased`: A conjunction's risk level increased
+- `maneuver.planned`: A new maneuver has been planned
+- `maneuver.executed`: A planned maneuver has been executed
+
+Webhook payload example:
+
+```json
+{
+  "eventType": "conjunction.risk_increased",
+  "timestamp": "2023-06-15T06:14:22Z",
+  "data": {
+    "conjunctionId": "conj-12345",
+    "previousPc": 0.00005,
+    "newPc": 0.00015,
+    "tca": "2023-06-15T08:22:15Z",
+    "objects": ["25544", "48274"]
+  }
+}
+```
+
+## Client Libraries
+
+Official client libraries are available for:
+
+- Python: [GitHub - ccdm/ccdm-python](https://github.com/ccdm/ccdm-python)
+- JavaScript: [GitHub - ccdm/ccdm-js](https://github.com/ccdm/ccdm-js)
+- Java: [GitHub - ccdm/ccdm-java](https://github.com/ccdm/ccdm-java)
+
+## API Versioning
+
+The API uses URL versioning (e.g., `/v1/`). We maintain backward compatibility within major versions and provide deprecation notices at least 6 months before removing features.
+
+## Support
+
+For API support, contact:
+
+- Email: api-support@ccdm.example.com
+- Documentation: https://docs.ccdm.example.com
+- Status page: https://status.ccdm.example.com 

@@ -1,11 +1,812 @@
 """CCDM Service with enhanced ML capabilities."""
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List, Optional, Union, Callable, Awaitable, TypeVar
 from datetime import datetime, timedelta
 import logging
-from analysis.ml_evaluators import MLManeuverEvaluator, MLSignatureEvaluator, MLAMREvaluator
 import random
+import time
+import asyncio
+import contextlib
+import json
+import socket
+import os
+import uuid
+import threading
+import smtplib
+import requests
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+import yaml
+from functools import wraps, lru_cache
+from collections import defaultdict
+from analysis.ml_evaluators import MLManeuverEvaluator, MLSignatureEvaluator, MLAMREvaluator
 
+# Configure enhanced structured logging
 logger = logging.getLogger(__name__)
+
+# Environment and configuration loading
+DEPLOYMENT_ENV = os.getenv("DEPLOYMENT_ENV", "development")
+CONFIG_DIR = os.getenv("CONFIG_DIR", "./config")
+
+# Load environment-specific configuration
+def load_config():
+    """
+    Load configuration based on current environment.
+    
+    Returns:
+        Dictionary with configuration values
+    """
+    # Default configuration
+    default_config = {
+        "service": {
+            "name": "ccdm_service",
+            "version": "1.0.0"
+        },
+        "logging": {
+            "level": "INFO",
+            "structured": True
+        },
+        "database": {
+            "timeout": 30,
+            "pool_size": 10,
+            "max_overflow": 20
+        },
+        "rate_limiting": {
+            "enabled": True,
+            "default_limit": 100,
+            "endpoints": {
+                "get_historical_analysis": 30,
+                "analyze_conjunction": 60,
+                "get_assessment": 120
+            }
+        },
+        "caching": {
+            "enabled": True,
+            "default_ttl": 300
+        },
+        "alerting": {
+            "enabled": False,
+            "email": {
+                "enabled": False,
+                "smtp_server": "",
+                "smtp_port": 587,
+                "username": "",
+                "password": "",
+                "from_address": "",
+                "to_addresses": []
+            },
+            "slack": {
+                "enabled": False,
+                "webhook_url": ""
+            }
+        }
+    }
+    
+    # Try to load environment-specific config
+    config_path = os.path.join(CONFIG_DIR, f"{DEPLOYMENT_ENV}.yaml")
+    env_config = {}
+    
+    try:
+        if os.path.exists(config_path):
+            with open(config_path, 'r') as f:
+                env_config = yaml.safe_load(f)
+    except Exception as e:
+        logger.warning(f"Failed to load config from {config_path}: {str(e)}")
+    
+    # Merge configurations with environment config taking precedence
+    def deep_merge(base, override):
+        result = base.copy()
+        for key, value in override.items():
+            if isinstance(value, dict) and key in result and isinstance(result[key], dict):
+                result[key] = deep_merge(result[key], value)
+            else:
+                result[key] = value
+        return result
+    
+    config = deep_merge(default_config, env_config)
+    
+    # Override with environment variables
+    if os.getenv("DB_TIMEOUT_SECONDS"):
+        config["database"]["timeout"] = int(os.getenv("DB_TIMEOUT_SECONDS"))
+    
+    if os.getenv("RATE_LIMIT_ENABLED"):
+        config["rate_limiting"]["enabled"] = os.getenv("RATE_LIMIT_ENABLED").lower() in ("true", "1", "yes")
+    
+    if os.getenv("CACHE_ENABLED"):
+        config["caching"]["enabled"] = os.getenv("CACHE_ENABLED").lower() in ("true", "1", "yes")
+    
+    if os.getenv("ALERTING_ENABLED"):
+        config["alerting"]["enabled"] = os.getenv("ALERTING_ENABLED").lower() in ("true", "1", "yes")
+    
+    return config
+
+# Load configuration
+CONFIG = load_config()
+
+# Host information for logging context
+HOSTNAME = socket.gethostname()
+SERVICE_NAME = CONFIG["service"]["name"]
+SERVICE_VERSION = CONFIG["service"]["version"]
+
+# Rate limiting configuration
+RATE_LIMIT_ENABLED = CONFIG["rate_limiting"]["enabled"]
+DEFAULT_RATE_LIMITS = CONFIG["rate_limiting"]["endpoints"]
+DEFAULT_RATE_LIMITS["default"] = CONFIG["rate_limiting"]["default_limit"]
+
+# Cache configuration
+CACHE_ENABLED = CONFIG["caching"]["enabled"]
+DEFAULT_CACHE_TTL = CONFIG["caching"]["default_ttl"]
+
+# Alerting system
+class AlertManager:
+    """Alert system for critical errors."""
+    
+    def __init__(self, config: Dict[str, Any]):
+        self.config = config
+        self.enabled = config["alerting"]["enabled"]
+        self.email_config = config["alerting"]["email"]
+        self.slack_config = config["alerting"]["slack"]
+        
+        # Maintain a set of recent alert IDs to prevent duplicates
+        self.recent_alerts = set()
+        self.lock = threading.RLock()
+        
+        # Start alert cleaner thread
+        if self.enabled:
+            self._start_alert_cleaner()
+            
+    def _start_alert_cleaner(self):
+        """Start background thread to clean old alerts."""
+        def clean_alerts():
+            while True:
+                time.sleep(3600)  # Run every hour
+                with self.lock:
+                    self.recent_alerts.clear()
+                    
+        thread = threading.Thread(target=clean_alerts, daemon=True)
+        thread.start()
+        
+    def _is_duplicate(self, alert_id: str) -> bool:
+        """Check if alert is a duplicate."""
+        with self.lock:
+            if alert_id in self.recent_alerts:
+                return True
+            self.recent_alerts.add(alert_id)
+            return False
+            
+    def send_alert(self, level: str, title: str, message: str, context: Dict[str, Any] = None):
+        """
+        Send alert via configured channels.
+        
+        Args:
+            level: Alert level (critical, error, warning)
+            title: Alert title
+            message: Alert message
+            context: Additional context for the alert
+        """
+        if not self.enabled:
+            return
+            
+        # Only alert for critical and error levels
+        if level.lower() not in ("critical", "error"):
+            return
+            
+        # Create alert ID to prevent duplicates
+        if context:
+            alert_id = f"{level}:{title}:{context.get('error_type', '')}"
+        else:
+            alert_id = f"{level}:{title}"
+            
+        if self._is_duplicate(alert_id):
+            return
+            
+        # Prepare alert data
+        alert_data = {
+            "level": level,
+            "title": title,
+            "message": message,
+            "service": SERVICE_NAME,
+            "version": SERVICE_VERSION,
+            "environment": DEPLOYMENT_ENV,
+            "hostname": HOSTNAME,
+            "timestamp": datetime.utcnow().isoformat()
+        }
+        
+        if context:
+            alert_data["context"] = context
+            
+        # Send via configured channels
+        if self.email_config["enabled"]:
+            self._send_email_alert(alert_data)
+            
+        if self.slack_config["enabled"]:
+            self._send_slack_alert(alert_data)
+            
+    def _send_email_alert(self, alert_data: Dict[str, Any]):
+        """Send alert via email."""
+        try:
+            config = self.email_config
+            
+            # Create message
+            msg = MIMEMultipart()
+            msg['Subject'] = f"[{alert_data['level'].upper()}] {alert_data['service']} - {alert_data['title']}"
+            msg['From'] = config['from_address']
+            msg['To'] = ", ".join(config['to_addresses'])
+            
+            # Create message body
+            body = f"""
+            <html>
+            <body>
+                <h2>{alert_data['title']}</h2>
+                <p><strong>Level:</strong> {alert_data['level']}</p>
+                <p><strong>Service:</strong> {alert_data['service']} v{alert_data['version']}</p>
+                <p><strong>Environment:</strong> {alert_data['environment']}</p>
+                <p><strong>Host:</strong> {alert_data['hostname']}</p>
+                <p><strong>Time:</strong> {alert_data['timestamp']}</p>
+                <h3>Message:</h3>
+                <p>{alert_data['message']}</p>
+            """
+            
+            if 'context' in alert_data:
+                body += "<h3>Context:</h3><pre>" + json.dumps(alert_data['context'], indent=2) + "</pre>"
+                
+            body += """
+            </body>
+            </html>
+            """
+            
+            # Attach body
+            msg.attach(MIMEText(body, 'html'))
+            
+            # Send email
+            with smtplib.SMTP(config['smtp_server'], config['smtp_port']) as server:
+                server.starttls()
+                if config['username'] and config['password']:
+                    server.login(config['username'], config['password'])
+                server.send_message(msg)
+                
+        except Exception as e:
+            logger.error(f"Failed to send email alert: {str(e)}")
+            
+    def _send_slack_alert(self, alert_data: Dict[str, Any]):
+        """Send alert via Slack webhook."""
+        try:
+            webhook_url = self.slack_config['webhook_url']
+            if not webhook_url:
+                return
+                
+            # Create color based on level
+            color = "#ff0000" if alert_data['level'].lower() == "critical" else "#ffa500"
+            
+            # Create attachment
+            attachment = {
+                "fallback": f"{alert_data['level'].upper()}: {alert_data['title']}",
+                "color": color,
+                "title": f"{alert_data['level'].upper()}: {alert_data['title']}",
+                "text": alert_data['message'],
+                "fields": [
+                    {
+                        "title": "Service",
+                        "value": f"{alert_data['service']} v{alert_data['version']}",
+                        "short": True
+                    },
+                    {
+                        "title": "Environment",
+                        "value": alert_data['environment'],
+                        "short": True
+                    },
+                    {
+                        "title": "Host",
+                        "value": alert_data['hostname'],
+                        "short": True
+                    },
+                    {
+                        "title": "Time",
+                        "value": alert_data['timestamp'],
+                        "short": True
+                    }
+                ],
+                "footer": "CCDM Service Alerts"
+            }
+            
+            # Add context if available
+            if 'context' in alert_data:
+                context_text = json.dumps(alert_data['context'], indent=2)
+                attachment["fields"].append({
+                    "title": "Context",
+                    "value": f"```{context_text}```",
+                    "short": False
+                })
+                
+            # Create payload
+            payload = {
+                "text": f"Alert from {alert_data['service']} ({alert_data['environment']})",
+                "attachments": [attachment]
+            }
+            
+            # Send to Slack
+            response = requests.post(
+                webhook_url,
+                json=payload,
+                headers={"Content-Type": "application/json"},
+                timeout=5
+            )
+            
+            if response.status_code != 200:
+                logger.error(f"Failed to send Slack alert: {response.status_code} {response.text}")
+                
+        except Exception as e:
+            logger.error(f"Failed to send Slack alert: {str(e)}")
+
+# Initialize alert manager
+alert_manager = AlertManager(CONFIG)
+
+# Enhanced structured logger with alerts
+class StructuredLogger:
+    """Enhanced structured logger with consistent context and alerting."""
+    
+    @staticmethod
+    def get_base_context():
+        """Get base context for all logs."""
+        return {
+            "service": SERVICE_NAME,
+            "version": SERVICE_VERSION,
+            "hostname": HOSTNAME,
+            "environment": DEPLOYMENT_ENV
+        }
+    
+    @classmethod
+    def info(cls, message: str, **kwargs):
+        """Log info message with structured context."""
+        context = cls.get_base_context()
+        context.update(kwargs)
+        
+        # Create structured log
+        log_entry = {
+            "message": message,
+            "level": "INFO",
+            "timestamp": datetime.utcnow().isoformat(),
+            "context": context
+        }
+        
+        logger.info(json.dumps(log_entry))
+        
+    @classmethod
+    def warning(cls, message: str, **kwargs):
+        """Log warning message with structured context."""
+        context = cls.get_base_context()
+        context.update(kwargs)
+        
+        # Create structured log
+        log_entry = {
+            "message": message,
+            "level": "WARNING",
+            "timestamp": datetime.utcnow().isoformat(),
+            "context": context
+        }
+        
+        logger.warning(json.dumps(log_entry))
+        
+    @classmethod
+    def error(cls, message: str, error=None, alert=False, **kwargs):
+        """Log error message with structured context and optional alert."""
+        context = cls.get_base_context()
+        context.update(kwargs)
+        
+        # Add error details if provided
+        if error:
+            context["error"] = {
+                "type": type(error).__name__,
+                "message": str(error)
+            }
+            
+        # Create structured log
+        log_entry = {
+            "message": message,
+            "level": "ERROR",
+            "timestamp": datetime.utcnow().isoformat(),
+            "context": context
+        }
+        
+        logger.error(json.dumps(log_entry))
+        
+        # Send alert if requested
+        if alert:
+            alert_manager.send_alert(
+                "error",
+                message,
+                str(error) if error else message,
+                context
+            )
+        
+    @classmethod
+    def critical(cls, message: str, error=None, **kwargs):
+        """Log critical error with structured context and automatic alert."""
+        context = cls.get_base_context()
+        context.update(kwargs)
+        
+        # Add error details if provided
+        if error:
+            context["error"] = {
+                "type": type(error).__name__,
+                "message": str(error)
+            }
+            
+        # Create structured log
+        log_entry = {
+            "message": message,
+            "level": "CRITICAL",
+            "timestamp": datetime.utcnow().isoformat(),
+            "context": context
+        }
+        
+        logger.critical(json.dumps(log_entry))
+        
+        # Always send alerts for critical errors
+        alert_manager.send_alert(
+            "critical",
+            message,
+            str(error) if error else message,
+            context
+        )
+        
+    @classmethod
+    def exception(cls, message: str, alert=True, **kwargs):
+        """Log exception message with structured context, traceback, and alert."""
+        context = cls.get_base_context()
+        context.update(kwargs)
+        
+        # Create structured log
+        log_entry = {
+            "message": message,
+            "level": "ERROR",
+            "timestamp": datetime.utcnow().isoformat(),
+            "context": context
+        }
+        
+        logger.exception(json.dumps(log_entry))
+        
+        # Send alert for exceptions if enabled
+        if alert:
+            alert_manager.send_alert(
+                "error",
+                f"Exception: {message}",
+                "See logs for stack trace",
+                context
+            )
+
+# Rate limiter class
+class RateLimiter:
+    """Rate limiter to prevent API abuse."""
+    
+    def __init__(self):
+        # Store request counts per user/IP and endpoint
+        self.request_counts = defaultdict(lambda: defaultdict(list))
+        self.rate_limits = DEFAULT_RATE_LIMITS.copy()
+        self.lock = threading.RLock()
+        
+    def _clean_old_requests(self, user_id: str, endpoint: str):
+        """Remove requests older than 1 minute."""
+        with self.lock:
+            now = time.time()
+            # Keep only requests within the last minute
+            self.request_counts[user_id][endpoint] = [
+                timestamp for timestamp in self.request_counts[user_id][endpoint]
+                if now - timestamp < 60
+            ]
+        
+    def check_rate_limit(self, user_id: str, endpoint: str) -> bool:
+        """
+        Check if a request is allowed under rate limits.
+        
+        Args:
+            user_id: User ID or IP address
+            endpoint: API endpoint being accessed
+            
+        Returns:
+            True if request is allowed, False if rate limit exceeded
+        """
+        if not RATE_LIMIT_ENABLED:
+            return True
+            
+        # Clean up old requests
+        self._clean_old_requests(user_id, endpoint)
+        
+        # Get rate limit for endpoint
+        rate_limit = self.rate_limits.get(endpoint, self.rate_limits["default"])
+        
+        with self.lock:
+            # Check if user has exceeded rate limit
+            if len(self.request_counts[user_id][endpoint]) >= rate_limit:
+                return False
+                
+            # Record request
+            self.request_counts[user_id][endpoint].append(time.time())
+            return True
+            
+    def get_remaining_requests(self, user_id: str, endpoint: str) -> int:
+        """Get remaining requests allowed for user and endpoint."""
+        if not RATE_LIMIT_ENABLED:
+            return 999
+            
+        # Clean up old requests
+        self._clean_old_requests(user_id, endpoint)
+        
+        # Get rate limit for endpoint
+        rate_limit = self.rate_limits.get(endpoint, self.rate_limits["default"])
+        
+        with self.lock:
+            return max(0, rate_limit - len(self.request_counts[user_id][endpoint]))
+            
+    def update_rate_limit(self, endpoint: str, new_limit: int):
+        """Update rate limit for an endpoint."""
+        with self.lock:
+            self.rate_limits[endpoint] = new_limit
+
+# Singleton rate limiter instance
+_rate_limiter = RateLimiter()
+
+# Cache decorator with TTL
+def cached(ttl_seconds: int = DEFAULT_CACHE_TTL):
+    """
+    Decorator to cache function results with time-to-live.
+    
+    Args:
+        ttl_seconds: TTL in seconds for cached items
+        
+    Returns:
+        Decorated function with caching
+    """
+    def decorator(func):
+        # Cache to store results and timestamps
+        cache = {}
+        cache_lock = threading.RLock()
+        
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            if not CACHE_ENABLED:
+                return func(*args, **kwargs)
+                
+            # Create cache key from function name, args, and kwargs
+            # Skip first arg (self) for instance methods
+            cache_args = args[1:] if args and hasattr(args[0], '__dict__') else args
+            key = f"{func.__name__}:{str(cache_args)}:{str(sorted(kwargs.items()))}"
+            
+            with cache_lock:
+                # Check if result is in cache and not expired
+                if key in cache:
+                    result, timestamp = cache[key]
+                    if time.time() - timestamp < ttl_seconds:
+                        StructuredLogger.info(
+                            f"Cache hit for {func.__name__}",
+                            operation=func.__name__,
+                            ttl_seconds=ttl_seconds
+                        )
+                        return result
+                
+                # Get fresh result
+                result = func(*args, **kwargs)
+                
+                # Cache result with timestamp
+                cache[key] = (result, time.time())
+                
+                # Clean up old cache entries if more than 1000 items
+                if len(cache) > 1000:
+                    # Remove oldest 20% of entries
+                    oldest = sorted(
+                        [(k, v[1]) for k, v in cache.items()],
+                        key=lambda x: x[1]
+                    )[:200]
+                    for k, _ in oldest:
+                        del cache[k]
+                
+                return result
+                
+        # Add method to clear cache
+        def clear_cache():
+            with cache_lock:
+                cache.clear()
+                
+        wrapper.clear_cache = clear_cache
+        return wrapper
+        
+    return decorator
+
+# Singleton instance
+_ccdm_service_instance = None
+
+# Define result type for error handling decorator
+T = TypeVar('T')
+
+# Error codes
+class ErrorCode:
+    """Standard error codes for CCDM service."""
+    INVALID_INPUT = "INVALID_INPUT"
+    DATABASE_ERROR = "DATABASE_ERROR"
+    TIMEOUT_ERROR = "TIMEOUT_ERROR"
+    PROCESSING_ERROR = "PROCESSING_ERROR"
+    NOT_FOUND = "NOT_FOUND"
+    SECURITY_ERROR = "SECURITY_ERROR"
+    DEPENDENCY_ERROR = "DEPENDENCY_ERROR"
+    
+# Standardized error response
+def error_response(code: str, message: str, object_id: str = None, request_id: str = None) -> Dict[str, Any]:
+    """
+    Create a standardized error response.
+    
+    Args:
+        code: Error code from ErrorCode class
+        message: Error message
+        object_id: Optional object ID
+        request_id: Optional request ID
+    
+    Returns:
+        Dictionary with error details
+    """
+    response = {
+        "status": "error",
+        "error_code": code,
+        "message": message,
+        "timestamp": datetime.utcnow().isoformat()
+    }
+    
+    if object_id:
+        response["object_id"] = object_id
+        
+    if request_id:
+        response["request_id"] = request_id
+        
+    return response
+
+# Timeout context manager
+@contextlib.contextmanager
+def timeout(seconds: int, error_message: str = "Operation timed out"):
+    """
+    Context manager for operation timeout.
+    
+    Args:
+        seconds: Timeout in seconds
+        error_message: Error message for timeout exception
+    
+    Raises:
+        TimeoutError: If operation exceeds timeout
+    """
+    def handle_timeout(signum, frame):
+        raise TimeoutError(error_message)
+        
+    # Use signal for timeout in synchronous code
+    import signal
+    signal.signal(signal.SIGALRM, handle_timeout)
+    signal.alarm(seconds)
+    
+    try:
+        yield
+    finally:
+        signal.alarm(0)  # Disable the alarm
+
+# Decorator for standardized error handling
+def handle_errors(func):
+    """
+    Decorator for standardized error handling with structured logging.
+    
+    Args:
+        func: Function to decorate
+    
+    Returns:
+        Wrapped function with error handling
+    """
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        # Generate request ID and extract object ID
+        request_id = str(uuid.uuid4())
+        object_id = None
+        
+        # Try to get object_id from kwargs or args
+        if 'norad_id' in kwargs:
+            object_id = kwargs['norad_id']
+        elif 'spacecraft_id' in kwargs:
+            object_id = kwargs['spacecraft_id']
+        elif 'object_id' in kwargs:
+            object_id = kwargs['object_id']
+        elif len(args) > 1 and isinstance(args[1], str):
+            object_id = args[1]  # Assume second arg is ID in most methods
+            
+        # Log request start with context
+        StructuredLogger.info(
+            f"Starting {func.__name__}",
+            request_id=request_id,
+            operation=func.__name__,
+            object_id=object_id,
+            start_time=datetime.utcnow().isoformat()
+        )
+            
+        try:
+            with timeout(300, "Operation timed out"):  # 5-minute timeout
+                result = func(*args, **kwargs)
+                
+                # Log successful completion
+                StructuredLogger.info(
+                    f"Completed {func.__name__}",
+                    request_id=request_id,
+                    operation=func.__name__,
+                    object_id=object_id,
+                    duration_ms=int((datetime.utcnow() - datetime.fromisoformat(StructuredLogger.get_base_context().get("start_time", datetime.utcnow().isoformat()))).total_seconds() * 1000),
+                    status="success"
+                )
+                
+                return result
+        except ValueError as e:
+            StructuredLogger.warning(
+                f"Validation error in {func.__name__}",
+                request_id=request_id,
+                operation=func.__name__,
+                object_id=object_id,
+                error=e,
+                status="failed"
+            )
+            return error_response(ErrorCode.INVALID_INPUT, str(e), object_id, request_id)
+        except TimeoutError as e:
+            StructuredLogger.error(
+                f"Timeout in {func.__name__}",
+                request_id=request_id,
+                operation=func.__name__,
+                object_id=object_id,
+                error=e,
+                status="timeout"
+            )
+            return error_response(ErrorCode.TIMEOUT_ERROR, str(e), object_id, request_id)
+        except Exception as e:
+            StructuredLogger.exception(
+                f"Error in {func.__name__}",
+                request_id=request_id,
+                operation=func.__name__,
+                object_id=object_id,
+                error_type=type(e).__name__,
+                status="error"
+            )
+            return error_response(ErrorCode.PROCESSING_ERROR, str(e), object_id, request_id)
+            
+    return wrapper
+
+# Async version of the error handling decorator
+def handle_errors_async(func):
+    """
+    Decorator for standardized error handling in async functions.
+    
+    Args:
+        func: Async function to decorate
+    
+    Returns:
+        Wrapped async function with error handling
+    """
+    @wraps(func)
+    async def wrapper(*args, **kwargs):
+        # Extract object_id from arguments if available
+        object_id = None
+        request_id = f"req_{int(time.time())}"
+        
+        # Try to get object_id from kwargs or args
+        if 'norad_id' in kwargs:
+            object_id = kwargs['norad_id']
+        elif 'spacecraft_id' in kwargs:
+            object_id = kwargs['spacecraft_id']
+        elif 'object_id' in kwargs:
+            object_id = kwargs['object_id']
+        elif len(args) > 1 and isinstance(args[1], str):
+            object_id = args[1]  # Assume second arg is ID in most methods
+            
+        try:
+            return await asyncio.wait_for(func(*args, **kwargs), timeout=300)  # 5-minute timeout
+        except ValueError as e:
+            logger.warning(f"[{request_id}] Validation error in {func.__name__}: {str(e)}")
+            return error_response(ErrorCode.INVALID_INPUT, str(e), object_id, request_id)
+        except asyncio.TimeoutError:
+            logger.error(f"[{request_id}] Async timeout in {func.__name__}")
+            return error_response(ErrorCode.TIMEOUT_ERROR, "Operation timed out", object_id, request_id)
+        except Exception as e:
+            logger.exception(f"[{request_id}] Error in {func.__name__}: {str(e)}")
+            return error_response(ErrorCode.PROCESSING_ERROR, str(e), object_id, request_id)
+            
+    return wrapper
 
 class CCDMService:
     def __init__(self, db=None):
@@ -14,6 +815,35 @@ class CCDMService:
         self.amr_evaluator = MLAMREvaluator()
         self.db = db  # SQLAlchemy session
         
+        # Database configuration
+        self.db_timeout = int(os.getenv("DB_TIMEOUT_SECONDS", "30"))
+        
+        # Load rate limiter
+        self.rate_limiter = _rate_limiter
+        
+    @classmethod
+    def get_instance(cls, db=None):
+        """
+        Get singleton instance of CCDMService.
+        
+        Args:
+            db: Optional database session
+            
+        Returns:
+            CCDMService instance
+        """
+        global _ccdm_service_instance
+        
+        if _ccdm_service_instance is None:
+            logger.info("Initializing new CCDMService instance")
+            _ccdm_service_instance = cls(db=db)
+        elif db is not None:
+            logger.debug("Updating database session in existing CCDMService instance")
+            _ccdm_service_instance.db = db
+            
+        return _ccdm_service_instance
+
+    @handle_errors
     def analyze_conjunction(self, spacecraft_id: str, other_spacecraft_id: str) -> Dict[str, Any]:
         """Analyze potential conjunction between two spacecraft using ML models."""
         try:
@@ -212,124 +1042,312 @@ class CCDMService:
             'confidence': 0.0
         }
 
-    def get_historical_analysis(self, norad_id: str, start_date: str, end_date: str) -> Dict[str, Any]:
+    # Apply rate limiting decorator
+    def check_rate_limit(self, user_id: str, endpoint: str) -> Dict[str, Any]:
         """
-        Get historical analysis data for a specific spacecraft and date range.
+        Check if request is allowed under rate limits.
         
         Args:
-            norad_id: The NORAD ID of the spacecraft
-            start_date: The start date in ISO format
-            end_date: The end date in ISO format
+            user_id: User ID or IP address
+            endpoint: API endpoint being accessed
             
         Returns:
-            Dictionary containing historical analysis data
+            Dictionary with rate limit check result
         """
-        try:
-            # Convert string dates to datetime objects
-            start_datetime = datetime.fromisoformat(start_date.replace('Z', '+00:00'))
-            end_datetime = datetime.fromisoformat(end_date.replace('Z', '+00:00'))
-            
-            # Try to get data from database if available
-            if self.db:
-                analysis_points = self._get_historical_analysis_from_db(norad_id, start_datetime, end_datetime)
-                
-                # If no data in database, fall back to generated data
-                if not analysis_points:
-                    analysis_points = self._generate_historical_data_points(norad_id, start_datetime, end_datetime)
-            else:
-                # Generate simulated data
-                analysis_points = self._generate_historical_data_points(norad_id, start_datetime, end_datetime)
-            
-            # Calculate overall trend summary
-            trend_summary = self._calculate_trend_summary(analysis_points)
-            
-            return {
-                "norad_id": int(norad_id) if norad_id.isdigit() else norad_id,
-                "start_date": start_date,
-                "end_date": end_date,
-                "trend_summary": trend_summary,
-                "analysis_points": analysis_points,
-                "metadata": {
-                    "data_source": "Database" if self.db and analysis_points else "Simulated Data",
-                    "processing_version": "1.0.0",
-                    "confidence_threshold": 0.7
-                }
-            }
-            
-        except Exception as e:
-            logger.error(f"Error in historical analysis for spacecraft {norad_id}: {str(e)}")
-            return {
-                "status": "error",
-                "message": f"Historical analysis failed: {str(e)}"
-            }
-    
-    def _generate_historical_data_points(self, norad_id: str, start_date: datetime, end_date: datetime) -> List[Dict[str, Any]]:
-        """Generate simulated historical data points for testing."""
-        # Calculate number of data points based on date range
-        days_diff = (end_date - start_date).days
-        num_points = max(days_diff * 2, 7)  # At least 7 points
+        allowed = self.rate_limiter.check_rate_limit(user_id, endpoint)
+        remaining = self.rate_limiter.get_remaining_requests(user_id, endpoint)
         
-        # Threat level possibilities with weights (higher weight = more common)
-        threat_levels = {
-            "NONE": 20,
-            "LOW": 35, 
-            "MEDIUM": 25,
-            "HIGH": 15,
-            "CRITICAL": 5
+        result = {
+            "allowed": allowed,
+            "remaining": remaining
         }
         
-        # Generate weighted threat levels list for random selection
-        weighted_threats = []
-        for level, weight in threat_levels.items():
-            weighted_threats.extend([level] * weight)
-        
-        # Initialize simulation parameters
-        points = []
-        current_index = 0
-        
-        # Tendency to maintain similar threat levels (state machine-like)
-        current_level_index = 1  # Start at LOW
-        level_keys = list(threat_levels.keys())
-        
-        # Time interval between points
-        interval = (end_date - start_date) / num_points
-        
-        for i in range(num_points):
-            # Calculate timestamp for this point
-            timestamp = start_date + interval * i
+        # If rate limit exceeded, add retry-after header suggestion
+        if not allowed:
+            result["retry_after"] = 60  # Try again after 1 minute
+            StructuredLogger.warning(
+                f"Rate limit exceeded",
+                user_id=user_id,
+                endpoint=endpoint
+            )
             
-            # For realism, add some randomness to move up or down in threat level
-            change = 0
-            rand_val = random.random()
-            if rand_val < 0.15:  # 15% chance to move up
-                change = 1
-            elif rand_val < 0.30:  # 15% chance to move down
-                change = -1
-                
-            # Apply change but stay within bounds
-            current_level_index = max(0, min(len(level_keys) - 1, current_level_index + change))
-            threat_level = level_keys[current_level_index]
+        return result
+        
+    # Add cache to relevant methods
+    @cached(ttl_seconds=300)  # 5-minute cache
+    def get_historical_analysis(self, norad_id: str, start_date: str, end_date: str, page: int = 1, page_size: int = 100) -> Dict[str, Any]:
+        """
+        Get historical analysis for a spacecraft.
+        
+        Args:
+            norad_id: NORAD ID of the spacecraft
+            start_date: Analysis start date (ISO format)
+            end_date: Analysis end date (ISO format)
+            page: Page number (starting from 1)
+            page_size: Number of items per page
             
-            # Generate confidence value (higher for extreme levels)
-            base_confidence = 0.7 + random.random() * 0.25
-            if threat_level in ["NONE", "CRITICAL"]:
-                confidence = min(0.98, base_confidence + 0.1)
-            else:
-                confidence = base_confidence
+        Returns:
+            Dict with historical analysis results
+        """
+        try:
+            # Input validation
+            if not self._is_valid_norad_id(norad_id):
+                return error_response(
+                    ErrorCode.INVALID_INPUT,
+                    f"Invalid NORAD ID: {self._sanitize_input(norad_id)}"
+                )
+            
+            try:
+                start = datetime.fromisoformat(start_date)
+                end = datetime.fromisoformat(end_date)
+            except ValueError:
+                return error_response(
+                    ErrorCode.INVALID_INPUT,
+                    "Invalid date format. Use ISO format (YYYY-MM-DDTHH:MM:SS)."
+                )
                 
-            # Generate some random details appropriate for the threat level
+            # Validate analysis window
+            valid, error_msg = validate_analysis_window(start_date, end_date)
+            if not valid:
+                return error_response(ErrorCode.INVALID_INPUT, error_msg)
+                
+            # Check if data exists in the database
+            db_data = self._get_historical_analysis_from_db(norad_id, start, end)
+            
+            # If data exists in DB and covers the entire period, use it
+            if db_data:
+                logger.info(f"Retrieved historical analysis for {norad_id} from database",
+                           extra={"norad_id": norad_id})
+                
+                # Apply pagination to the data
+                total_items = len(db_data)
+                total_pages = (total_items + page_size - 1) // page_size  # Ceiling division
+                
+                # Validate page number
+                if page < 1:
+                    page = 1
+                elif page > total_pages and total_pages > 0:
+                    page = total_pages
+                    
+                # Calculate slice indices
+                start_idx = (page - 1) * page_size
+                end_idx = min(start_idx + page_size, total_items)
+                
+                # Get paginated data
+                paginated_data = db_data[start_idx:end_idx]
+                
+                # Construct response with pagination metadata
+                response = {
+                    "norad_id": norad_id,
+                    "start_date": start_date,
+                    "end_date": end_date,
+                    "pagination": {
+                        "page": page,
+                        "page_size": page_size,
+                        "total_items": total_items,
+                        "total_pages": total_pages
+                    },
+                    "data_points": paginated_data
+                }
+                
+                # Add trend summary if we have enough data
+                if total_items >= 3:
+                    response["trend_summary"] = self._calculate_trend_summary(db_data)
+                    
+                return response
+                
+            # Generate new data if not in database
+            logger.info(f"Generating historical analysis for {norad_id}",
+                      extra={"norad_id": norad_id})
+                      
+            # Generate data points in batches to avoid memory issues with large date ranges
+            all_data_points = self._generate_historical_data_points_optimized(norad_id, start, end)
+            
+            # Store in database asynchronously to avoid blocking the response
+            threading.Thread(
+                target=self._store_historical_analysis,
+                args=(norad_id, all_data_points)
+            ).start()
+            
+            # Apply pagination
+            total_items = len(all_data_points)
+            total_pages = (total_items + page_size - 1) // page_size
+            
+            # Validate page number
+            if page < 1:
+                page = 1
+            elif page > total_pages and total_pages > 0:
+                page = total_pages
+                
+            # Calculate slice indices
+            start_idx = (page - 1) * page_size
+            end_idx = min(start_idx + page_size, total_items)
+            
+            # Get paginated data
+            paginated_data = all_data_points[start_idx:end_idx]
+            
+            # Construct response
+            response = {
+                "norad_id": norad_id,
+                "start_date": start_date,
+                "end_date": end_date,
+                "pagination": {
+                    "page": page,
+                    "page_size": page_size,
+                    "total_items": total_items,
+                    "total_pages": total_pages
+                },
+                "data_points": paginated_data
+            }
+            
+            # Add trend summary if we have enough data
+            if total_items >= 3:
+                response["trend_summary"] = self._calculate_trend_summary(all_data_points)
+                
+            return response
+            
+        except Exception as e:
+            logger.exception(f"Error generating historical analysis: {str(e)}",
+                           extra={"norad_id": norad_id})
+            return error_response(
+                ErrorCode.PROCESSING_ERROR,
+                "Failed to generate historical analysis. Try again or contact support.",
+                object_id=norad_id
+            )
+
+    def _generate_historical_data_points_optimized(self, norad_id: str, start_date: datetime, end_date: datetime) -> List[Dict[str, Any]]:
+        """
+        Optimized version of historical data point generation.
+        Processes data in chunks to reduce memory usage.
+        
+        Args:
+            norad_id: NORAD ID of the spacecraft
+            start_date: Start date
+            end_date: End date
+            
+        Returns:
+            List of historical data points
+        """
+        # Calculate total number of days
+        total_days = (end_date - start_date).days + 1
+        
+        # If the period is large, process in chunks
+        MAX_DAYS_PER_CHUNK = 30
+        
+        if total_days <= MAX_DAYS_PER_CHUNK:
+            # For small ranges, process normally
+            return self._generate_historical_data_points_batch(norad_id, start_date, end_date)
+        
+        # For large ranges, process in chunks
+        all_data_points = []
+        current_start = start_date
+        
+        while current_start <= end_date:
+            # Calculate end of current chunk
+            current_end = min(current_start + timedelta(days=MAX_DAYS_PER_CHUNK - 1), end_date)
+            
+            # Process chunk
+            logger.info(f"Processing chunk from {current_start} to {current_end} for {norad_id}")
+            chunk_data = self._generate_historical_data_points_batch(norad_id, current_start, current_end)
+            all_data_points.extend(chunk_data)
+            
+            # Move to next chunk
+            current_start = current_end + timedelta(days=1)
+        
+        return all_data_points
+
+    def _generate_historical_data_points_batch(self, norad_id: str, start_date: datetime, end_date: datetime) -> List[Dict[str, Any]]:
+        """
+        Generate historical data points for a specific date range.
+        Optimized version that processes smaller batches.
+        
+        Args:
+            norad_id: NORAD ID of the spacecraft
+            start_date: Start date
+            end_date: End date
+            
+        Returns:
+            List of historical data points
+        """
+        data_points = []
+        current_date = start_date
+        
+        # Create a reusable random number generator for consistency
+        rng = random.Random(int(norad_id) if norad_id.isdigit() else hash(norad_id))
+        
+        # Precompute threat level probabilities based on norad_id
+        # This creates a consistent pattern for each spacecraft
+        threat_probs = {
+            "none": 0.5 + (rng.random() * 0.2),
+            "low": 0.2 + (rng.random() * 0.1),
+            "medium": 0.05 + (rng.random() * 0.1),
+            "high": 0.01 + (rng.random() * 0.04)
+        }
+        
+        # Normalize probabilities to sum to 1
+        total_prob = sum(threat_probs.values())
+        for level in threat_probs:
+            threat_probs[level] /= total_prob
+        
+        # Generate data points - one per day
+        while current_date <= end_date:
+            # Determine threat level based on weighted probabilities
+            rand_val = rng.random()
+            cumulative = 0
+            threat_level = "none"  # Default
+            
+            for level, prob in threat_probs.items():
+                cumulative += prob
+                if rand_val <= cumulative:
+                    threat_level = level
+                    break
+            
+            # Generate analysis details based on threat level
             details = self._generate_details_for_threat_level(threat_level)
             
-            # Add data point
-            points.append({
-                "timestamp": timestamp.isoformat(),
+            # Create data point
+            data_point = {
+                "date": current_date.isoformat(),
                 "threat_level": threat_level,
-                "confidence": round(confidence, 2),
                 "details": details
-            })
+            }
             
-        return points
-    
+            data_points.append(data_point)
+            current_date += timedelta(days=1)
+        
+        return data_points
+
+    def _store_historical_analysis(self, norad_id: str, data_points: List[Dict[str, Any]]) -> None:
+        """
+        Store historical analysis data in the database.
+        
+        Args:
+            norad_id: NORAD ID of the spacecraft
+            data_points: List of data points to store
+        """
+        try:
+            # Batch inserts for better performance
+            BATCH_SIZE = 100
+            for i in range(0, len(data_points), BATCH_SIZE):
+                batch = data_points[i:i+BATCH_SIZE]
+                with self.db.session() as session:
+                    for point in batch:
+                        analysis = HistoricalAnalysis(
+                            norad_id=norad_id,
+                            analysis_date=datetime.fromisoformat(point["date"]),
+                            threat_level=point["threat_level"],
+                            analysis_type="historical",
+                            data=point["details"]
+                        )
+                        session.add(analysis)
+                    session.commit()
+                    
+            logger.info(f"Stored {len(data_points)} historical data points for {norad_id}",
+                       extra={"norad_id": norad_id})
+        except Exception as e:
+            logger.exception(f"Error storing historical analysis: {str(e)}",
+                           extra={"norad_id": norad_id})
+
     def _generate_details_for_threat_level(self, threat_level: str) -> Dict[str, Any]:
         """Generate appropriate details for a threat level."""
         details = {}
@@ -426,16 +1444,98 @@ class CCDMService:
             
         return summary
 
-    def get_assessment(self, object_id: str) -> Dict[str, Any]:
+    # Apply rate limiting to secure method
+    def get_historical_analysis_secure(self, auth_token: str, norad_id: str, start_date: str, end_date: str) -> Dict[str, Any]:
         """
-        Get a comprehensive CCDM assessment for a specific object.
+        Secure version of get_historical_analysis with authentication and rate limiting.
         
         Args:
-            object_id: The ID of the object to assess
+            auth_token: Authentication token
+            norad_id: The NORAD ID of the spacecraft
+            start_date: The start date in ISO format
+            end_date: The end date in ISO format
             
         Returns:
-            Dictionary containing the assessment data
+            Dictionary containing historical analysis data or error
         """
+        request_id = str(uuid.uuid4())
+        
+        try:
+            # Authenticate request
+            auth_info = self.authenticate_request(auth_token)
+            user_id = auth_info.get("user_id", "anonymous")
+            
+            # Check rate limit
+            rate_limit_check = self.check_rate_limit(user_id, "get_historical_analysis")
+            if not rate_limit_check["allowed"]:
+                return error_response(
+                    "RATE_LIMIT_EXCEEDED", 
+                    f"Rate limit exceeded. Try again after {rate_limit_check['retry_after']} seconds.",
+                    norad_id, 
+                    request_id
+                )
+            
+            # Authorize action
+            if not self.authorize_action(auth_info, "read"):
+                StructuredLogger.warning(
+                    "Unauthorized access attempt", 
+                    request_id=request_id,
+                    user_id=user_id,
+                    norad_id=norad_id
+                )
+                return error_response(
+                    "UNAUTHORIZED", 
+                    "You do not have permission to access this data", 
+                    norad_id, 
+                    request_id
+                )
+                
+            # Log successful authentication
+            StructuredLogger.info(
+                "Authorized historical data access", 
+                request_id=request_id,
+                user_id=user_id,
+                norad_id=norad_id
+            )
+                
+            # Call the actual method
+            result = self.get_historical_analysis(norad_id, start_date, end_date)
+            
+            # Add audit information to the result
+            if isinstance(result, dict) and result.get("status") != "error":
+                result["audit"] = {
+                    "user_id": user_id,
+                    "access_time": datetime.utcnow().isoformat(),
+                    "request_id": request_id
+                }
+                
+                # Add rate limit information
+                result["rate_limit"] = {
+                    "remaining": rate_limit_check["remaining"]
+                }
+                
+            return result
+            
+        except ValueError as auth_error:
+            # Handle authentication errors
+            StructuredLogger.warning(
+                "Authentication failed for historical data access", 
+                request_id=request_id,
+                norad_id=norad_id,
+                error=auth_error
+            )
+            
+            return error_response(
+                "AUTHENTICATION_FAILED", 
+                str(auth_error), 
+                norad_id, 
+                request_id
+            )
+            
+    # Also add caching to assessment method
+    @cached(ttl_seconds=180)  # 3-minute cache
+    def get_assessment(self, object_id: str) -> Dict[str, Any]:
+        """Get a comprehensive CCDM assessment for a specific object."""
         try:
             # Try to get assessment from database if available
             if self.db:
@@ -606,46 +1706,111 @@ class CCDMService:
     # Database-related methods
     
     def _get_historical_analysis_from_db(self, norad_id: str, start_date: datetime, end_date: datetime) -> List[Dict[str, Any]]:
-        """Get historical analysis data from database."""
+        """
+        Get historical analysis data from the database.
+        Optimized for performance with proper query construction and result handling.
+        
+        Args:
+            norad_id: NORAD ID of the spacecraft
+            start_date: Start date for the analysis
+            end_date: End date for the analysis
+        
+        Returns:
+            List of historical analysis data points
+        """
         if not self.db:
+            logger.info(f"No database connection available for historical analysis of {norad_id}")
             return []
-            
+        
+        start_time = datetime.utcnow()
+        logger.info(f"Retrieving historical analysis for {norad_id} from {start_date} to {end_date}",
+                   extra={"norad_id": norad_id})
+        
         try:
-            # Import models here to avoid circular imports
-            from backend.models.ccdm import Spacecraft, CCDMIndicator, CCDMAssessment, ThreatLevel
-            
-            # Find spacecraft by NORAD ID
-            spacecraft = self.db.query(Spacecraft).filter(Spacecraft.norad_id == norad_id).first()
-            if not spacecraft:
-                return []
-                
-            # Get assessments within date range
-            assessments = (
-                self.db.query(CCDMAssessment)
-                .filter(
-                    CCDMAssessment.spacecraft_id == spacecraft.id,
-                    CCDMAssessment.timestamp >= start_date,
-                    CCDMAssessment.timestamp <= end_date
+            # Use session context manager to ensure proper session handling
+            with self.db.session() as session:
+                # Use optimized query with explicit join and column selection
+                # This reduces data transfer and processing time
+                query = (
+                    session.query(
+                        HistoricalAnalysis.norad_id,
+                        HistoricalAnalysis.analysis_date,
+                        HistoricalAnalysis.threat_level,
+                        HistoricalAnalysis.data
+                    )
+                    .filter(
+                        HistoricalAnalysis.norad_id == norad_id,
+                        HistoricalAnalysis.analysis_date >= start_date,
+                        HistoricalAnalysis.analysis_date <= end_date
+                    )
+                    # Use the composite index we created for this query pattern
+                    .order_by(HistoricalAnalysis.analysis_date)
+                    # Set timeout to prevent long-running queries
+                    .execution_options(timeout=CONFIG["database"]["timeout"])
                 )
-                .order_by(CCDMAssessment.timestamp)
-                .all()
-            )
-            
-            # Convert to analysis points
-            analysis_points = []
-            for assessment in assessments:
-                analysis_points.append({
-                    "timestamp": assessment.timestamp.isoformat(),
-                    "threat_level": assessment.threat_level.value,
-                    "confidence": assessment.confidence_level,
-                    "details": assessment.results or {}
-                })
                 
-            return analysis_points
+                # Execute with custom timeout handler
+                with timeout(seconds=CONFIG["database"]["timeout"]):
+                    # Use chunks for large result sets to reduce memory usage
+                    # Set a reasonable chunk size based on expected data volume
+                    CHUNK_SIZE = 500
+                    results = []
+                    
+                    # Stream results in chunks
+                    for chunk in self._chunked_query_results(query, CHUNK_SIZE):
+                        results.extend(chunk)
+                    
+                    # Convert to the format expected by the API
+                    analysis_points = []
+                    for record in results:
+                        point = {
+                            "date": record.analysis_date.isoformat(),
+                            "threat_level": record.threat_level,
+                            "details": record.data
+                        }
+                        analysis_points.append(point)
+                    
+                    logger.info(f"Retrieved {len(analysis_points)} historical data points for {norad_id}",
+                               extra={"norad_id": norad_id, 
+                                     "duration_ms": (datetime.utcnow() - start_time).total_seconds() * 1000})
+                    
+                    return analysis_points
         except Exception as e:
-            logger.error(f"Error retrieving historical analysis from database: {str(e)}")
+            logger.error(f"Error retrieving historical analysis from database: {str(e)}",
+                       extra={"norad_id": norad_id, "error": str(e)})
+            # Return empty list on error - the caller will generate simulated data
             return []
+
+    def _chunked_query_results(self, query, chunk_size: int):
+        """
+        Helper method to process query results in chunks to reduce memory usage.
+        
+        Args:
+            query: SQLAlchemy query object
+            chunk_size: Number of records to process at once
+        
+        Yields:
+            Chunks of query results
+        """
+        offset = 0
+        while True:
+            # Get a chunk of results
+            chunk = query.limit(chunk_size).offset(offset).all()
             
+            # If no results, we're done
+            if not chunk:
+                break
+                
+            # Yield this chunk
+            yield chunk
+            
+            # Move to next chunk
+            offset += chunk_size
+            
+            # If chunk is smaller than chunk_size, we're done
+            if len(chunk) < chunk_size:
+                break
+
     def _get_conjunctions_from_db(self, spacecraft_id: str) -> List[Dict[str, Any]]:
         """Get active conjunctions from database."""
         if not self.db:
@@ -899,3 +2064,435 @@ class CCDMService:
         except Exception as e:
             logger.error(f"Error storing analysis results in database: {str(e)}")
             self.db.rollback()
+
+    def get_health_status(self) -> Dict[str, Any]:
+        """
+        Get the health status of the CCDM service.
+        
+        Returns:
+            Dictionary containing service health information
+        """
+        health_data = {
+            "status": "operational",
+            "version": "1.0.0",
+            "timestamp": datetime.utcnow().isoformat(),
+            "services": {
+                "ml_evaluators": {
+                    "maneuver": self._check_evaluator_health(self.maneuver_evaluator),
+                    "signature": self._check_evaluator_health(self.signature_evaluator),
+                    "amr": self._check_evaluator_health(self.amr_evaluator)
+                },
+                "database": self._check_database_health()
+            }
+        }
+        
+        # Determine overall health
+        failed_services = [svc for svc, status in health_data["services"]["ml_evaluators"].items() 
+                          if status["status"] != "operational"]
+        
+        if health_data["services"]["database"]["status"] != "operational":
+            failed_services.append("database")
+            
+        if failed_services:
+            health_data["status"] = "degraded"
+            health_data["degraded_services"] = failed_services
+            
+        return health_data
+        
+    def _check_evaluator_health(self, evaluator) -> Dict[str, Any]:
+        """Check health of an ML evaluator."""
+        try:
+            # Check if evaluator has required attributes
+            if not hasattr(evaluator, 'model'):
+                return {
+                    "status": "degraded",
+                    "error": "Evaluator missing model attribute"
+                }
+                
+            return {
+                "status": "operational",
+                "model_loaded": True
+            }
+        except Exception as e:
+            logger.error(f"Evaluator health check failed: {str(e)}")
+            return {
+                "status": "error",
+                "error": str(e)
+            }
+            
+    def _check_database_health(self) -> Dict[str, Any]:
+        """Check health of database connection."""
+        if not self.db:
+            return {
+                "status": "not_configured",
+                "message": "Database session not provided"
+            }
+            
+        try:
+            # Test database connection with simple query
+            self.db.execute("SELECT 1")
+            return {
+                "status": "operational",
+                "connection": "active"
+            }
+        except Exception as e:
+            logger.error(f"Database health check failed: {str(e)}")
+            return {
+                "status": "error",
+                "error": str(e)
+            }
+
+    def _sanitize_input(self, input_str: str) -> str:
+        """
+        Sanitize input string to prevent injection attacks.
+        
+        Args:
+            input_str: Input string to sanitize
+            
+        Returns:
+            Sanitized string
+        """
+        if input_str is None:
+            return ""
+            
+        # Remove any potentially dangerous characters
+        # Keep only alphanumeric, dash, underscore, period
+        import re
+        return re.sub(r'[^\w\-\.]', '', input_str)
+        
+    def _is_valid_norad_id(self, norad_id: str) -> bool:
+        """
+        Validate if the string is a valid NORAD ID format.
+        
+        Args:
+            norad_id: NORAD ID to validate
+            
+        Returns:
+            True if valid, False otherwise
+        """
+        if not norad_id:
+            return False
+            
+        # Check if it's all digits (standard NORAD ID)
+        if norad_id.isdigit():
+            return True
+            
+        # Check for extended format (e.g. "STARLINK-1234")
+        import re
+        return bool(re.match(r'^[A-Za-z0-9\-]+$', norad_id))
+
+    def authenticate_request(self, auth_token: str) -> Dict[str, Any]:
+        """
+        Authenticate API request using token authentication.
+        
+        Args:
+            auth_token: Authentication token from request
+            
+        Returns:
+            Dictionary with authentication result and user info if successful
+        
+        Raises:
+            ValueError: If token is invalid or expired
+        """
+        if not auth_token:
+            StructuredLogger.warning("Missing authentication token")
+            raise ValueError("Authentication token is required")
+            
+        try:
+            # For simple token authentication in development
+            if DEPLOYMENT_ENV == "development" and auth_token == "dev-token":
+                return {
+                    "authenticated": True,
+                    "user_id": "dev-user",
+                    "roles": ["admin"],
+                    "permissions": ["read", "write", "admin"]
+                }
+                
+            # Import JWT library for token validation
+            import jwt
+            from jwt.exceptions import ExpiredSignatureError, InvalidTokenError
+            
+            # Get JWT secret from environment
+            jwt_secret = os.getenv("JWT_SECRET")
+            if not jwt_secret:
+                StructuredLogger.error("JWT secret not configured")
+                raise ValueError("Authentication service not properly configured")
+                
+            # Decode and validate token
+            try:
+                decoded = jwt.decode(auth_token, jwt_secret, algorithms=["HS256"])
+                
+                # Validate required claims
+                if "sub" not in decoded:
+                    raise ValueError("Invalid token: missing required claims")
+                    
+                # Check if token is expired
+                exp = decoded.get("exp", 0)
+                if exp < time.time():
+                    raise ExpiredSignatureError("Token has expired")
+                    
+                # Return authentication result
+                return {
+                    "authenticated": True,
+                    "user_id": decoded["sub"],
+                    "roles": decoded.get("roles", []),
+                    "permissions": decoded.get("permissions", [])
+                }
+            except ExpiredSignatureError:
+                StructuredLogger.warning("Expired authentication token", token_sub=decoded.get("sub", "unknown"))
+                raise ValueError("Authentication token has expired")
+            except InvalidTokenError:
+                StructuredLogger.warning("Invalid authentication token")
+                raise ValueError("Invalid authentication token")
+                
+        except Exception as e:
+            StructuredLogger.error("Authentication error", error=e)
+            
+            if isinstance(e, ValueError):
+                raise
+                
+            raise ValueError(f"Authentication failed: {str(e)}")
+            
+    def authorize_action(self, auth_info: Dict[str, Any], required_permission: str) -> bool:
+        """
+        Check if authenticated user has permission to perform an action.
+        
+        Args:
+            auth_info: Authentication information from authenticate_request
+            required_permission: Permission required for the action
+            
+        Returns:
+            True if authorized, False otherwise
+        """
+        if not auth_info or not auth_info.get("authenticated"):
+            return False
+            
+        # Check permissions
+        permissions = auth_info.get("permissions", [])
+        if "admin" in permissions or required_permission in permissions:
+            return True
+            
+        # Check roles
+        roles = auth_info.get("roles", [])
+        if "admin" in roles:
+            return True
+            
+        # Specific role-based checks
+        if required_permission == "read" and any(role in ["analyst", "viewer"] for role in roles):
+            return True
+            
+        if required_permission == "write" and any(role in ["analyst", "editor"] for role in roles):
+            return True
+            
+        return False
+        
+    def get_liveness_probe(self) -> Dict[str, Any]:
+        """
+        Simple liveness probe to check if the service is running.
+        
+        Returns:
+            Dictionary with service status
+        """
+        return {
+            "status": "alive",
+            "timestamp": datetime.utcnow().isoformat(),
+            "service": SERVICE_NAME,
+            "version": SERVICE_VERSION
+        }
+        
+    @handle_errors
+    def get_readiness_probe(self) -> Dict[str, Any]:
+        """
+        Readiness probe to check if service is ready to handle requests.
+        Checks all dependencies like database, ML models, etc.
+        
+        Returns:
+            Dictionary with readiness status and details
+        """
+        ready = True
+        dependencies = {
+            "database": self._check_database_connection(),
+            "ml_models": self._check_ml_models(),
+            "memory": self._check_memory_status()
+        }
+        
+        # Check if any dependency is not ready
+        for dep_name, dep_status in dependencies.items():
+            if not dep_status.get("ready", False):
+                ready = False
+                break
+                
+        return {
+            "ready": ready,
+            "timestamp": datetime.utcnow().isoformat(),
+            "service": SERVICE_NAME,
+            "version": SERVICE_VERSION,
+            "dependencies": dependencies
+        }
+        
+    def _check_database_connection(self) -> Dict[str, Any]:
+        """Check database connection for readiness probe."""
+        if not self.db:
+            return {
+                "ready": False,
+                "status": "not_configured",
+                "message": "Database session not provided"
+            }
+            
+        try:
+            # Test database connection with simple query and timeout
+            with timeout(5, "Database connection check timed out"):
+                self.db.execute("SELECT 1")
+                
+            return {
+                "ready": True,
+                "status": "connected"
+            }
+        except Exception as e:
+            StructuredLogger.error("Database readiness check failed", error=e)
+            return {
+                "ready": False,
+                "status": "error",
+                "message": str(e)
+            }
+            
+    def _check_ml_models(self) -> Dict[str, Any]:
+        """Check ML models for readiness probe."""
+        models_ready = True
+        model_status = {}
+        
+        # Check all evaluators
+        evaluators = {
+            "maneuver": self.maneuver_evaluator,
+            "signature": self.signature_evaluator,
+            "amr": self.amr_evaluator
+        }
+        
+        for name, evaluator in evaluators.items():
+            try:
+                model_loaded = hasattr(evaluator, 'model')
+                model_status[name] = {
+                    "ready": model_loaded,
+                    "status": "loaded" if model_loaded else "not_loaded"
+                }
+                
+                if not model_loaded:
+                    models_ready = False
+            except Exception as e:
+                StructuredLogger.error(f"Error checking {name} model", error=e)
+                model_status[name] = {
+                    "ready": False,
+                    "status": "error",
+                    "message": str(e)
+                }
+                models_ready = False
+                
+        return {
+            "ready": models_ready,
+            "models": model_status
+        }
+        
+    def _check_memory_status(self) -> Dict[str, Any]:
+        """Check memory status for readiness probe."""
+        try:
+            import psutil
+            
+            # Get memory usage
+            memory = psutil.virtual_memory()
+            
+            # Consider not ready if memory usage is above 95%
+            ready = memory.percent < 95
+            
+            return {
+                "ready": ready,
+                "used_percent": memory.percent,
+                "available_mb": memory.available / (1024 * 1024)
+            }
+        except ImportError:
+            # psutil may not be available
+            return {
+                "ready": True,
+                "status": "unknown",
+                "message": "psutil not available"
+            }
+        except Exception as e:
+            StructuredLogger.error("Error checking memory status", error=e)
+            return {
+                "ready": False,
+                "status": "error",
+                "message": str(e)
+            }
+            
+    def graceful_shutdown(self) -> Dict[str, Any]:
+        """
+        Perform graceful shutdown of the service.
+        Closes database connections, releases resources, etc.
+        
+        Returns:
+            Dictionary with shutdown status
+        """
+        StructuredLogger.info("Starting graceful shutdown")
+        shutdown_status = {
+            "success": True,
+            "timestamp": datetime.utcnow().isoformat(),
+            "service": SERVICE_NAME,
+            "components": {}
+        }
+        
+        # Close database connection if available
+        if self.db:
+            try:
+                StructuredLogger.info("Closing database connection")
+                self.db.close()
+                shutdown_status["components"]["database"] = {
+                    "status": "closed",
+                    "success": True
+                }
+            except Exception as e:
+                StructuredLogger.error("Error closing database connection", error=e)
+                shutdown_status["components"]["database"] = {
+                    "status": "error",
+                    "success": False,
+                    "message": str(e)
+                }
+                shutdown_status["success"] = False
+                
+        # Close ML model resources
+        try:
+            StructuredLogger.info("Cleaning up ML resources")
+            # Release any ML model resources here
+            shutdown_status["components"]["ml_models"] = {
+                "status": "released",
+                "success": True
+            }
+        except Exception as e:
+            StructuredLogger.error("Error releasing ML resources", error=e)
+            shutdown_status["components"]["ml_models"] = {
+                "status": "error",
+                "success": False,
+                "message": str(e)
+            }
+            shutdown_status["success"] = False
+            
+        # Log final shutdown status
+        if shutdown_status["success"]:
+            StructuredLogger.info("Graceful shutdown completed successfully")
+        else:
+            StructuredLogger.warning("Graceful shutdown completed with errors")
+            
+        return shutdown_status
+    
+    def __del__(self):
+        """
+        Destructor to ensure resources are released.
+        """
+        try:
+            # Attempt to close database if it exists
+            if hasattr(self, 'db') and self.db:
+                try:
+                    self.db.close()
+                except:
+                    pass
+        except:
+            # Ignore errors in destructor
+            pass

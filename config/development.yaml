@@ -1,0 +1,34 @@
+# Development environment configuration for CCDM Service
+
+service:
+  name: ccdm_service
+  version: "1.0.0"
+
+logging:
+  level: "DEBUG"
+  structured: true
+  log_file: "logs/ccdm_service_dev.log"
+
+database:
+  url: "sqlite:///./astroshield_dev.db"
+  echo: true  # Log SQL queries in development
+  timeout: 60  # Longer timeout for debugging
+
+rate_limiting:
+  enabled: false  # Disable rate limiting in development
+
+caching:
+  enabled: true
+  default_ttl: 60  # Short TTL for development
+
+api:
+  port: 8000
+  cors:
+    enabled: true
+    origins: ["*"]
+  authentication:
+    enabled: true
+    jwt_secret: "dev-secret-change-in-production"
+
+alerting:
+  enabled: false  # No alerts in development 
