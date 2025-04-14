@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  # Simplified Backend API
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.simple
+    ports:
+      - "5002:5002"
+    volumes:
+      - ./app:/app/app
+      - ./requirements-simple.txt:/app/requirements.txt
+    restart: always
+    networks:
+      - astroshield-network
+    environment:
+      - PORT=5002
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+
+  # Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3003:3000"
+    restart: always
+    networks:
+      - astroshield-network
+    environment:
+      - NEXT_PUBLIC_API_URL=http://backend:5002
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    depends_on:
+      - backend
+
+  # Nginx
+  nginx:
+    image: nginx:stable-alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - frontend
+      - backend
+    restart: always
+    networks:
+      - astroshield-network
+
+networks:
+  astroshield-network:
+    driver: bridge 
