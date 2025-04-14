@@ -1,278 +1,232 @@
 #!/usr/bin/env python3
 """
-Simple FastAPI server for AstroShield.
-This provides a basic API that works without complex dependencies.
+Simple AstroShield Backend
+
+This is a simplified version of the AstroShield backend API focused on trajectory analysis.
+It provides basic endpoints for trajectory analysis without complex dependencies.
 """
-from fastapi import FastAPI, HTTPException, Query
-from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
-from typing import List, Optional, Dict
-from datetime import datetime
-import random
+
 import os
 import json
-import sqlite3
 import logging
+import random
+import math
+import numpy as np
+from typing import List, Dict, Any, Optional
+from datetime import datetime, timedelta
+from fastapi import FastAPI, HTTPException, Depends, Query, status, Request, Response
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from pydantic import BaseModel, Field
+import uvicorn
 
 # Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-)
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# Models
+class ObjectProperties(BaseModel):
+    mass: float = Field(100.0, description="Mass of the object in kg")
+    area: float = Field(1.2, description="Cross-sectional area in m²")
+    cd: float = Field(2.2, description="Drag coefficient")
+
+class BreakupModel(BaseModel):
+    enabled: bool = Field(True, description="Whether breakup modeling is enabled")
+    fragmentation_threshold: float = Field(50.0, description="Energy threshold for fragmentation in kJ")
+
+class TrajectoryConfig(BaseModel):
+    object_name: str = Field("Satellite Debris", description="Name of the object being analyzed")
+    object_properties: ObjectProperties = Field(default_factory=ObjectProperties, description="Physical properties of the object")
+    atmospheric_model: str = Field("exponential", description="Atmospheric model to use")
+    wind_model: str = Field("custom", description="Wind model to use")
+    monte_carlo_samples: int = Field(100, description="Number of Monte Carlo samples for uncertainty")
+    breakup_model: BreakupModel = Field(default_factory=BreakupModel, description="Configuration for breakup modeling")
+
+class TrajectoryRequest(BaseModel):
+    config: TrajectoryConfig = Field(..., description="Configuration for the trajectory analysis")
+    initial_state: List[float] = Field(..., description="Initial state vector [lon, lat, alt, vx, vy, vz]")
+
+class TrajectoryPoint(BaseModel):
+    time: float
+    position: List[float]
+    velocity: List[float]
+
+class ImpactPrediction(BaseModel):
+    time: float
+    position: List[float]
+    confidence: float
+    energy: float
+    area: float
+
+class BreakupPoint(BaseModel):
+    time: float
+    position: List[float]
+    fragments: int
+    cause: str
+
+class TrajectoryResult(BaseModel):
+    trajectory: List[TrajectoryPoint]
+    impactPrediction: ImpactPrediction
+    breakupPoints: List[BreakupPoint]
+
 # Create FastAPI app
-app = FastAPI(
-    title="AstroShield Simple API",
-    description="A simple API for the AstroShield platform",
-    version="1.0.0",
-)
+app = FastAPI(title="AstroShield API", version="0.1.0")
 
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["*"],  # Allow all origins for testing
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Models
-class Position(BaseModel):
-    x: float
-    y: float
-    z: float
+# Basic trajectory simulation for demo
+def simulate_trajectory(config: Dict[str, Any], initial_state: List[float]) -> Dict[str, Any]:
+    """Simple trajectory simulation for demonstration purposes"""
+    logger.info(f"Simulating trajectory for {config['object_name']}")
+    
+    # Extract parameters
+    mass = config["object_properties"]["mass"]
+    altitude = initial_state[2]  # Initial altitude
+    
+    # Generate trajectory points
+    num_points = 100
+    trajectory_points = []
+    
+    start_time = datetime.now().timestamp()
+    time_step = 60  # 1 minute per step
+    
+    # Starting position and velocity
+    lon, lat, alt = initial_state[0:3]
+    vx, vy, vz = initial_state[3:6]
+    
+    for i in range(num_points):
+        # Time for this point
+        time = start_time + i * time_step
+        
+        # Update altitude with some randomness for realism
+        alt = max(0, altitude - (i * altitude / num_points) + random.uniform(-500, 500))
+        
+        # Adjust longitude and latitude based on velocity and Earth's curvature
+        earth_radius = 6371000  # meters
+        meters_per_degree_lon = 111320 * math.cos(math.radians(lat))
+        meters_per_degree_lat = 110574
+        
+        lon_change = (vx * time_step) / meters_per_degree_lon
+        lat_change = (vy * time_step) / meters_per_degree_lat
+        
+        lon += lon_change
+        lat += lat_change
+        
+        # Ensure longitude wraps around properly
+        lon = (lon + 180) % 360 - 180
+        
+        # Update velocities with some atmospheric drag effects
+        if alt < 100000:  # Below 100km, significant atmosphere
+            drag_factor = 1 - (alt / 100000) * 0.1
+            vx *= drag_factor
+            vy *= drag_factor
+            vz *= drag_factor
+        
+        # Add trajectory point
+        trajectory_points.append({
+            "time": time,
+            "position": [lon, lat, alt],
+            "velocity": [vx, vy, vz]
+        })
+        
+        # Terminal velocity increases as atmosphere gets denser
+        if alt < 50000:
+            vz -= 9.8 * time_step * (1 + (50000 - alt) / 10000)
+        else:
+            vz -= 9.8 * time_step * 0.5  # Reduced gravity effect at higher altitudes
+    
+    # Impact prediction
+    impact_prediction = {
+        "time": trajectory_points[-1]["time"],
+        "position": trajectory_points[-1]["position"],
+        "confidence": 0.95,
+        "energy": 0.5 * mass * sum(v**2 for v in trajectory_points[-1]["velocity"]),
+        "area": config["object_properties"]["area"] * (1 + random.uniform(0, 0.5))  # Slight expansion on impact
+    }
+    
+    # Breakup points (if enabled)
+    breakup_points = []
+    if config["breakup_model"]["enabled"]:
+        # Add random breakup points if altitude and energy conditions are met
+        for i in range(1, len(trajectory_points) - 1):
+            point = trajectory_points[i]
+            if point["position"][2] < 80000 and random.random() < 0.1:  # 10% chance below 80km
+                velocity_magnitude = math.sqrt(sum(v**2 for v in point["velocity"]))
+                if velocity_magnitude > 2000:  # Only break up at high speeds
+                    breakup_points.append({
+                        "time": point["time"],
+                        "position": point["position"],
+                        "fragments": random.randint(5, 30),
+                        "cause": random.choice(["Aerodynamic Stress", "Thermal Stress", "Material Failure"])
+                    })
+    
+    return {
+        "trajectory": trajectory_points,
+        "impactPrediction": impact_prediction,
+        "breakupPoints": breakup_points
+    }
 
-class Velocity(BaseModel):
-    x: float
-    y: float
-    z: float
+# Routes
+@app.get("/health")
+def health_check():
+    """Health check endpoint"""
+    return {"status": "healthy", "version": "0.1.0"}
 
-class Satellite(BaseModel):
-    id: str
-    name: str
-    status: str = "active"
-    epoch: Optional[str] = None
-    position: Optional[Position] = None
-    velocity: Optional[Velocity] = None
-    last_update: Optional[str] = None
+@app.get("/api/v1/health")
+def api_health_check():
+    """API health check endpoint"""
+    return {
+        "status": "healthy",
+        "version": "0.1.0",
+        "services": {
+            "trajectory": "ready"
+        }
+    }
 
-class Maneuver(BaseModel):
-    id: str
-    satellite_id: str
-    status: str = "planned"
-    type: str
-    start_time: str
-    end_time: Optional[str] = None
-    description: Optional[str] = None
+@app.post("/api/trajectory/analyze", response_model=TrajectoryResult)
+async def analyze_trajectory(request: TrajectoryRequest):
+    """
+    Analyze a trajectory and return predictions.
+    
+    Parameters:
+    - config: Configuration for the trajectory analysis including object properties
+    - initial_state: Initial position and velocity of the object [x, y, z, vx, vy, vz]
+    """
+    try:
+        logger.info(f"Analyzing trajectory for {request.config.object_name}")
+        
+        # Perform trajectory simulation
+        result = simulate_trajectory(
+            request.config.dict(),
+            request.initial_state
+        )
+        
+        return result
+    except Exception as e:
+        logger.error(f"Error analyzing trajectory: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error analyzing trajectory: {str(e)}")
 
-# Root endpoint
 @app.get("/")
 async def root():
-    """Root endpoint providing basic API information"""
+    """Root endpoint"""
     return {
-        "status": "healthy",
-        "timestamp": datetime.utcnow().isoformat(),
-        "version": "1.0.0",
-        "api_name": "AstroShield Simple API",
-        "documentation": "/docs"
+        "message": "Welcome to the AstroShield API",
+        "documentation": "/docs",
+        "health": "/health"
     }
 
-# Satellites endpoint
-@app.get("/api/v1/satellites", response_model=List[Satellite])
-async def get_satellites(
-    limit: int = Query(10, ge=1, le=100)
-):
-    """Get list of satellites with position and velocity information"""
-    satellites = []
-    
-    try:
-        # Try to load from DB first
-        db_path = os.environ.get("DATABASE_URL", "sqlite:///./astroshield.db")
-        if db_path.startswith("sqlite:///"):
-            db_path = db_path[len("sqlite:///"):]
-            
-        if os.path.exists(db_path):
-            try:
-                conn = sqlite3.connect(db_path)
-                cursor = conn.cursor()
-                cursor.execute("SELECT id, name, status FROM satellites LIMIT ?", (limit,))
-                rows = cursor.fetchall()
-                conn.close()
-                
-                for row in rows:
-                    sat_id, name, status = row
-                    epoch = datetime.utcnow().isoformat()
-                    position = Position(
-                        x=random.uniform(-7000, 7000),
-                        y=random.uniform(-7000, 7000),
-                        z=random.uniform(-7000, 7000)
-                    )
-                    velocity = Velocity(
-                        x=random.uniform(-7, 7),
-                        y=random.uniform(-7, 7),
-                        z=random.uniform(-7, 7)
-                    )
-                    
-                    satellites.append(Satellite(
-                        id=sat_id,
-                        name=name,
-                        status=status,
-                        epoch=epoch,
-                        position=position,
-                        velocity=velocity,
-                        last_update=epoch
-                    ))
-                
-                logger.info(f"Loaded {len(satellites)} satellites from database")
-            except Exception as e:
-                logger.error(f"Error loading from database: {str(e)}")
-                # Fall through to mock data
-    except Exception as e:
-        logger.error(f"Database error: {str(e)}")
-        
-    # If no satellites loaded from DB, create mock data
-    if not satellites:
-        logger.info("Generating mock satellite data")
-        for i in range(1, limit + 1):
-            epoch = datetime.utcnow().isoformat()
-            position = Position(
-                x=random.uniform(-7000, 7000),
-                y=random.uniform(-7000, 7000),
-                z=random.uniform(-7000, 7000)
-            )
-            velocity = Velocity(
-                x=random.uniform(-7, 7),
-                y=random.uniform(-7, 7),
-                z=random.uniform(-7, 7)
-            )
-            
-            satellites.append(Satellite(
-                id=f"sat-{i}",
-                name=f"Test Satellite {i}",
-                status="active" if i % 4 != 0 else "inactive",
-                epoch=epoch,
-                position=position,
-                velocity=velocity,
-                last_update=epoch
-            ))
-    
-    return satellites
+def main():
+    """Run the application"""
+    port = int(os.environ.get("PORT", 5002))
+    logger.info(f"Starting simplified AstroShield backend on port {port}")
+    uvicorn.run("simple_backend:app", host="0.0.0.0", port=port, reload=False)
 
-@app.get("/api/v1/satellites/{satellite_id}", response_model=Satellite)
-async def get_satellite(satellite_id: str):
-    """Get details for a specific satellite"""
-    # Create a mock satellite with the requested ID
-    epoch = datetime.utcnow().isoformat()
-    position = Position(
-        x=random.uniform(-7000, 7000),
-        y=random.uniform(-7000, 7000),
-        z=random.uniform(-7000, 7000)
-    )
-    velocity = Velocity(
-        x=random.uniform(-7, 7),
-        y=random.uniform(-7, 7),
-        z=random.uniform(-7, 7)
-    )
-    
-    # Try to look up in DB first
-    db_path = os.environ.get("DATABASE_URL", "sqlite:///./astroshield.db")
-    if db_path.startswith("sqlite:///"):
-        db_path = db_path[len("sqlite:///"):]
-        
-    if os.path.exists(db_path):
-        try:
-            conn = sqlite3.connect(db_path)
-            cursor = conn.cursor()
-            cursor.execute("SELECT id, name, status FROM satellites WHERE id = ?", (satellite_id,))
-            row = cursor.fetchone()
-            conn.close()
-            
-            if row:
-                sat_id, name, status = row
-                return Satellite(
-                    id=sat_id,
-                    name=name,
-                    status=status,
-                    epoch=epoch,
-                    position=position,
-                    velocity=velocity,
-                    last_update=epoch
-                )
-        except Exception as e:
-            logger.error(f"Database error: {str(e)}")
-    
-    # If not found in DB or DB access failed, create mock data
-    for i in range(1, 11):
-        if f"sat-{i}" == satellite_id:
-            return Satellite(
-                id=satellite_id,
-                name=f"Test Satellite {i}",
-                status="active" if i % 4 != 0 else "inactive",
-                epoch=epoch,
-                position=position,
-                velocity=velocity,
-                last_update=epoch
-            )
-    
-    # If we get here, the satellite wasn't found
-    raise HTTPException(status_code=404, detail=f"Satellite with ID {satellite_id} not found")
-
-@app.get("/api/v1/maneuvers", response_model=List[Maneuver])
-async def get_maneuvers():
-    """Get a list of satellite maneuvers"""
-    now = datetime.utcnow()
-    
-    # Mock maneuvers data
-    maneuvers = [
-        Maneuver(
-            id="mnv-001",
-            satellite_id="sat-001",
-            status="completed",
-            type="collision_avoidance",
-            start_time=(now.replace(hour=now.hour-2)).isoformat(),
-            end_time=(now.replace(hour=now.hour-1)).isoformat(),
-            description="Collision avoidance maneuver"
-        ),
-        Maneuver(
-            id="mnv-002",
-            satellite_id="sat-001", 
-            status="planned",
-            type="station_keeping",
-            start_time=(now.replace(hour=now.hour+5)).isoformat(),
-            description="Scheduled station keeping"
-        )
-    ]
-    
-    return maneuvers
-
-@app.get("/health")
-async def health_check():
-    """Health check endpoint"""
-    return {
-        "status": "healthy",
-        "timestamp": datetime.utcnow().isoformat(),
-        "version": "1.0.0"
-    }
-
-@app.get("/api/v1/mock-udl-status")
-async def mock_udl_status():
-    """Get the status of the mock UDL service"""
-    udl_base_url = os.environ.get("UDL_BASE_URL", "https://mock-udl-service.local/api/v1")
-    mock_mode = udl_base_url.startswith(("http://localhost", "https://mock"))
-    
-    return {
-        "mock_mode": mock_mode,
-        "udl_url": udl_base_url,
-        "status": "connected" if mock_mode else "using real UDL",
-        "timestamp": datetime.utcnow().isoformat()
-    }
-
-# Run the server when executed directly
 if __name__ == "__main__":
-    import uvicorn
-    port = int(os.environ.get("API_PORT", 5000))
-    host = "0.0.0.0"
-    
-    logger.info(f"Starting simple AstroShield API on http://{host}:{port}")
-    uvicorn.run(app, host=host, port=port) 
+    main() 
