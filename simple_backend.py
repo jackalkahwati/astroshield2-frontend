@@ -19,12 +19,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 import uvicorn
+import uuid
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Models
+# Trajectory Models
 class ObjectProperties(BaseModel):
     mass: float = Field(100.0, description="Mass of the object in kg")
     area: float = Field(1.2, description="Cross-sectional area in m²")
@@ -69,6 +70,32 @@ class TrajectoryResult(BaseModel):
     impactPrediction: ImpactPrediction
     breakupPoints: List[BreakupPoint]
 
+# Maneuver Models
+class ManeuverDetails(BaseModel):
+    delta_v: Optional[float] = None
+    duration: Optional[float] = None
+    fuel_required: Optional[float] = None
+    fuel_used: Optional[float] = None
+    target_orbit: Optional[Dict[str, float]] = None
+
+class ManeuverCreateRequest(BaseModel):
+    satellite_id: Optional[str] = "SAT-001"
+    type: str
+    status: str = "scheduled"
+    scheduledTime: str
+    details: ManeuverDetails
+
+class Maneuver(BaseModel):
+    id: str
+    satellite_id: str
+    type: str
+    status: str
+    scheduledTime: str
+    completedTime: Optional[str] = None
+    created_by: Optional[str] = "system"
+    created_at: Optional[str] = None
+    details: ManeuverDetails
+
 # Create FastAPI app
 app = FastAPI(title="AstroShield API", version="0.1.0")
 
@@ -80,6 +107,62 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# In-memory storage for maneuvers
+maneuvers_db = [
+    {
+        "id": "MNV-1001",
+        "satellite_id": "SAT-001",
+        "type": "hohmann",
+        "status": "completed",
+        "scheduledTime": (datetime.now() - timedelta(days=7)).isoformat(),
+        "completedTime": (datetime.now() - timedelta(days=7, hours=2)).isoformat(),
+        "created_by": "system",
+        "created_at": (datetime.now() - timedelta(days=7, hours=5)).isoformat(),
+        "details": {
+            "delta_v": 3.5,
+            "duration": 120,
+            "fuel_required": 5.2,
+            "fuel_used": 5.3,
+            "target_orbit": {
+                "altitude": 700,
+                "inclination": 51.6
+            }
+        }
+    },
+    {
+        "id": "MNV-1002",
+        "satellite_id": "SAT-002",
+        "type": "stationkeeping",
+        "status": "scheduled",
+        "scheduledTime": (datetime.now() + timedelta(days=2)).isoformat(),
+        "created_by": "operator",
+        "created_at": (datetime.now() - timedelta(days=1)).isoformat(),
+        "details": {
+            "delta_v": 0.8,
+            "duration": 35,
+            "fuel_required": 1.1,
+            "target_orbit": {
+                "altitude": 420,
+                "inclination": 45.0
+            }
+        }
+    },
+    {
+        "id": "MNV-1003",
+        "satellite_id": "SAT-001",
+        "type": "collision",
+        "status": "executing",
+        "scheduledTime": (datetime.now() - timedelta(hours=2)).isoformat(),
+        "created_by": "auto",
+        "created_at": (datetime.now() - timedelta(hours=3)).isoformat(),
+        "details": {
+            "delta_v": 1.2,
+            "duration": 45,
+            "fuel_required": 2.0
+        }
+    }
+]
 
 # Basic trajectory simulation for demo
 def simulate_trajectory(config: Dict[str, Any], initial_state: List[float]) -> Dict[str, Any]:
@@ -186,7 +269,8 @@ def api_health_check():
         "status": "healthy",
         "version": "0.1.0",
         "services": {
-            "trajectory": "ready"
+            "trajectory": "ready",
+            "maneuvers": "ready"
         }
     }
 
@@ -212,6 +296,50 @@ async def analyze_trajectory(request: TrajectoryRequest):
     except Exception as e:
         logger.error(f"Error analyzing trajectory: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error analyzing trajectory: {str(e)}")
+
+# Maneuver endpoints
+@app.get("/api/v1/maneuvers", response_model=List[Maneuver])
+async def get_maneuvers():
+    """Get all maneuvers"""
+    logger.info("Fetching all maneuvers")
+    return maneuvers_db
+
+@app.post("/api/v1/maneuvers", response_model=Maneuver)
+async def create_maneuver(request: ManeuverCreateRequest):
+    """Create a new maneuver"""
+    logger.info(f"Creating new {request.type} maneuver")
+    
+    # Generate a new maneuver ID
+    maneuver_id = f"MNV-{random.randint(1000, 9999)}"
+    
+    # Create the new maneuver
+    new_maneuver = {
+        "id": maneuver_id,
+        "satellite_id": request.satellite_id,
+        "type": request.type,
+        "status": request.status,
+        "scheduledTime": request.scheduledTime,
+        "completedTime": None,
+        "created_by": "user",
+        "created_at": datetime.now().isoformat(),
+        "details": request.details.dict(exclude_none=True)
+    }
+    
+    # Add to database
+    maneuvers_db.append(new_maneuver)
+    
+    return new_maneuver
+
+@app.get("/api/v1/maneuvers/{maneuver_id}", response_model=Maneuver)
+async def get_maneuver(maneuver_id: str):
+    """Get a specific maneuver by ID"""
+    logger.info(f"Fetching maneuver with ID: {maneuver_id}")
+    
+    for maneuver in maneuvers_db:
+        if maneuver["id"] == maneuver_id:
+            return maneuver
+    
+    raise HTTPException(status_code=404, detail=f"Maneuver with ID {maneuver_id} not found")
 
 @app.get("/")
 async def root():

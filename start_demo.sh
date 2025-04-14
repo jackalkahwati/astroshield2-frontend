@@ -14,7 +14,12 @@ echo "This script launches the frontend and simplified backend for AstroShield."
 
 # Stop any existing services
 echo -e "${YELLOW}Stopping any existing services...${RESET}"
-./stop_astroshield.sh || true  # Don't exit if this fails
+./stop_demo.sh || true  # Don't exit if this fails
+
+# Make sure ports are free
+echo -e "${YELLOW}Ensuring ports are free...${RESET}"
+kill $(lsof -ti:5002) 2>/dev/null || echo "Port 5002 is free"
+kill $(lsof -ti:3003) 2>/dev/null || echo "Port 3003 is free"
 
 # Start simplified backend
 echo -e "${BLUE}Starting simplified backend...${RESET}"
@@ -39,14 +44,16 @@ cd frontend
 npm run dev &
 FRONTEND_PID=$!
 echo "Frontend process started with PID: $FRONTEND_PID"
+cd ..
 
 # Save PIDs to file for cleanup
-echo "$BACKEND_PID $FRONTEND_PID" > ../demo_pids.txt
+echo "$BACKEND_PID $FRONTEND_PID" > demo_pids.txt
 
 echo -e "${GREEN}AstroShield Demo Started${RESET}"
 echo -e "Backend URL: ${BLUE}http://localhost:5002${RESET}"
 echo -e "Frontend URL: ${BLUE}http://localhost:3003${RESET}"
 echo -e "Trajectory Analysis: ${BLUE}http://localhost:3003/trajectory${RESET}"
+echo -e "Maneuvers Page: ${BLUE}http://localhost:3003/maneuvers${RESET}"
 echo ""
 echo -e "To stop the demo, run: ${YELLOW}./stop_demo.sh${RESET}"
 echo ""

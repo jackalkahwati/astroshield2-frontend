@@ -63,6 +63,7 @@ type FormValues = z.infer<typeof formSchema>
 
 export function PlanManeuverForm() {
   const [open, setOpen] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const { toast } = useToast()
   
   const form = useForm<FormValues>({
@@ -77,7 +78,8 @@ export function PlanManeuverForm() {
 
   async function onSubmit(data: FormValues) {
     try {
-      const maneuverData: Partial<ManeuverData> = {
+      setIsSubmitting(true);
+      const maneuverData = {
         type: data.type,
         status: "scheduled",
         scheduledTime: data.scheduledTime.toISOString(),
@@ -88,15 +90,17 @@ export function PlanManeuverForm() {
         }
       }
       
-      const response = await createManeuver(maneuverData)
+      const response = await fetch("/api/v1/maneuvers", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(maneuverData),
+      });
       
-      if (!response.data) {
-        toast({
-          title: "Error",
-          description: response.error?.message || "Failed to plan maneuver. Please try again.",
-          variant: "destructive",
-        })
-        return
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.detail || "Failed to create maneuver");
       }
       
       toast({
@@ -106,12 +110,18 @@ export function PlanManeuverForm() {
       
       setOpen(false)
       form.reset()
+      
+      // Refresh the page to show the new maneuver
+      window.location.reload();
     } catch (error) {
+      console.error("Error creating maneuver:", error);
       toast({
         title: "Error",
-        description: "Failed to plan maneuver. Please try again.",
+        description: error instanceof Error ? error.message : "Failed to plan maneuver. Please try again.",
         variant: "destructive",
       })
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
@@ -246,7 +256,9 @@ export function PlanManeuverForm() {
               )}
             />
             <DialogFooter>
-              <Button type="submit">Plan Maneuver</Button>
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? "Planning..." : "Plan Maneuver"}
+              </Button>
             </DialogFooter>
           </form>
         </Form>

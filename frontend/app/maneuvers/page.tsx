@@ -2,19 +2,52 @@
 
 import { useEffect, useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { getManeuvers } from "@/lib/api-client"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Skeleton } from "@/components/ui/skeleton"
 import { PlanManeuverForm } from "@/components/maneuvers/plan-maneuver-form"
 import { Badge } from "@/components/ui/badge"
-import type { ManeuverData } from "@/lib/types"
 import { Input } from "@/components/ui/input"
-import { formatDate } from "@/lib/utils/date"
+
+// Define types matching our backend
+interface ManeuverDetails {
+  delta_v?: number
+  duration?: number
+  fuel_required?: number
+  fuel_used?: number
+  target_orbit?: {
+    altitude?: number
+    inclination?: number
+  }
+}
+
+interface ManeuverData {
+  id: string
+  satellite_id: string
+  type: string
+  status: string
+  scheduledTime: string
+  completedTime?: string
+  created_by?: string
+  created_at?: string
+  details: ManeuverDetails
+}
 
 interface ManeuversState {
   data: ManeuverData[] | null
   isLoading: boolean
   error: string | null
+}
+
+// Helper function to format date 
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString);
+  return new Intl.DateTimeFormat('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  }).format(date);
 }
 
 function ManeuversFilter({ onFilter }: { onFilter: (query: string) => void }) {
@@ -47,25 +80,25 @@ export default function ManeuversPage() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await getManeuvers()
-        if (!response.data) {
-          setState(prev => ({
-            ...prev,
-            error: response.error?.message || 'No maneuvers data available',
-            isLoading: false
-          }))
-          return
+        const response = await fetch("/api/v1/maneuvers");
+        
+        if (!response.ok) {
+          throw new Error(`Error fetching maneuvers: ${response.status}`);
         }
+        
+        const data = await response.json();
+        
         setState(prev => ({
           ...prev,
-          data: response.data,
+          data: data,
           isLoading: false
         }))
-        setFilteredData(response.data)
+        setFilteredData(data)
       } catch (err) {
+        console.error("Failed to fetch maneuvers:", err);
         setState(prev => ({
           ...prev,
-          error: 'Failed to fetch maneuvers data',
+          error: err instanceof Error ? err.message : 'Failed to fetch maneuvers data',
           isLoading: false
         }))
       }
@@ -99,11 +132,14 @@ export default function ManeuversPage() {
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <span>{maneuver.type}</span>
-            <Badge className="ml-2" variant={maneuver.status === 'completed' ? 'default' : 'secondary'}>
+            <Badge className={`ml-2 ${getStatusBadgeColor(maneuver.status)}`}>
               {maneuver.status}
             </Badge>
           </CardTitle>
           <CardDescription>ID: {maneuver.id}</CardDescription>
+          {maneuver.satellite_id && (
+            <CardDescription>Satellite: {maneuver.satellite_id}</CardDescription>
+          )}
         </CardHeader>
         <CardContent className="space-y-2">
           <p>
@@ -123,11 +159,36 @@ export default function ManeuversPage() {
               <p>Delta-V: {maneuver.details.delta_v?.toFixed(2) ?? "N/A"} m/s</p>
               <p>Duration: {maneuver.details.duration?.toFixed(1) ?? "N/A"} s</p>
               <p>Fuel Required: {maneuver.details.fuel_required?.toFixed(2) ?? "N/A"} kg</p>
+              {maneuver.details.fuel_used && (
+                <p>Fuel Used: {maneuver.details.fuel_used.toFixed(2)} kg</p>
+              )}
+              {maneuver.details.target_orbit && (
+                <>
+                  <p>Target Altitude: {maneuver.details.target_orbit.altitude} km</p>
+                  <p>Target Inclination: {maneuver.details.target_orbit.inclination}°</p>
+                </>
+              )}
             </div>
           )}
         </CardContent>
       </Card>
     ))
+  }
+
+  // Helper function to get badge color based on status
+  const getStatusBadgeColor = (status: string) => {
+    switch (status.toLowerCase()) {
+      case 'completed':
+        return 'bg-green-500 hover:bg-green-600'
+      case 'executing':
+        return 'bg-blue-500 hover:bg-blue-600'
+      case 'scheduled':
+        return 'bg-yellow-500 hover:bg-yellow-600'
+      case 'failed':
+        return 'bg-red-500 hover:bg-red-600'
+      default:
+        return '' // default badge color
+    }
   }
 
   if (state.error) {
