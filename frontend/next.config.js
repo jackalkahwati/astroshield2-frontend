@@ -50,7 +50,16 @@ const nextConfig = {
   // Add environment variables
   env: {
     MAPBOX_TOKEN: 'pk.eyJ1IjoiaXExOXplcm8xMiIsImEiOiJjajNveDZkNWMwMGtpMnFuNG05MjNidjBrIn0.rbEk-JO7ewQXACGoTCT5CQ'
-  }
+  },
+  // Add API proxy configuration
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        destination: 'http://localhost:5002/api/:path*',
+      },
+    ];
+  },
 }
 
 module.exports = nextConfig 
