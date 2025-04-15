@@ -36,7 +36,8 @@ from app.models.ccdm import (
     HistoricalAnalysisRequest,
     ShapeChangeRequest,
     ShapeChangeDetection,
-    HistoricalAnalysisPoint
+    HistoricalAnalysisPoint,
+    ThreatAssessmentRequest
 )
 
 from app.models.ccdm_orm import (

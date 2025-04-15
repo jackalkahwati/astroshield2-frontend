@@ -3,9 +3,20 @@
 from typing import Dict, Any, List, Optional, Tuple
 from datetime import datetime, timedelta
 import numpy as np
-from scipy.integrate import odeint
+from scipy.integrate import odeint, solve_ivp
 from dataclasses import dataclass
 import warnings
+
+from src.utils.coordinates import (
+    eci_to_lla,
+    lla_to_eci,
+    deg_to_rad,
+    rad_to_deg,
+    dict_eci_to_lla,
+    dict_lla_to_eci,
+    WGS84_A,
+    EARTH_ROTATION_RATE
+)
 
 @dataclass
 class AtmosphericConditions:
@@ -39,9 +50,9 @@ class TrajectoryPredictor:
                 - object_properties: Default object properties
         """
         self.config = config
-        self.R = 6371000.0  # Earth radius in meters
-        self.g0 = 9.81  # Standard gravity in m/s²
-        self.monte_carlo_samples = config.get('monte_carlo_samples', 1000)
+        self.R = WGS84_A  # Use WGS84 Earth radius
+        self.g0 = 9.80665  # Standard gravity [m/s^2]
+        self.monte_carlo_samples = config.get('monte_carlo_samples', 100)
         
         # Load atmospheric model coefficients
         self._load_atmospheric_model()
@@ -237,13 +248,11 @@ class TrajectoryPredictor:
         r = state[:3]
         v = state[3:]
         
-        # Calculate altitude and position-dependent quantities
-        alt = np.linalg.norm(r) - self.R
-        lat = np.degrees(np.arcsin(r[2] / np.linalg.norm(r)))
-        lon = np.degrees(np.arctan2(r[1], r[0]))
+        # Convert to LLA for atmospheric calculations
+        lat, lon, alt = eci_to_lla(r, datetime.utcnow() + timedelta(seconds=t))
         
-        # Get atmospheric conditions
-        conditions = self.get_atmospheric_conditions(alt, lat, lon)
+        # Get atmospheric conditions at current position
+        conditions = self.get_atmospheric_conditions(alt, rad_to_deg(lat), rad_to_deg(lon))
         
         # Calculate forces
         # 1. Gravity with J2 effect
@@ -260,7 +269,7 @@ class TrajectoryPredictor:
         f_drag = self._calculate_drag(v, conditions)
         
         # 3. Coriolis and centrifugal forces
-        omega_earth = np.array([0, 0, 7.2921159e-5])  # Earth's rotation vector
+        omega_earth = np.array([0, 0, EARTH_ROTATION_RATE])  # Earth's rotation vector
         f_coriolis = -2.0 * np.cross(omega_earth, v)
         f_centrifugal = -np.cross(omega_earth, np.cross(omega_earth, r))
         
@@ -272,113 +281,73 @@ class TrajectoryPredictor:
     def predict_impact(self, initial_state: np.ndarray, mass: float,
                       time_step: float = 1.0, max_time: float = 3600.0,
                       monte_carlo: bool = True) -> Dict[str, Any]:
-        """Predict impact location with uncertainty using Monte Carlo analysis.
-        
-        Args:
-            initial_state: Initial state vector [x, y, z, vx, vy, vz]
-            mass: Object mass in kg
-            time_step: Integration time step in seconds
-            max_time: Maximum integration time in seconds
-            monte_carlo: Whether to perform Monte Carlo analysis
-            
-        Returns:
-            Dictionary containing impact prediction and uncertainty
-        """
-        if monte_carlo:
-            return self._monte_carlo_prediction(initial_state, mass, time_step, max_time)
-        
-        # Single trajectory prediction
-        t = np.arange(0, max_time, time_step)
-        trajectory = odeint(self._dynamics, initial_state, t, args=(mass,))
-        
-        # Find impact point
-        impact_idx = None
-        for i in range(len(trajectory)):
-            alt = np.linalg.norm(trajectory[i, :3]) - self.R
-            if alt <= 0:
-                impact_idx = i
-                break
-        
-        if impact_idx is None:
-            return None
-        
-        # Calculate impact location
-        impact_pos = trajectory[impact_idx, :3]
-        impact_vel = trajectory[impact_idx, 3:]
-        
-        r_mag = np.linalg.norm(impact_pos)
-        lat = np.degrees(np.arcsin(impact_pos[2] / r_mag))
-        lon = np.degrees(np.arctan2(impact_pos[1], impact_pos[0]))
-        
-        # Calculate basic uncertainty
-        uncertainty = self._calculate_uncertainty(
-            t[impact_idx],
-            initial_state,
-            trajectory[:impact_idx+1]
-        )
-        
-        return {
-            'time': datetime.utcnow() + timedelta(seconds=float(t[impact_idx])),
-            'location': {
-                'lat': float(lat),
-                'lon': float(lon)
-            },
-            'velocity': {
-                'magnitude': float(np.linalg.norm(impact_vel)),
-                'direction': {
-                    'x': float(impact_vel[0]),
-                    'y': float(impact_vel[1]),
-                    'z': float(impact_vel[2])
-                }
-            },
-            'uncertainty_radius_km': float(uncertainty),
-            'confidence': 0.95
-        }
-
-    def _monte_carlo_prediction(self, initial_state: np.ndarray, mass: float,
-                              time_step: float, max_time: float) -> Dict[str, Any]:
-        """Perform Monte Carlo analysis for impact prediction."""
+        """Predict impact location with uncertainty using Monte Carlo analysis."""
         impact_points = []
         impact_times = []
         impact_velocities = []
         
-        # Generate Monte Carlo samples
-        for _ in range(self.monte_carlo_samples):
-            # Add perturbations to initial state and parameters
-            perturbed_state = self._add_state_perturbations(initial_state)
-            perturbed_mass = mass * (1.0 + np.random.normal(0, 0.1))  # 10% uncertainty
+        # Monte Carlo simulation with perturbations
+        n_samples = self.monte_carlo_samples if monte_carlo else 1
+        
+        for _ in range(n_samples):
+            # Add perturbations for Monte Carlo analysis
+            if monte_carlo:
+                perturbed_state = initial_state + np.random.normal(0, 0.01, size=6) * initial_state
+                perturbed_mass = mass * (1 + np.random.normal(0, 0.05))
+            else:
+                perturbed_state = initial_state
+                perturbed_mass = mass
             
-            # Predict trajectory
-            t = np.arange(0, max_time, time_step)
-            trajectory = odeint(self._dynamics, perturbed_state, t, args=(perturbed_mass,))
+            # Integrate trajectory
+            t_eval = np.arange(0, max_time, time_step)
+            sol = solve_ivp(
+                lambda t, y: self._dynamics(y, t, perturbed_mass),
+                (0, max_time),
+                perturbed_state,
+                t_eval=t_eval,
+                method='RK45',
+                rtol=1e-8,
+                atol=1e-8
+            )
             
-            # Find impact point
-            for i in range(len(trajectory)):
-                alt = np.linalg.norm(trajectory[i, :3]) - self.R
-                if alt <= 0:
-                    impact_points.append(trajectory[i, :3])
-                    impact_times.append(t[i])
-                    impact_velocities.append(trajectory[i, 3:])
+            # Find impact point (when altitude becomes zero)
+            for i in range(len(sol.t)-1):
+                r1 = sol.y[:3, i]
+                r2 = sol.y[:3, i+1]
+                v2 = sol.y[3:, i+1]
+                
+                # Convert positions to LLA
+                lat1, lon1, alt1 = eci_to_lla(r1, datetime.utcnow() + timedelta(seconds=sol.t[i]))
+                lat2, lon2, alt2 = eci_to_lla(r2, datetime.utcnow() + timedelta(seconds=sol.t[i+1]))
+                
+                if alt1 > 0 and alt2 <= 0:
+                    # Interpolate to find exact impact point
+                    alpha = alt1 / (alt1 - alt2)
+                    impact_lat = lat1 + alpha * (lat2 - lat1)
+                    impact_lon = lon1 + alpha * (lon2 - lon1)
+                    impact_time = sol.t[i] + alpha * (sol.t[i+1] - sol.t[i])
+                    
+                    # Store results
+                    impact_points.append([impact_lat, impact_lon])
+                    impact_times.append(impact_time)
+                    impact_velocities.append(v2)
                     break
         
         if not impact_points:
             return None
         
-        # Statistical analysis of Monte Carlo results
         impact_points = np.array(impact_points)
         impact_times = np.array(impact_times)
         impact_velocities = np.array(impact_velocities)
         
         # Calculate mean impact point
-        mean_pos = np.mean(impact_points, axis=0)
-        r_mag = np.linalg.norm(mean_pos)
-        mean_lat = np.degrees(np.arcsin(mean_pos[2] / r_mag))
-        mean_lon = np.degrees(np.arctan2(mean_pos[1], mean_pos[0]))
+        mean_lat = np.mean(impact_points[:, 0])
+        mean_lon = np.mean(impact_points[:, 1])
         
         # Calculate uncertainty ellipse
         covariance = np.cov(impact_points, rowvar=False)
-        eigenvals, eigenvecs = np.linalg.eig(covariance[:2, :2])
-        uncertainty_radius = np.sqrt(np.max(eigenvals)) / 1000.0  # Convert to km
+        eigenvals, eigenvecs = np.linalg.eig(covariance)
+        uncertainty_radius = np.sqrt(np.max(eigenvals))  # Convert to km
         
         # Calculate confidence based on spread
         confidence = 1.0 - np.std(impact_times) / np.mean(impact_times)
@@ -387,8 +356,8 @@ class TrajectoryPredictor:
         return {
             'time': datetime.utcnow() + timedelta(seconds=float(np.mean(impact_times))),
             'location': {
-                'lat': float(mean_lat),
-                'lon': float(mean_lon)
+                'lat': float(rad_to_deg(mean_lat)),
+                'lon': float(rad_to_deg(mean_lon))
             },
             'velocity': {
                 'magnitude': float(np.mean(np.linalg.norm(impact_velocities, axis=1))),
@@ -407,18 +376,6 @@ class TrajectoryPredictor:
                 'velocity_std': float(np.std(np.linalg.norm(impact_velocities, axis=1)))
             }
         }
-
-    def _add_state_perturbations(self, state: np.ndarray) -> np.ndarray:
-        """Add random perturbations to the state vector."""
-        # Position uncertainty (1% of position magnitude)
-        pos_scale = np.linalg.norm(state[:3]) * 0.01
-        pos_perturbation = np.random.normal(0, pos_scale, 3)
-        
-        # Velocity uncertainty (1% of velocity magnitude)
-        vel_scale = np.linalg.norm(state[3:]) * 0.01
-        vel_perturbation = np.random.normal(0, vel_scale, 3)
-        
-        return state + np.concatenate([pos_perturbation, vel_perturbation])
 
     def model_breakup(self, state: np.ndarray, mass: float, 
                      breakup_altitude: float) -> List[BreakupFragment]:

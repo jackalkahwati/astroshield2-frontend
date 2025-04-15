@@ -109,27 +109,43 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         self.rate_limiter = rate_limiter or RateLimiter()
         
     async def dispatch(self, request: Request, call_next: Callable) -> Response:
-        """Process request and apply rate limiting"""
-        if not self.rate_limiter.enabled:
+        """Rate limit based on client IP or user ID"""
+        # Skip rate limiting for certain paths
+        if self._should_skip(request.url.path):
             return await call_next(request)
         
-        # Extract client information
-        client_id = request.client.host if request.client else "unknown"
-        endpoint = request.url.path
+        # Get client IP
+        client_ip = self._get_client_ip(request)
         
-        # Get user ID from session if available
-        user_id = None
-        if hasattr(request, "user") and hasattr(request.user, "id"):
-            user_id = request.user.id
+        # Get rate limit key based on user ID (if authenticated) or IP
+        key = None
+        
+        # Try to get user safely without raising an assertion error
+        user = None
+        try:
+            if "user" in request.scope and request.scope["user"] is not None:
+                user = request.scope["user"]
+        except (AssertionError, AttributeError):
+            # No user in request scope, use IP only
+            pass
+        
+        # Use user ID if available, otherwise fall back to IP
+        if user is not None and hasattr(user, "id"):
+            # Use both user ID and IP to prevent shared account abuse
+            key = f"rate_limit:{user.id}:{client_ip}"
             
-        # Use user ID if available, otherwise IP address
-        rate_limit_key = f"ratelimit:{user_id or client_id}:{endpoint}"
+            # Allow higher limits for authenticated users
+            max_requests = self.auth_rate_limit
+        else:
+            # Use IP only for unauthenticated requests
+            key = f"rate_limit:{client_ip}"
+            max_requests = self.anon_rate_limit
         
         # Get rate limit for endpoint
-        limit = self.rate_limiter.get_rate_limit(endpoint)
+        limit = self.rate_limiter.get_rate_limit(request.url.path)
         
         # Check if rate limited
-        is_limited, current, reset = self.rate_limiter.is_rate_limited(rate_limit_key, limit)
+        is_limited, current, reset = self.rate_limiter.is_rate_limited(key, limit)
         
         # Add rate limit headers
         headers = {
@@ -139,7 +155,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         }
         
         if is_limited:
-            logger.warning(f"Rate limit exceeded for {client_id} on {endpoint}")
+            logger.warning(f"Rate limit exceeded for {client_ip}")
             
             # Return 429 Too Many Requests
             content = {

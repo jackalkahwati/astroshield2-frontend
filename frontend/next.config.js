@@ -49,14 +49,15 @@ const nextConfig = {
   },
   // Add environment variables
   env: {
-    MAPBOX_TOKEN: 'pk.eyJ1IjoiaXExOXplcm8xMiIsImEiOiJjajNveDZkNWMwMGtpMnFuNG05MjNidjBrIn0.rbEk-JO7ewQXACGoTCT5CQ'
+    MAPBOX_TOKEN: 'pk.eyJ1IjoiaXExOXplcm8xMiIsImEiOiJjajNveDZkNWMwMGtpMnFuNG05MjNidjBrIn0.rbEk-JO7ewQXACGoTCT5CQ',
+    API_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5002'
   },
   // Add API proxy configuration
   async rewrites() {
     return [
       {
         source: '/api/:path*',
-        destination: 'http://localhost:5002/api/:path*',
+        destination: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5002/api/:path*',
       },
     ];
   },

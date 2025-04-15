@@ -15,7 +15,7 @@ class CCDMAnalysisORM(Base):
     norad_id = Column(Integer, index=True)
     timestamp = Column(DateTime, default=datetime.utcnow)
     summary = Column(String)
-    metadata = Column(JSON, nullable=True)
+    meta_data = Column(JSON, nullable=True)
 
     # Relationships
     results = relationship("AnalysisResultORM", back_populates="analysis", cascade="all, delete-orphan")
@@ -32,7 +32,7 @@ class ThreatAssessmentORM(Base):
     confidence = Column(Float)
     threat_components = Column(JSON, nullable=True)
     recommendations = Column(JSON, nullable=True)  # Stored as JSON array
-    metadata = Column(JSON, nullable=True)
+    meta_data = Column(JSON, nullable=True)
 
 
 class AnalysisResultORM(Base):
@@ -59,7 +59,7 @@ class HistoricalAnalysisORM(Base):
     start_date = Column(DateTime)
     end_date = Column(DateTime)
     trend_summary = Column(String)
-    metadata = Column(JSON, nullable=True)
+    meta_data = Column(JSON, nullable=True)
 
     # Relationships
     analysis_points = relationship("HistoricalAnalysisPointORM", back_populates="historical_analysis", cascade="all, delete-orphan")
@@ -87,7 +87,7 @@ class ShapeChangeORM(Base):
     id = Column(Integer, primary_key=True, index=True)
     norad_id = Column(Integer, index=True)
     summary = Column(String)
-    metadata = Column(JSON, nullable=True)
+    meta_data = Column(JSON, nullable=True)
 
     # Relationships
     detections = relationship("ShapeChangeDetectionORM", back_populates="shape_change", cascade="all, delete-orphan")

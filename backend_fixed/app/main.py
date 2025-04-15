@@ -17,7 +17,7 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 from app.db.session import get_db
-from app.routers import ccdm
+from app.routers import ccdm, trajectory, maneuvers
 from app.core.config import settings
 from app.middlewares.rate_limiter import add_rate_limit_middleware
 from app.middlewares.request_id import add_request_id_middleware
@@ -72,11 +72,13 @@ add_rate_limit_middleware(app)
 
 # Include routers
 app.include_router(ccdm.router)
+app.include_router(trajectory.router, prefix="/api/v1", tags=["trajectory"])
+app.include_router(maneuvers.router, prefix="/api/v1", tags=["maneuvers"])
 
 # Track active requests for graceful shutdown
 active_requests = 0
 active_requests_lock = threading.Lock()
-shutdown_event = threading.Event()
+app_shutdown_event = threading.Event()
 
 @app.middleware("http")
 async def track_requests(request: Request, call_next):
@@ -89,7 +91,7 @@ async def track_requests(request: Request, call_next):
     
     try:
         # Check if server is shutting down
-        if shutdown_event.is_set():
+        if app_shutdown_event.is_set():
             return {
                 "status": "error",
                 "message": "Server is shutting down, please try again later"
@@ -133,7 +135,7 @@ def graceful_shutdown(signum, frame):
     logger.info(f"Received signal {signum}, initiating graceful shutdown")
     
     # Set shutdown event to prevent new requests
-    shutdown_event.set()
+    app_shutdown_event.set()
     
     # Wait for active requests to complete (max 30 seconds)
     max_wait = 30

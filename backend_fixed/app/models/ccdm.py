@@ -32,7 +32,7 @@ class PropulsiveCapabilityResponse(BaseModel):
 class ObjectAnalysisRequest(BaseModel):
     object_id: str
     timestamp: Optional[datetime] = None
-    metadata: Optional[Dict[str, Any]] = None
+    meta_data: Optional[Dict[str, Any]] = None
 
 class ObjectAnalysisResponse(BaseModel):
     object_id: str
@@ -151,7 +151,7 @@ class ObjectAnalysisResponse(BaseModel):
     timestamp: datetime
     analysis_results: List[AnalysisResult]
     summary: str
-    metadata: Optional[Dict] = None
+    meta_data: Optional[Dict] = None
 
 class ThreatAssessmentRequest(BaseModel):
     norad_id: int

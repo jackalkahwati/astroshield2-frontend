@@ -6,6 +6,15 @@ import numpy as np
 from dataclasses import dataclass
 from enum import Enum
 from .trajectory_predictor import TrajectoryPredictor
+from src.utils.coordinates import (
+    eci_to_lla,
+    lla_to_eci,
+    deg_to_rad,
+    rad_to_deg,
+    dict_eci_to_lla,
+    dict_lla_to_eci,
+    WGS84_A
+)
 
 class TransitType(Enum):
     """Types of atmospheric transit objects."""
@@ -136,36 +145,33 @@ class UDLDataIntegrator:
                  datetime.fromisoformat(history[0]['epoch'])).total_seconds()
             
             if dt > 0:
+                # Convert positions to ECI coordinates
+                current_eci = {
+                    'x': current['xpos'],
+                    'y': current['ypos'],
+                    'z': current['zpos']
+                }
+                
+                # Convert to LLA
+                current_epoch = datetime.fromisoformat(current['epoch'])
+                lla = dict_eci_to_lla(current_eci, current_epoch)
+                
+                # Calculate velocity in ECI frame
                 dx = history[-1]['xpos'] - history[0]['xpos']
                 dy = history[-1]['ypos'] - history[0]['ypos']
                 dz = history[-1]['zpos'] - history[0]['zpos']
                 
-                vx = dx / dt
-                vy = dy / dt
-                vz = dz / dt
-                
-                # Convert to km/s
                 velocity = {
-                    'vx': vx / 1000,
-                    'vy': vy / 1000,
-                    'vz': vz / 1000
+                    'vx': dx / dt / 1000,  # Convert to km/s
+                    'vy': dy / dt / 1000,
+                    'vz': dz / dt / 1000
                 }
                 
-                # Calculate altitude
-                x = current['xpos']
-                y = current['ypos']
-                z = current['zpos']
-                r = np.sqrt(x**2 + y**2 + z**2)
-                alt = (r - 6371000) / 1000  # Convert to km
-                
-                if self.config['altitude_range']['min'] <= alt <= self.config['altitude_range']['max']:
+                if (self.config['altitude_range']['min'] <= lla['alt'] / 1000 <= 
+                    self.config['altitude_range']['max']):
                     return TransitObject(
                         time_first_detection=datetime.fromisoformat(history[0]['epoch']),
-                        location={
-                            'lat': np.degrees(np.arcsin(z/r)),
-                            'lon': np.degrees(np.arctan2(y, x)),
-                            'alt': alt
-                        },
+                        location=lla,
                         velocity=velocity,
                         transit_type=TransitType.UNKNOWN,
                         confidence=0.9 if current.get('uct', False) else 0.7
@@ -676,33 +682,33 @@ class AtmosphericTransitDetector:
         return TransitType.UNKNOWN
     
     def _predict_impact(self, obj: TransitObject) -> Dict[str, Any]:
-        """Predict impact location and time for Earth-bound objects.
+        """Predict impact location and time for Earth-bound objects."""
+        # Convert LLA to ECI coordinates
+        state = {
+            'lat': obj.location['lat'],
+            'lon': obj.location['lon'],
+            'alt': obj.location['alt']
+        }
+        epoch = obj.time_first_detection
         
-        Args:
-            obj: Transit object with current state
-            
-        Returns:
-            Dictionary containing impact prediction
-        """
-        # Convert location to Cartesian coordinates
-        lat_rad = np.radians(obj.location['lat'])
-        lon_rad = np.radians(obj.location['lon'])
-        alt = obj.location['alt'] * 1000  # Convert to meters
-        
-        # Calculate position vector
-        R = 6.371e6  # Earth radius in meters
-        r = (R + alt)
-        x = r * np.cos(lat_rad) * np.cos(lon_rad)
-        y = r * np.cos(lat_rad) * np.sin(lon_rad)
-        z = r * np.sin(lat_rad)
+        eci_state = dict_lla_to_eci(state, epoch)
         
         # Convert velocity to m/s
-        vx = obj.velocity['vx'] * 1000
-        vy = obj.velocity['vy'] * 1000
-        vz = obj.velocity['vz'] * 1000
+        velocity = np.array([
+            obj.velocity['vx'] * 1000,
+            obj.velocity['vy'] * 1000,
+            obj.velocity['vz'] * 1000
+        ])
         
         # Create initial state vector
-        initial_state = np.array([x, y, z, vx, vy, vz])
+        initial_state = np.array([
+            eci_state['x'],
+            eci_state['y'],
+            eci_state['z'],
+            velocity[0],
+            velocity[1],
+            velocity[2]
+        ])
         
         # Estimate object mass based on radar cross section or default value
         mass = self.config.get('default_mass', 1000.0)  # kg

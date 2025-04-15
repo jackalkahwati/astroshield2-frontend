@@ -7,7 +7,7 @@ import { Box, Typography } from '@mui/material';
 // Dynamically import the TrajectoryAnalysis component with no SSR
 // This is necessary because mapbox-gl is a client-side library
 const TrajectoryAnalysis = dynamic(
-  () => import('@/src/frontend/containers/TrajectoryAnalysis'),
+  () => import('@/src/components/TrajectoryAnalysis'),
   { ssr: false }
 );
 
@@ -19,6 +19,7 @@ export default function TrajectoryPage() {
       </Typography>
       <Typography variant="body1" paragraph>
         Analyze spacecraft trajectories, predict reentry paths, and assess impact risks.
+        (Currently using simulated data for demonstration purposes)
       </Typography>
       
       <TrajectoryAnalysis />
