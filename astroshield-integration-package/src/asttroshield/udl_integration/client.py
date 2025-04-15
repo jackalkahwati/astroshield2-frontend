@@ -881,4 +881,34 @@ class UDLClient:
         # 1. Load JSON schema definitions
         # 2. Use a library like jsonschema to validate
         logger.debug(f"Schema validation for {schema_name} not implemented")
-        return True 
+        return True
+
+    def get_dmd_state_data(self, catalog_id, time_window=24):
+        """
+        Get state data for DMD orbit determination
+        
+        Args:
+            catalog_id: The DMD catalog ID
+            time_window: Time window in hours
+        
+        Returns:
+            List of state vectors
+        """
+        params = {'hours': time_window}
+        endpoint = f"{self.base_url}/dmd/od/{catalog_id}/states"
+        return self._make_request("GET", endpoint, params=params).json()
+
+    def analyze_maneuvers(self, catalog_id, time_window=24):
+        """
+        Wrapper for our maneuver detection logic
+        
+        Args:
+            catalog_id: The DMD catalog ID
+            time_window: Analysis window in hours
+            
+        Returns:
+            Maneuver detection results
+        """
+        states = self.get_dmd_state_data(catalog_id, time_window)
+        from asttroshield.event_processing.maneuver_detection import detect_maneuvers_from_states
+        return detect_maneuvers_from_states(states) 

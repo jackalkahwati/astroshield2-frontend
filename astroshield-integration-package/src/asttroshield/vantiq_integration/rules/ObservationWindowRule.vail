@@ -1,0 +1,27 @@
+RULE ObservationWindowRule
+WHEN EVENT OCCURS FROM AstroshieldKafkaSource as message
+WHERE message.topic == "observation-windows"
+// Parse the message as JSON
+var parsedMessage = JSON.parse(message.value)
+// Transform to Vantiq format
+var transformedEvent = transformObservationWindow(parsedMessage)
+
+// Publish to Vantiq topic
+PUBLISH { 
+    event: transformedEvent 
+} TO TOPIC "/astroshield/observations"
+
+// Schedule if recommendation is GO
+if (transformedEvent.recommendation == "GO" && 
+    transformedEvent.qualityScore > 0.7) {
+    
+    // Create a scheduled observation
+    INSERT ScheduledObservation({
+        objectId: transformedEvent.targetObject.catalogId,
+        startTime: transformedEvent.observationWindow.startTime,
+        endTime: transformedEvent.observationWindow.endTime,
+        location: transformedEvent.location,
+        qualityScore: transformedEvent.qualityScore,
+        status: "SCHEDULED"
+    })
+} 

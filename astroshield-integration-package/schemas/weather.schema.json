@@ -1,0 +1,57 @@
+{
+  "header": {
+    "messageType": "weather-data",
+    "source": "weather-service",
+    "timestamp": "2023-06-01T12:34:56.789Z"
+  },
+  "payload": {
+    "timestamp": "2023-06-01T12:34:56.789Z",
+    "location": {
+      "name": "New York",
+      "region": "New York",
+      "country": "United States",
+      "latitude": 40.7128,
+      "longitude": -74.0060
+    },
+    "conditions": {
+      "temperature": {
+        "celsius": 22.5,
+        "fahrenheit": 72.5
+      },
+      "feelsLike": {
+        "celsius": 23.0,
+        "fahrenheit": 73.4
+      },
+      "windSpeed": {
+        "kph": 8.6,
+        "mph": 5.3
+      },
+      "windDirection": {
+        "degrees": 220,
+        "direction": "SW"
+      },
+      "precipitation": {
+        "mm": 0.0,
+        "in": 0.0
+      },
+      "humidity": 65,
+      "clouds": {
+        "coverage": 15
+      },
+      "visibility": {
+        "km": 9.7,
+        "miles": 6.0,
+        "value": 9.7
+      },
+      "uv": 5,
+      "condition": {
+        "text": "Partly cloudy",
+        "code": 1003
+      }
+    },
+    "forecast_period": {
+      "start": "2023-06-01T12:00:00.000Z",
+      "end": "2023-06-01T18:00:00.000Z"
+    }
+  }
+} 

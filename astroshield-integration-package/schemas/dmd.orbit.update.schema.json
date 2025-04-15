@@ -1,0 +1,26 @@
+{
+  "type": "object",
+  "required": ["header", "payload"],
+  "properties": {
+    "header": {
+      "type": "object",
+      "required": ["messageType", "source", "timestamp"],
+      "properties": {
+        "messageType": {"type": "string", "enum": ["dmd-object-update"]},
+        "source": {"type": "string"},
+        "timestamp": {"type": "string", "format": "date-time"}
+      }
+    },
+    "payload": {
+      "type": "object",
+      "required": ["object_id", "updateType"],
+      "properties": {
+        "object_id": {"type": "string"},
+        "catalogId": {"type": "string"},
+        "updateType": {"type": "string", "enum": ["NEW_OBSERVATION", "ORBIT_UPDATED", "STATE_VECTOR_UPDATED"]},
+        "updateTime": {"type": "string", "format": "date-time"},
+        "source": {"type": "string"}
+      }
+    }
+  }
+} 

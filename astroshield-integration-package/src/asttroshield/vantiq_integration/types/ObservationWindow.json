@@ -1,0 +1,31 @@
+{
+  "name": "ObservationWindow",
+  "properties": {
+    "location": {
+      "type": "Object",
+      "properties": {
+        "latitude": { "type": "Real" },
+        "longitude": { "type": "Real" },
+        "locationName": { "type": "String" }
+      }
+    },
+    "qualityScore": { "type": "Real" },
+    "qualityCategory": { "type": "String" },
+    "recommendation": { "type": "String" },
+    "observationWindow": {
+      "type": "Object",
+      "properties": {
+        "startTime": { "type": "DateTime" },
+        "endTime": { "type": "DateTime" },
+        "durationMinutes": { "type": "Integer" }
+      }
+    },
+    "targetObject": {
+      "type": "Object",
+      "properties": {
+        "catalogId": { "type": "String" },
+        "altitudeKm": { "type": "Real" }
+      }
+    }
+  }
+} 

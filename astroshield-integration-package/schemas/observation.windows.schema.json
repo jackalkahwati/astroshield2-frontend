@@ -1,0 +1,25 @@
+{
+  "header": {
+    "messageType": "observation-window-recommended",
+    "source": "weather-integration",
+    "timestamp": "2023-06-01T12:34:56.789Z"
+  },
+  "payload": {
+    "location": {
+      "latitude": 40.7128,
+      "longitude": -74.0060
+    },
+    "qualityScore": 0.82,
+    "qualityCategory": "EXCELLENT",
+    "recommendation": "GO",
+    "observationWindow": {
+      "start_time": "2023-06-01T13:00:00.000Z",
+      "end_time": "2023-06-01T14:00:00.000Z",
+      "duration_minutes": 60
+    },
+    "targetObject": {
+      "catalog_id": "SAT-5678",
+      "altitude_km": 650.0
+    }
+  }
+} 

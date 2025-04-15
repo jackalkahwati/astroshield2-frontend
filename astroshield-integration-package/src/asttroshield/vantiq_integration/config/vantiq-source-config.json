@@ -1,0 +1,14 @@
+{
+  "name": "AstroshieldKafkaSource",
+  "type": "KAFKA",
+  "config": {
+    "bootstrapServers": "kafka:9092",
+    "topics": ["maneuvers-detected", "observation-windows", "dmd-od-update", "weather-data"],
+    "groupId": "vantiq-consumer-group",
+    "keyDeserializer": "org.apache.kafka.common.serialization.StringDeserializer",
+    "valueDeserializer": "org.apache.kafka.common.serialization.StringDeserializer",
+    "autoOffsetReset": "latest",
+    "enableAutoCommit": "true",
+    "pollTimeout": 100
+  }
+} 

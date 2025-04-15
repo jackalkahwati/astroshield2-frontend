@@ -15,6 +15,7 @@ This integration package provides all the necessary resources for integrating wi
 - [Version Information](#version-information)
 - [License](#license)
 - [UDL Integration](#udl-integration)
+- [Docker Deployment](#docker-deployment)
 
 ## Package Contents
 
@@ -103,6 +104,10 @@ sasl.jaas.config=org.apache.kafka.common.security.plain.PlainLoginModule require
 | `ss5.conjunction.events` | Conjunction events between spacecraft | [Schema](schemas/ss5.conjunction.events.schema.json) | Subsystem 5 (Hostility Monitoring) |
 | `ss5.cyber.threats` | Cyber threat notifications | [Schema](schemas/ss5.cyber.threats.schema.json) | Subsystem 5 (Hostility Monitoring) |
 | `ss6.threat.assessment` | Comprehensive threat assessments and recommendations | [Schema](schemas/ss6.threat.assessment.schema.json) | Subsystem 6 (Threat Assessment) |
+| `dmd-od-update` | DMD orbit determination updates | [Schema](schemas/dmd.od.schema.json) | Event Processor |
+| `weather-data` | Weather condition updates | [Schema](schemas/weather.schema.json) | Event Processor |
+| `maneuvers-detected` | Detected satellite maneuvers | [Schema](schemas/maneuvers.detected.schema.json) | Event Processor |
+| `observation-windows` | Recommended observation windows | [Schema](schemas/observation.windows.schema.json) | Event Processor |
 
 ## System Architecture
 
@@ -390,4 +395,31 @@ pytest src/asttroshield/udl_integration/tests/test_kafka_producer.py
 pytest src/asttroshield/udl_integration/tests/test_integration.py
 ```
 
-For more information, see the [UDL Integration README](src/asttroshield/udl_integration/README.md). 
+For more information, see the [UDL Integration README](src/asttroshield/udl_integration/README.md).
+
+## Docker Deployment
+
+The AstroShield integration package includes Docker deployment examples for a complete event-driven architecture:
+
+1. **Build and start services:**
+   ```bash
+   docker-compose -f config/docker-compose.event-processor.yml up -d
+   ```
+
+2. **Monitor Kafka topics:**
+   ```bash
+   # View Kafka UI at http://localhost:8080
+   ```
+
+3. **Test with demo data:**
+   ```bash
+   docker-compose -f config/docker-compose.event-processor.yml exec event-processor python simple_demo.py 10 5
+   ```
+
+This Docker Compose setup includes:
+- Event processor service for handling events from various sources
+- Kafka for message streaming
+- Zookeeper for Kafka coordination
+- Kafka UI for monitoring and administration
+
+For custom deployments, modify the environment variables in the docker-compose file to match your configuration needs. 

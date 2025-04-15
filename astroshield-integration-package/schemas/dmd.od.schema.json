@@ -1,0 +1,53 @@
+{
+  "header": {
+    "messageType": "dmd-od-update",
+    "source": "dmd-catalog",
+    "timestamp": "2023-06-01T12:34:56.789Z"
+  },
+  "payload": {
+    "object_id": "DMD-12345",
+    "object_name": "COSMOS 2567",
+    "object_type": "PAYLOAD",
+    "catalog_source": "DMD",
+    "states": [
+      {
+        "epoch": "2023-06-01T12:00:00.000Z",
+        "position": {
+          "x": 6800.0,
+          "y": 1200.0,
+          "z": 0.0
+        },
+        "velocity": {
+          "x": -1.5,
+          "y": 7.5,
+          "z": 0.0
+        }
+      },
+      {
+        "epoch": "2023-06-01T12:30:00.000Z",
+        "position": {
+          "x": 6300.0,
+          "y": 3500.0,
+          "z": 0.0
+        },
+        "velocity": {
+          "x": -3.0,
+          "y": 7.0,
+          "z": 0.0
+        }
+      }
+    ],
+    "orbit_parameters": {
+      "semi_major_axis": 7000.0,
+      "eccentricity": 0.001,
+      "inclination": 51.6,
+      "raan": 145.0,
+      "arg_of_perigee": 30.0,
+      "mean_anomaly": 10.0
+    },
+    "determination_quality": {
+      "residual": 0.002,
+      "covariance_available": true
+    }
+  }
+} 

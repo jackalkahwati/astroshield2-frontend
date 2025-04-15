@@ -1,0 +1,41 @@
+FROM python:3.9-slim
+
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    gcc \
+    python3-dev \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements file first for better caching
+COPY requirements-event-processor.txt ./requirements.txt
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application code
+COPY src/ ./src/
+COPY schemas/ ./schemas/
+COPY examples/ ./examples/
+
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PORT=5005 \
+    KAFKA_BOOTSTRAP_SERVERS=kafka:9092 \
+    KAFKA_TOPIC_PREFIXES=dmd-od-update,weather-data \
+    KAFKA_CONSUMER_GROUP=astroshield-event-processor \
+    KAFKA_PRODUCER_CLIENT_ID=astroshield-producer \
+    LOG_LEVEL=INFO
+
+# Expose port
+EXPOSE ${PORT}
+
+# Add health check
+HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
+  CMD curl -f http://localhost:${PORT}/health || exit 1
+
+# Start the application in production mode
+CMD ["python", "-m", "src.asttroshield.main"] 

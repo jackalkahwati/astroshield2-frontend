@@ -1,0 +1,13 @@
+{
+  "name": "ManeuverDetection",
+  "properties": {
+    "catalogId": { "type": "String" },
+    "deltaV": { "type": "Real" },
+    "confidence": { "type": "Real" },
+    "maneuverType": { "type": "String" },
+    "detectionTime": { "type": "DateTime" },
+    "source": { "type": "String" },
+    "messageId": { "type": "String" },
+    "traceId": { "type": "String" }
+  }
+} 

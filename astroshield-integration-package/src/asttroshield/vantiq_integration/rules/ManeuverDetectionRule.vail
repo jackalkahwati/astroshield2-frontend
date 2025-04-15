@@ -1,0 +1,26 @@
+RULE ManeuverDetectionRule
+WHEN EVENT OCCURS FROM AstroshieldKafkaSource as message
+WHERE message.topic == "maneuvers-detected"
+// Parse the message as JSON
+var parsedMessage = JSON.parse(message.value)
+// Transform to Vantiq format
+var transformedEvent = transformManeuverDetection(parsedMessage)
+
+// Publish to Vantiq topic
+PUBLISH { 
+    event: transformedEvent 
+} TO TOPIC "/astroshield/maneuvers"
+
+// If confidence is high, also create a notification
+if (transformedEvent.confidence > 0.8 && 
+    transformedEvent.maneuverType == "MAJOR_MANEUVER") {
+    
+    INSERT Notification({
+        title: "High Confidence Maneuver Detected",
+        message: "Object " + transformedEvent.catalogId + 
+                 " performed a major maneuver with delta-v of " + 
+                 transformedEvent.deltaV + " km/s",
+        severity: "WARNING",
+        category: "SPACE_OPERATIONS"
+    })
+} 

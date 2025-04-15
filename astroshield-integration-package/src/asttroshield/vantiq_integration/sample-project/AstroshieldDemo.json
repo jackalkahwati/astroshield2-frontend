@@ -1,0 +1,88 @@
+{
+  "project": {
+    "name": "AstroshieldDemo",
+    "resources": [
+      {
+        "name": "AstroshieldKafkaSource",
+        "type": "Source",
+        "implementation": "KAFKA",
+        "config": { 
+          "bootstrapServers": "kafka:9092",
+          "topics": ["maneuvers-detected", "observation-windows", "dmd-od-update", "weather-data"],
+          "groupId": "vantiq-consumer-group",
+          "keyDeserializer": "org.apache.kafka.common.serialization.StringDeserializer",
+          "valueDeserializer": "org.apache.kafka.common.serialization.StringDeserializer",
+          "autoOffsetReset": "latest",
+          "enableAutoCommit": "true",
+          "pollTimeout": 100
+        }
+      },
+      {
+        "name": "ManeuverDetection",
+        "type": "Type",
+        "properties": {
+          "catalogId": { "type": "String" },
+          "deltaV": { "type": "Real" },
+          "confidence": { "type": "Real" },
+          "maneuverType": { "type": "String" },
+          "detectionTime": { "type": "DateTime" },
+          "source": { "type": "String" },
+          "messageId": { "type": "String" },
+          "traceId": { "type": "String" }
+        }
+      },
+      {
+        "name": "ObservationWindow",
+        "type": "Type",
+        "properties": {
+          "location": {
+            "type": "Object",
+            "properties": {
+              "latitude": { "type": "Real" },
+              "longitude": { "type": "Real" },
+              "locationName": { "type": "String" }
+            }
+          },
+          "qualityScore": { "type": "Real" },
+          "qualityCategory": { "type": "String" },
+          "recommendation": { "type": "String" },
+          "observationWindow": {
+            "type": "Object",
+            "properties": {
+              "startTime": { "type": "DateTime" },
+              "endTime": { "type": "DateTime" },
+              "durationMinutes": { "type": "Integer" }
+            }
+          },
+          "targetObject": {
+            "type": "Object",
+            "properties": {
+              "catalogId": { "type": "String" },
+              "altitudeKm": { "type": "Real" }
+            }
+          }
+        }
+      },
+      {
+        "name": "ManeuverDetectionRule",
+        "type": "Rule",
+        "implementation": "RULE ManeuverDetectionRule\nWHEN EVENT OCCURS FROM AstroshieldKafkaSource as message\nWHERE message.topic == \"maneuvers-detected\"\n// Parse the message as JSON\nvar parsedMessage = JSON.parse(message.value)\n// Transform to Vantiq format\nvar transformedEvent = transformManeuverDetection(parsedMessage)\n\n// Publish to Vantiq topic\nPUBLISH { \n    event: transformedEvent \n} TO TOPIC \"/astroshield/maneuvers\"\n\n// If confidence is high, also create a notification\nif (transformedEvent.confidence > 0.8 && \n    transformedEvent.maneuverType == \"MAJOR_MANEUVER\") {\n    \n    INSERT Notification({\n        title: \"High Confidence Maneuver Detected\",\n        message: \"Object \" + transformedEvent.catalogId + \n                 \" performed a major maneuver with delta-v of \" + \n                 transformedEvent.deltaV + \" km/s\",\n        severity: \"WARNING\",\n        category: \"SPACE_OPERATIONS\"\n    })\n}"
+      },
+      {
+        "name": "ObservationWindowRule",
+        "type": "Rule",
+        "implementation": "RULE ObservationWindowRule\nWHEN EVENT OCCURS FROM AstroshieldKafkaSource as message\nWHERE message.topic == \"observation-windows\"\n// Parse the message as JSON\nvar parsedMessage = JSON.parse(message.value)\n// Transform to Vantiq format\nvar transformedEvent = transformObservationWindow(parsedMessage)\n\n// Publish to Vantiq topic\nPUBLISH { \n    event: transformedEvent \n} TO TOPIC \"/astroshield/observations\"\n\n// Schedule if recommendation is GO\nif (transformedEvent.recommendation == \"GO\" && \n    transformedEvent.qualityScore > 0.7) {\n    \n    // Create a scheduled observation\n    INSERT ScheduledObservation({\n        objectId: transformedEvent.targetObject.catalogId,\n        startTime: transformedEvent.observationWindow.startTime,\n        endTime: transformedEvent.observationWindow.endTime,\n        location: transformedEvent.location,\n        qualityScore: transformedEvent.qualityScore,\n        status: \"SCHEDULED\"\n    })\n}"
+      },
+      {
+        "name": "AstroshieldAPI",
+        "type": "Procedure",
+        "implementation": "PROCEDURE AstroshieldAPI(operation, params) {\n    var settings = SELECT * FROM AstroshieldSettings LIMIT 1\n    var client = new AstroshieldClient(settings.apiBaseUrl, settings.apiKey)\n    \n    if (operation == \"getManeuverHistory\") {\n        return client.getObjectManeuverHistory(\n            params.catalogId, \n            params.startDate, \n            params.endDate\n        )\n    } else if (operation == \"getObjectDetails\") {\n        return client.getObjectDetails(params.catalogId)\n    } else if (operation == \"getFutureObservationWindows\") {\n        return client.getFutureObservationWindows(\n            params.locationId, \n            params.hours\n        )\n    } else {\n        throw new Error(\"Unsupported operation: \" + operation)\n    }\n}"
+      },
+      {
+        "name": "SpaceDashboard",
+        "type": "Client",
+        "implementation": { "components": [] }
+      }
+    ]
+  }
+} 

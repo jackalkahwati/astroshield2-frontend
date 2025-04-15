@@ -1,0 +1,12 @@
+aiohttp==3.8.5
+aiokafka==0.8.1
+jsonschema==4.19.0
+numpy==1.24.3
+prometheus-client==0.17.1
+pydantic==2.3.0
+cryptography==41.0.3
+python-dotenv==1.0.0
+uvicorn==0.23.2
+fastapi==0.103.1
+tenacity==8.2.3
+pythonfinder==2.0.1 

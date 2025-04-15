@@ -1,0 +1,14 @@
+{
+  "header": {
+    "messageType": "maneuver-detected",
+    "source": "dmd-od-integration",
+    "timestamp": "2023-06-01T12:34:56.789Z"
+  },
+  "payload": {
+    "catalogId": "DMD-12345",
+    "deltaV": 0.15,
+    "confidence": 0.85,
+    "maneuverType": "ORBIT_ADJUSTMENT", 
+    "detectionTime": "2023-06-01T12:30:45.123Z"
+  }
+} 
