@@ -1,10 +1,13 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-// Avoid importing mapbox-gl during SSR
+// Mapbox must only be imported in the browser to avoid SSR failures
 let mapboxgl: typeof import('mapbox-gl');
 if (typeof window !== 'undefined') {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   mapboxgl = require('mapbox-gl');
   require('mapbox-gl/dist/mapbox-gl.css');
+  // Use the environment variable for the Mapbox token
+  (mapboxgl as any).accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || process.env.MAPBOX_TOKEN ||
+    'pk.eyJ1IjoiaXExOXplcm8xMiIsImEiOiJjajNveDZkNWMwMGtpMnFuNG05MjNidjBrIn0.rbEk-JO7ewQXACGoTCT5CQ';
 }
 import { styled } from '@mui/material/styles';
 import { 
@@ -48,9 +51,6 @@ import {
     VisibilityOff,
     Visibility
 } from '@mui/icons-material';
-
-// Use the environment variable for the Mapbox token
-mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || process.env.MAPBOX_TOKEN || 'pk.eyJ1IjoiaXExOXplcm8xMiIsImEiOiJjajNveDZkNWMwMGtpMnFuNG05MjNidjBrIn0.rbEk-JO7ewQXACGoTCT5CQ';
 
 const MapContainer = styled(Box)(({ theme }) => ({
     height: '600px',
@@ -165,8 +165,25 @@ interface ImpactPrediction {
     };
 }
 
-interface TrajectoryViewerProps {
+// Support multiple model runs (e.g. truth vs physics vs ML)
+interface ModelRun {
+    name: string;
+    color: string; // hex or css colour for the line / legend
     trajectory: TrajectoryPoint[];
+}
+
+interface TrajectoryViewerProps {
+    /**
+     * Optional array of model runs to compare. If provided, the old `trajectory` field is ignored.
+     */
+    models?: ModelRun[];
+
+    /**
+     * Single-trajectory fallback to keep backward compatibility with pages that
+     * haven't been upgraded to the multi-model API yet.
+     */
+    trajectory?: TrajectoryPoint[];
+
     impactPrediction: ImpactPrediction;
     breakupPoints?: {
         altitude: number;
@@ -184,7 +201,8 @@ const mapStyles = [
 ];
 
 const TrajectoryViewer: React.FC<TrajectoryViewerProps> = ({
-    trajectory,
+    models,
+    trajectory: singleTrajectory,
     impactPrediction,
     breakupPoints
 }) => {
@@ -201,6 +219,11 @@ const TrajectoryViewer: React.FC<TrajectoryViewerProps> = ({
     const [playbackSpeed, setPlaybackSpeed] = useState(1);
     const [currentPoint, setCurrentPoint] = useState<TrajectoryPoint | null>(null);
     const animationRef = useRef<number | null>(null);
+
+    // Decide which trajectories we will render; keep first one as primary for
+    // playback-related calculations that still assume a single array.
+    const activeModels: ModelRun[] | null = models ?? null;
+    const trajectory: TrajectoryPoint[] = activeModels ? activeModels[0]?.trajectory ?? [] : (singleTrajectory ?? []);
 
     const createMapControls = useCallback(() => {
         if (!map.current) return;
@@ -313,45 +336,70 @@ const TrajectoryViewer: React.FC<TrajectoryViewerProps> = ({
         map.current.on('load', () => {
             createMapControls();
             
-            // Add trajectory line
-            map.current?.addSource('trajectory', {
-                type: 'geojson',
-                data: {
-                    type: 'Feature',
-                    properties: {},
-                    geometry: {
-                        type: 'LineString',
-                        coordinates: trajectory.map(point => [
-                            point.position[0],
-                            point.position[1],
-                            point.position[2]
-                        ])
+            // ---- Add one line layer per model OR a single fallback line ---- //
+            if (activeModels) {
+                activeModels.forEach((m, idx) => {
+                    const sourceId = `traj-${idx}`;
+                    const layerId = `traj-line-${idx}`;
+                    map.current?.addSource(sourceId, {
+                        type: 'geojson',
+                        data: {
+                            type: 'Feature',
+                            properties: {},
+                            geometry: {
+                                type: 'LineString',
+                                coordinates: m.trajectory.map((p) => [p.position[0], p.position[1]])
+                            }
+                        }
+                    });
+
+                    map.current?.addLayer({
+                        id: layerId,
+                        type: 'line',
+                        source: sourceId,
+                        layout: {
+                            'line-join': 'round',
+                            'line-cap': 'round'
+                        },
+                        paint: {
+                            'line-color': m.color,
+                            'line-width': 3,
+                            'line-opacity': 0.9
+                        }
+                    });
+                });
+            } else {
+                // Fallback to single trajectory (legacy code path)
+                map.current?.addSource('trajectory', {
+                    type: 'geojson',
+                    data: {
+                        type: 'Feature',
+                        properties: {},
+                        geometry: {
+                            type: 'LineString',
+                            coordinates: trajectory.map(point => [
+                                point.position[0],
+                                point.position[1],
+                            ])
+                        }
                     }
-                }
-            });
-            
-            map.current?.addLayer({
-                id: 'trajectory-line',
-                type: 'line',
-                source: 'trajectory',
-                layout: {
-                    'line-join': 'round',
-                    'line-cap': 'round'
-                },
-                paint: {
-                    'line-color': theme.palette.primary.main,
-                    'line-width': 3,
-                    'line-opacity': 0.8,
-                    'line-gradient': [
-                        'interpolate',
-                        ['linear'],
-                        ['line-progress'],
-                        0, '#4CAF50',
-                        0.5, '#FFC107',
-                        1, '#F44336'
-                    ]
-                }
-            });
+                });
+
+                map.current?.addLayer({
+                    id: 'trajectory-line',
+                    type: 'line',
+                    source: 'trajectory',
+                    layout: {
+                        'line-join': 'round',
+                        'line-cap': 'round'
+                    },
+                    paint: {
+                        'line-color': theme.palette.primary.main,
+                        'line-width': 3,
+                        'line-opacity': 0.8
+                    }
+                });
+            }
             
             // Add impact point
             map.current?.addSource('impact', {
@@ -463,60 +511,52 @@ const TrajectoryViewer: React.FC<TrajectoryViewerProps> = ({
                 }
             });
             
-            // Add current position marker
-            map.current?.addSource('current-position', {
-                type: 'geojson',
-                data: {
-                    type: 'Feature',
-                    properties: {},
-                    geometry: {
-                        type: 'Point',
-                        coordinates: [
-                            trajectory[0].position[0],
-                            trajectory[0].position[1],
-                            trajectory[0].position[2]
-                        ]
+            // Add current position marker (only for primary trajectory)
+            if (trajectory.length) {
+                map.current?.addSource('current-position', {
+                    type: 'geojson',
+                    data: {
+                        type: 'Feature',
+                        properties: {},
+                        geometry: {
+                            type: 'Point',
+                            coordinates: [
+                                trajectory[0].position[0],
+                                trajectory[0].position[1]
+                            ]
+                        }
                     }
-                }
-            });
-            
-            map.current?.addLayer({
-                id: 'current-position-point',
-                type: 'circle',
-                source: 'current-position',
-                paint: {
-                    'circle-radius': 8,
-                    'circle-color': '#2196F3',
-                    'circle-opacity': 1,
-                    'circle-stroke-width': 2,
-                    'circle-stroke-color': '#FFFFFF'
-                }
-            });
+                });
 
-            // Add pulse animation for current position
-            map.current?.addLayer({
-                id: 'current-position-pulse',
-                type: 'circle',
-                source: 'current-position',
-                paint: {
-                    'circle-radius': [
-                        'interpolate',
-                        ['linear'],
-                        ['get', 'pulse'],
-                        0, 8,
-                        1, 20
-                    ],
-                    'circle-color': '#2196F3',
-                    'circle-opacity': [
-                        'interpolate',
-                        ['linear'],
-                        ['get', 'pulse'],
-                        0, 0.6,
-                        1, 0
-                    ],
-                    'circle-stroke-width': 0
-                }
-            });
+                map.current?.addLayer({
+                    id: 'current-position-point',
+                    type: 'circle',
+                    source: 'current-position',
+                    paint: {
+                        'circle-radius': 8,
+                        'circle-color': '#2196F3',
+                        'circle-opacity': 1,
+                        'circle-stroke-width': 2,
+                        'circle-stroke-color': '#FFFFFF'
+                    }
+                });
+            }
+
+            if (trajectory.length) {
+                map.current?.addLayer({
+                    id: 'current-position-pulse',
+                    type: 'circle',
+                    source: 'current-position',
+                    paint: {
+                        'circle-radius': {
+                            'base': 2,
+                            'stops': [[0, 6], [20, 16]]
+                        },
+                        'circle-color': '#2196F3',
+                        'circle-opacity': 0.5
+                    }
+                });
+            }
             
             // Add breakup points if available
             if (breakupPoints) {
@@ -766,6 +806,14 @@ const TrajectoryViewer: React.FC<TrajectoryViewerProps> = ({
 
     return (
         <Box sx={{ position: 'relative' }}>
+            {/* Legend for multiple models */}
+            {activeModels && (
+                <Box sx={{ position: 'absolute', top: 16, left: 16, zIndex: 3, display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                    {activeModels.map((m, idx) => (
+                        <Chip key={idx} label={m.name} size="small" sx={{ bgcolor: m.color, color: '#fff' }} />
+                    ))}
+                </Box>
+            )}
             <Grid container spacing={2}>
                 <Grid item xs={12}>
                     <ControlPanel>

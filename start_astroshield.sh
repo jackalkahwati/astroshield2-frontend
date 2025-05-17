@@ -10,8 +10,28 @@ NC='\033[0m' # No Color
 
 echo -e "${BLUE}Starting AstroShield services...${NC}"
 
+# Allow overriding backend port via environment variable when invoking the script.
+# Primary variable: BACKEND_PORT
+# Legacy/alternate variable: BACKEND_BACKEND_PORT (some users mistakenly set this)
+#   Example: BACKEND_PORT=3001 ./start_astroshield.sh
+#   Example: BACKEND_BACKEND_PORT=3001 ./start_astroshield.sh
+# Precedence:
+#   1. If BACKEND_PORT is set, use it.
+#   2. Else if BACKEND_BACKEND_PORT is set, use it.
+#   3. Fallback to default 5002.
+
+if [ -z "$BACKEND_PORT" ]; then
+  # shellcheck disable=SC2154 # Variable can be set externally
+  if [ -n "$BACKEND_BACKEND_PORT" ]; then
+    BACKEND_PORT=$BACKEND_BACKEND_PORT
+  else
+    BACKEND_PORT=5002
+  fi
+fi
+
+export BACKEND_PORT
+
 # --- Define Ports --- 
-export BACKEND_PORT=5002
 export UDL_PORT=8888
 
 # Activate virtual environment
@@ -33,7 +53,7 @@ sleep 1 # Give OS time to release ports
 # Start Mock UDL service in background
 echo "Starting Mock UDL service on port $UDL_PORT..."
 # Ensure UDL port is used if defined in mock_udl.py (though it's hardcoded there now)
-python mock_services/mock_udl.py > udl.log 2>&1 &
+python3 mock_services/mock_udl.py > udl.log 2>&1 &
 UDL_PID=$!
 sleep 1 # Give it a moment to start
 
@@ -49,7 +69,7 @@ sleep 2
 
 # Test UDL connection
 echo "Testing UDL connection..."
-python test_simple_udl.py
+python3 test_simple_udl.py
 if [ $? -ne 0 ]; then
     echo -e "${YELLOW}Warning: UDL service test failed. Check connection to http://localhost:$UDL_PORT. Continuing anyway...${NC}"
 fi
@@ -58,7 +78,7 @@ fi
 echo "Starting main backend API on port $BACKEND_PORT (no reload)..."
 cd backend
 # Using exported BACKEND_PORT
-uvicorn app.main:app --host 0.0.0.0 --port $BACKEND_PORT > ../backend.log 2>&1 &
+python3 -m uvicorn app.main:app --host 0.0.0.0 --port $BACKEND_PORT > ../backend.log 2>&1 &
 API_PID=$!
 sleep 1 # Give it a moment to start
 cd ..

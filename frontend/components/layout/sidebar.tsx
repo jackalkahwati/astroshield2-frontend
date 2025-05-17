@@ -63,6 +63,11 @@ const routes = [
     href: "/analytics",
   },
   {
+    label: "Diagnostics",
+    icon: BarChart3,
+    href: "/diagnostics",
+  },
+  {
     label: "Settings",
     icon: Settings,
     href: "/settings",

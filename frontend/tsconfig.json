@@ -21,7 +21,9 @@
       }
     ],
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "@mui/*": ["../node_modules/@mui/*"],
+      "mapbox-gl": ["../node_modules/mapbox-gl/dist/mapbox-gl.js"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
