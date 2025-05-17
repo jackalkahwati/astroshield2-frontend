@@ -81,7 +81,7 @@ register_exception_handlers(app)
 
 # Import and include routers
 try:
-    from app.routers import health, analytics, maneuvers, satellites, advanced, dashboard, ccdm, trajectory, comparison, events
+    from app.routers import health, analytics, maneuvers, satellites, advanced, dashboard, ccdm, trajectory, comparison, events, diagnostics
 
     # Include routers with prefixes
     app.include_router(health.router, prefix="/api/v1", tags=["health"])
@@ -94,6 +94,7 @@ try:
     app.include_router(trajectory.router, prefix="/api", tags=["trajectory"])
     app.include_router(comparison.router, prefix="/api", tags=["comparison"])
     app.include_router(events.router, prefix="/api/v1", tags=["events"])
+    app.include_router(diagnostics.router, prefix="/api/v1", tags=["diagnostics"])
 except ImportError as e:
     logger.warning(f"Could not import all routers: {str(e)}")
     logger.info("Some endpoints may not be available")
@@ -695,6 +696,83 @@ async def startup_event():
     except Exception as e:
         logger.error(f"Error during startup: {str(e)}")
         # We'll continue running, but some services might be unavailable
+
+# ------------------------------------------------------------
+# Trajectory comparison endpoint (toy implementation)
+# ------------------------------------------------------------
+
+from typing import List, Dict
+import math, json, os, pathlib, datetime as _dt
+
+# Load TIP window data once at startup
+TIP_PATHS = [
+    pathlib.Path("data/tip_window1.json"),
+    pathlib.Path("tip_window1.json"),
+]
+_TIP_DATA: List[Dict] = []
+for p in TIP_PATHS:
+    if p.exists():
+        try:
+            _TIP_DATA = json.loads(p.read_text())
+            break
+        except Exception:
+            pass
+
+def _haversine_km(lat1, lon1, lat2, lon2):
+    R = 6371.0
+    phi1, phi2 = math.radians(lat1), math.radians(lat2)
+    dphi = math.radians(lat2 - lat1)
+    dlambda = math.radians(lon2 - lon1)
+    a = math.sin(dphi/2)**2 + math.cos(phi1)*math.cos(phi2)*math.sin(dlambda/2)**2
+    return 2*R*math.asin(math.sqrt(a))
+
+
+@app.get("/api/v1/trajectory/{norad_id}", tags=["trajectory"])
+async def trajectory_compare(norad_id: str):
+    """Return mock trajectories & error metrics for a NORAD object."""
+    rec = next((r for r in _TIP_DATA if r["NORAD_CAT_ID"] == norad_id), None)
+    if not rec:
+        raise HTTPException(status_code=404, detail="NORAD ID not found in TIP file")
+
+    impact_lat = float(rec["LAT"])
+    impact_lon = float(rec["LON"])
+    impact_t = _dt.datetime.strptime(rec["DECAY_EPOCH"], "%Y-%m-%d %H:%M:%S")
+
+    def make_path(dlon, dlat, scale=1.0):
+        traj = []
+        for i in range(180, -1, -1):  # 180 → 0 minutes before impact
+            frac = i/180
+            t = impact_t - _dt.timedelta(minutes=i)
+            lon = impact_lon + dlon * (1-frac) * 20 * scale
+            lat = impact_lat + dlat * (1-frac) * 20 * scale
+            alt = 120000*frac  # 120 km down to 0
+            traj.append({
+                "time": t.replace(tzinfo=_dt.timezone.utc).isoformat(),
+                "position": [lon, lat, alt],
+                "velocity": [0, 0, -200 + 150*frac],
+            })
+        return traj
+
+    truth_traj = make_path(0.1, 0.08, 1.0)
+    phys_traj  = make_path(0.11, 0.07, 1.02)
+    ml_traj    = make_path(0.09, 0.09, 0.98)
+
+    def metrics(pred, true):
+        dR = [_haversine_km(p["position"][1], p["position"][0], t["position"][1], t["position"][0]) for p, t in zip(pred, true)]
+        dT = [( _dt.datetime.fromisoformat(p["time"]) - _dt.datetime.fromisoformat(t["time"]) ).total_seconds() for p,t in zip(pred,true)]
+        return {"dR": dR, "dT": dT}
+
+    return {
+        "models": [
+            {"name": "Ground Truth", "color": "#4CAF50", "trajectory": truth_traj},
+            {"name": "Physics Propagation", "color": "#1E90FF", "trajectory": phys_traj},
+            {"name": "ML Forecast", "color": "#FF5722", "trajectory": ml_traj},
+        ],
+        "metrics": {
+            "physics": metrics(phys_traj, truth_traj),
+            "ml": metrics(ml_traj, truth_traj),
+        }
+    }
 
 if __name__ == "__main__":
     import uvicorn

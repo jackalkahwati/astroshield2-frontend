@@ -121,31 +121,31 @@ const TrajectoryAnalysis: React.FC = () => {
 
   const handleChange = (field: string, value: any) => {
     if (field.includes('.')) {
-      const [parent, child] = field.split('.');
+      const [parent, child] = field.split('.') as [keyof TrajectoryConfig, string]
       setConfig(prev => ({
         ...prev,
         [parent]: {
-          ...prev[parent as keyof TrajectoryConfig],
-          [child]: value
-        }
-      }));
+          ...(prev as any)[parent],
+          [child]: value,
+        },
+      }))
     } else {
       setConfig(prev => ({
         ...prev,
-        [field]: value
-      }));
+        [field]: value,
+      }))
     }
-  };
+  }
 
-  const handleNestedChange = (parent: string, field: string, value: any) => {
+  const handleNestedChange = (parent: keyof TrajectoryConfig, field: string, value: any) => {
     setConfig(prev => ({
       ...prev,
       [parent]: {
-        ...prev[parent as keyof TrajectoryConfig],
-        [field]: value
-      }
-    }));
-  };
+        ...(prev as any)[parent],
+        [field]: value,
+      },
+    }))
+  }
 
   const handleInitialStateChange = (index: number, value: number) => {
     setInitialState(prev => {
@@ -522,10 +522,9 @@ const TrajectoryAnalysis: React.FC = () => {
             <TabsContent value="results">
               {trajectoryData ? (
                 <TrajectoryViewer 
-                  trajectory={trajectoryData.trajectory}
-                  impactPrediction={trajectoryData.impactPrediction}
-                  breakupPoints={trajectoryData.breakupPoints}
-                  autoPlay={true}
+                  trajectory={trajectoryData.trajectory as any}
+                  impactPrediction={trajectoryData.impactPrediction as any}
+                  breakupPoints={trajectoryData.breakupPoints as any}
                 />
               ) : (
                 <div className="text-center py-12">

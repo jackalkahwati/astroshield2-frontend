@@ -1,6 +1,11 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import mapboxgl from 'mapbox-gl';
-import 'mapbox-gl/dist/mapbox-gl.css';
+// Avoid importing mapbox-gl during SSR
+let mapboxgl: typeof import('mapbox-gl');
+if (typeof window !== 'undefined') {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  mapboxgl = require('mapbox-gl');
+  require('mapbox-gl/dist/mapbox-gl.css');
+}
 import { styled } from '@mui/material/styles';
 import { 
     Box, 
