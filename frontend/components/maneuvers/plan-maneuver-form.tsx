@@ -63,15 +63,13 @@ const formSchema = z.object({
   scheduled_date: z.date({
     required_error: "Please select a date",
   }),
-  scheduled_time: z.string({
-    required_error: "Please select a time",
-  }),
+  scheduled_time: z.string().min(1, "Please select a time"),
   delta_v: z.number().min(0.001, "Delta-V must be greater than 0"),
   burn_duration: z.number().min(1, "Duration must be at least 1 second"),
   direction_x: z.number().min(-1).max(1),
   direction_y: z.number().min(-1).max(1),
   direction_z: z.number().min(-1).max(1),
-  priority: z.number().min(1).max(5).default(3),
+  priority: z.number().min(1).max(5),
   notes: z.string().optional(),
 })
 
@@ -85,7 +83,9 @@ export function PlanManeuverForm() {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      satellite_id: "",
       type: "collision_avoidance",
+      scheduled_time: "12:00", // Default time
       delta_v: 0.01,
       burn_duration: 10,
       direction_x: 0.0,
@@ -100,10 +100,22 @@ export function PlanManeuverForm() {
     try {
       setIsSubmitting(true);
       
+      // Validate required fields
+      if (!data.scheduled_date) {
+        throw new Error("Please select a date");
+      }
+      if (!data.scheduled_time) {
+        throw new Error("Please select a time");
+      }
+      
       // Combine date and time into a proper datetime
       const scheduledDateTime = new Date(data.scheduled_date);
-      const [hours, minutes] = data.scheduled_time.split(':');
-      scheduledDateTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+      const timeString = data.scheduled_time || "12:00"; // Fallback to noon if time is empty
+      const [hoursStr, minutesStr] = timeString.split(':');
+      const hours = parseInt(hoursStr) || 0;
+      const minutes = parseInt(minutesStr) || 0;
+      
+      scheduledDateTime.setHours(hours, minutes, 0, 0);
       
       // Format data to match backend ManeuverRequest model
       const maneuverData = {
@@ -143,7 +155,18 @@ export function PlanManeuverForm() {
       })
       
       setOpen(false)
-      form.reset()
+      form.reset({
+        satellite_id: "",
+        type: "collision_avoidance",
+        scheduled_time: "12:00",
+        delta_v: 0.01,
+        burn_duration: 10,
+        direction_x: 0.0,
+        direction_y: 0.0,
+        direction_z: 0.1,
+        priority: 3,
+        notes: "",
+      })
       
       // Refresh the page to show the new maneuver
       window.location.reload();
@@ -337,6 +360,7 @@ export function PlanManeuverForm() {
                           type="time"
                           {...field}
                           className="pl-10"
+                          defaultValue="12:00"
                         />
                         <ClockIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 opacity-50" />
                       </div>
@@ -358,7 +382,7 @@ export function PlanManeuverForm() {
                       <Input
                         type="number"
                         step="0.001"
-                        {...field}
+                        value={field.value || 0}
                         onChange={e => field.onChange(parseFloat(e.target.value) || 0)}
                       />
                     </FormControl>
@@ -376,7 +400,7 @@ export function PlanManeuverForm() {
                     <FormControl>
                       <Input
                         type="number"
-                        {...field}
+                        value={field.value || 0}
                         onChange={e => field.onChange(parseFloat(e.target.value) || 0)}
                       />
                     </FormControl>
@@ -426,7 +450,7 @@ export function PlanManeuverForm() {
                           step="0.1"
                           min="-1"
                           max="1"
-                          {...field}
+                          value={field.value || 0}
                           onChange={e => field.onChange(parseFloat(e.target.value) || 0)}
                         />
                       </FormControl>
@@ -447,7 +471,7 @@ export function PlanManeuverForm() {
                           step="0.1"
                           min="-1"
                           max="1"
-                          {...field}
+                          value={field.value || 0}
                           onChange={e => field.onChange(parseFloat(e.target.value) || 0)}
                         />
                       </FormControl>
@@ -468,7 +492,7 @@ export function PlanManeuverForm() {
                           step="0.1"
                           min="-1"
                           max="1"
-                          {...field}
+                          value={field.value || 0}
                           onChange={e => field.onChange(parseFloat(e.target.value) || 0)}
                         />
                       </FormControl>
