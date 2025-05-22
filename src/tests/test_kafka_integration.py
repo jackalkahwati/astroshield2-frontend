@@ -8,7 +8,7 @@ import os
 from pathlib import Path
 import numpy as np
 
-from models.monitoring.prediction_metrics import PerformanceTracker
+from asttroshield.monitoring.prediction_metrics import PerformanceTracker
 from models.monitoring.real_time_monitor import RealTimeMonitor
 
 @pytest.fixture

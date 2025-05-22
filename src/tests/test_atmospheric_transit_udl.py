@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 from unittest.mock import patch, MagicMock
 import numpy as np
 
-from models.atmospheric_transit import (
+from asttroshield.atmospheric_transit import (
     AtmosphericTransitDetector,
     UDLDataIntegrator,
     GeophysicalData,

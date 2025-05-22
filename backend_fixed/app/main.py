@@ -12,16 +12,19 @@ from app.core.security import (
     Token, authenticate_user, create_access_token, 
     ACCESS_TOKEN_EXPIRE_MINUTES, check_roles
 )
-from app.models.user import User
+from app.core.roles import Roles
+from app.schemas.user import User as UserSchema
 from fastapi.responses import HTMLResponse, JSONResponse
 from sqlalchemy.orm import Session
 from sqlalchemy import text
-from app.db.session import get_db
+from app.db.session import get_db, engine
 from app.routers import ccdm, trajectory, maneuvers
+from app.routers import login as login_router
 from app.core.config import settings
 from app.middlewares.rate_limiter import add_rate_limit_middleware
 from app.middlewares.request_id import add_request_id_middleware
 from app.core.errors import register_exception_handlers
+from app.models.user import User as UserModel
 
 # Import error handling
 from fastapi.exceptions import RequestValidationError
@@ -74,6 +77,7 @@ add_rate_limit_middleware(app)
 app.include_router(ccdm.router)
 app.include_router(trajectory.router, prefix="/api/v1", tags=["trajectory"])
 app.include_router(maneuvers.router, prefix="/api/v1", tags=["maneuvers"])
+app.include_router(login_router.router, prefix="/api/v1", tags=["auth"])
 
 # Track active requests for graceful shutdown
 active_requests = 0
@@ -168,6 +172,14 @@ signal.signal(signal.SIGINT, graceful_shutdown)
 async def startup_event():
     """Handle application startup"""
     logger.info("Starting AstroShield API...")
+    
+    # Create database tables if they don't exist (for development/testing)
+    # In production, you would typically use Alembic migrations.
+    from app.db.base_class import Base
+    from app.models import user  # noqa: F401 ensure model import for table creation
+    logger.info("Creating database tables if they don't exist...")
+    Base.metadata.create_all(bind=engine)
+    logger.info("Database tables checked/created.")
     
     # Check UDL configuration
     udl_username = os.environ.get("UDL_USERNAME")
@@ -637,40 +649,8 @@ async def root():
         "documentation": "/api/v1/documentation"
     }
 
-# Authentication endpoints
-class LoginRequest(BaseModel):
-    username: str
-    password: str
-
-@app.post("/api/v1/token", response_model=Token, tags=["auth"])
-async def login_for_access_token(login_data: LoginRequest):
-    """
-    Get an access token for future requests
-    """
-    user = await authenticate_user(login_data.username, login_data.password)
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect username or password",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    
-    expires_delta = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    expires_at = datetime.utcnow() + expires_delta
-    
-    access_token = create_access_token(
-        data={"sub": user.email, "is_superuser": user.is_superuser},
-        expires_delta=expires_delta
-    )
-    
-    return Token(
-        access_token=access_token,
-        token_type="bearer",
-        expires_at=expires_at
-    )
-
-@app.get("/api/v1/users/me", response_model=User, tags=["auth"])
-async def read_users_me(current_user: User = Depends(check_roles(["active"]))):
+@app.get("/api/v1/users/me", response_model=UserSchema, tags=["auth"])
+async def read_users_me(current_user: UserModel = Depends(check_roles([Roles.viewer]))):
     """
     Get current user information
     """

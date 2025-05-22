@@ -25,6 +25,7 @@ from app.models.ccdm import (
 from app.core.security import get_current_user, check_roles
 from app.models.user import User
 from app.exceptions import ObjectNotFoundError, AnalysisError, InvalidInputError, ServiceError
+from app.core.roles import Roles
 import logging
 
 # Set up logging
@@ -55,7 +56,8 @@ def get_ccdm_service() -> CCDMService:
 @router.post("/analyze", response_model=ObjectAnalysisResponse)
 def analyze_object(
     request: ObjectAnalysisRequest,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(check_roles([Roles.viewer]))
 ):
     """
     Analyze a space object based on its NORAD ID
@@ -69,7 +71,8 @@ def analyze_object(
 @router.post("/threat-assessment", response_model=ObjectThreatAssessment)
 def assess_threat(
     request: ThreatAssessmentRequest,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(check_roles([Roles.viewer]))
 ):
     """
     Assess the threat level of a space object
@@ -85,7 +88,8 @@ def get_historical_analysis(
     request: HistoricalAnalysisRequest,
     page: int = Query(1, ge=1, description="Page number for paginated results"),
     page_size: int = Query(50, ge=10, le=500, description="Number of data points per page"),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(check_roles([Roles.viewer]))
 ):
     """
     Get historical analysis data for a space object
@@ -175,7 +179,8 @@ def get_historical_analysis(
 @router.post("/shape-changes", response_model=ShapeChangeResponse)
 def detect_shape_changes(
     request: ShapeChangeRequest,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(check_roles([Roles.viewer]))
 ):
     """
     Detect shape changes for a space object
@@ -198,7 +203,8 @@ def detect_shape_changes(
 @router.get("/quick-assessment/{norad_id}", response_model=ObjectThreatAssessment)
 def quick_assess(
     norad_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(check_roles([Roles.viewer]))
 ):
     """
     Quick threat assessment for a space object by NORAD ID
@@ -212,7 +218,8 @@ def quick_assess(
 @router.get("/last-week-analysis/{norad_id}", response_model=HistoricalAnalysisResponse)
 def get_last_week_analysis(
     norad_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(check_roles([Roles.viewer]))
 ):
     """
     Get analysis data for the last week for a space object
@@ -227,7 +234,7 @@ def get_last_week_analysis(
 async def assess_thermal_signature(
     object_id: str,
     timestamp: datetime,
-    current_user: User = Depends(check_roles(["active"])),
+    current_user: User = Depends(check_roles([Roles.viewer])),
     ccdm_service: CCDMService = Depends(get_ccdm_service)
 ):
     """Assess thermal signature of an object"""
@@ -249,7 +256,7 @@ async def assess_thermal_signature(
 async def evaluate_propulsive_capabilities(
     object_id: str,
     analysis_period: int,
-    current_user: User = Depends(check_roles(["active", "admin"])),
+    current_user: User = Depends(check_roles([Roles.admin])),
     ccdm_service: CCDMService = Depends(get_ccdm_service)
 ):
     """Evaluate object's propulsive capabilities"""
@@ -270,7 +277,7 @@ async def evaluate_propulsive_capabilities(
 @router.get("/history/{object_id}", response_model=List[HistoricalAnalysis])
 async def retrieve_historical_analysis(
     object_id: str,
-    current_user: User = Depends(check_roles(["active", "admin"])),
+    current_user: User = Depends(check_roles([Roles.admin])),
     ccdm_service: CCDMService = Depends(get_ccdm_service)
 ) -> List[HistoricalAnalysis]:
     """Retrieve historical CCDM analysis for an object"""
@@ -286,7 +293,7 @@ async def retrieve_historical_analysis(
 @router.get("/assessment/{object_id}", response_model=CCDMAssessment)
 async def get_ccdm_assessment(
     object_id: str,
-    current_user: User = Depends(check_roles(["active"])),
+    current_user: User = Depends(check_roles([Roles.viewer])),
     ccdm_service: CCDMService = Depends(get_ccdm_service)
 ) -> CCDMAssessment:
     """Get a comprehensive CCDM assessment for an object"""
@@ -305,7 +312,7 @@ async def get_ccdm_assessment(
 async def get_anomaly_detections(
     object_id: str,
     days: int = Query(30, description="Number of days to look back for anomalies"),
-    current_user: User = Depends(check_roles(["active"])),
+    current_user: User = Depends(check_roles([Roles.viewer])),
     ccdm_service: CCDMService = Depends(get_ccdm_service)
 ) -> List[AnomalyDetection]:
     """Get anomaly detections for an object over a period"""

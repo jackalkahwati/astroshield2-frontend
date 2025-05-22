@@ -5,6 +5,7 @@ import random
 from app.services.analytics_service import AnalyticsService, PerformanceMetrics
 from app.core.security import get_current_user, check_roles
 from app.models.user import User
+from app.core.roles import Roles
 
 router = APIRouter()
 analytics_service = AnalyticsService()
@@ -20,7 +21,7 @@ async def get_analytics_status():
 
 @router.get("/analytics")
 async def get_analytics_dashboard(
-    current_user: User = Depends(check_roles(["active"]))
+    current_user: User = Depends(check_roles([Roles.viewer]))
 ):
     """Get analytics dashboard data"""
     try:
@@ -36,7 +37,7 @@ async def get_analytics_dashboard(
 @router.get("/analytics/trends")
 async def get_analytics_trends(
     days: int = Query(7, description="Number of days of trend data to retrieve"),
-    current_user: User = Depends(check_roles(["active"]))
+    current_user: User = Depends(check_roles([Roles.viewer]))
 ):
     """Get time-series analytics data for trends"""
     try:
@@ -63,7 +64,7 @@ async def get_analytics_trends(
 @router.get("/analytics/performance")
 async def get_performance_metrics(
     hours: int = Query(24, description="Number of hours of performance data to retrieve"),
-    current_user: User = Depends(check_roles(["active", "admin"]))
+    current_user: User = Depends(check_roles([Roles.admin]))
 ):
     """Get system performance metrics"""
     try:
@@ -102,7 +103,7 @@ async def get_performance_metrics(
 @router.get("/analytics/satellite/{satellite_id}")
 async def get_satellite_analytics(
     satellite_id: str,
-    current_user: User = Depends(check_roles(["active"]))
+    current_user: User = Depends(check_roles([Roles.viewer]))
 ):
     """Get analytics specifically for one satellite"""
     try:
@@ -118,7 +119,7 @@ async def get_satellite_analytics(
 @router.get("/analytics/conjunctions")
 async def get_conjunction_analytics(
     days: int = Query(30, description="Number of days of conjunction data to analyze"),
-    current_user: User = Depends(check_roles(["active"]))
+    current_user: User = Depends(check_roles([Roles.viewer]))
 ):
     """Get analytics for conjunction events"""
     try:
@@ -133,7 +134,7 @@ async def get_conjunction_analytics(
 
 @router.get("/analytics/predictive")
 async def get_predictive_analytics(
-    current_user: User = Depends(check_roles(["active"]))
+    current_user: User = Depends(check_roles([Roles.viewer]))
 ):
     """Get predictive analytics for future events"""
     try:

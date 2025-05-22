@@ -1,6 +1,7 @@
 from pydantic_settings import BaseSettings
 from typing import Optional
 import secrets
+from pydantic import EmailStr
 
 class Settings(BaseSettings):
     PROJECT_NAME: str = "AstroShield"
@@ -29,7 +30,8 @@ class Settings(BaseSettings):
     # Database
     DATABASE_URL: Optional[str] = "sqlite:///./astroshield.db" # Default to local sqlite if not set
     
-    # Default User Credentials (Consider removing from general settings)
+    # Default User Credentials (For initial setup scripts only; change/remove in production)
+    DEFAULT_ADMIN_EMAIL: EmailStr = "admin@example.com"
     DEFAULT_ADMIN_USER_PASSWORD: str = "change_this_password"
     DEFAULT_TEST_USER_PASSWORD: str = "change_this_password"
     

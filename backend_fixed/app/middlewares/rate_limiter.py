@@ -106,11 +106,21 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
     
     def __init__(self, app: FastAPI, rate_limiter: Optional[RateLimiter] = None):
         super().__init__(app)
+        self._should_skip = self.__class__._should_skip
         self.rate_limiter = rate_limiter or RateLimiter()
+        
+    def _should_skip(self, path: str) -> bool:
+        """Return True if the request path should bypass rate limiting, e.g., health checks and documentation endpoints."""
+        return path.startswith('/health') or path.startswith('/openapi') or path.startswith('/docs')
+
+    def _get_client_ip(self, request: Request) -> str:
+        """Extract the client IP address from the request."""
+        if request.client:
+            return request.client.host
+        return "unknown"
         
     async def dispatch(self, request: Request, call_next: Callable) -> Response:
         """Rate limit based on client IP or user ID"""
-        # Skip rate limiting for certain paths
         if self._should_skip(request.url.path):
             return await call_next(request)
         
@@ -133,13 +143,9 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         if user is not None and hasattr(user, "id"):
             # Use both user ID and IP to prevent shared account abuse
             key = f"rate_limit:{user.id}:{client_ip}"
-            
-            # Allow higher limits for authenticated users
-            max_requests = self.auth_rate_limit
         else:
             # Use IP only for unauthenticated requests
             key = f"rate_limit:{client_ip}"
-            max_requests = self.anon_rate_limit
         
         # Get rate limit for endpoint
         limit = self.rate_limiter.get_rate_limit(request.url.path)

@@ -14,6 +14,7 @@ from app.models.user import User
 from app.services.trajectory_service import TrajectoryService
 from app.db.session import get_db
 from app.core.security import check_roles
+from app.core.roles import Roles
 import logging
 
 logger = logging.getLogger(__name__)
@@ -27,7 +28,7 @@ router = APIRouter()
 )
 async def analyze_trajectory(
     request: TrajectoryRequest = Body(...),
-    current_user: User = Depends(check_roles(["active"]))
+    current_user: User = Depends(check_roles([Roles.viewer]))
 ):
     """
     Analyze a trajectory and return predictions.
@@ -63,7 +64,7 @@ async def analyze_trajectory(
 @router.post("/trajectories/", response_model=TrajectoryInDB, status_code=status.HTTP_201_CREATED)
 async def create_trajectory(data: TrajectoryCreate, 
                            db: Session = Depends(get_db),
-                           current_user: User = Depends(check_roles(["active"]))):
+                           current_user: User = Depends(check_roles([Roles.viewer]))):
     """Create a new trajectory record."""
     service = TrajectoryService(db)
     return service.create_trajectory(data, current_user.id)
@@ -77,7 +78,7 @@ async def create_trajectory(data: TrajectoryCreate,
 async def list_trajectories(
     skip: int = Query(0, description="Number of records to skip"),
     limit: int = Query(100, description="Maximum number of records to return"),
-    current_user: User = Depends(check_roles(["active"]))
+    current_user: User = Depends(check_roles([Roles.viewer]))
 ):
     """
     List all trajectories created by the current user.
@@ -108,7 +109,7 @@ async def list_trajectories(
 )
 async def get_trajectory(
     trajectory_id: int,
-    current_user: User = Depends(check_roles(["active"]))
+    current_user: User = Depends(check_roles([Roles.viewer]))
 ):
     """
     Get details of a previously analyzed trajectory.
@@ -132,7 +133,7 @@ async def get_trajectory(
 async def update_trajectory(trajectory_id: int,
                            data: TrajectoryUpdate,
                            db: Session = Depends(get_db),
-                           current_user: User = Depends(check_roles(["active"]))):
+                           current_user: User = Depends(check_roles([Roles.viewer]))):
     """Update a trajectory record."""
     service = TrajectoryService(db)
     
@@ -162,7 +163,7 @@ async def update_trajectory(trajectory_id: int,
 @router.delete("/trajectories/{trajectory_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_trajectory(trajectory_id: int,
                            db: Session = Depends(get_db),
-                           current_user: User = Depends(check_roles(["active"]))):
+                           current_user: User = Depends(check_roles([Roles.viewer]))):
     """Delete a trajectory record."""
     service = TrajectoryService(db)
     
@@ -195,7 +196,7 @@ async def delete_trajectory(trajectory_id: int,
 )
 async def compare_trajectories(
     comparison: TrajectoryComparisonCreate = Body(...),
-    current_user: User = Depends(check_roles(["active"]))
+    current_user: User = Depends(check_roles([Roles.viewer]))
 ):
     """
     Compare multiple trajectories to identify differences and patterns.

@@ -1,4 +1,9 @@
 #!/bin/bash
+cd "$(dirname "$0")"
+if [ -z "$ASTROSHIELD_HOME" ]; then
+    ASTROSHIELD_HOME=$(pwd)
+fi
+
 # Script to start all AstroShield services
 
 # Colors for output
@@ -68,12 +73,34 @@ fi
 
 # --- Start backend API --- 
 echo "Starting main backend API on port $BACKEND_PORT (no reload)..."
-cd backend_fixed # Ensure correct directory for backend
+
+# Activate virtual environment if available from ASTROSHIELD_HOME
+if [ -f "${ASTROSHIELD_HOME}/.venv/bin/activate" ]; then
+    echo "Activating virtual environment from ${ASTROSHIELD_HOME}..."
+    source "${ASTROSHIELD_HOME}/.venv/bin/activate"
+else
+    echo "Virtual environment not found at ${ASTROSHIELD_HOME}/.venv"
+fi
+
+# After the if-else block for venv activation, ensure uvicorn is installed
+pip install uvicorn
+
+# Check for backend directory using ASTROSHIELD_HOME
+if [ ! -d "${ASTROSHIELD_HOME}/backend_fixed" ]; then
+    echo -e "${RED}Backend directory ${ASTROSHIELD_HOME}/backend_fixed not found. Exiting.${NC}"
+    exit 1
+fi
+
+cd "${ASTROSHIELD_HOME}/backend_fixed"
+
+# Replace the simple touch command with error handling and permission setting for log file
+touch "${ASTROSHIELD_HOME}/backend.log" || { echo -e "${RED}Cannot create log file ${ASTROSHIELD_HOME}/backend.log, check permissions. Exiting.${NC}"; exit 1; }
+chmod 644 "${ASTROSHIELD_HOME}/backend.log"
+
 # Using exported BACKEND_PORT
-uvicorn app.main:app --host 0.0.0.0 --port $BACKEND_PORT > ../backend.log 2>&1 &
+${ASTROSHIELD_HOME}/.venv/bin/uvicorn app.main:app --host 0.0.0.0 --port $BACKEND_PORT > "${ASTROSHIELD_HOME}/backend.log" 2>&1 &
 API_PID=$!
 sleep 2 # Give it a bit more time to start, especially if connecting to external services
-cd ..
 
 # Verify API PID
 if ! ps -p $API_PID > /dev/null; then

@@ -13,6 +13,7 @@ from app.models.user import User
 from app.services.trajectory_service import TrajectoryService
 from app.db.session import get_db
 from app.core.security import check_roles
+from app.core.roles import Roles
 
 router = APIRouter()
 
@@ -20,7 +21,7 @@ router = APIRouter()
 async def list_comparisons(skip: int = 0, 
                           limit: int = 100,
                           db: Session = Depends(get_db),
-                          current_user: User = Depends(check_roles(["active"]))):
+                          current_user: User = Depends(check_roles([Roles.viewer]))):
     """List trajectory comparisons for the current user."""
     # This would be implemented to query the database for comparisons
     # For now, we'll return a placeholder empty list
@@ -29,7 +30,7 @@ async def list_comparisons(skip: int = 0,
 @router.get("/comparisons/{comparison_id}", response_model=Dict[str, Any])
 async def get_comparison(comparison_id: int = Path(..., title="Comparison ID"),
                         db: Session = Depends(get_db),
-                        current_user: User = Depends(check_roles(["active"]))):
+                        current_user: User = Depends(check_roles([Roles.viewer]))):
     """Get a specific comparison by ID with detailed metrics."""
     # This would query the database for the comparison
     # For now, return a 404 since it's not implemented yet
@@ -41,7 +42,7 @@ async def get_comparison(comparison_id: int = Path(..., title="Comparison ID"),
 @router.get("/comparisons/{comparison_id}/trajectories", response_model=List[TrajectoryInDB])
 async def get_comparison_trajectories(comparison_id: int = Path(..., title="Comparison ID"),
                                      db: Session = Depends(get_db),
-                                     current_user: User = Depends(check_roles(["active"]))):
+                                     current_user: User = Depends(check_roles([Roles.viewer]))):
     """Get all trajectories associated with a comparison."""
     # This would query the database for the trajectories in the comparison
     # For now, return a 404 since it's not implemented yet
@@ -53,7 +54,7 @@ async def get_comparison_trajectories(comparison_id: int = Path(..., title="Comp
 @router.post("/comparisons/", response_model=Dict[str, Any])
 async def create_comparison(data: TrajectoryComparisonCreate,
                            db: Session = Depends(get_db),
-                           current_user: User = Depends(check_roles(["active"]))):
+                           current_user: User = Depends(check_roles([Roles.viewer]))):
     """Create a new comparison between multiple trajectories."""
     service = TrajectoryService(db)
     

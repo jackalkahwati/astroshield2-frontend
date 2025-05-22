@@ -12,6 +12,7 @@ from app.services.maneuver_service import (
     ManeuverResources,
     ManeuverParameters
 )
+from app.core.roles import Roles
 import logging
 
 logger = logging.getLogger(__name__)
@@ -27,7 +28,7 @@ maneuver_service = ManeuverService()
 async def get_maneuvers(
     satellite_id: Optional[str] = Query(None, description="Filter by satellite ID"),
     status: Optional[str] = Query(None, description="Filter by maneuver status (e.g., scheduled, in_progress, completed, cancelled)"),
-    current_user: User = Depends(check_roles(["active"]))
+    current_user: User = Depends(check_roles([Roles.viewer]))
 ):
     """
     Retrieve a list of all maneuvers with optional filtering.
@@ -51,7 +52,7 @@ async def get_maneuvers(
 )
 async def get_maneuver(
     maneuver_id: str = Path(..., description="The unique identifier of the maneuver"),
-    current_user: User = Depends(check_roles(["active"]))
+    current_user: User = Depends(check_roles([Roles.viewer]))
 ):
     """
     Get detailed information about a specific maneuver.
@@ -75,7 +76,7 @@ async def get_maneuver(
 )
 async def create_maneuver(
     request: ManeuverRequest = Body(..., description="Maneuver request details including satellite ID, type, and parameters"),
-    current_user: User = Depends(check_roles(["active"]))
+    current_user: User = Depends(check_roles([Roles.viewer]))
 ):
     """
     Create a new satellite maneuver.
@@ -97,7 +98,7 @@ async def create_maneuver(
 async def update_maneuver(
     maneuver_id: str = Path(..., description="The unique identifier of the maneuver to update"),
     updates: Dict[str, Any] = Body(..., description="Fields to update on the maneuver"),
-    current_user: User = Depends(check_roles(["active"]))
+    current_user: User = Depends(check_roles([Roles.viewer]))
 ):
     """
     Update an existing maneuver.
@@ -126,7 +127,7 @@ async def update_maneuver(
 )
 async def cancel_maneuver(
     maneuver_id: str = Path(..., description="The unique identifier of the maneuver to cancel"),
-    current_user: User = Depends(check_roles(["active"]))
+    current_user: User = Depends(check_roles([Roles.viewer]))
 ):
     """
     Cancel a scheduled maneuver.
@@ -157,7 +158,7 @@ async def cancel_maneuver(
 )
 async def get_maneuver_resources(
     satellite_id: str = Path(..., description="The ID of the satellite"),
-    current_user: User = Depends(check_roles(["active"]))
+    current_user: User = Depends(check_roles([Roles.viewer]))
 ):
     """
     Get the current resources available for maneuvering a satellite.
@@ -176,7 +177,7 @@ async def get_maneuver_resources(
 )
 async def simulate_maneuver(
     request: ManeuverRequest = Body(..., description="Maneuver to simulate"),
-    current_user: User = Depends(check_roles(["active"]))
+    current_user: User = Depends(check_roles([Roles.viewer]))
 ):
     """
     Simulate a satellite maneuver to preview expected results.

@@ -2,14 +2,14 @@
 
 import os
 import sys
+# Add the src directory to the Python path using an absolute path so that 'asttroshield' can be imported
+src_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+if src_dir not in sys.path:
+    sys.path.insert(0, src_dir)
+
 import pytest
 from pathlib import Path
 from asttroshield.api_client.udl_client import UDLClient
-
-# Add the src directory to the Python path
-src_dir = Path(__file__).parent.parent
-if str(src_dir) not in sys.path:
-    sys.path.insert(0, str(src_dir))
 
 # Configure test environment
 os.environ['TESTING'] = 'true'
