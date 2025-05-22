@@ -1,0 +1,51 @@
+<html>
+<head>
+    <title>AstroShield Platform</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background: linear-gradient(135deg, #1e3c72, #2a5298); color: white; }
+        .container { background: rgba(255,255,255,0.1); padding: 30px; border-radius: 10px; }
+        h1 { color: #ffd700; }
+        a { color: #87ceeb; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        .service { margin: 10px 0; padding: 10px; background: rgba(255,255,255,0.1); border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 AstroShield Space Surveillance Platform</h1>
+        <p><strong>Status:</strong> ✅ Deployed and Running</p>
+        
+        <h2>🌐 Available Services:</h2>
+        
+        <div class="service">
+            <h3>📊 Monitoring Dashboard</h3>
+            <p><a href="http://56.136.120.99:3000" target="_blank">Grafana Monitoring Interface</a></p>
+            <p>Real-time monitoring and visualization of space assets</p>
+        </div>
+        
+        <div class="service">
+            <h3>📈 Metrics & Analytics</h3>
+            <p><a href="http://56.136.120.99:9090" target="_blank">Prometheus Metrics</a></p>
+            <p>System performance metrics and alerting</p>
+        </div>
+        
+        <div class="service">
+            <h3>🔌 Backend API</h3>
+            <p><a href="/api" target="_blank">API Documentation</a> (Internal Access)</p>
+            <p>RESTful API for space surveillance data</p>
+        </div>
+        
+        <div class="service">
+            <h3>🗄️ Database Services</h3>
+            <p>MongoDB: Port 27017 (Internal)</p>
+            <p>Redis: Port 6379 (Internal)</p>
+        </div>
+        
+        <h2>📡 Access Instructions:</h2>
+        <p>For external access, use SSH tunneling:</p>
+        <code style="background: rgba(0,0,0,0.3); padding: 10px; display: block; margin: 10px 0;">
+            ssh -L 8080:localhost:8080 -L 3000:localhost:3000 -L 9090:localhost:9090 astroshield
+        </code>
+    </div>
+</body>
+</html> 
