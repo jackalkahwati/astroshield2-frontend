@@ -106,7 +106,6 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
     
     def __init__(self, app: FastAPI, rate_limiter: Optional[RateLimiter] = None):
         super().__init__(app)
-        self._should_skip = self.__class__._should_skip
         self.rate_limiter = rate_limiter or RateLimiter()
         
     def _should_skip(self, path: str) -> bool:
