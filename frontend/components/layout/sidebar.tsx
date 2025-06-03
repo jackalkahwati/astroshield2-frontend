@@ -1,135 +1,147 @@
 "use client"
 
-import React from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { cn } from "@/lib/utils"
-import { useSidebar } from "@/components/providers/sidebar-provider"
+import { Laptop, BarChart2, Shield, Activity, Menu, X, Settings, Layout, Satellite, AlertTriangle } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import {
-  LayoutDashboard,
-  Activity,
-  Rocket,
-  Shield,
-  Settings,
-  ChevronLeft,
-  ChevronRight,
-  Satellite,
-  AlertCircle,
-  BarChart3,
-  Gauge,
-  Navigation
-} from "lucide-react"
+import { ThemeToggle } from "@/components/ui/theme-toggle"
+import { useSidebar } from "@/components/providers/sidebar-provider"
+import { cn } from "@/lib/utils"
 
-interface SidebarProps extends React.HTMLAttributes<HTMLElement> {
-  // Add any additional custom props here
-}
-
-const routes = [
+const items = [
   {
-    label: "Dashboard",
-    icon: LayoutDashboard,
+    title: "Dashboard",
     href: "/dashboard",
+    icon: Layout,
   },
   {
-    label: "Indicators",
-    icon: AlertCircle,
-    href: "/indicators",
-  },
-  {
-    label: "Satellite Tracking",
-    icon: Satellite,
+    title: "Satellites",
     href: "/tracking",
+    icon: Satellite,
   },
   {
-    label: "Stability Analysis",
-    icon: Gauge,
-    href: "/stability",
-  },
-  {
-    label: "Maneuvers",
-    icon: Rocket,
+    title: "Maneuvers",
     href: "/maneuvers",
+    icon: Activity,
   },
   {
-    label: "Trajectory Analysis",
-    icon: Navigation,
-    href: "/trajectory",
+    title: "Threats",
+    href: "/protection",
+    icon: AlertTriangle,
   },
   {
-    label: "Analytics",
-    icon: BarChart3,
+    title: "Analytics",
     href: "/analytics",
+    icon: BarChart2,
   },
   {
-    label: "Diagnostics",
-    icon: BarChart3,
-    href: "/diagnostics",
-  },
-  {
-    label: "Settings",
-    icon: Settings,
+    title: "Settings",
     href: "/settings",
+    icon: Settings,
   },
 ]
 
-export function Sidebar({ className, ...props }: SidebarProps) {
+export function Sidebar() {
   const pathname = usePathname()
-  const { isOpen, toggle } = useSidebar()
+  const { expanded, setExpanded } = useSidebar()
 
   return (
-    <aside
-      className={cn(
-        "h-screen sticky top-0 z-40 border-r border-border bg-background transition-all duration-300",
-        isOpen ? "w-64" : "w-16",
-        className
+    <>
+      {/* Mobile overlay */}
+      {expanded && (
+        <div 
+          className="fixed inset-0 z-40 bg-background/80 backdrop-blur-sm md:hidden"
+          onClick={() => setExpanded(false)}
+          aria-hidden="true"
+        />
       )}
-      {...props}
-    >
-      <div className="flex h-16 items-center justify-between px-4 border-b">
-        <div className={cn("flex items-center gap-x-2", !isOpen && "justify-center w-full")}>
-          <Shield className="h-8 w-8 text-primary" />
-          {isOpen && <span className="text-xl font-bold">AstroShield</span>}
+      
+      <div
+        className={cn(
+          "fixed inset-y-0 left-0 z-50 flex h-full flex-col border-r bg-background transition-all duration-300 ease-in-out",
+          expanded ? "w-64" : "w-16",
+          "md:relative md:z-0"
+        )}
+      >
+        <div className="flex h-16 items-center justify-between border-b px-4">
+          <div className={cn("flex items-center", expanded ? "justify-between w-full" : "justify-center")}>
+            {expanded ? (
+              <div className="flex items-center">
+                <Shield className="h-6 w-6 text-primary" />
+                <span className="ml-2 font-semibold">AstroShield</span>
+              </div>
+            ) : (
+              <Shield className="h-6 w-6 text-primary" />
+            )}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="md:hidden"
+              onClick={() => setExpanded(false)}
+              aria-label="Close sidebar"
+            >
+              <X className="h-5 w-5" />
+            </Button>
+          </div>
         </div>
+        <div className="flex-1 overflow-auto py-2">
+          <nav className="grid gap-1 px-2">
+            {items.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                aria-current={pathname === item.href ? "page" : undefined}
+              >
+                <span
+                  className={cn(
+                    "group flex items-center rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground",
+                    pathname === item.href
+                      ? "bg-accent text-accent-foreground"
+                      : "transparent"
+                  )}
+                >
+                  <item.icon className={cn("mr-2 h-5 w-5", expanded ? "" : "mx-auto")} />
+                  {expanded && <span>{item.title}</span>}
+                  {!expanded && (
+                    <span className="sr-only">{item.title}</span>
+                  )}
+                </span>
+              </Link>
+            ))}
+          </nav>
+        </div>
+        <div className="border-t p-4">
+          <div className={cn("flex", expanded ? "justify-between" : "justify-center")}>
+            {expanded && <ThemeToggle />}
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => setExpanded(!expanded)}
+              aria-label={expanded ? "Collapse sidebar" : "Expand sidebar"}
+              className="h-8 w-8"
+            >
+              <Menu className="h-4 w-4" />
+              <span className="sr-only">
+                {expanded ? "Collapse" : "Expand"}
+              </span>
+            </Button>
+          </div>
+        </div>
+      </div>
+      
+      {/* Mobile toggle button (only visible when sidebar is collapsed) */}
+      {!expanded && (
         <Button
-          onClick={toggle}
-          variant="ghost"
+          variant="outline"
           size="icon"
-          className={cn("h-8 w-8", !isOpen && "hidden")}
-          aria-label="Close sidebar"
-        >
-          <ChevronLeft className="h-4 w-4" />
-        </Button>
-        <Button
-          onClick={toggle}
-          variant="ghost"
-          size="icon"
-          className={cn("h-8 w-8", isOpen && "hidden")}
+          className="fixed bottom-4 left-4 z-50 md:hidden"
+          onClick={() => setExpanded(true)}
           aria-label="Open sidebar"
         >
-          <ChevronRight className="h-4 w-4" />
+          <Menu className="h-5 w-5" />
         </Button>
-      </div>
-      <ScrollArea className="h-[calc(100vh-4rem)]">
-        <nav className="space-y-2 p-4">
-          {routes.map((route) => (
-            <Link
-              key={route.href}
-              href={route.href}
-              className={cn(
-                "flex items-center gap-x-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground",
-                pathname === route.href ? "bg-accent text-accent-foreground" : "text-muted-foreground",
-                !isOpen && "justify-center"
-              )}
-            >
-              <route.icon className="h-5 w-5" />
-              {isOpen && <span>{route.label}</span>}
-            </Link>
-          ))}
-        </nav>
-      </ScrollArea>
-    </aside>
+      )}
+    </>
   )
 }
 

@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Rocket, Calendar, AlertTriangle, CheckCircle2, Clock } from 'lucide-react';
+import { Rocket, Calendar, AlertTriangle, CheckCircle2, Clock, AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Progress } from '@/components/ui/progress';
 import { format } from 'date-fns';
@@ -327,7 +327,7 @@ const ManeuverPlanner: React.FC = () => {
       case 'in_progress':
         return <Badge variant="secondary" className="flex items-center gap-1"><Clock className="h-3 w-3" /> In Progress</Badge>;
       case 'completed':
-        return <Badge variant="success" className="flex items-center gap-1"><CheckCircle2 className="h-3 w-3" /> Completed</Badge>;
+        return <Badge variant="default" className="flex items-center gap-1"><CheckCircle2 className="h-3 w-3" /> Completed</Badge>;
       case 'canceled':
         return <Badge variant="destructive" className="flex items-center gap-1"><AlertTriangle className="h-3 w-3" /> Canceled</Badge>;
       default:
@@ -734,7 +734,7 @@ const ManeuverPlanner: React.FC = () => {
                         !maneuverRequest.satellite_id || 
                         !maneuverRequest.type || 
                         !simulationResult ||
-                        (resources && simulationResult && simulationResult.fuel_required > resources.fuel_remaining)
+                        Boolean(resources && simulationResult && simulationResult.fuel_required > resources.fuel_remaining)
                       }
                     >
                       {isLoading && simulationResult ? 'Creating...' : 'Create Maneuver'}

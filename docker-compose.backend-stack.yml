@@ -1,0 +1,153 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:14-alpine
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: always
+    networks:
+      - astroshield-network
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=astroshield_secure_password_2024
+      - POSTGRES_DB=astroshield
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - astroshield-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    command: ["redis-server", "--appendonly", "yes"]
+
+  # Backend API
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    ports:
+      - "3001:3001"
+    restart: always
+    networks:
+      - astroshield-network
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      - PORT=3001
+      - DATABASE_URL=postgresql://postgres:astroshield_secure_password_2024@postgres:5432/astroshield
+      - SECRET_KEY=astroshield_supersecret_jwt_key_2024_production_ready
+      - ACCESS_TOKEN_EXPIRE_MINUTES=30
+      - UDL_BASE_URL=https://mock-udl-service.local/api/v1
+      - UDL_USERNAME=mockuser
+      - UDL_PASSWORD=mockpass
+      - ENVIRONMENT=development
+      - CORS_ORIGINS=http://localhost:3000,http://localhost:80,http://localhost:8080
+      - DEFAULT_ADMIN_USER_PASSWORD=admin123
+      - DEFAULT_TEST_USER_PASSWORD=user123
+      - REDIS_URL=redis://redis:6379
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # Kafka Messaging
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.3.2
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+    ports:
+      - "2181:2181"
+    networks:
+      - astroshield-network
+
+  kafka:
+    image: confluentinc/cp-kafka:7.3.2
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    networks:
+      - astroshield-network
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+
+  # Kafka UI
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    ports:
+      - "8080:8080"
+    networks:
+      - astroshield-network
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+      KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
+    depends_on:
+      - kafka
+
+  # Prometheus monitoring
+  prometheus:
+    image: prom/prometheus:v2.45.0
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    networks:
+      - astroshield-network
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+
+  # Grafana dashboard
+  grafana:
+    image: grafana/grafana:10.0.3
+    ports:
+      - "3002:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    networks:
+      - astroshield-network
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    depends_on:
+      - prometheus
+
+volumes:
+  postgres_data:
+  redis_data:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  astroshield-network:
+    driver: bridge 

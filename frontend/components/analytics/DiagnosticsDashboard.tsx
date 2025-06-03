@@ -109,7 +109,7 @@ export default function DiagnosticsDashboard() {
         <ChartCard title="ΔT Scatter vs Days-Before-Decay">
           <ScatterChart
             height={300}
-            series={[{ data: diagnostics.dt_scatter, xKey: 'x', yKey: 'y' }]}
+            series={[{ data: diagnostics.dt_scatter }]}
             xAxis={[{ label: 'Days before decay', scaleType: 'linear', valueFormatter: (v) => v.toString() }]}
             yAxis={[{ label: 'ΔT (s)' }]}
           />
