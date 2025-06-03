@@ -1,0 +1,82 @@
+{
+  "family": "astroshield-backend",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "512",
+  "memory": "1024",
+  "executionRoleArn": "${ECS_EXECUTION_ROLE_ARN}",
+  "taskRoleArn": "${ECS_TASK_ROLE_ARN}",
+  "containerDefinitions": [
+    {
+      "name": "backend",
+      "image": "${ECR_BACKEND_IMAGE}",
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 3001,
+          "protocol": "tcp"
+        }
+      ],
+      "environment": [
+        {
+          "name": "PORT",
+          "value": "3001"
+        },
+        {
+          "name": "DATABASE_URL",
+          "value": "postgresql://${DB_USERNAME}:${DB_PASSWORD}@${DB_ENDPOINT}:5432/astroshield"
+        },
+        {
+          "name": "REDIS_URL",
+          "value": "redis://${REDIS_ENDPOINT}:6379"
+        },
+        {
+          "name": "SECRET_KEY",
+          "value": "${SECRET_KEY}"
+        },
+        {
+          "name": "ACCESS_TOKEN_EXPIRE_MINUTES",
+          "value": "30"
+        },
+        {
+          "name": "ENVIRONMENT",
+          "value": "production"
+        },
+        {
+          "name": "CORS_ORIGINS",
+          "value": "${FRONTEND_URL}"
+        },
+        {
+          "name": "UDL_BASE_URL",
+          "value": "${UDL_BASE_URL}"
+        },
+        {
+          "name": "UDL_USERNAME",
+          "value": "${UDL_USERNAME}"
+        },
+        {
+          "name": "UDL_PASSWORD",
+          "value": "${UDL_PASSWORD}"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/astroshield-backend",
+          "awslogs-region": "${AWS_REGION}",
+          "awslogs-stream-prefix": "ecs"
+        }
+      },
+      "healthCheck": {
+        "command": [
+          "CMD-SHELL",
+          "curl -f http://localhost:3001/health || exit 1"
+        ],
+        "interval": 30,
+        "timeout": 5,
+        "retries": 3,
+        "startPeriod": 60
+      }
+    }
+  ]
+} 

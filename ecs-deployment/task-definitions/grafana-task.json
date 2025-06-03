@@ -1,0 +1,66 @@
+{
+  "family": "astroshield-grafana",
+  "networkMode": "awsvpc", 
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "256",
+  "memory": "512",
+  "executionRoleArn": "${ECS_EXECUTION_ROLE_ARN}",
+  "taskRoleArn": "${ECS_TASK_ROLE_ARN}",
+  "containerDefinitions": [
+    {
+      "name": "grafana",
+      "image": "grafana/grafana:10.0.3",
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 3000,
+          "protocol": "tcp"
+        }
+      ],
+      "environment": [
+        {
+          "name": "GF_SECURITY_ADMIN_USER",
+          "value": "admin"
+        },
+        {
+          "name": "GF_SECURITY_ADMIN_PASSWORD",
+          "value": "${GRAFANA_ADMIN_PASSWORD}"
+        },
+        {
+          "name": "GF_USERS_ALLOW_SIGN_UP",
+          "value": "false"
+        },
+        {
+          "name": "GF_SERVER_DOMAIN",
+          "value": "${FRONTEND_DOMAIN}"
+        },
+        {
+          "name": "GF_SERVER_ROOT_URL",
+          "value": "${FRONTEND_URL}/grafana/"
+        },
+        {
+          "name": "GF_SERVER_SERVE_FROM_SUB_PATH",
+          "value": "true"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/astroshield-grafana",
+          "awslogs-region": "${AWS_REGION}",
+          "awslogs-stream-prefix": "ecs"
+        }
+      },
+      "healthCheck": {
+        "command": [
+          "CMD-SHELL",
+          "curl -f http://localhost:3000/api/health || exit 1"
+        ],
+        "interval": 30,
+        "timeout": 5,
+        "retries": 3,
+        "startPeriod": 60
+      }
+    }
+  ]
+} 
