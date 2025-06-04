@@ -1,0 +1,48 @@
+name: Deploy AstroShield Production
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:  # Manual trigger
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 🚀 Deploy Full Stack to EC2
+      uses: appleboy/ssh-action@v1.0.0
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USERNAME }}
+        key: ${{ secrets.EC2_SSH_KEY }}
+        port: 22
+        script: |
+          echo "🚀 Starting AstroShield Production Deployment..."
+          
+          # Navigate to the project directory
+          cd ${{ secrets.EC2_PROJECT_PATH }} || {
+            echo "❌ Project directory not found at ${{ secrets.EC2_PROJECT_PATH }}"
+            exit 1
+          }
+          
+          # Pull latest changes
+          echo "🔄 Pulling latest changes..."
+          git pull origin main
+          
+          # Run the full stack deployment
+          echo "🏗️ Starting full stack deployment..."
+          chmod +x deploy_fullstack.sh
+          ./deploy_fullstack.sh
+          
+          echo "🎉 Production deployment complete!"
+
+    - name: 📝 Deployment Summary
+      if: success()
+      run: |
+        echo "## 🚀 Production Deployment Successful!" >> $GITHUB_STEP_SUMMARY
+        echo "- **Target**: AstroShield Full Stack" >> $GITHUB_STEP_SUMMARY
+        echo "- **Frontend**: https://astroshield.sdataplab.com/" >> $GITHUB_STEP_SUMMARY
+        echo "- **API**: https://astroshield.sdataplab.com/api" >> $GITHUB_STEP_SUMMARY
+        echo "- **Timestamp**: $(date)" >> $GITHUB_STEP_SUMMARY
+        echo "- **Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY 

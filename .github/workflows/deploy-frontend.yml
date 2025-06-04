@@ -1,0 +1,65 @@
+name: Deploy Frontend
+
+on:
+  push:
+    branches: [ main ]
+    paths: 
+      - 'frontend/**'
+      - 'components/**'
+      - 'app/**'
+      - 'src/**'
+  workflow_dispatch:  # Manual trigger
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 🎨 Deploy Frontend to EC2
+      uses: appleboy/ssh-action@v1.0.0
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USERNAME }}
+        key: ${{ secrets.EC2_SSH_KEY }}
+        port: 22
+        script: |
+          echo "🎨 Starting AstroShield Frontend Deployment..."
+          
+          # Navigate to the project directory
+          cd ${{ secrets.EC2_PROJECT_PATH }} || {
+            echo "❌ Project directory not found at ${{ secrets.EC2_PROJECT_PATH }}"
+            exit 1
+          }
+          
+          # Pull latest changes
+          echo "🔄 Pulling latest changes..."
+          git pull origin main
+          
+          # Rebuild just the frontend service
+          echo "🏗️ Rebuilding frontend service..."
+          docker-compose -f docker-compose.fullstack.yml up -d --build frontend
+          
+          # Wait for frontend to be ready
+          echo "⏳ Waiting for frontend to start..."
+          sleep 10
+          
+          # Check if frontend is running
+          if docker-compose -f docker-compose.fullstack.yml ps frontend | grep -q "Up"; then
+            echo "✅ Frontend deployment successful!"
+          else
+            echo "❌ Frontend deployment failed!"
+            docker-compose -f docker-compose.fullstack.yml logs frontend
+            exit 1
+          fi
+          
+          echo "🎉 Frontend deployment complete!"
+
+    - name: 📝 Frontend Deployment Summary
+      if: success()
+      run: |
+        echo "## 🎨 Frontend Deployment Successful!" >> $GITHUB_STEP_SUMMARY
+        echo "- **Target**: AstroShield Frontend (Next.js)" >> $GITHUB_STEP_SUMMARY
+        echo "- **URL**: https://astroshield.sdataplab.com/" >> $GITHUB_STEP_SUMMARY
+        echo "- **Service**: Frontend container rebuilt" >> $GITHUB_STEP_SUMMARY
+        echo "- **Timestamp**: $(date)" >> $GITHUB_STEP_SUMMARY
+        echo "- **Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY 

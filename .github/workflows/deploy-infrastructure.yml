@@ -1,0 +1,65 @@
+name: Deploy Infrastructure
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'nginx/**'
+      - 'k8s/**'
+      - 'infrastructure/**'
+      - 'docker-compose*.yml'
+  workflow_dispatch:  # Manual trigger
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 🏗️ Deploy Infrastructure to EC2
+      uses: appleboy/ssh-action@v1.0.0
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USERNAME }}
+        key: ${{ secrets.EC2_SSH_KEY }}
+        port: 22
+        script: |
+          echo "🏗️ Starting AstroShield Infrastructure Deployment..."
+          
+          # Navigate to the project directory
+          cd ${{ secrets.EC2_PROJECT_PATH }} || {
+            echo "❌ Project directory not found at ${{ secrets.EC2_PROJECT_PATH }}"
+            exit 1
+          }
+          
+          # Pull latest changes
+          echo "🔄 Pulling latest changes..."
+          git pull origin main
+          
+          # Update nginx configuration
+          echo "🌐 Updating nginx configuration..."
+          docker-compose -f docker-compose.fullstack.yml up -d --build nginx
+          
+          # Check nginx configuration
+          echo "🔍 Testing nginx configuration..."
+          if docker-compose -f docker-compose.fullstack.yml exec -T nginx nginx -t; then
+            echo "✅ Nginx configuration is valid"
+          else
+            echo "❌ Nginx configuration has errors!"
+            exit 1
+          fi
+          
+          # Restart nginx to apply changes
+          echo "🔄 Restarting nginx..."
+          docker-compose -f docker-compose.fullstack.yml restart nginx
+          
+          echo "🎉 Infrastructure deployment complete!"
+
+    - name: 📝 Infrastructure Deployment Summary
+      if: success()
+      run: |
+        echo "## 🏗️ Infrastructure Deployment Successful!" >> $GITHUB_STEP_SUMMARY
+        echo "- **Target**: AstroShield Infrastructure" >> $GITHUB_STEP_SUMMARY
+        echo "- **Components**: Nginx, Docker Compose, K8s configs" >> $GITHUB_STEP_SUMMARY
+        echo "- **URL**: https://astroshield.sdataplab.com/" >> $GITHUB_STEP_SUMMARY
+        echo "- **Timestamp**: $(date)" >> $GITHUB_STEP_SUMMARY
+        echo "- **Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY 
