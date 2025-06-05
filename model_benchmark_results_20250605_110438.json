@@ -1,0 +1,965 @@
+{
+  "local": {
+    "raw_results": {
+      "orbital_errors": [
+        {
+          "altitude_mae": 0.0,
+          "period_mae": 0.019399847822498373,
+          "inclination_mae": 0.0,
+          "eccentricity_mae": 4.000000000000097e-07
+        },
+        {
+          "altitude_mae": 5.0,
+          "period_mae": 0.2096921712106905,
+          "inclination_mae": 0.0,
+          "eccentricity_mae": 0.0011106
+        },
+        {
+          "altitude_mae": 11.0,
+          "period_mae": 0.23861545335103074,
+          "inclination_mae": 0.0033999999999991815,
+          "eccentricity_mae": 0.1111104
+        },
+        {
+          "altitude_mae": 558.0,
+          "period_mae": 0.15804260864834418,
+          "inclination_mae": 0.004599999999996385,
+          "eccentricity_mae": 0.0111105
+        }
+      ],
+      "risk_scores": [
+        {
+          "risk_categorical_accuracy": 1.0,
+          "lifetime_relative_error": 0.0006844626967829725,
+          "lifetime_order_magnitude": 1.0
+        },
+        {
+          "risk_categorical_accuracy": 1.0,
+          "lifetime_relative_error": 0.6655258955053617,
+          "lifetime_order_magnitude": 1.0
+        },
+        {
+          "risk_categorical_accuracy": 0.0,
+          "lifetime_relative_error": 0.8001368925393567,
+          "lifetime_order_magnitude": 1.0
+        },
+        {
+          "risk_categorical_accuracy": 0.0,
+          "lifetime_relative_error": 18.98631074606434,
+          "lifetime_order_magnitude": 0.0
+        }
+      ],
+      "recognition_scores": [
+        1.0,
+        0.5,
+        0.5,
+        0.3
+      ],
+      "domain_scores": [
+        0.49,
+        0.15000000000000002,
+        0.1,
+        0.21000000000000002
+      ],
+      "confidence_scores": [
+        0.931213098908164,
+        0.7332579102399073,
+        0.6854176818968526,
+        0.0
+      ],
+      "processing_times": [
+        1.698315143585205,
+        1.513465166091919,
+        1.510558843612671,
+        1.5104260444641113
+      ],
+      "test_results": [
+        {
+          "test_case": "International Space Station (ISS)",
+          "prediction": {
+            "norad_id": "25544",
+            "satellite_name": "International Space Station (ISS)",
+            "orbit_description": "\ud83c\udfe0 **Local AI Model Analysis**: This TLE represents the International Space Station (ISS), humanity's premier orbital laboratory. The 51.64\u00b0 inclination maximizes global coverage while maintaining accessibility from multiple launch sites. At approximately 408 km altitude, the station experiences significant atmospheric drag requir...",
+            "orbit_type": "LEO",
+            "altitude_description": "423 km altitude",
+            "period_minutes": 92.88060015217751,
+            "inclination_degrees": 51.64,
+            "eccentricity": 0.0007776,
+            "decay_risk_score": 0.2,
+            "decay_risk_level": "LOW",
+            "anomaly_flags": [
+              "LOCAL_MODEL",
+              "OFFLINE_CAPABLE",
+              "ADVANCED_ANALYSIS"
+            ],
+            "predicted_lifetime_days": 1825,
+            "last_updated": "2025-06-05T18:04:33.731Z",
+            "confidence_score": 0.88,
+            "technical_details": {
+              "epoch": "24079.07757601",
+              "mean_motion": "15.50377579",
+              "bstar": "270-3 0 ",
+              "ai_analysis": "This TLE represents the International Space Station (ISS), humanity's premier orbital laboratory. The 51.64\u00b0 inclination maximizes global coverage while maintaining accessibility from multiple launch sites. At approximately 408 km altitude, the station experiences significant atmospheric drag requiring periodic reboosts. The near-circular orbit (low eccentricity) provides stable conditions for microgravity research. Current orbital parameters indicate the station is in excellent health with normal decay characteristics. Without regular reboosts, natural orbital lifetime would be approximately 5-6 years, but active maintenance ensures indefinite operation.",
+              "model_used": "Local TLE Analyzer (Simulated)",
+              "model_type": "Intelligent TLE Analysis Engine",
+              "execution_mode": "Local Processing",
+              "note": "High-quality local analysis with satellite-specific intelligence"
+            }
+          },
+          "ground_truth": {
+            "satellite_type": "space_station",
+            "orbit_type": "LEO",
+            "altitude_km": 423,
+            "period_minutes": 92.9,
+            "inclination": 51.64,
+            "eccentricity": 0.000778,
+            "decay_risk": "LOW",
+            "lifetime_years": 5.0,
+            "operational_status": "active",
+            "mission_type": "human_spaceflight"
+          },
+          "metrics": {
+            "orbital_accuracy": 0.9999805997521775,
+            "risk_accuracy": 0.999315537303217,
+            "recognition_score": 1.0,
+            "domain_score": 0.49,
+            "confidence_calibration": 0.931213098908164,
+            "processing_time": 1.698315143585205
+          }
+        },
+        {
+          "test_case": "Starlink-1007",
+          "prediction": {
+            "norad_id": "44713",
+            "satellite_name": "Satellite 44713",
+            "orbit_description": "\ud83c\udfe0 **Local AI Model Analysis**: This Low Earth Orbit satellite demonstrates characteristics typical of Earth observation, communications, or scientific missions. The orbital inclination of 53.0\u00b0 suggests coverage requirements spanning from 37.0\u00b0S to 37.0\u00b0N latitude. The eccentricity indicates a nearly circular orbit optimized for ...",
+            "orbit_type": "LEO",
+            "altitude_description": "555 km altitude",
+            "period_minutes": 95.6096921712107,
+            "inclination_degrees": 53,
+            "eccentricity": 0.0001234,
+            "decay_risk_score": 0.2,
+            "decay_risk_level": "LOW",
+            "anomaly_flags": [
+              "LOCAL_MODEL",
+              "OFFLINE_CAPABLE",
+              "ADVANCED_ANALYSIS"
+            ],
+            "predicted_lifetime_days": 1825,
+            "last_updated": "2025-06-05T18:04:35.248Z",
+            "confidence_score": 0.88,
+            "technical_details": {
+              "epoch": "24079.12345678",
+              "mean_motion": "15.06123456",
+              "bstar": "330-3 0 ",
+              "ai_analysis": "This Low Earth Orbit satellite demonstrates characteristics typical of Earth observation, communications, or scientific missions. The orbital inclination of 53.0\u00b0 suggests coverage requirements spanning from 37.0\u00b0S to 37.0\u00b0N latitude. The eccentricity indicates a nearly circular orbit optimized for mission requirements. Atmospheric drag at this altitude requires consideration for long-term orbital maintenance.",
+              "model_used": "Local TLE Analyzer (Simulated)",
+              "model_type": "Intelligent TLE Analysis Engine",
+              "execution_mode": "Local Processing",
+              "note": "High-quality local analysis with satellite-specific intelligence"
+            }
+          },
+          "ground_truth": {
+            "satellite_type": "constellation",
+            "orbit_type": "LEO",
+            "altitude_km": 550,
+            "period_minutes": 95.4,
+            "inclination": 53.0,
+            "eccentricity": 0.001234,
+            "decay_risk": "LOW",
+            "lifetime_years": 3.0,
+            "operational_status": "active",
+            "mission_type": "communications"
+          },
+          "metrics": {
+            "orbital_accuracy": 0.9947891972287893,
+            "risk_accuracy": 0.3344741044946383,
+            "recognition_score": 0.5,
+            "domain_score": 0.15000000000000002,
+            "confidence_calibration": 0.7332579102399073,
+            "processing_time": 1.513465166091919
+          }
+        },
+        {
+          "test_case": "GPS IIF-2 (Defunct)",
+          "prediction": {
+            "norad_id": "25933",
+            "satellite_name": "Satellite 25933",
+            "orbit_description": "\ud83c\udfe0 **Local AI Model Analysis**: This satellite operates in Medium Earth Orbit, likely part of a navigation constellation such as GPS, GLONASS, or Galileo. The orbital period and inclination are precisely designed for optimal geometric dilution of precision (GDOP) in positioning calculations. At this altitude, the satellite experie...",
+            "orbit_type": "MEO",
+            "altitude_description": "20189 km altitude (MEO)",
+            "period_minutes": 717.961384546649,
+            "inclination_degrees": 55.1234,
+            "eccentricity": 0.0123456,
+            "decay_risk_score": 0.1,
+            "decay_risk_level": "LOW",
+            "anomaly_flags": [
+              "LOCAL_MODEL",
+              "OFFLINE_CAPABLE",
+              "ADVANCED_ANALYSIS"
+            ],
+            "predicted_lifetime_days": 3650,
+            "last_updated": "2025-06-05T18:04:36.758Z",
+            "confidence_score": 0.88,
+            "technical_details": {
+              "epoch": "24079.15432109",
+              "mean_motion": " 2.00567890",
+              "bstar": "0000+0 0",
+              "ai_analysis": "This satellite operates in Medium Earth Orbit, likely part of a navigation constellation such as GPS, GLONASS, or Galileo. The orbital period and inclination are precisely designed for optimal geometric dilution of precision (GDOP) in positioning calculations. At this altitude, the satellite experiences minimal atmospheric drag and extremely stable orbital conditions, critical for the nanosecond-level timing accuracy required for global positioning services.",
+              "model_used": "Local TLE Analyzer (Simulated)",
+              "model_type": "Intelligent TLE Analysis Engine",
+              "execution_mode": "Local Processing",
+              "note": "High-quality local analysis with satellite-specific intelligence"
+            }
+          },
+          "ground_truth": {
+            "satellite_type": "navigation",
+            "orbit_type": "MEO",
+            "altitude_km": 20200,
+            "period_minutes": 718.2,
+            "inclination": 55.12,
+            "eccentricity": 0.123456,
+            "decay_risk": "MEDIUM",
+            "lifetime_years": 50.0,
+            "operational_status": "defunct",
+            "mission_type": "navigation"
+          },
+          "metrics": {
+            "orbital_accuracy": 0.988646874146649,
+            "risk_accuracy": 0.19986310746064329,
+            "recognition_score": 0.5,
+            "domain_score": 0.1,
+            "confidence_calibration": 0.6854176818968526,
+            "processing_time": 1.510558843612671
+          }
+        },
+        {
+          "test_case": "CubeSat Debris",
+          "prediction": {
+            "norad_id": "12345",
+            "satellite_name": "Satellite 12345",
+            "orbit_description": "\ud83c\udfe0 **Local AI Model Analysis**: This Low Earth Orbit satellite demonstrates characteristics typical of Earth observation, communications, or scientific missions. The orbital inclination of 98.8\u00b0 suggests coverage requirements spanning from -8.8\u00b0S to -8.8\u00b0N latitude. The eccentricity indicates a nearly circular orbit optimized for ...",
+            "orbit_type": "LEO",
+            "altitude_description": "858 km altitude",
+            "period_minutes": 101.95804260864834,
+            "inclination_degrees": 98.7654,
+            "eccentricity": 0.0012345,
+            "decay_risk_score": 0.2,
+            "decay_risk_level": "LOW",
+            "anomaly_flags": [
+              "LOCAL_MODEL",
+              "OFFLINE_CAPABLE",
+              "ADVANCED_ANALYSIS"
+            ],
+            "predicted_lifetime_days": 1825,
+            "last_updated": "2025-06-05T18:04:38.269Z",
+            "confidence_score": 0.88,
+            "technical_details": {
+              "epoch": "24079.98765432",
+              "mean_motion": " 14.1234567",
+              "bstar": "890-3 0 ",
+              "ai_analysis": "This Low Earth Orbit satellite demonstrates characteristics typical of Earth observation, communications, or scientific missions. The orbital inclination of 98.8\u00b0 suggests coverage requirements spanning from -8.8\u00b0S to -8.8\u00b0N latitude. The eccentricity indicates a nearly circular orbit optimized for mission requirements. Atmospheric drag at this altitude requires consideration for long-term orbital maintenance.",
+              "model_used": "Local TLE Analyzer (Simulated)",
+              "model_type": "Intelligent TLE Analysis Engine",
+              "execution_mode": "Local Processing",
+              "note": "High-quality local analysis with satellite-specific intelligence"
+            }
+          },
+          "ground_truth": {
+            "satellite_type": "cubesat",
+            "orbit_type": "LEO",
+            "altitude_km": 300,
+            "period_minutes": 101.8,
+            "inclination": 98.77,
+            "eccentricity": 0.012345,
+            "decay_risk": "HIGH",
+            "lifetime_years": 0.25,
+            "operational_status": "debris",
+            "mission_type": "experimental"
+          },
+          "metrics": {
+            "orbital_accuracy": 0.44182624689135164,
+            "risk_accuracy": -17.98631074606434,
+            "recognition_score": 0.3,
+            "domain_score": 0.21000000000000002,
+            "confidence_calibration": 0.0,
+            "processing_time": 1.5104260444641113
+          }
+        }
+      ]
+    },
+    "summary_statistics": {
+      "orbital_accuracy_mean": 0.8563107295047419,
+      "orbital_accuracy_std": 0.2763618154678685,
+      "risk_accuracy_mean": 0.44170659365731235,
+      "risk_accuracy_std": 0.47402123518775563,
+      "recognition_score_mean": 0.575,
+      "recognition_score_std": 0.29860788111948194,
+      "domain_knowledge_mean": 0.23750000000000002,
+      "domain_knowledge_std": 0.17423642940938996,
+      "confidence_calibration_mean": 0.587472172761231,
+      "processing_time_mean": 1.5581912994384766,
+      "processing_time_std": 0.09342642226792548
+    }
+  },
+  "simulation": {
+    "raw_results": {
+      "orbital_errors": [
+        {
+          "altitude_mae": 0.0,
+          "period_mae": 0.019399847822498373,
+          "inclination_mae": 0.0,
+          "eccentricity_mae": 4.000000000000097e-07
+        },
+        {
+          "altitude_mae": 5.0,
+          "period_mae": 0.2096921712106905,
+          "inclination_mae": 0.0,
+          "eccentricity_mae": 0.0011106
+        },
+        {
+          "altitude_mae": 11.0,
+          "period_mae": 0.23861545335103074,
+          "inclination_mae": 0.0033999999999991815,
+          "eccentricity_mae": 0.1111104
+        },
+        {
+          "altitude_mae": 558.0,
+          "period_mae": 0.15804260864834418,
+          "inclination_mae": 0.004599999999996385,
+          "eccentricity_mae": 0.0111105
+        }
+      ],
+      "risk_scores": [
+        {
+          "risk_categorical_accuracy": 1.0,
+          "lifetime_relative_error": 0.40041067761806987,
+          "lifetime_order_magnitude": 1.0
+        },
+        {
+          "risk_categorical_accuracy": 0.0,
+          "lifetime_relative_error": 0.9986310746064339,
+          "lifetime_order_magnitude": 1.0
+        },
+        {
+          "risk_categorical_accuracy": 0.0,
+          "lifetime_relative_error": 0.8001368925393567,
+          "lifetime_order_magnitude": 1.0
+        },
+        {
+          "risk_categorical_accuracy": 0.0,
+          "lifetime_relative_error": 38.97262149212868,
+          "lifetime_order_magnitude": 0.0
+        }
+      ],
+      "recognition_scores": [
+        0.8,
+        0.3,
+        0.6,
+        0.3
+      ],
+      "domain_scores": [
+        0.26,
+        0.15000000000000002,
+        0.1,
+        0.21000000000000002
+      ],
+      "confidence_scores": [
+        0.8158690366154502,
+        0.7233263565095855,
+        0.7354176818968526,
+        0.0
+      ],
+      "processing_times": [
+        0.00654292106628418,
+        0.005410194396972656,
+        0.006367206573486328,
+        0.005644083023071289
+      ],
+      "test_results": [
+        {
+          "test_case": "International Space Station (ISS)",
+          "prediction": {
+            "norad_id": "25544",
+            "satellite_name": "International Space Station (ISS)",
+            "orbit_description": "\ud83e\udde0 **AI Analysis**: The ISS represents humanity's most successful long-term space habitat. Operating in a carefully maintained orbit at ~400km altitude, it requires regular orbital boosts due to atmospheric drag. The 51.64\u00b0 inclination maximizes global coverage for both crew accessibility and Earth observation. Current orbital decay models suggest approximately 5-6 years of natural orbital lifetime without regular boosts.\n\n**Technical Summary**: LEO orbit with 92.9-minute period at 423km altitude. LOW decay risk assessment based on current orbital parameters.",
+            "orbit_type": "LEO",
+            "altitude_description": "423 km altitude",
+            "period_minutes": 92.88060015217751,
+            "inclination_degrees": 51.64,
+            "eccentricity": 0.0007776,
+            "decay_risk_score": 0.7,
+            "decay_risk_level": "LOW",
+            "anomaly_flags": [
+              "AI_SIMULATION",
+              "ADVANCED_ANALYSIS"
+            ],
+            "predicted_lifetime_days": 1095,
+            "last_updated": "2025-06-05T18:04:38.276Z",
+            "confidence_score": 0.95,
+            "technical_details": {
+              "ai_mode": "Advanced Simulation",
+              "analysis_engine": "TLE-AI-Simulator-v2",
+              "satellite_recognition": "ACTIVE",
+              "orbital_modeling": "ENHANCED"
+            }
+          },
+          "ground_truth": {
+            "satellite_type": "space_station",
+            "orbit_type": "LEO",
+            "altitude_km": 423,
+            "period_minutes": 92.9,
+            "inclination": 51.64,
+            "eccentricity": 0.000778,
+            "decay_risk": "LOW",
+            "lifetime_years": 5.0,
+            "operational_status": "active",
+            "mission_type": "human_spaceflight"
+          },
+          "metrics": {
+            "orbital_accuracy": 0.9999805997521775,
+            "risk_accuracy": 0.5995893223819302,
+            "recognition_score": 0.8,
+            "domain_score": 0.26,
+            "confidence_calibration": 0.8158690366154502,
+            "processing_time": 0.00654292106628418
+          }
+        },
+        {
+          "test_case": "Starlink-1007",
+          "prediction": {
+            "norad_id": "44713",
+            "satellite_name": "Unknown Satellite",
+            "orbit_description": "\ud83e\udde0 **AI Analysis**: This Low Earth Orbit satellite exhibits orbital characteristics consistent with LEO operations. The 53.0\u00b0 inclination suggests mid-inclination coverage requirements. Orbital eccentricity of 0.000123 indicates a nearly circular orbit.\n\n**Technical Summary**: LEO orbit with 95.6-minute period at 555km altitude. MEDIUM decay risk assessment based on current orbital parameters.",
+            "orbit_type": "LEO",
+            "altitude_description": "555 km altitude",
+            "period_minutes": 95.6096921712107,
+            "inclination_degrees": 53,
+            "eccentricity": 0.0001234,
+            "decay_risk_score": 0.5,
+            "decay_risk_level": "MEDIUM",
+            "anomaly_flags": [
+              "AI_SIMULATION",
+              "ADVANCED_ANALYSIS"
+            ],
+            "predicted_lifetime_days": 2190,
+            "last_updated": "2025-06-05T18:04:38.282Z",
+            "confidence_score": 0.75,
+            "technical_details": {
+              "ai_mode": "Advanced Simulation",
+              "analysis_engine": "TLE-AI-Simulator-v2",
+              "satellite_recognition": "ACTIVE",
+              "orbital_modeling": "ENHANCED"
+            }
+          },
+          "ground_truth": {
+            "satellite_type": "constellation",
+            "orbit_type": "LEO",
+            "altitude_km": 550,
+            "period_minutes": 95.4,
+            "inclination": 53.0,
+            "eccentricity": 0.001234,
+            "decay_risk": "LOW",
+            "lifetime_years": 3.0,
+            "operational_status": "active",
+            "mission_type": "communications"
+          },
+          "metrics": {
+            "orbital_accuracy": 0.9947891972287893,
+            "risk_accuracy": 0.001368925393566145,
+            "recognition_score": 0.3,
+            "domain_score": 0.15000000000000002,
+            "confidence_calibration": 0.7233263565095855,
+            "processing_time": 0.005410194396972656
+          }
+        },
+        {
+          "test_case": "GPS IIF-2 (Defunct)",
+          "prediction": {
+            "norad_id": "25933",
+            "satellite_name": "GPS/GNSS Navigation Satellite",
+            "orbit_description": "\ud83e\udde0 **AI Analysis**: This satellite operates in the GPS Medium Earth Orbit constellation. The precise ~55\u00b0 inclination and ~20,200km altitude ensure optimal geometric coverage for global positioning. These satellites maintain extremely stable orbits with minimal perturbations, critical for nanosecond-level timing accuracy required for GPS positioning.\n\n**Technical Summary**: MEO orbit with 718.0-minute period at 20189km altitude. LOW decay risk assessment based on current orbital parameters.",
+            "orbit_type": "MEO",
+            "altitude_description": "20189 km altitude",
+            "period_minutes": 717.961384546649,
+            "inclination_degrees": 55.1234,
+            "eccentricity": 0.0123456,
+            "decay_risk_score": 0.1,
+            "decay_risk_level": "LOW",
+            "anomaly_flags": [
+              "AI_SIMULATION",
+              "ADVANCED_ANALYSIS"
+            ],
+            "predicted_lifetime_days": 3650,
+            "last_updated": "2025-06-05T18:04:38.288Z",
+            "confidence_score": 0.85,
+            "technical_details": {
+              "ai_mode": "Advanced Simulation",
+              "analysis_engine": "TLE-AI-Simulator-v2",
+              "satellite_recognition": "ACTIVE",
+              "orbital_modeling": "ENHANCED"
+            }
+          },
+          "ground_truth": {
+            "satellite_type": "navigation",
+            "orbit_type": "MEO",
+            "altitude_km": 20200,
+            "period_minutes": 718.2,
+            "inclination": 55.12,
+            "eccentricity": 0.123456,
+            "decay_risk": "MEDIUM",
+            "lifetime_years": 50.0,
+            "operational_status": "defunct",
+            "mission_type": "navigation"
+          },
+          "metrics": {
+            "orbital_accuracy": 0.988646874146649,
+            "risk_accuracy": 0.19986310746064329,
+            "recognition_score": 0.6,
+            "domain_score": 0.1,
+            "confidence_calibration": 0.7354176818968526,
+            "processing_time": 0.006367206573486328
+          }
+        },
+        {
+          "test_case": "CubeSat Debris",
+          "prediction": {
+            "norad_id": "12345",
+            "satellite_name": "Unknown Satellite",
+            "orbit_description": "\ud83e\udde0 **AI Analysis**: This Low Earth Orbit satellite exhibits orbital characteristics consistent with LEO operations. The 98.8\u00b0 inclination suggests retrograde coverage requirements. Orbital eccentricity of 0.001234 indicates a nearly circular orbit.\n\n**Technical Summary**: LEO orbit with 102.0-minute period at 858km altitude. LOW decay risk assessment based on current orbital parameters.",
+            "orbit_type": "LEO",
+            "altitude_description": "858 km altitude",
+            "period_minutes": 101.95804260864834,
+            "inclination_degrees": 98.7654,
+            "eccentricity": 0.0012345,
+            "decay_risk_score": 0.3,
+            "decay_risk_level": "LOW",
+            "anomaly_flags": [
+              "AI_SIMULATION",
+              "ADVANCED_ANALYSIS"
+            ],
+            "predicted_lifetime_days": 3650,
+            "last_updated": "2025-06-05T18:04:38.294Z",
+            "confidence_score": 0.75,
+            "technical_details": {
+              "ai_mode": "Advanced Simulation",
+              "analysis_engine": "TLE-AI-Simulator-v2",
+              "satellite_recognition": "ACTIVE",
+              "orbital_modeling": "ENHANCED"
+            }
+          },
+          "ground_truth": {
+            "satellite_type": "cubesat",
+            "orbit_type": "LEO",
+            "altitude_km": 300,
+            "period_minutes": 101.8,
+            "inclination": 98.77,
+            "eccentricity": 0.012345,
+            "decay_risk": "HIGH",
+            "lifetime_years": 0.25,
+            "operational_status": "debris",
+            "mission_type": "experimental"
+          },
+          "metrics": {
+            "orbital_accuracy": 0.44182624689135164,
+            "risk_accuracy": -37.97262149212868,
+            "recognition_score": 0.3,
+            "domain_score": 0.21000000000000002,
+            "confidence_calibration": 0.0,
+            "processing_time": 0.005644083023071289
+          }
+        }
+      ]
+    },
+    "summary_statistics": {
+      "orbital_accuracy_mean": 0.8563107295047419,
+      "orbital_accuracy_std": 0.2763618154678685,
+      "risk_accuracy_mean": 0.22510266940451745,
+      "risk_accuracy_std": 0.3859937119080017,
+      "recognition_score_mean": 0.5,
+      "recognition_score_std": 0.24494897427831783,
+      "domain_knowledge_mean": 0.18000000000000002,
+      "domain_knowledge_std": 0.0697614984548545,
+      "confidence_calibration_mean": 0.5686532687554721,
+      "processing_time_mean": 0.005991101264953613,
+      "processing_time_std": 0.0005488881931424465
+    }
+  },
+  "offline": {
+    "raw_results": {
+      "orbital_errors": [
+        {
+          "altitude_mae": 1000,
+          "period_mae": 0.019399847822498373,
+          "inclination_mae": 0.0,
+          "eccentricity_mae": 4.000000000000097e-07
+        },
+        {
+          "altitude_mae": 1000,
+          "period_mae": 0.2096921712106905,
+          "inclination_mae": 0.0,
+          "eccentricity_mae": 0.0011106
+        },
+        {
+          "altitude_mae": 1000,
+          "period_mae": 0.23861545335103074,
+          "inclination_mae": 0.0033999999999991815,
+          "eccentricity_mae": 0.1111104
+        },
+        {
+          "altitude_mae": 1000,
+          "period_mae": 0.15804260864834418,
+          "inclination_mae": 0.004599999999996385,
+          "eccentricity_mae": 0.0111105
+        }
+      ],
+      "risk_scores": [
+        {
+          "risk_categorical_accuracy": 0.0,
+          "lifetime_relative_error": 0.9014373716632443,
+          "lifetime_order_magnitude": 1.0
+        },
+        {
+          "risk_categorical_accuracy": 0.0,
+          "lifetime_relative_error": 0.8357289527720738,
+          "lifetime_order_magnitude": 1.0
+        },
+        {
+          "risk_categorical_accuracy": 0.0,
+          "lifetime_relative_error": 0.9000684462696783,
+          "lifetime_order_magnitude": 1.0
+        },
+        {
+          "risk_categorical_accuracy": 1.0,
+          "lifetime_relative_error": 0.9712525667351128,
+          "lifetime_order_magnitude": 1.0
+        }
+      ],
+      "recognition_scores": [
+        0.6,
+        0.3,
+        0.3,
+        0.0
+      ],
+      "domain_scores": [
+        0.16,
+        0.1,
+        0.1,
+        0.1
+      ],
+      "confidence_scores": [
+        0.41556878850102663,
+        0.36928131416837784,
+        0.34997946611909647,
+        0.2686242299794661
+      ],
+      "processing_times": [
+        0.005388021469116211,
+        0.006907939910888672,
+        0.006039142608642578,
+        0.005723714828491211
+      ],
+      "test_results": [
+        {
+          "test_case": "International Space Station (ISS)",
+          "prediction": {
+            "norad_id": "25544",
+            "satellite_name": "International Space Station (ISS)",
+            "orbit_description": "Enhanced TLE Analysis: International Space Station (ISS) in LEO orbit with 92.9-minute period. Inclination of 51.64\u00b0 suggests inclined trajectory. Eccentricity 0.000778 indicates nearly circular orbit.",
+            "orbit_type": "LEO",
+            "altitude_description": "400-500 km altitude",
+            "period_minutes": 92.88060015217751,
+            "inclination_degrees": 51.64,
+            "eccentricity": 0.0007776,
+            "decay_risk_score": 0.7,
+            "decay_risk_level": "HIGH",
+            "anomaly_flags": [
+              "OFFLINE_MODE"
+            ],
+            "predicted_lifetime_days": 180,
+            "last_updated": "2025-06-05T18:04:38.299Z",
+            "confidence_score": 0.75,
+            "technical_details": {
+              "epoch": "24079.07757601",
+              "mean_motion": "15.50377579",
+              "bstar": "270-3 0 ",
+              "period_calculated": "92.88",
+              "orbit_classification": "LEO",
+              "note": "Enhanced offline analysis with actual TLE parsing. Token configured for AI: YES"
+            }
+          },
+          "ground_truth": {
+            "satellite_type": "space_station",
+            "orbit_type": "LEO",
+            "altitude_km": 423,
+            "period_minutes": 92.9,
+            "inclination": 51.64,
+            "eccentricity": 0.000778,
+            "decay_risk": "LOW",
+            "lifetime_years": 5.0,
+            "operational_status": "active",
+            "mission_type": "human_spaceflight"
+          },
+          "metrics": {
+            "orbital_accuracy": 0.0,
+            "risk_accuracy": 0.09856262833675566,
+            "recognition_score": 0.6,
+            "domain_score": 0.16,
+            "confidence_calibration": 0.41556878850102663,
+            "processing_time": 0.005388021469116211
+          }
+        },
+        {
+          "test_case": "Starlink-1007",
+          "prediction": {
+            "norad_id": "44713",
+            "satellite_name": "Satellite 44713",
+            "orbit_description": "Enhanced TLE Analysis: Satellite 44713 in LEO orbit with 95.6-minute period. Inclination of 53.00\u00b0 suggests inclined trajectory. Eccentricity 0.000123 indicates nearly circular orbit.",
+            "orbit_type": "LEO",
+            "altitude_description": "400-500 km altitude",
+            "period_minutes": 95.6096921712107,
+            "inclination_degrees": 53,
+            "eccentricity": 0.0001234,
+            "decay_risk_score": 0.7,
+            "decay_risk_level": "HIGH",
+            "anomaly_flags": [
+              "OFFLINE_MODE"
+            ],
+            "predicted_lifetime_days": 180,
+            "last_updated": "2025-06-05T18:04:38.306Z",
+            "confidence_score": 0.75,
+            "technical_details": {
+              "epoch": "24079.12345678",
+              "mean_motion": "15.06123456",
+              "bstar": "330-3 0 ",
+              "period_calculated": "95.61",
+              "orbit_classification": "LEO",
+              "note": "Enhanced offline analysis with actual TLE parsing. Token configured for AI: YES"
+            }
+          },
+          "ground_truth": {
+            "satellite_type": "constellation",
+            "orbit_type": "LEO",
+            "altitude_km": 550,
+            "period_minutes": 95.4,
+            "inclination": 53.0,
+            "eccentricity": 0.001234,
+            "decay_risk": "LOW",
+            "lifetime_years": 3.0,
+            "operational_status": "active",
+            "mission_type": "communications"
+          },
+          "metrics": {
+            "orbital_accuracy": 0.0,
+            "risk_accuracy": 0.16427104722792618,
+            "recognition_score": 0.3,
+            "domain_score": 0.1,
+            "confidence_calibration": 0.36928131416837784,
+            "processing_time": 0.006907939910888672
+          }
+        },
+        {
+          "test_case": "GPS IIF-2 (Defunct)",
+          "prediction": {
+            "norad_id": "25933",
+            "satellite_name": "Satellite 25933",
+            "orbit_description": "Enhanced TLE Analysis: Satellite 25933 in MEO orbit with 718.0-minute period. Inclination of 55.12\u00b0 suggests inclined trajectory. Eccentricity 0.012346 indicates elliptical orbit.",
+            "orbit_type": "MEO",
+            "altitude_description": "2,000-35,786 km altitude",
+            "period_minutes": 717.961384546649,
+            "inclination_degrees": 55.1234,
+            "eccentricity": 0.0123456,
+            "decay_risk_score": 0.1,
+            "decay_risk_level": "LOW",
+            "anomaly_flags": [
+              "OFFLINE_MODE"
+            ],
+            "predicted_lifetime_days": 1825,
+            "last_updated": "2025-06-05T18:04:38.312Z",
+            "confidence_score": 0.75,
+            "technical_details": {
+              "epoch": "24079.15432109",
+              "mean_motion": " 2.00567890",
+              "bstar": "0000+0 0",
+              "period_calculated": "717.96",
+              "orbit_classification": "MEO",
+              "note": "Enhanced offline analysis with actual TLE parsing. Token configured for AI: YES"
+            }
+          },
+          "ground_truth": {
+            "satellite_type": "navigation",
+            "orbit_type": "MEO",
+            "altitude_km": 20200,
+            "period_minutes": 718.2,
+            "inclination": 55.12,
+            "eccentricity": 0.123456,
+            "decay_risk": "MEDIUM",
+            "lifetime_years": 50.0,
+            "operational_status": "defunct",
+            "mission_type": "navigation"
+          },
+          "metrics": {
+            "orbital_accuracy": 0.0,
+            "risk_accuracy": 0.0999315537303217,
+            "recognition_score": 0.3,
+            "domain_score": 0.1,
+            "confidence_calibration": 0.34997946611909647,
+            "processing_time": 0.006039142608642578
+          }
+        },
+        {
+          "test_case": "CubeSat Debris",
+          "prediction": {
+            "norad_id": "12345",
+            "satellite_name": "Satellite 12345",
+            "orbit_description": "Enhanced TLE Analysis: Satellite 12345 in LEO (Retrograde) orbit with 102.0-minute period. Inclination of 98.77\u00b0 suggests polar trajectory. Eccentricity 0.001234 indicates nearly circular orbit.",
+            "orbit_type": "LEO (Retrograde)",
+            "altitude_description": "400-500 km altitude",
+            "period_minutes": 101.95804260864834,
+            "inclination_degrees": 98.7654,
+            "eccentricity": 0.0012345,
+            "decay_risk_score": 0.7,
+            "decay_risk_level": "HIGH",
+            "anomaly_flags": [
+              "OFFLINE_MODE"
+            ],
+            "predicted_lifetime_days": 180,
+            "last_updated": "2025-06-05T18:04:38.318Z",
+            "confidence_score": 0.75,
+            "technical_details": {
+              "epoch": "24079.98765432",
+              "mean_motion": " 14.1234567",
+              "bstar": "890-3 0 ",
+              "period_calculated": "101.96",
+              "orbit_classification": "LEO (Retrograde)",
+              "note": "Enhanced offline analysis with actual TLE parsing. Token configured for AI: YES"
+            }
+          },
+          "ground_truth": {
+            "satellite_type": "cubesat",
+            "orbit_type": "LEO",
+            "altitude_km": 300,
+            "period_minutes": 101.8,
+            "inclination": 98.77,
+            "eccentricity": 0.012345,
+            "decay_risk": "HIGH",
+            "lifetime_years": 0.25,
+            "operational_status": "debris",
+            "mission_type": "experimental"
+          },
+          "metrics": {
+            "orbital_accuracy": 0.0,
+            "risk_accuracy": 0.028747433264887157,
+            "recognition_score": 0.0,
+            "domain_score": 0.1,
+            "confidence_calibration": 0.2686242299794661,
+            "processing_time": 0.005723714828491211
+          }
+        }
+      ]
+    },
+    "summary_statistics": {
+      "orbital_accuracy_mean": 0.0,
+      "orbital_accuracy_std": 0.0,
+      "risk_accuracy_mean": 0.17393908281998632,
+      "risk_accuracy_std": 0.22747349534724728,
+      "recognition_score_mean": 0.3,
+      "recognition_score_std": 0.2449489742783178,
+      "domain_knowledge_mean": 0.115,
+      "domain_knowledge_std": 0.03,
+      "confidence_calibration_mean": 0.3508634496919918,
+      "processing_time_mean": 0.006014704704284668,
+      "processing_time_std": 0.0006521434736165039
+    }
+  },
+  "comparative_analysis": {
+    "rankings": {
+      "orbital_accuracy_mean": [
+        [
+          "local",
+          0.8563107295047419
+        ],
+        [
+          "simulation",
+          0.8563107295047419
+        ],
+        [
+          "offline",
+          0.0
+        ]
+      ],
+      "risk_accuracy_mean": [
+        [
+          "local",
+          0.44170659365731235
+        ],
+        [
+          "simulation",
+          0.22510266940451745
+        ],
+        [
+          "offline",
+          0.17393908281998632
+        ]
+      ],
+      "recognition_score_mean": [
+        [
+          "local",
+          0.575
+        ],
+        [
+          "simulation",
+          0.5
+        ],
+        [
+          "offline",
+          0.3
+        ]
+      ],
+      "domain_knowledge_mean": [
+        [
+          "local",
+          0.23750000000000002
+        ],
+        [
+          "simulation",
+          0.18000000000000002
+        ],
+        [
+          "offline",
+          0.115
+        ]
+      ],
+      "confidence_calibration_mean": [
+        [
+          "local",
+          0.587472172761231
+        ],
+        [
+          "simulation",
+          0.5686532687554721
+        ],
+        [
+          "offline",
+          0.3508634496919918
+        ]
+      ]
+    },
+    "statistical_significance": {},
+    "recommendations": [],
+    "overall_ranking": [
+      [
+        "local",
+        0.5457515480666366
+      ],
+      [
+        "simulation",
+        0.46321867660286203
+      ],
+      [
+        "offline",
+        0.16157111567419577
+      ]
+    ]
+  }
+}

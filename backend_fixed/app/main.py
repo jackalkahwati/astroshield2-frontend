@@ -20,11 +20,14 @@ from sqlalchemy import text
 from app.db.session import get_db, engine
 from app.routers import ccdm, trajectory, maneuvers
 from app.routers import login as login_router
+from app.routers import local_ml_inference
 from app.core.config import settings
 from app.middlewares.rate_limiter import add_rate_limit_middleware
 from app.middlewares.request_id import add_request_id_middleware
 from app.core.errors import register_exception_handlers
 from app.models.user import User as UserModel
+from app.api.api_v1.api import api_router
+from app.sda_integration.welders_arc_integration import router as sda_router
 
 # Import error handling
 from fastapi.exceptions import RequestValidationError
@@ -46,7 +49,8 @@ logger.info(f"Configuring CORS for origins: {CORS_ORIGINS}")
 app = FastAPI(
     title="AstroShield API",
     description="AstroShield Space Situational Awareness & Satellite Protection System API",
-    version="0.1.0"
+    version="0.1.0",
+    openapi_url=f"{settings.API_V1_STR}/openapi.json",
 )
 
 # Configure standard CORS middleware for simpler development
@@ -78,6 +82,9 @@ app.include_router(ccdm.router)
 app.include_router(trajectory.router, prefix="/api/v1", tags=["trajectory"])
 app.include_router(maneuvers.router, prefix="/api/v1", tags=["maneuvers"])
 app.include_router(login_router.router, prefix="/api/v1", tags=["auth"])
+app.include_router(local_ml_inference.router, prefix="/api/v1/ml", tags=["ml", "local-inference"])
+app.include_router(api_router, prefix=settings.API_V1_STR)
+app.include_router(sda_router)
 
 # Track active requests for graceful shutdown
 active_requests = 0
