@@ -1,0 +1,21 @@
+﻿Category,Item,Description,Status/Support,Notes
+Database Features,NORAD ID,Unique identifier for each space object,Available,Essential for object tracking and identification
+Database Features,Object Name and Type,Identification and classification of space objects,Available,"Includes payloads, rocket bodies, debris"
+Database Features,Launch Date,Original launch date of the object,Available,Helps establish object age and mission context
+Database Features,Actual Reentry Time,Ground truth reentry timestamp with uncertainty,Available,Gold standard for benchmarking - the actual outcome
+Database Features,Predicted Reentry Time,Database's own prediction for comparison,Available,Allows comparison with existing prediction methods
+Database Features,Orbit History,Historical orbital elements and TLEs,Sometimes Available,Critical input data for prediction models
+Benchmarking Use Cases,Historical Ground Truth,Compare model output against actual reentry times,Yes,Direct comparison with known outcomes
+Benchmarking Use Cases,Multiple Object Types,Test across different spacecraft categories,Yes,Comprehensive testing across object types
+Benchmarking Use Cases,CSV Download,Batch processing for offline evaluation,Yes,Enables automated testing workflows
+Benchmarking Use Cases,Head-to-head with Peers,Compare performance with other prediction models,Yes,Anyone can use these events for comparison
+Benchmarking Use Cases,Independent Auditability,Third-party verification of benchmarking claims,Yes,Data curated by authoritative Aerospace Corp
+Implementation Steps,Data Selection,Choose subset with cleanest data and low uncertainty,Required,Focus on entries with good TLE history
+Implementation Steps,Test Harness Setup,Strip actual reentry times and feed TLEs to model,Required,Blind prediction testing approach
+Implementation Steps,Statistical Evaluation,Calculate error metrics and confidence intervals,Required,"Mean absolute error, mean bias, CI overlap"
+Implementation Steps,Protocol Documentation,Document benchmarking methodology for audit,Recommended,Enables replication and verification
+Quality Assurance,Independent Curation,Data maintained by industry authority,Yes,Aerospace Corporation's authoritative database
+Quality Assurance,Global Scope,Includes objects from multiple space agencies,Yes,"U.S., Russian, Chinese, ESA, commercial objects"
+Quality Assurance,Historical Breadth,"Coverage of old, recent, and ongoing events",Yes,Comprehensive temporal coverage
+Analysis Types,Blind Predictions,Using only data available up to reentry,Recommended,Most realistic testing scenario
+Analysis Types,Postdictive Analysis,Maximum possible model accuracy assessment,Recommended,Shows theoretical performance ceiling

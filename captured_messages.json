@@ -1,0 +1,47 @@
+[
+  {
+    "message_id": "inspector-test-1749705059",
+    "timestamp": "2025-06-11T22:10:59.206645",
+    "subsystem": "astroshield_inspector",
+    "event_type": "maneuver_detected",
+    "data": {
+      "objectId": "INSPECTOR-TEST-001",
+      "objectName": "Test Satellite",
+      "maneuverType": "STATION_KEEPING",
+      "detectionTime": "2025-06-11T22:10:59.206647",
+      "deltaV": 0.75,
+      "confidence": 0.96,
+      "source": "astroshield_spatiotemporal_ai",
+      "processing_details": {
+        "algorithm": "divided_space_time_attention",
+        "f1_score": 0.94,
+        "processing_time_ms": 42,
+        "model_version": "v2.1.3"
+      },
+      "orbital_elements": {
+        "semi_major_axis": 42164.0,
+        "eccentricity": 0.0001,
+        "inclination": 0.1,
+        "raan": 75.3,
+        "arg_perigee": 0.0,
+        "mean_anomaly": 123.4
+      },
+      "threat_assessment": {
+        "risk_level": "LOW",
+        "intent_probabilities": {
+          "station_keeping": 0.89,
+          "collision_avoidance": 0.06,
+          "inspection": 0.03,
+          "hostile": 0.02
+        }
+      },
+      "metadata": {
+        "sensor_source": "SSN_RADAR",
+        "tracking_accuracy": 0.5,
+        "observation_count": 47,
+        "last_observation": "2025-06-11T22:10:59.206669"
+      }
+    },
+    "received_at": "2025-06-11T22:11:02.115162"
+  }
+]

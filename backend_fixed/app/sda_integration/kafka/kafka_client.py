@@ -12,6 +12,9 @@ from confluent_kafka import Producer, Consumer, KafkaError
 from confluent_kafka.admin import AdminClient, NewTopic
 from pydantic import BaseModel, Field
 
+# Import standard topic definitions
+from .standard_topics import StandardKafkaTopics, ASTROSHIELD_TOPIC_ACCESS
+
 logger = logging.getLogger(__name__)
 
 
@@ -58,56 +61,61 @@ class SubsystemID:
     SS6_RESPONSE = "ss6_response"
 
 
-class KafkaTopics:
-    """122+ Kafka topic definitions for Welders Arc"""
+# Use standard topic definitions
+class KafkaTopics(StandardKafkaTopics):
+    """Kafka topic definitions following standard naming convention"""
     
-    # SS0 - Sensor topics
-    SENSOR_OBSERVATIONS = "welders.ss0.sensor.observations"
-    SENSOR_HEARTBEAT = "welders.ss0.sensor.heartbeat"
-    COLLECT_REQUEST = "welders.ss0.collect.request"
-    COLLECT_RESPONSE = "welders.ss0.collect.response"
+    # Create aliases for backward compatibility with existing code
+    # Map old names to new standard names
+    SENSOR_OBSERVATIONS = StandardKafkaTopics.SS2_DATA_OBSERVATION_TRACK
+    SENSOR_HEARTBEAT = StandardKafkaTopics.SS0_SENSOR_HEARTBEAT
+    SENSOR_STATUS = StandardKafkaTopics.SS0_SENSOR_HEARTBEAT
+    SENSOR_CONTROL = StandardKafkaTopics.SS3_DATA_ACCESSWINDOW
     
-    # SS1 - Target modeling topics
-    TARGET_UPDATE_REQUEST = "welders.ss1.target.update.request"
-    TARGET_UPDATE_RESPONSE = "welders.ss1.target.update.response"
-    TARGET_MODEL_INSERT = "welders.ss1.target.model.insert"
-    TARGET_MODEL_UPDATE = "welders.ss1.target.model.update"
+    # State vectors and tracking
+    UCT_TRACKS = StandardKafkaTopics.SS2_DATA_OBSERVATION_TRACK_TRUE_UCT
+    STATE_VECTORS = StandardKafkaTopics.SS2_DATA_STATE_VECTOR
+    ORBIT_DETERMINATION = StandardKafkaTopics.SS2_DATA_ORBIT_DETERMINATION
+    CATALOG_CORRELATION = StandardKafkaTopics.SS2_DATA_STATE_VECTOR_CATALOG_NOMINEE
     
-    # SS2 - State estimation topics
-    UCT_TRACKS = "welders.ss2.uct.tracks"
-    STATE_VECTORS = "welders.ss2.state.vectors"
-    ORBIT_DETERMINATION = "welders.ss2.orbit.determination"
-    CATALOG_CORRELATION = "welders.ss2.catalog.correlation"
+    # Target modeling
+    TARGET_MODELS = StandardKafkaTopics.SS1_TMDB_OBJECT_UPDATED
+    TARGET_MODEL_UPDATE = StandardKafkaTopics.SS1_TMDB_OBJECT_UPDATED
+    TARGET_MODEL_INSERT = StandardKafkaTopics.SS1_TMDB_OBJECT_INSERTED
     
-    # SS3 - Command & Control topics
-    SENSOR_SCHEDULE = "welders.ss3.sensor.schedule"
-    COLLECTION_PLAN = "welders.ss3.collection.plan"
-    SURVEILLANCE_TASK = "welders.ss3.surveillance.task"
-    CUSTODY_TASK = "welders.ss3.custody.task"
+    # CCDM
+    CCDM_INDICATORS = StandardKafkaTopics.SS4_CCDM_CCDM_DB
+    OBJECT_INTEREST_LIST = StandardKafkaTopics.SS4_CCDM_OOI
     
-    # SS4 - CCDM topics
-    CCDM_INDICATORS = "welders.ss4.ccdm.indicators"
-    OBJECT_INTEREST_LIST = "welders.ss4.object.interest.list"
-    ANOMALY_DETECTION = "welders.ss4.anomaly.detection"
-    PATTERN_VIOLATION = "welders.ss4.pattern.violation"
+    # Hostility monitoring
+    THREAT_WARNING = StandardKafkaTopics.SS5_LAUNCH_INTENT_ASSESSMENT
+    WEZ_PREDICTION = StandardKafkaTopics.SS5_PEZ_WEZ_PREDICTION_KKV
+    HOSTILE_INTENT = StandardKafkaTopics.SS5_LAUNCH_INTENT_ASSESSMENT
     
-    # SS5 - Hostility monitoring topics
-    WEAPON_ENGAGEMENT_ZONE = "welders.ss5.wez.prediction"
-    INTENT_ASSESSMENT = "welders.ss5.intent.assessment"
-    PURSUIT_DETECTION = "welders.ss5.pursuit.detection"
-    THREAT_WARNING = "welders.ss5.threat.warning"
+    # Response
+    ALERT_OPERATOR = StandardKafkaTopics.SS6_RESPONSE_RECOMMENDATION_ON_ORBIT
+    ALERT_THREAT = StandardKafkaTopics.SS6_RESPONSE_RECOMMENDATION_LAUNCH_ASAT
+    RESPONSE_STATUS = StandardKafkaTopics.SS6_RISK_MITIGATION_OPTIMAL_MANEUVER
     
-    # SS6 - Response coordination topics
-    DEFENSIVE_COA = "welders.ss6.defensive.coa"
-    MITIGATION_PLAN = "welders.ss6.mitigation.plan"
-    ALERT_OPERATOR = "welders.ss6.alert.operator"
-    ACTION_RECOMMENDATION = "welders.ss6.action.recommendation"
+    # Command & Control
+    COMMAND_STATUS = StandardKafkaTopics.SS3_DATA_ACCESSWINDOW
+    COMMAND_EXECUTION = StandardKafkaTopics.SS3_DATA_DETECTIONPROBABILITY
+    ASSET_STATUS = StandardKafkaTopics.SS3_DATA_ACCESSWINDOW
+    PLAN_EXECUTION = StandardKafkaTopics.SS3_DATA_DETECTIONPROBABILITY
     
-    # Event processing topics
-    EVENT_LAUNCH_DETECTION = "welders.event.launch.detection"
-    EVENT_MANEUVER_DETECTION = "welders.event.maneuver.detection"
-    EVENT_PROXIMITY_ALERT = "welders.event.proximity.alert"
-    EVENT_SEPARATION_DETECTED = "welders.event.separation.detected"
+    # Events
+    EVENT_LAUNCH_DETECTION = StandardKafkaTopics.SS5_LAUNCH_DETECTION
+    EVENT_MANEUVER_DETECTION = StandardKafkaTopics.SS4_INDICATORS_MANEUVERS_DETECTED
+    EVENT_PROXIMITY_ALERT = StandardKafkaTopics.SS4_INDICATORS_PROXIMITY_EVENTS_VALID_REMOTE_SENSE
+    EVENT_SEPARATION_DETECTED = StandardKafkaTopics.SS5_SEPARATION_DETECTION
+    EVENT_RF_DETECTION = StandardKafkaTopics.SS4_INDICATORS_RF_DETECTED
+    
+    # Additional mappings
+    FUSED_OBSERVATIONS = StandardKafkaTopics.SS5_LAUNCH_FUSED
+    COLLECT_STATUS = StandardKafkaTopics.SS0_SENSOR_HEARTBEAT
+    MANEUVER_PREDICTIONS = StandardKafkaTopics.SS4_INDICATORS_MANEUVERS_DETECTED
+    MANEUVER_DETECTION = StandardKafkaTopics.SS4_INDICATORS_MANEUVERS_DETECTED
+    METRICS = StandardKafkaTopics.UI_EVENT
 
 
 class WeldersArcKafkaClient:
@@ -120,6 +128,7 @@ class WeldersArcKafkaClient:
         self.admin_client = None
         self.message_handlers: Dict[str, List[Callable]] = {}
         self._running = False
+        self.topic_access = ASTROSHIELD_TOPIC_ACCESS
         
     async def initialize(self):
         """Initialize Kafka connections and create topics"""
@@ -148,25 +157,28 @@ class WeldersArcKafkaClient:
             raise
             
     async def _create_topics(self):
-        """Create all required Welders Arc topics"""
-        # Get all topic names from KafkaTopics class
-        topics = []
-        for attr_name in dir(KafkaTopics):
-            if not attr_name.startswith('_'):
-                topic_name = getattr(KafkaTopics, attr_name)
-                if isinstance(topic_name, str):
-                    topics.append(NewTopic(
-                        topic_name,
-                        num_partitions=3,
-                        replication_factor=1,
-                        config={
-                            'retention.ms': '604800000',  # 7 days
-                            'compression.type': 'snappy'
-                        }
-                    ))
+        """Create all required topics based on access permissions"""
+        topics_to_create = set()
+        
+        # Add topics where AstroShield has read, write, or both access
+        for access_type in ['read', 'write', 'both']:
+            topics_to_create.update(self.topic_access.get(access_type, []))
+        
+        # Create NewTopic objects
+        new_topics = []
+        for topic_name in topics_to_create:
+            new_topics.append(NewTopic(
+                topic_name,
+                num_partitions=3,
+                replication_factor=1,
+                config={
+                    'retention.ms': '604800000',  # 7 days
+                    'compression.type': 'snappy'
+                }
+            ))
         
         # Create topics
-        fs = self.admin_client.create_topics(topics, request_timeout=15.0)
+        fs = self.admin_client.create_topics(new_topics, request_timeout=15.0)
         
         # Wait for operation to complete
         for topic, f in fs.items():
@@ -179,8 +191,21 @@ class WeldersArcKafkaClient:
                 else:
                     logger.error(f"Failed to create topic {topic}: {e}")
                     
+    def _check_topic_access(self, topic: str, operation: str) -> bool:
+        """Check if AstroShield has permission for the operation on the topic"""
+        if operation == 'read':
+            return topic in self.topic_access['read'] or topic in self.topic_access['both']
+        elif operation == 'write':
+            return topic in self.topic_access['write'] or topic in self.topic_access['both']
+        return False
+            
     def subscribe(self, topic: str, handler: Callable):
         """Subscribe to a topic with a message handler"""
+        # Check read access
+        if not self._check_topic_access(topic, 'read'):
+            logger.warning(f"AstroShield does not have read access to topic {topic}")
+            return
+            
         if topic not in self.message_handlers:
             self.message_handlers[topic] = []
         self.message_handlers[topic].append(handler)
@@ -202,6 +227,11 @@ class WeldersArcKafkaClient:
         """Publish a message to a topic"""
         if not self.producer:
             raise RuntimeError("Kafka producer not initialized")
+        
+        # Check write access
+        if not self._check_topic_access(topic, 'write'):
+            logger.error(f"AstroShield does not have write access to topic {topic}")
+            raise PermissionError(f"No write access to topic {topic}")
             
         try:
             # Serialize message

@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Laptop, BarChart2, Shield, Activity, Menu, X, Settings, Layout, Satellite, AlertTriangle } from "lucide-react"
+import { Laptop, BarChart2, Shield, Activity, Menu, X, Settings, Layout, Satellite, AlertTriangle, MessageSquare, Brain } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ThemeToggle } from "@/components/ui/theme-toggle"
 import { useSidebar } from "@/components/providers/sidebar-provider"
@@ -15,9 +15,19 @@ const items = [
     icon: Layout,
   },
   {
+    title: "AI Command",
+    href: "/ai-dashboard",
+    icon: Brain,
+  },
+  {
     title: "Satellites",
     href: "/tracking",
     icon: Satellite,
+  },
+  {
+    title: "TLE Analyzer",
+    href: "/tle-chat",
+    icon: MessageSquare,
   },
   {
     title: "Maneuvers",
@@ -43,7 +53,7 @@ const items = [
 
 export function Sidebar() {
   const pathname = usePathname()
-  const { expanded, setExpanded } = useSidebar()
+  const { isOpen: expanded, setIsOpen: setExpanded } = useSidebar()
 
   return (
     <>

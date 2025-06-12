@@ -3,6 +3,11 @@
 from typing import Dict, Any, List, Optional
 from datetime import datetime
 import requests
+import logging
+import time
+import random
+
+logger = logging.getLogger(__name__)
 
 class UDLClient:
     """Client for interacting with the UDL API."""
@@ -170,15 +175,16 @@ class UDLClient:
 
     # RF Interference
     def get_rf_interference(self, frequency_range: Dict[str, float]) -> Dict[str, Any]:
-        """Get RF interference data."""
+        """Get RF interference data with schema-aware transformation."""
         endpoint = '/udl/rfemitter'
         params = {
             'minFreq': frequency_range.get('min'),
             'maxFreq': frequency_range.get('max')
         }
-        response = self.session.get(f'{self.base_url}{endpoint}', params=params)
-        response.raise_for_status()
-        return response.json()
+
+        response = self._make_request_with_retry('GET', f'{self.base_url}{endpoint}', params=params)
+        data = response.json()
+        return self._transform_rf_response(data)
 
     # Orbital Data
     def get_state_vector(self, object_id: str) -> Dict[str, Any]:
@@ -289,3 +295,92 @@ class UDLClient:
                 summary[endpoint] = {'error': str(e)}
         
         return summary 
+
+    # ------------------------------------------------------------------
+    # Internal helpers
+    # ------------------------------------------------------------------
+
+    def _make_request_with_retry(self, method: str, url: str, **kwargs) -> requests.Response:
+        """Make HTTP request with exponential back-off handling 429 errors.
+
+        Args:
+            method: HTTP method (GET, POST, etc.)
+            url: Full URL for the request
+            **kwargs: Additional arguments passed to requests
+
+        Returns:
+            A requests.Response object with successful status
+        """
+        max_retries = 5
+        base_delay = 1  # seconds
+
+        for attempt in range(max_retries):
+            response = self.session.request(method, url, **kwargs)
+
+            if response.status_code == 429:
+                retry_after = response.headers.get('Retry-After')
+                delay = int(retry_after) if retry_after else base_delay * (2 ** attempt) + random.uniform(0, 1)
+                logger.warning("UDL rate/volume limit hit – retrying in %ss (attempt %s)", delay, attempt + 1)
+                time.sleep(delay)
+                continue
+
+            response.raise_for_status()
+            return response
+
+        raise Exception(f"Max retries exceeded for {method} {url}")
+
+    # ------------------------------------------------------------------
+    # New UDL 1.33.0 services
+    # ------------------------------------------------------------------
+
+    def get_emi_reports(self, time_range: Optional[Dict[str, str]] = None) -> Dict[str, Any]:
+        """Retrieve Electromagnetic Interference (EMI) reports."""
+        endpoint = '/udl/emiReport'
+        response = self._make_request_with_retry('GET', f'{self.base_url}{endpoint}', params=time_range or {})
+        return response.json()
+
+    def get_laser_deconflict_requests(self, region: Optional[str] = None) -> Dict[str, Any]:
+        """Retrieve laser deconfliction requests."""
+        endpoint = '/udl/laserDeconflictRequest'
+        params = {'region': region} if region else {}
+        response = self._make_request_with_retry('GET', f'{self.base_url}{endpoint}', params=params)
+        return response.json()
+
+    def get_deconflict_sets(self, mission_type: Optional[str] = None) -> Dict[str, Any]:
+        """Retrieve deconfliction windows for mission planning."""
+        endpoint = '/udl/deconflictSet'
+        params = {'missionType': mission_type} if mission_type else {}
+        response = self._make_request_with_retry('GET', f'{self.base_url}{endpoint}', params=params)
+        return response.json()
+
+    def get_ecpedr_data(self, region: Optional[str] = None) -> Dict[str, Any]:
+        """Retrieve energetic charged particle environmental data."""
+        endpoint = '/udl/ecpedr'
+        params = {'region': region} if region else {}
+        response = self._make_request_with_retry('GET', f'{self.base_url}{endpoint}', params=params)
+        return response.json()
+
+    # ------------------------------------------------------------------
+    # Transformation helpers
+    # ------------------------------------------------------------------
+
+    @staticmethod
+    def _transform_rf_response(rf_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Normalize RFEmitter schema changes to maintain backward compatibility."""
+        deprecated_fields = [
+            'receiverSensitivity', 'receiverBandwidth', 'transmitterFrequency',
+            'transmitterBandwidth', 'transmitPower', 'antennaSize', 'antennaDiameter'
+        ]
+
+        for item in rf_data.get('rfEmitters', []):
+            # Field renames
+            if 'manufacturerOrgId' in item:
+                item['idManufacturerOrg'] = item.pop('manufacturerOrgId')
+            if 'productionFacilityLocationId' in item:
+                item['idProductionFacilityLocation'] = item.pop('productionFacilityLocationId')
+
+            # Drop deprecated fields
+            for field in deprecated_fields:
+                item.pop(field, None)
+
+        return rf_data 

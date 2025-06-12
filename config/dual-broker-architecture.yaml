@@ -1,0 +1,428 @@
+# AstroShield Dual-Broker Architecture Configuration
+# Separates critical safety topics (Kafka) from high-volume telemetry (Redpanda)
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dual-broker-config
+  namespace: astroshield-production
+data:
+  broker-routing.yaml: |
+    # Topic routing configuration for dual-broker architecture
+    critical_topics:
+      broker: "confluent-kafka"
+      bootstrap_servers: "kafka-cluster.astroshield.mil:9092"
+      topics:
+        - "ss2.conjunction.assessment"
+        - "ss2.conjunction.alert"
+        - "ss5.threat.critical"
+        - "ss5.threat.high"
+        - "ss6.maneuver.critical"
+        - "dnd.bogey.critical"
+        - "dnd.bogey.high"
+      config:
+        replication.factor: 3
+        min.insync.replicas: 2
+        acks: "all"
+        retries: 2147483647
+        max.in.flight.requests.per.connection: 1
+        enable.idempotence: true
+        compression.type: "lz4"
+        batch.size: 16384
+        linger.ms: 5
+        buffer.memory: 33554432
+        
+    telemetry_topics:
+      broker: "redpanda"
+      bootstrap_servers: "redpanda-cluster.astroshield.mil:9092"
+      topics:
+        - "ss0.telemetry.*"
+        - "ss0.statevector.bulk"
+        - "ss3.rf.bulk"
+        - "ss3.rf.spectrum"
+        - "ss4.sensor.telemetry"
+        - "monitoring.metrics.*"
+      config:
+        replication.factor: 2
+        min.insync.replicas: 1
+        acks: "1"
+        compression.type: "snappy"
+        retention.ms: 3600000  # 1 hour for bursty data
+        segment.ms: 300000     # 5 minute segments
+        cleanup.policy: "delete"
+
+---
+# Confluent Kafka Cluster for Critical Topics
+apiVersion: platform.confluent.io/v1beta1
+kind: Kafka
+metadata:
+  name: kafka-critical
+  namespace: astroshield-production
+spec:
+  replicas: 5
+  image:
+    application: confluentinc/cp-server:7.5.0
+    init: confluentinc/confluent-init-container:2.7.0
+  dataVolumeCapacity: 1000Gi
+  storageClass: fast-ssd
+  metricReporter:
+    enabled: true
+  configOverrides:
+    server:
+      # Optimize for low latency and high reliability
+      num.network.threads: 8
+      num.io.threads: 16
+      socket.send.buffer.bytes: 102400
+      socket.receive.buffer.bytes: 102400
+      socket.request.max.bytes: 104857600
+      num.partitions: 12
+      num.recovery.threads.per.data.dir: 2
+      offsets.topic.replication.factor: 3
+      transaction.state.log.replication.factor: 3
+      transaction.state.log.min.isr: 2
+      log.retention.hours: 168  # 7 days
+      log.segment.bytes: 1073741824
+      log.retention.check.interval.ms: 300000
+      log.cleanup.policy: delete
+      # JVM tuning for low latency
+      confluent.metrics.reporter.bootstrap.servers: "kafka-critical:9071"
+      confluent.metrics.reporter.topic: "_confluent-metrics"
+      confluent.metrics.enable: true
+  resources:
+    requests:
+      cpu: "4"
+      memory: "16Gi"
+    limits:
+      cpu: "8"
+      memory: "32Gi"
+  jvmConfig:
+    heapSize: "24G"
+    jvmArgs:
+      - "-XX:+UseG1GC"
+      - "-XX:MaxGCPauseMillis=20"
+      - "-XX:InitiatingHeapOccupancyPercent=35"
+      - "-XX:+ExplicitGCInvokesConcurrent"
+      - "-Djava.awt.headless=true"
+      - "-Dcom.sun.management.jmxremote=true"
+
+---
+# Redpanda Cluster for High-Volume Telemetry
+apiVersion: cluster.redpanda.com/v1alpha1
+kind: Cluster
+metadata:
+  name: redpanda-telemetry
+  namespace: astroshield-production
+spec:
+  image: "vectorized/redpanda:v23.2.8"
+  version: "v23.2.8"
+  replicas: 3
+  resources:
+    requests:
+      cpu: "2"
+      memory: "8Gi"
+    limits:
+      cpu: "4"
+      memory: "16Gi"
+  storage:
+    capacity: 500Gi
+    storageClassName: fast-ssd
+  configuration:
+    rpcServer:
+      port: 33145
+    kafkaApi:
+      - port: 9092
+        name: kafka
+    pandaproxyApi:
+      - port: 8082
+        name: proxy
+    schemaRegistry:
+      port: 8081
+    adminApi:
+      - port: 9644
+        name: admin
+    developerMode: false
+    tuning:
+      # Optimize for high throughput
+      tune_network: true
+      tune_disk_scheduler: true
+      tune_disk_nomerges: true
+      tune_disk_write_cache: true
+      tune_disk_irq: true
+      tune_cpu: true
+      tune_aio_events: true
+      tune_clocksource: true
+      tune_swappiness: true
+      enable_memory_locking: true
+    redpanda:
+      # High-throughput configuration
+      default_topic_partitions: 6
+      default_topic_replications: 2
+      group_topic_partitions: 3
+      metadata_dissemination_interval_ms: 3000
+      raft_heartbeat_interval_ms: 150
+      raft_heartbeat_timeout_ms: 3000
+      # Memory and disk optimization
+      log_segment_size: 134217728  # 128MB segments
+      compacted_log_segment_size: 67108864  # 64MB for compacted topics
+      max_compacted_log_segment_size: 536870912  # 512MB max
+      retention_bytes: -1  # No size-based retention
+      log_compression_type: "snappy"
+      # Network optimization
+      kafka_batch_max_bytes: 1048576  # 1MB batches
+      kafka_connection_rate_limit: 1000
+      kafka_connections_max: 10000
+
+---
+# Topic Router Service for Intelligent Message Routing
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: topic-router
+  namespace: astroshield-production
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: topic-router
+  template:
+    metadata:
+      labels:
+        app: topic-router
+    spec:
+      containers:
+      - name: topic-router
+        image: astroshield/topic-router:latest
+        ports:
+        - containerPort: 8080
+        env:
+        - name: KAFKA_BOOTSTRAP_SERVERS
+          value: "kafka-critical:9092"
+        - name: REDPANDA_BOOTSTRAP_SERVERS
+          value: "redpanda-telemetry:9092"
+        - name: ROUTING_CONFIG_PATH
+          value: "/config/broker-routing.yaml"
+        volumeMounts:
+        - name: config
+          mountPath: /config
+        resources:
+          requests:
+            cpu: "500m"
+            memory: "1Gi"
+          limits:
+            cpu: "1"
+            memory: "2Gi"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 5
+      volumes:
+      - name: config
+        configMap:
+          name: dual-broker-config
+
+---
+# Service for Topic Router
+apiVersion: v1
+kind: Service
+metadata:
+  name: topic-router
+  namespace: astroshield-production
+spec:
+  selector:
+    app: topic-router
+  ports:
+  - port: 8080
+    targetPort: 8080
+  type: ClusterIP
+
+---
+# Network Policies for Broker Isolation
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: kafka-critical-network-policy
+  namespace: astroshield-production
+spec:
+  podSelector:
+    matchLabels:
+      app: kafka-critical
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: flink-conjunction-analysis
+    - podSelector:
+        matchLabels:
+          app: dnd-processor
+    - podSelector:
+        matchLabels:
+          app: threat-assessment
+    ports:
+    - protocol: TCP
+      port: 9092
+  egress:
+  - to:
+    - podSelector:
+        matchLabels:
+          app: kafka-critical
+    ports:
+    - protocol: TCP
+      port: 9092
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: redpanda-telemetry-network-policy
+  namespace: astroshield-production
+spec:
+  podSelector:
+    matchLabels:
+      app: redpanda-telemetry
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: udl-websocket-client
+    - podSelector:
+        matchLabels:
+          app: sensor-processors
+    - podSelector:
+        matchLabels:
+          app: telemetry-collectors
+    ports:
+    - protocol: TCP
+      port: 9092
+  egress:
+  - to:
+    - podSelector:
+        matchLabels:
+          app: redpanda-telemetry
+    ports:
+    - protocol: TCP
+      port: 9092
+
+---
+# Monitoring and Alerting for Dual-Broker Architecture
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: dual-broker-monitoring
+  namespace: astroshield-production
+spec:
+  selector:
+    matchLabels:
+      app: kafka-critical
+  endpoints:
+  - port: jmx
+    interval: 30s
+    path: /metrics
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: redpanda-monitoring
+  namespace: astroshield-production
+spec:
+  selector:
+    matchLabels:
+      app: redpanda-telemetry
+  endpoints:
+  - port: admin
+    interval: 30s
+    path: /metrics
+
+---
+# PrometheusRule for Dual-Broker Alerting
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: dual-broker-alerts
+  namespace: astroshield-production
+spec:
+  groups:
+  - name: kafka-critical-alerts
+    rules:
+    - alert: KafkaCriticalHighLatency
+      expr: kafka_network_request_total_time_ms{quantile="0.99"} > 100
+      for: 2m
+      labels:
+        severity: critical
+        component: kafka-critical
+      annotations:
+        summary: "Critical Kafka cluster experiencing high latency"
+        description: "99th percentile latency is {{ $value }}ms, exceeding 100ms threshold"
+    
+    - alert: KafkaCriticalPartitionLag
+      expr: kafka_consumer_lag_sum > 1000
+      for: 1m
+      labels:
+        severity: warning
+        component: kafka-critical
+      annotations:
+        summary: "Critical topic consumer lag detected"
+        description: "Consumer lag is {{ $value }} messages"
+
+  - name: redpanda-telemetry-alerts
+    rules:
+    - alert: RedpandaTelemetryThroughputDrop
+      expr: rate(redpanda_kafka_request_bytes_total[5m]) < 1000000  # Less than 1MB/s
+      for: 5m
+      labels:
+        severity: warning
+        component: redpanda-telemetry
+      annotations:
+        summary: "Redpanda telemetry throughput below threshold"
+        description: "Throughput is {{ $value }} bytes/s, below 1MB/s threshold"
+    
+    - alert: RedpandaStorageUtilization
+      expr: redpanda_storage_disk_free_bytes / redpanda_storage_disk_total_bytes < 0.1
+      for: 2m
+      labels:
+        severity: critical
+        component: redpanda-telemetry
+      annotations:
+        summary: "Redpanda storage utilization critical"
+        description: "Only {{ $value | humanizePercentage }} storage remaining"
+
+---
+# HorizontalPodAutoscaler for Topic Router
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: topic-router-hpa
+  namespace: astroshield-production
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: topic-router
+  minReplicas: 3
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80 

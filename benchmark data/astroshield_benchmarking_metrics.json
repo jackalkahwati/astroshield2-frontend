@@ -1,0 +1,261 @@
+{
+  "report_title": "Real-World Performance Metrics for AstroShield TBD Algorithm Benchmarking",
+  "compilation_date": "2025-06-12 07:08:53",
+  "data_sources": [
+    "SOCRATES Conjunction Analysis System (CelesTrak)",
+    "MIT Lincoln Laboratory Maneuver Detection Studies",
+    "NASA/GSFC Flight Dynamics Facility TLE Accuracy Analysis",
+    "US Space Surveillance Network Operational Data",
+    "ESA Space Debris Office Statistical Analysis",
+    "Industry Kafka Performance Benchmarks"
+  ],
+  "performance_metrics": {
+    "TLE_Propagation_Accuracy": {
+      "Typical_Accuracy_At_Epoch": {
+        "Position_Error": "~1 km (non-maneuvering spacecraft >400km altitude)",
+        "Source": "Space-Track accuracy studies",
+        "Confidence": "Typical performance"
+      },
+      "Error_Growth_Rates": {
+        "LEO_Below_1000km": {
+          "1_Day_Propagation": "10-30 km (1-\u03c3)",
+          "2_Day_Propagation": "20-70 km (1-\u03c3)",
+          "Typical_Growth": "~100 m per day improvement with enhanced methods",
+          "Source": "USU CubeSat studies, ScienceDirect propagation analysis"
+        },
+        "GEO_Objects": {
+          "Prediction_Window": "24-48 hours typical accuracy",
+          "Threshold_Detection": "Within 3-4 standard deviations"
+        }
+      },
+      "SGP4_Limitations": {
+        "Model_Variations": "Accuracy varies by SGP4 implementation version",
+        "Deep_Space_Corrections": "1990/1992 modifications not publicly released",
+        "Atmospheric_Drag_Impact": "Primary error source in LEO <1000km"
+      },
+      "Operational_Requirements": {
+        "Space_Force_Tracking": "Objects >10 cm\u00b3 trackable",
+        "Catalog_Accuracy": "<2.5km envelope for catalog inclusion",
+        "Update_Frequency": "TLEs updated twice daily via Space-Track"
+      }
+    },
+    "Conjunction_Analysis_Performance": {
+      "SOCRATES_System_Performance": {
+        "Daily_Conjunctions": "~250 predicted conjunctions within 1km over 7-day forecast",
+        "Processing_Time": "5+ hours on 2GHz Pentium 4, 1GB RAM",
+        "Comparison_Objects": "~2,700 payloads against 8,500 total objects",
+        "Database_Coverage": "~90% of cataloged objects (8,544 of 9,490)",
+        "Forecast_Period": "7 days ahead",
+        "Distance_Threshold": "1 km (plans for 10 km would yield ~25,000 conjunctions)"
+      },
+      "False_Positive_Reduction": {
+        "Industry_Goal": "Reduce Type I errors without increasing Type II errors",
+        "Current_Challenge": "Excessive false alarms burden operators",
+        "Operational_Impact": "Forces operators to focus on subset of objects"
+      },
+      "Statistical_Performance": {
+        "LEO_Conjunction_Analysis": {
+          "False_Positive_Rate": "0.93% with extensive radar/optical tracks",
+          "True_Positive_Detection": "97.4% IOD success rate (space surveillance)",
+          "Association_Accuracy": "89.7% True Positive, 1.8% False Positive"
+        },
+        "Probability_Methods": {
+          "Maximum_Probability": "Used when covariance data unavailable",
+          "True_Probability": "Calculated when actual covariances known",
+          "Risk_Assessment": "Probability-based methods preferred over minimum distance"
+        }
+      },
+      "Operational_Thresholds": {
+        "USSPACECOM_Screening": "All tracked objects screened for conjunctions",
+        "Alert_Criteria": "Varies by orbital regime and object type",
+        "Notification_Methods": "CDM (Conjunction Data Messages)",
+        "Response_Requirements": "24-72 hour advance warning typical"
+      }
+    },
+    "Maneuver_Detection_Metrics": {
+      "Current_Statistical_Methods": {
+        "GEO_Optical_Performance": {
+          "Detection_Rate": "94% (Folcik et al., 2007)",
+          "False_Alarm_Rate": "8%",
+          "Timing_Accuracy": "Within 24-48 hours of maneuver start"
+        },
+        "Threshold_Method": "3-4 standard deviations typical",
+        "Processing_Method": "Kalman Filter + Weighted Least Squares"
+      },
+      "AI_Enhanced_Methods": {
+        "Random_Forest_Performance": {
+          "GEO_Optical": "91% detection, 1% false alarm",
+          "LEO_Radar": "98.1% detection, 0.1% false alarm",
+          "Optimization": "250 epochs optimal for radar data"
+        },
+        "Deep_Neural_Network": {
+          "GEO_Optical_Simulated": "96.7% detection, 0.05% false alarm",
+          "GEO_Optical_Real": "98.5% detection, 1.8% false alarm",
+          "LEO_Radar_Simulated": "96.8% detection, 0.05% false alarm",
+          "Real_vs_Simulated": "Real data shows higher false alarms due to outliers"
+        },
+        "Performance_Comparison": {
+          "Statistical_vs_AI": "AI methods show significant improvement",
+          "RF_vs_DNN": "DNN better for optical, RF slightly better detection for radar",
+          "Optimization_Impact": "Grid search optimization improved DNN by 2-3%"
+        }
+      },
+      "Operational_Requirements": {
+        "Detection_Sensitivity": {
+          "Large_Maneuvers": ">95% detection for \u0394V >0.005 km/s",
+          "Small_Maneuvers": "Challenging <0.001 km/s threshold",
+          "GEO_Stationkeeping": "~90% detection rate for causal inference methods"
+        },
+        "Timing_Requirements": {
+          "Lead_Time": "24-72 hours advance warning needed",
+          "Processing_Time": "Real-time to near-real-time required",
+          "Update_Frequency": "Continuous monitoring during conjunction periods"
+        }
+      },
+      "Operator_Impact": {
+        "Current_Workload": "115 operators for 16,000+ maneuvering satellites",
+        "Operator_Overload": "Must ignore most maneuvers except critical areas",
+        "Automation_Benefit": ">95% reduction in response time potential"
+      }
+    },
+    "Space_Surveillance_Requirements": {
+      "US_Space_Surveillance_Network": {
+        "Object_Tracking": {
+          "Current_Catalog": "45,000+ objects in Earth orbit",
+          "Payload_Count": "~16,000 active maneuvering satellites",
+          "Total_Tracked": "22,000+ objects (growth from 4,600 in 1980)",
+          "Minimum_Size": "10 cm\u00b3 detection capability (Space Fence)",
+          "Previous_Limit": "Objects below 10 cm\u00b3 not regularly tracked"
+        },
+        "Accuracy_Requirements": {
+          "Catalog_Inclusion": "<2.5 km accuracy envelope required",
+          "Position_Precision": "Varies by sensor type and orbital regime",
+          "Update_Frequency": "Continuous tracking, TLE updates twice daily"
+        },
+        "Sensor_Performance": {
+          "GEODSS_Capability": "Basketball at 20,000 miles, chair at 35,000 miles",
+          "Space_Surveillance_Telescope": "3.5m telescope, 18 mv sensitivity",
+          "Radar_Performance": "10-100x greater range than aircraft tracking"
+        }
+      },
+      "Operational_Constraints": {
+        "Processing_Limitations": {
+          "Daily_Data_Volume": "Reams of observational data for operators",
+          "Personnel_Constraints": "115 operators for massive object catalog",
+          "Coverage_Gaps": "Missing ~10% due to classified/lost objects"
+        },
+        "Real_Time_Requirements": {
+          "Conjunction_Screening": "24/7 continuous monitoring required",
+          "Alert_Generation": "Automated CDM generation and distribution",
+          "Response_Time": "Immediate for high-risk conjunctions"
+        }
+      },
+      "International_Standards": {
+        "EU_SST_Network": "444,000+ measurements gathered annually",
+        "ESA_Standards": "Conjunction probability thresholds by orbital regime",
+        "Data_Sharing": "International cooperation through Space-Track.org"
+      },
+      "Acquisition_Requirements": {
+        "CubeSat_Tracking": {
+          "Antenna_Accuracy": "22-40 km accuracy for 3\u00b0 beamwidth",
+          "TLE_Degradation": "2-3 days before exceeding antenna accuracy",
+          "GPS_Integration": "Sub-10m accuracy when available"
+        }
+      }
+    },
+    "Kafka_Performance_Benchmarks": {
+      "Throughput_Benchmarks": {
+        "Industry_Standards": {
+          "High_Performance": "350,000+ messages/second achievable",
+          "Typical_Performance": "60,000-65,000 messages/second sustained",
+          "Cloud_Variations": "Performance varies by cloud provider and plan tier",
+          "Message_Size_Impact": "1KB messages typical for benchmarking"
+        },
+        "Real_World_Examples": {
+          "PayPal_Scale": "Billions of events processed",
+          "Sub_Second_Latency": "60,000 msg/s with <1 second latency (Pathway)",
+          "Ultra_High_Throughput": "250,000 msg/s possible with optimization",
+          "Enterprise_Scale": ">1 million msg/s reading/writing 7KB messages"
+        }
+      },
+      "Latency_Requirements": {
+        "End_to_End_Processing": "<100ms target for real-time systems",
+        "Network_Limitations": "Often network-bound rather than CPU-bound",
+        "Batching_Benefits": "Batched production/persistence improves throughput",
+        "Sequential_Writes": "Hard drive sequential writes optimization critical"
+      },
+      "Reliability_Metrics": {
+        "Availability_Targets": ">99.9% uptime for operational systems",
+        "Fault_Tolerance": "Asynchronous replication for resilience",
+        "Data_Durability": "Multiple replica guarantees",
+        "Recovery_Time": "Fast recovery from node failures"
+      },
+      "Space_System_Requirements": {
+        "Real_Time_Processing": "Space situational awareness requires <100ms latency",
+        "Data_Volume": "Thousands of conjunction assessments daily",
+        "System_Integration": "Must interface with 8 TBD algorithms simultaneously",
+        "Operational_Continuity": "24/7/365 operation required for space safety"
+      }
+    },
+    "SOCRATES_Operational_Data": {
+      "System_Architecture": {
+        "Data_Sources": {
+          "Primary_Input": "NORAD Two-Line Element Sets",
+          "Update_Frequency": "Twice daily from Space-Track website",
+          "Coverage": "2,700 payloads vs 8,500 total objects",
+          "Database_Completeness": "90% of cataloged objects (excludes classified)"
+        },
+        "Processing_Specifications": {
+          "Hardware_Requirements": "2GHz Pentium 4, 1GB RAM minimum",
+          "Processing_Time": "5+ hours per daily run",
+          "Start_Time": "1500 UTC daily",
+          "Completion": "Finished by 2000 UTC, uploaded 2030 UTC"
+        }
+      },
+      "Operational_Performance": {
+        "Daily_Output": {
+          "Typical_Conjunctions": "~250 within 1km over 7-day forecast",
+          "Extended_Threshold": "~25,000 conjunctions within 10km (planned)",
+          "Top_10_Lists": "Sorted by maximum probability and minimum distance",
+          "Analysis_Tools": "STK/CAT scenario generation on-demand"
+        },
+        "Accuracy_Metrics": {
+          "Forecast_Period": "7 days ahead standard",
+          "Distance_Threshold": "1 km current operational limit",
+          "Error_Estimate": "~10 km typical error at end of forecast period",
+          "Probability_Calculations": "Maximum probability when covariance unavailable"
+        }
+      },
+      "Data_Quality_Factors": {
+        "SGP4_Implementation": {
+          "Standard_Version": "Public version from 1980 Spacetrack Report #3",
+          "Modifications": "1990/1992 corrections not publicly available",
+          "Validation": "STK implementation tested against known hard cases"
+        },
+        "Missing_Data_Impact": {
+          "Classified_Objects": "~184 payloads excluded (national security)",
+          "Lost_Objects": "Objects not tracked for >30 days excluded",
+          "Small_Objects": "Sub-SSN detection limit objects not included"
+        }
+      },
+      "Probability_Assessment_Methods": {
+        "Covariance_Estimation": {
+          "Historical_Method": "Uses 2x prediction interval of historical TLEs",
+          "VNC_Coordinate_Analysis": "Velocity-Normal-Conormal error tracking",
+          "Bias_Correction": "Zero-bias mean calculation from sample data"
+        },
+        "Risk_Calculation": {
+          "Maximum_Probability": "Used when no covariance data available",
+          "True_Probability": "Calculated when actual covariances known",
+          "Aspect_Ratio": "Assumes ratio of 1 for object size calculations"
+        }
+      },
+      "Operational_Usage": {
+        "Public_Access": "Free service via CelesTrak website",
+        "User_Base": "Satellite operators worldwide",
+        "Integration_Capability": "Direct STK scenario generation",
+        "Data_Formats": "Searchable reports, VDF files for visualization"
+      }
+    }
+  }
+}

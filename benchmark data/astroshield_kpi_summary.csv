@@ -1,0 +1,13 @@
+Category,Metric,Target_Value,Current_Best,Source
+TLE_Propagation,Epoch_Accuracy,~1 km,Operational,Space-Track studies
+TLE_Propagation,1_Day_Error,10-30 km (1-σ),LEO typical,USU CubeSat analysis
+TLE_Propagation,2_Day_Error,20-70 km (1-σ),LEO typical,NASA GSFC studies
+Conjunction_Analysis,False_Positive_Rate,<1%,0.93%,ESA SST network
+Conjunction_Analysis,True_Positive_Rate,>97%,97.4%,Space surveillance
+Conjunction_Analysis,Daily_Volume,250+ within 1km,250 typical,SOCRATES system
+Maneuver_Detection,Detection_Rate,>95%,98.5% (AI),MIT Lincoln Lab
+Maneuver_Detection,False_Alarm_Rate,<2%,0.05% (AI),MIT Lincoln Lab
+Maneuver_Detection,Timing_Accuracy,24-48 hrs,24-48 hrs,Operational standard
+System_Performance,Kafka_Throughput,"60,000 msg/s","65,000 achieved",Industry benchmarks
+System_Performance,End_to_End_Latency,<100ms,<100ms target,Real-time systems
+System_Performance,System_Availability,>99.9%,99.9% target,Operational requirement

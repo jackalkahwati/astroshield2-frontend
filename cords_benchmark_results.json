@@ -1,0 +1,157 @@
+{
+  "benchmark_info": {
+    "model": "jackal79/tle-orbit-explainer",
+    "database": "CORDS (Aerospace Corporation)",
+    "analysis_date": "2025-06-12T07:46:11.190824+00:00",
+    "total_records": 19,
+    "astroshield_integration": true
+  },
+  "tle_orbit_explainer_performance": {
+    "total_predictions": 19,
+    "mean_absolute_error_hours": 4886.182998395087,
+    "median_absolute_error_hours": 4318.8131991733335,
+    "std_error_hours": 4393.261924083025,
+    "mean_bias_hours": 4811.277875826667,
+    "rmse_hours": 6436.871613376382,
+    "max_error_hours": 11637.23887296,
+    "min_error_hours": 492.15873869333336,
+    "accuracy_within_24h": 0.0,
+    "accuracy_within_48h": 0.0,
+    "accuracy_within_72h": 0.0,
+    "predictions": [
+      {
+        "object_name": "STARLINK-2025",
+        "norad_id": 47607,
+        "object_type": "Payload",
+        "predicted_days": 485,
+        "actual_days": 0.11504696,
+        "error_hours": 11637.23887296,
+        "abs_error_hours": 11637.23887296,
+        "decay_risk": "MEDIUM",
+        "confidence": 0.7999999999999999,
+        "explanation": "This object operates at 353x367 km altitude. Higher altitude provides stable orbit with minimal atmo..."
+      },
+      {
+        "object_name": "FALCON 9 R/B",
+        "norad_id": 62878,
+        "object_type": "Rocket Body",
+        "predicted_days": 288,
+        "actual_days": 0.06335895,
+        "error_hours": 6910.4793852,
+        "abs_error_hours": 6910.4793852,
+        "decay_risk": "MEDIUM",
+        "confidence": 0.7999999999999999,
+        "explanation": "This object operates at 347x361 km altitude. Higher altitude provides stable orbit with minimal atmo..."
+      },
+      {
+        "object_name": "STARLINK-5693",
+        "norad_id": 55482,
+        "object_type": "Payload",
+        "predicted_days": 22,
+        "actual_days": 0.06639417,
+        "error_hours": 526.40653992,
+        "abs_error_hours": 526.40653992,
+        "decay_risk": "HIGH",
+        "confidence": 0.8999999999999999,
+        "explanation": "This object operates at 253x266 km altitude. Low altitude indicates significant atmospheric drag wit..."
+      },
+      {
+        "object_name": "DRAGON CRS-27 DEB",
+        "norad_id": 56234,
+        "object_type": "Debris",
+        "predicted_days": 340,
+        "actual_days": 0.0346677,
+        "error_hours": 8159.1679752,
+        "abs_error_hours": 8159.1679752,
+        "decay_risk": "MEDIUM",
+        "confidence": 0.7999999999999999,
+        "explanation": "This object operates at 348x362 km altitude. Higher altitude provides stable orbit with minimal atmo..."
+      },
+      {
+        "object_name": "STARLINK-4682",
+        "norad_id": 53597,
+        "object_type": "Payload",
+        "predicted_days": 45,
+        "actual_days": 0.08470020444444444,
+        "error_hours": 1077.9671950933334,
+        "abs_error_hours": 1077.9671950933334,
+        "decay_risk": "HIGH",
+        "confidence": 0.8999999999999999,
+        "explanation": "This object operates at 270x283 km altitude. Low altitude indicates significant atmospheric drag wit..."
+      },
+      {
+        "object_name": "STARLINK-2382",
+        "norad_id": 47801,
+        "object_type": "Payload",
+        "predicted_days": 32,
+        "actual_days": 0.49301696,
+        "error_hours": 756.1675929600001,
+        "abs_error_hours": 756.1675929600001,
+        "decay_risk": "HIGH",
+        "confidence": 0.8999999999999999,
+        "explanation": "This object operates at 264x277 km altitude. Low altitude indicates significant atmospheric drag wit..."
+      },
+      {
+        "object_name": "STARLINK-3373",
+        "norad_id": 51122,
+        "object_type": "Payload",
+        "predicted_days": 436,
+        "actual_days": 0.05990436222222223,
+        "error_hours": 10462.562295306667,
+        "abs_error_hours": 10462.562295306667,
+        "decay_risk": "MEDIUM",
+        "confidence": 0.7999999999999999,
+        "explanation": "This object operates at 316x329 km altitude. Higher altitude provides stable orbit with minimal atmo..."
+      },
+      {
+        "object_name": "STARLINK-1149",
+        "norad_id": 45079,
+        "object_type": "Payload",
+        "predicted_days": 311,
+        "actual_days": 0.1851266788888889,
+        "error_hours": 7459.556959706667,
+        "abs_error_hours": 7459.556959706667,
+        "decay_risk": "MEDIUM",
+        "confidence": 0.7999999999999999,
+        "explanation": "This object operates at 308x321 km altitude. Higher altitude provides stable orbit with minimal atmo..."
+      },
+      {
+        "object_name": "DRAGON ENDURANCE 3 DEB",
+        "norad_id": 59227,
+        "object_type": "Debris",
+        "predicted_days": 390,
+        "actual_days": 0.20769931,
+        "error_hours": 9355.01521656,
+        "abs_error_hours": 9355.01521656,
+        "decay_risk": "MEDIUM",
+        "confidence": 0.7999999999999999,
+        "explanation": "This object operates at 303x317 km altitude. Higher altitude provides stable orbit with minimal atmo..."
+      },
+      {
+        "object_name": "ISS DEB (EP BATTERY)",
+        "norad_id": 47853,
+        "object_type": "Debris",
+        "predicted_days": 397,
+        "actual_days": 0.11499364777777778,
+        "error_hours": 9525.240152453332,
+        "abs_error_hours": 9525.240152453332,
+        "decay_risk": "MEDIUM",
+        "confidence": 0.7999999999999999,
+        "explanation": "This object operates at 368x381 km altitude. Higher altitude provides stable orbit with minimal atmo..."
+      }
+    ]
+  },
+  "cords_baseline_performance": {
+    "total_predictions": 18,
+    "mean_absolute_error_hours": 82.79715030864196,
+    "median_absolute_error_hours": 0.3137763888888889,
+    "accuracy_within_24h": 94.44444444444444,
+    "accuracy_within_48h": 94.44444444444444,
+    "accuracy_within_72h": 94.44444444444444
+  },
+  "performance_comparison": {
+    "mae_improvement_percent": -5801.3903016962795,
+    "accuracy_24h_improvement": -94.44444444444444,
+    "accuracy_48h_improvement": -94.44444444444444
+  }
+}

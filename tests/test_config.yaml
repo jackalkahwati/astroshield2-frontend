@@ -1,0 +1,235 @@
+# AstroShield Test Suite Configuration
+test_categories:
+  unit:
+    enabled: true
+    timeout: 300
+    parallel: true
+  integration:
+    enabled: true
+    timeout: 600
+    parallel: false
+  performance:
+    enabled: true
+    timeout: 900
+    parallel: false
+  security:
+    enabled: true
+    timeout: 1200
+    parallel: true
+  ai_ml:
+    enabled: true
+    timeout: 1800
+    parallel: false
+  end_to_end:
+    enabled: true
+    timeout: 2400
+    parallel: false
+
+environments:
+  test:
+    kafka_url: 'localhost:9092'
+    redpanda_url: 'localhost:9093'
+    neo4j_url: 'bolt://localhost:7687'
+    prometheus_url: 'http://localhost:9090'
+    grafana_url: 'http://localhost:3000'
+    kubernetes_context: 'test-cluster'
+    flink_jobmanager: 'localhost:8081'
+  staging:
+    kafka_url: 'staging-kafka:9092'
+    redpanda_url: 'staging-redpanda:9093'
+    neo4j_url: 'bolt://staging-neo4j:7687'
+    prometheus_url: 'http://staging-prometheus:9090'
+    grafana_url: 'http://staging-grafana:3000'
+    kubernetes_context: 'staging-cluster'
+    flink_jobmanager: 'staging-flink:8081'
+
+performance_thresholds:
+  # Latency requirements (milliseconds)
+  udl_websocket_latency_ms: 1000
+  neo4j_query_time_ms: 200
+  ccd_detection_time_ms: 50
+  intent_classification_time_ms: 100
+  conjunction_analysis_time_ms: 500
+  end_to_end_pipeline_latency_ms: 1000
+  
+  # Throughput requirements
+  flink_throughput_msg_per_sec: 50000
+  kafka_throughput_msg_per_sec: 30000
+  redpanda_throughput_msg_per_sec: 50000
+  neo4j_writes_per_sec: 10000
+  
+  # Resource utilization limits (percentages)
+  max_cpu_usage_percent: 80
+  max_memory_usage_percent: 85
+  max_disk_usage_percent: 90
+  max_network_usage_percent: 75
+  
+  # Accuracy requirements
+  ccd_detection_f1_score: 0.90
+  intent_classification_balanced_accuracy: 0.80
+  conjunction_detection_precision: 0.95
+  threat_assessment_recall: 0.90
+
+security_requirements:
+  vulnerability_scan: true
+  container_signing: true
+  network_policies: true
+  rbac_validation: true
+  encryption_compliance: true
+  audit_logging: true
+  pod_security_standards: 'restricted'
+  
+  # Maximum allowed vulnerabilities
+  max_critical_vulnerabilities: 0
+  max_high_vulnerabilities: 5
+  max_medium_vulnerabilities: 20
+  
+  # Compliance standards
+  dod_il5_compliance: true
+  fips_140_2_compliance: true
+  stig_compliance: true
+
+chaos_engineering:
+  enabled: true
+  experiments:
+    - name: 'pod_failure'
+      duration_seconds: 60
+      expected_mttr_seconds: 45
+    - name: 'network_partition'
+      duration_seconds: 120
+      expected_mttr_seconds: 45
+    - name: 'resource_exhaustion'
+      duration_seconds: 90
+      expected_mttr_seconds: 45
+    - name: 'dependency_failure'
+      duration_seconds: 180
+      expected_mttr_seconds: 45
+
+load_testing:
+  enabled: true
+  scenarios:
+    - name: 'normal_load'
+      duration_seconds: 300
+      messages_per_second: 10000
+      concurrent_users: 100
+    - name: 'peak_load'
+      duration_seconds: 600
+      messages_per_second: 50000
+      concurrent_users: 500
+    - name: 'stress_test'
+      duration_seconds: 900
+      messages_per_second: 80000
+      concurrent_users: 1000
+
+ai_ml_validation:
+  datasets:
+    ccd_validation: 'data/ccd_validation_set.json'
+    intent_validation: 'data/intent_validation_set.json'
+    conjunction_validation: 'data/conjunction_validation_set.json'
+  
+  model_endpoints:
+    ccd_detector: 'http://localhost:8080/predict/ccd'
+    intent_classifier: 'http://localhost:8080/predict/intent'
+    conjunction_analyzer: 'http://localhost:8080/predict/conjunction'
+  
+  performance_tests:
+    batch_sizes: [1, 8, 16, 32, 64]
+    concurrent_requests: [1, 5, 10, 20, 50]
+
+monitoring:
+  metrics_collection_interval_seconds: 30
+  alert_evaluation_interval_seconds: 60
+  
+  critical_alerts:
+    - name: 'high_latency'
+      threshold: 2000  # milliseconds
+    - name: 'low_throughput'
+      threshold: 25000  # messages per second
+    - name: 'high_error_rate'
+      threshold: 0.05  # 5%
+    - name: 'resource_exhaustion'
+      cpu_threshold: 90
+      memory_threshold: 95
+      disk_threshold: 95
+
+deployment:
+  argocd_url: 'https://argocd.astroshield.local'
+  kubernetes_namespaces:
+    - 'astroshield-core'
+    - 'astroshield-ai'
+    - 'astroshield-data'
+    - 'astroshield-monitoring'
+    - 'astroshield-security'
+  
+  rollback_timeout_seconds: 300
+  health_check_timeout_seconds: 180
+
+reporting:
+  output_formats: ['json', 'html', 'junit']
+  include_performance_graphs: true
+  include_security_scan_details: true
+  include_coverage_reports: true
+  
+  notification:
+    slack_webhook: null  # Set if Slack notifications desired
+    email_recipients: []  # Set if email notifications desired
+    teams_webhook: null   # Set if Teams notifications desired
+
+# Test data generation
+test_data:
+  space_objects:
+    count: 1000
+    orbit_types: ['LEO', 'MEO', 'GEO', 'HEO']
+    object_types: ['PAYLOAD', 'ROCKET_BODY', 'DEBRIS', 'UNKNOWN']
+  
+  conjunction_events:
+    count: 100
+    min_miss_distance_km: 0.1
+    max_miss_distance_km: 50.0
+    time_to_closest_approach_hours: [1, 6, 12, 24, 48]
+  
+  ccd_scenarios:
+    stealth_coating: 50
+    electronic_deception: 30
+    trajectory_masking: 40
+    debris_simulation: 35
+    formation_flying: 25
+    proximity_operations: 20
+    inspection_maneuvers: 15
+
+# Production readiness criteria
+production_readiness:
+  minimum_success_rate: 0.95
+  maximum_failed_tests: 0
+  required_categories: ['security', 'performance', 'ai_ml']
+  
+  performance_gates:
+    - metric: 'udl_websocket_latency_ms'
+      threshold: 1000
+      operator: 'less_than'
+    - metric: 'neo4j_query_time_ms'
+      threshold: 200
+      operator: 'less_than'
+    - metric: 'flink_throughput_msg_per_sec'
+      threshold: 50000
+      operator: 'greater_than_or_equal'
+    - metric: 'ccd_detection_f1_score'
+      threshold: 0.90
+      operator: 'greater_than_or_equal'
+    - metric: 'intent_classification_balanced_accuracy'
+      threshold: 0.80
+      operator: 'greater_than_or_equal'
+  
+  security_gates:
+    - check: 'critical_vulnerabilities'
+      threshold: 0
+      operator: 'equal'
+    - check: 'container_signing'
+      threshold: true
+      operator: 'equal'
+    - check: 'network_policies_enforced'
+      threshold: true
+      operator: 'equal'
+    - check: 'rbac_configured'
+      threshold: true
+      operator: 'equal' 

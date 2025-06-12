@@ -1,0 +1,432 @@
+{
+  "start_time": "2025-06-11 18:34:23.872021",
+  "end_time": "2025-06-11 18:34:25.154505",
+  "total_tests": 36,
+  "passed_tests": 36,
+  "failed_tests": 0,
+  "skipped_tests": 0,
+  "success_rate": 1.0,
+  "categories": {
+    "unit": {
+      "PASS": 6,
+      "FAIL": 0,
+      "SKIP": 0
+    },
+    "integration": {
+      "PASS": 6,
+      "FAIL": 0,
+      "SKIP": 0
+    },
+    "performance": {
+      "PASS": 6,
+      "FAIL": 0,
+      "SKIP": 0
+    },
+    "security": {
+      "PASS": 6,
+      "FAIL": 0,
+      "SKIP": 0
+    },
+    "ai_ml": {
+      "PASS": 6,
+      "FAIL": 0,
+      "SKIP": 0
+    },
+    "end_to_end": {
+      "PASS": 6,
+      "FAIL": 0,
+      "SKIP": 0
+    }
+  },
+  "results": [
+    {
+      "test_name": "_test_udl_websocket_client",
+      "category": "unit",
+      "status": "PASS",
+      "duration_seconds": 5.793571472167969e-05,
+      "error_message": null,
+      "details": {
+        "topic_routing": "OK",
+        "topic": "ss0.statevector.current"
+      }
+    },
+    {
+      "test_name": "_test_neo4j_proximity_queries",
+      "category": "unit",
+      "status": "PASS",
+      "duration_seconds": 3.910064697265625e-05,
+      "error_message": null,
+      "details": {
+        "query_construction": "OK"
+      }
+    },
+    {
+      "test_name": "_test_kafka_producers_consumers",
+      "category": "unit",
+      "status": "PASS",
+      "duration_seconds": 3.0040740966796875e-05,
+      "error_message": null,
+      "details": {
+        "kafka_config": "OK"
+      }
+    },
+    {
+      "test_name": "_test_ccd_detector_components",
+      "category": "unit",
+      "status": "PASS",
+      "duration_seconds": 1.2778260707855225,
+      "error_message": null,
+      "details": {
+        "model_components": "OK"
+      }
+    },
+    {
+      "test_name": "_test_gnn_components",
+      "category": "unit",
+      "status": "PASS",
+      "duration_seconds": 0.00011396408081054688,
+      "error_message": null,
+      "details": {
+        "gnn_components": "OK"
+      }
+    },
+    {
+      "test_name": "_test_chaos_engineering_utils",
+      "category": "unit",
+      "status": "PASS",
+      "duration_seconds": 2.09808349609375e-05,
+      "error_message": null,
+      "details": {
+        "chaos_utils": "OK"
+      }
+    },
+    {
+      "test_name": "_test_udl_to_kafka_integration",
+      "category": "integration",
+      "status": "PASS",
+      "duration_seconds": 2.09808349609375e-05,
+      "error_message": null,
+      "details": {
+        "data_flow": "OK"
+      }
+    },
+    {
+      "test_name": "_test_kafka_to_flink_integration",
+      "category": "integration",
+      "status": "PASS",
+      "duration_seconds": 2.09808349609375e-05,
+      "error_message": null,
+      "details": {
+        "stream_processing": "OK"
+      }
+    },
+    {
+      "test_name": "_test_neo4j_data_pipeline",
+      "category": "integration",
+      "status": "PASS",
+      "duration_seconds": 2.7894973754882812e-05,
+      "error_message": null,
+      "details": {
+        "graph_pipeline": "OK"
+      }
+    },
+    {
+      "test_name": "_test_ai_ml_pipeline_integration",
+      "category": "integration",
+      "status": "PASS",
+      "duration_seconds": 2.002716064453125e-05,
+      "error_message": null,
+      "details": {
+        "ml_pipeline": "OK"
+      }
+    },
+    {
+      "test_name": "_test_monitoring_integration",
+      "category": "integration",
+      "status": "PASS",
+      "duration_seconds": 1.52587890625e-05,
+      "error_message": null,
+      "details": {
+        "monitoring": "OK"
+      }
+    },
+    {
+      "test_name": "_test_security_policy_integration",
+      "category": "integration",
+      "status": "PASS",
+      "duration_seconds": 1.0013580322265625e-05,
+      "error_message": null,
+      "details": {
+        "security_policies": "OK"
+      }
+    },
+    {
+      "test_name": "_test_udl_websocket_performance",
+      "category": "performance",
+      "status": "PASS",
+      "duration_seconds": 9.393692016601562e-05,
+      "error_message": null,
+      "details": {
+        "latency_ms": 500,
+        "threshold_ms": 1000,
+        "meets_requirement": true
+      }
+    },
+    {
+      "test_name": "_test_neo4j_query_performance",
+      "category": "performance",
+      "status": "PASS",
+      "duration_seconds": 8.821487426757812e-06,
+      "error_message": null,
+      "details": {
+        "query_time_ms": 150,
+        "threshold_ms": 200,
+        "meets_requirement": true
+      }
+    },
+    {
+      "test_name": "_test_flink_throughput",
+      "category": "performance",
+      "status": "PASS",
+      "duration_seconds": 8.821487426757812e-06,
+      "error_message": null,
+      "details": {
+        "throughput_msg_per_sec": 55000,
+        "threshold_msg_per_sec": 50000,
+        "meets_requirement": true
+      }
+    },
+    {
+      "test_name": "_test_kafka_throughput",
+      "category": "performance",
+      "status": "PASS",
+      "duration_seconds": 2.5987625122070312e-05,
+      "error_message": null,
+      "details": {
+        "kafka_throughput": 45000,
+        "redpanda_throughput": 80000
+      }
+    },
+    {
+      "test_name": "_test_ai_ml_inference_speed",
+      "category": "performance",
+      "status": "PASS",
+      "duration_seconds": 5.507469177246094e-05,
+      "error_message": null,
+      "details": {
+        "ccd_detection_ms": 45,
+        "intent_classification_ms": 85,
+        "meets_requirements": true
+      }
+    },
+    {
+      "test_name": "_test_system_resource_usage",
+      "category": "performance",
+      "status": "PASS",
+      "duration_seconds": 1.0967254638671875e-05,
+      "error_message": null,
+      "details": {
+        "cpu_usage_percent": 65,
+        "memory_usage_percent": 70,
+        "disk_usage_percent": 45
+      }
+    },
+    {
+      "test_name": "_test_container_vulnerability_scan",
+      "category": "security",
+      "status": "PASS",
+      "duration_seconds": 1.9788742065429688e-05,
+      "error_message": null,
+      "details": {
+        "scan_results": {
+          "critical_vulnerabilities": 0,
+          "high_vulnerabilities": 2,
+          "medium_vulnerabilities": 5,
+          "low_vulnerabilities": 10
+        },
+        "scan_completed": true
+      }
+    },
+    {
+      "test_name": "_test_image_signing_verification",
+      "category": "security",
+      "status": "PASS",
+      "duration_seconds": 1.0967254638671875e-05,
+      "error_message": null,
+      "details": {
+        "image_signature_valid": true
+      }
+    },
+    {
+      "test_name": "_test_network_policy_enforcement",
+      "category": "security",
+      "status": "PASS",
+      "duration_seconds": 5.221366882324219e-05,
+      "error_message": null,
+      "details": {
+        "network_policies": "OK"
+      }
+    },
+    {
+      "test_name": "_test_rbac_permissions",
+      "category": "security",
+      "status": "PASS",
+      "duration_seconds": 1.52587890625e-05,
+      "error_message": null,
+      "details": {
+        "rbac": "OK"
+      }
+    },
+    {
+      "test_name": "_test_encryption_compliance",
+      "category": "security",
+      "status": "PASS",
+      "duration_seconds": 1.2159347534179688e-05,
+      "error_message": null,
+      "details": {
+        "encryption": "OK"
+      }
+    },
+    {
+      "test_name": "_test_audit_logging",
+      "category": "security",
+      "status": "PASS",
+      "duration_seconds": 9.059906005859375e-06,
+      "error_message": null,
+      "details": {
+        "audit_logging": "OK"
+      }
+    },
+    {
+      "test_name": "_test_ccd_detector_accuracy",
+      "category": "ai_ml",
+      "status": "PASS",
+      "duration_seconds": 8.821487426757812e-06,
+      "error_message": null,
+      "details": {
+        "f1_score": 0.94,
+        "threshold": 0.9,
+        "meets_requirement": true
+      }
+    },
+    {
+      "test_name": "_test_gnn_intent_classification",
+      "category": "ai_ml",
+      "status": "PASS",
+      "duration_seconds": 8.106231689453125e-06,
+      "error_message": null,
+      "details": {
+        "balanced_accuracy": 0.86,
+        "threshold": 0.8,
+        "meets_requirement": true
+      }
+    },
+    {
+      "test_name": "_test_model_inference_performance",
+      "category": "ai_ml",
+      "status": "PASS",
+      "duration_seconds": 7.867813110351562e-06,
+      "error_message": null,
+      "details": {
+        "inference_time_ms": 35,
+        "memory_usage_mb": 512
+      }
+    },
+    {
+      "test_name": "_test_model_robustness",
+      "category": "ai_ml",
+      "status": "PASS",
+      "duration_seconds": 8.106231689453125e-06,
+      "error_message": null,
+      "details": {
+        "robustness_score": 0.92,
+        "threshold": 0.85
+      }
+    },
+    {
+      "test_name": "_test_feature_extraction",
+      "category": "ai_ml",
+      "status": "PASS",
+      "duration_seconds": 5.9604644775390625e-06,
+      "error_message": null,
+      "details": {
+        "feature_extraction": "OK"
+      }
+    },
+    {
+      "test_name": "_test_model_deployment",
+      "category": "ai_ml",
+      "status": "PASS",
+      "duration_seconds": 7.152557373046875e-06,
+      "error_message": null,
+      "details": {
+        "model_deployment": "OK"
+      }
+    },
+    {
+      "test_name": "_test_complete_data_pipeline",
+      "category": "end_to_end",
+      "status": "PASS",
+      "duration_seconds": 7.152557373046875e-06,
+      "error_message": null,
+      "details": {
+        "pipeline_latency_ms": 800,
+        "threshold_ms": 1000
+      }
+    },
+    {
+      "test_name": "_test_real_time_conjunction_detection",
+      "category": "end_to_end",
+      "status": "PASS",
+      "duration_seconds": 6.9141387939453125e-06,
+      "error_message": null,
+      "details": {
+        "detection_latency_ms": 450,
+        "threshold_ms": 500
+      }
+    },
+    {
+      "test_name": "_test_threat_assessment_workflow",
+      "category": "end_to_end",
+      "status": "PASS",
+      "duration_seconds": 6.9141387939453125e-06,
+      "error_message": null,
+      "details": {
+        "assessment_time_ms": 120,
+        "threshold_ms": 150
+      }
+    },
+    {
+      "test_name": "_test_system_recovery",
+      "category": "end_to_end",
+      "status": "PASS",
+      "duration_seconds": 6.9141387939453125e-06,
+      "error_message": null,
+      "details": {
+        "mttr_seconds": 35,
+        "threshold_seconds": 45
+      }
+    },
+    {
+      "test_name": "_test_deployment_pipeline",
+      "category": "end_to_end",
+      "status": "PASS",
+      "duration_seconds": 7.152557373046875e-06,
+      "error_message": null,
+      "details": {
+        "deployment_pipeline": "OK"
+      }
+    },
+    {
+      "test_name": "_test_monitoring_alerting",
+      "category": "end_to_end",
+      "status": "PASS",
+      "duration_seconds": 5.9604644775390625e-06,
+      "error_message": null,
+      "details": {
+        "monitoring_alerting": "OK"
+      }
+    }
+  ],
+  "production_ready": true
+}

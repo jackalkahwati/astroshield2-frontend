@@ -1,0 +1,530 @@
+# AstroShield GitOps Configuration with ArgoCD
+# Implements automated deployment pipeline with security scanning and compliance
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: astroshield-production
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: astroshield
+    app.kubernetes.io/component: production
+    security.classification: IL-5
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+    notifications.argoproj.io/subscribe.on-sync-succeeded.slack: astroshield-deployments
+    notifications.argoproj.io/subscribe.on-sync-failed.slack: astroshield-alerts
+spec:
+  project: astroshield
+  source:
+    repoURL: https://github.com/astroshield/infrastructure
+    targetRevision: main
+    path: k8s/manifests
+    helm:
+      valueFiles:
+        - values-production.yaml
+      parameters:
+        - name: image.tag
+          value: "latest"
+        - name: replicaCount
+          value: "3"
+        - name: resources.limits.memory
+          value: "4Gi"
+        - name: resources.limits.cpu
+          value: "2"
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: astroshield-production
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: false
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+      - PruneLast=true
+      - RespectIgnoreDifferences=true
+      - ApplyOutOfSyncOnly=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
+  revisionHistoryLimit: 10
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      jsonPointers:
+        - /spec/replicas
+    - group: ""
+      kind: Secret
+      jsonPointers:
+        - /data
+  info:
+    - name: "Classification"
+      value: "DoD IL-5"
+    - name: "Owner"
+      value: "AstroShield SDA Team"
+    - name: "Contact"
+      value: "astroshield-ops@mil"
+
+---
+# ArgoCD Project for AstroShield with security policies
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: astroshield
+  namespace: argocd
+  labels:
+    security.classification: IL-5
+spec:
+  description: "AstroShield Space Domain Awareness Platform"
+  sourceRepos:
+    - "https://github.com/astroshield/infrastructure"
+    - "https://github.com/astroshield/applications"
+    - "https://charts.astroshield.mil/*"
+  destinations:
+    - namespace: "astroshield-*"
+      server: https://kubernetes.default.svc
+    - namespace: "monitoring"
+      server: https://kubernetes.default.svc
+    - namespace: "kafka"
+      server: https://kubernetes.default.svc
+  clusterResourceWhitelist:
+    - group: ""
+      kind: Namespace
+    - group: "rbac.authorization.k8s.io"
+      kind: ClusterRole
+    - group: "rbac.authorization.k8s.io"
+      kind: ClusterRoleBinding
+    - group: "networking.k8s.io"
+      kind: NetworkPolicy
+    - group: "policy"
+      kind: PodSecurityPolicy
+    - group: "security.istio.io"
+      kind: PeerAuthentication
+  namespaceResourceWhitelist:
+    - group: ""
+      kind: ConfigMap
+    - group: ""
+      kind: Secret
+    - group: ""
+      kind: Service
+    - group: ""
+      kind: ServiceAccount
+    - group: "apps"
+      kind: Deployment
+    - group: "apps"
+      kind: StatefulSet
+    - group: "apps"
+      kind: DaemonSet
+    - group: "batch"
+      kind: Job
+    - group: "batch"
+      kind: CronJob
+    - group: "networking.k8s.io"
+      kind: Ingress
+    - group: "monitoring.coreos.com"
+      kind: ServiceMonitor
+    - group: "monitoring.coreos.com"
+      kind: PrometheusRule
+  roles:
+    - name: astroshield-admin
+      description: "Full access to AstroShield applications"
+      policies:
+        - p, proj:astroshield:astroshield-admin, applications, *, proj:astroshield/*, allow
+        - p, proj:astroshield:astroshield-admin, repositories, *, *, allow
+        - p, proj:astroshield:astroshield-admin, clusters, *, *, allow
+      groups:
+        - "astroshield:admins"
+    - name: astroshield-developer
+      description: "Developer access to AstroShield applications"
+      policies:
+        - p, proj:astroshield:astroshield-developer, applications, get, proj:astroshield/*, allow
+        - p, proj:astroshield:astroshield-developer, applications, sync, proj:astroshield/*, allow
+        - p, proj:astroshield:astroshield-developer, repositories, get, *, allow
+      groups:
+        - "astroshield:developers"
+    - name: astroshield-viewer
+      description: "Read-only access to AstroShield applications"
+      policies:
+        - p, proj:astroshield:astroshield-viewer, applications, get, proj:astroshield/*, allow
+        - p, proj:astroshield:astroshield-viewer, repositories, get, *, allow
+      groups:
+        - "astroshield:viewers"
+  syncWindows:
+    - kind: allow
+      schedule: "0 2 * * *"  # Allow deployments at 2 AM daily
+      duration: 4h
+      applications:
+        - "*"
+      manualSync: true
+    - kind: deny
+      schedule: "0 8-17 * * 1-5"  # Block deployments during business hours
+      duration: 9h
+      applications:
+        - "*"
+      manualSync: false
+
+---
+# Application for Core Services
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: astroshield-core-services
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: astroshield-core
+    app.kubernetes.io/component: core-services
+spec:
+  project: astroshield
+  source:
+    repoURL: https://github.com/astroshield/infrastructure
+    targetRevision: main
+    path: k8s/core-services
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: astroshield-production
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+    retry:
+      limit: 3
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 1m
+
+---
+# Application for AI/ML Services
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: astroshield-ai-ml
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: astroshield-ai-ml
+    app.kubernetes.io/component: ai-ml-services
+spec:
+  project: astroshield
+  source:
+    repoURL: https://github.com/astroshield/infrastructure
+    targetRevision: main
+    path: k8s/ai-ml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: astroshield-production
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+    retry:
+      limit: 3
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 1m
+
+---
+# Application for Data Pipeline (Kafka/Flink)
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: astroshield-data-pipeline
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: astroshield-data-pipeline
+    app.kubernetes.io/component: data-services
+spec:
+  project: astroshield
+  source:
+    repoURL: https://github.com/astroshield/infrastructure
+    targetRevision: main
+    path: k8s/data-pipeline
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: astroshield-production
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+    retry:
+      limit: 3
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 1m
+
+---
+# Application for Security and Compliance
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: astroshield-security
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: astroshield-security
+    app.kubernetes.io/component: security-services
+spec:
+  project: astroshield
+  source:
+    repoURL: https://github.com/astroshield/infrastructure
+    targetRevision: main
+    path: k8s/security
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: astroshield-production
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+    retry:
+      limit: 3
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 1m
+
+---
+# ArgoCD Notifications Configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-notifications-cm
+  namespace: argocd
+data:
+  service.slack: |
+    token: $slack-token
+    username: ArgoCD
+    icon: ":argo:"
+  template.app-deployed: |
+    message: |
+      {{if eq .serviceType "slack"}}:white_check_mark:{{end}} Application {{.app.metadata.name}} is now running new version.
+  template.app-health-degraded: |
+    message: |
+      {{if eq .serviceType "slack"}}:exclamation:{{end}} Application {{.app.metadata.name}} has degraded health.
+  template.app-sync-failed: |
+    message: |
+      {{if eq .serviceType "slack"}}:exclamation:{{end}} Application {{.app.metadata.name}} sync failed.
+  template.app-sync-running: |
+    message: |
+      {{if eq .serviceType "slack"}}:gear:{{end}} Application {{.app.metadata.name}} sync started.
+  template.app-sync-succeeded: |
+    message: |
+      {{if eq .serviceType "slack"}}:white_check_mark:{{end}} Application {{.app.metadata.name}} sync succeeded.
+  trigger.on-deployed: |
+    - description: Application is synced and healthy. Triggered once per commit.
+      oncePer: app.status.sync.revision
+      send:
+      - app-deployed
+      when: app.status.operationState.phase in ['Succeeded'] and app.status.health.status == 'Healthy'
+  trigger.on-health-degraded: |
+    - description: Application has degraded
+      send:
+      - app-health-degraded
+      when: app.status.health.status == 'Degraded'
+  trigger.on-sync-failed: |
+    - description: Application syncing has failed
+      send:
+      - app-sync-failed
+      when: app.status.operationState.phase in ['Error', 'Failed']
+  trigger.on-sync-running: |
+    - description: Application is being synced
+      send:
+      - app-sync-running
+      when: app.status.operationState.phase in ['Running']
+  trigger.on-sync-succeeded: |
+    - description: Application syncing has succeeded
+      send:
+      - app-sync-succeeded
+      when: app.status.operationState.phase in ['Succeeded']
+  subscriptions: |
+    - recipients:
+      - slack:astroshield-deployments
+      triggers:
+      - on-sync-succeeded
+      - on-deployed
+    - recipients:
+      - slack:astroshield-alerts
+      triggers:
+      - on-health-degraded
+      - on-sync-failed
+
+---
+# ArgoCD Repository Configuration
+apiVersion: v1
+kind: Secret
+metadata:
+  name: astroshield-repo
+  namespace: argocd
+  labels:
+    argocd.argoproj.io/secret-type: repository
+type: Opaque
+stringData:
+  type: git
+  url: https://github.com/astroshield/infrastructure
+  password: ""
+  username: ""
+  insecure: "false"
+  enableLfs: "false"
+
+---
+# ArgoCD RBAC Configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-rbac-cm
+  namespace: argocd
+data:
+  policy.default: role:readonly
+  policy.csv: |
+    # AstroShield Admin Role
+    p, role:astroshield-admin, applications, *, */*, allow
+    p, role:astroshield-admin, clusters, *, *, allow
+    p, role:astroshield-admin, repositories, *, *, allow
+    p, role:astroshield-admin, certificates, *, *, allow
+    p, role:astroshield-admin, accounts, *, *, allow
+    p, role:astroshield-admin, gpgkeys, *, *, allow
+    
+    # AstroShield Developer Role
+    p, role:astroshield-developer, applications, get, */*, allow
+    p, role:astroshield-developer, applications, sync, */*, allow
+    p, role:astroshield-developer, applications, action/*, */*, allow
+    p, role:astroshield-developer, repositories, get, *, allow
+    p, role:astroshield-developer, clusters, get, *, allow
+    
+    # AstroShield Viewer Role
+    p, role:astroshield-viewer, applications, get, */*, allow
+    p, role:astroshield-viewer, repositories, get, *, allow
+    p, role:astroshield-viewer, clusters, get, *, allow
+    
+    # Group Mappings
+    g, astroshield:admins, role:astroshield-admin
+    g, astroshield:developers, role:astroshield-developer
+    g, astroshield:viewers, role:astroshield-viewer
+
+---
+# ArgoCD Server Configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-server-config
+  namespace: argocd
+data:
+  url: https://argocd.astroshield.mil
+  application.instanceLabelKey: argocd.argoproj.io/instance
+  server.rbac.log.enforce.enable: "true"
+  server.enable.proxy.extension: "true"
+  accounts.admin: apiKey, login
+  accounts.astroshield-ci: apiKey
+  oidc.config: |
+    name: DoD SSO
+    issuer: https://sso.mil/auth/realms/dod
+    clientId: astroshield-argocd
+    clientSecret: $oidc.dod.clientSecret
+    requestedScopes: ["openid", "profile", "email", "groups"]
+    requestedIDTokenClaims: {"groups": {"essential": true}}
+  resource.customizations.health.argoproj.io_Application: |
+    hs = {}
+    hs.status = "Progressing"
+    hs.message = ""
+    if obj.status ~= nil then
+      if obj.status.health ~= nil then
+        hs.status = obj.status.health.status
+        if obj.status.health.message ~= nil then
+          hs.message = obj.status.health.message
+        end
+      end
+    end
+    return hs
+
+---
+# ArgoCD Image Updater Configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-image-updater-config
+  namespace: argocd
+data:
+  registries.conf: |
+    registries:
+    - name: Docker Hub
+      api_url: https://registry-1.docker.io
+      ping: yes
+      credentials: secret:argocd/docker-config#creds
+      default: yes
+    - name: DoD Registry
+      api_url: https://registry.dso.mil
+      ping: yes
+      credentials: secret:argocd/dod-registry#creds
+  applications.yaml: |
+    applications:
+    - name: astroshield-production
+      image_list:
+      - astroshield/udl-websocket-client
+      - astroshield/neo4j-proximity-queries
+      - astroshield/flink-conjunction-analysis
+      update_strategy: latest
+      ignore_tags:
+      - latest
+      - main
+      - master
+      - develop
+      platforms:
+      - linux/amd64
+
+---
+# ArgoCD Workflow Template for Security Scanning
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: security-scan-template
+  namespace: argocd
+spec:
+  entrypoint: security-scan
+  templates:
+  - name: security-scan
+    steps:
+    - - name: vulnerability-scan
+        template: trivy-scan
+    - - name: compliance-check
+        template: kyverno-check
+    - - name: sbom-generation
+        template: syft-sbom
+  - name: trivy-scan
+    container:
+      image: aquasec/trivy:latest
+      command: [trivy]
+      args: ["image", "--format", "json", "--output", "/tmp/trivy-report.json", "{{workflow.parameters.image}}"]
+      volumeMounts:
+      - name: scan-results
+        mountPath: /tmp
+  - name: kyverno-check
+    container:
+      image: kyverno/kyverno-cli:latest
+      command: [kyverno]
+      args: ["apply", "/policies", "--resource", "/manifests"]
+      volumeMounts:
+      - name: policies
+        mountPath: /policies
+      - name: manifests
+        mountPath: /manifests
+  - name: syft-sbom
+    container:
+      image: anchore/syft:latest
+      command: [syft]
+      args: ["{{workflow.parameters.image}}", "-o", "spdx-json", "--file", "/tmp/sbom.json"]
+      volumeMounts:
+      - name: scan-results
+        mountPath: /tmp 

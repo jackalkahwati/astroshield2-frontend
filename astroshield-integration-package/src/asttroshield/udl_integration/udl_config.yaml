@@ -111,8 +111,8 @@ topics:
 # Secure Messaging configuration
 secure_messaging:
   message_buffer_size: 1000
-  consumer_threads: 2
-  worker_threads: 2
+  consumer_threads: 3
+  worker_threads: 3
   
   # Topics to consume via secure messaging
   streaming_topics:
@@ -123,5 +123,20 @@ secure_messaging:
       start_from_latest: true
       process_historical: false
     - name: "statevector"
+      start_from_latest: true
+      process_historical: false
+    - name: "emireport"
+      start_from_latest: true
+      process_historical: false
+    - name: "laserdeconflictrequest"
+      start_from_latest: true
+      process_historical: false
+    - name: "deconflictset"
+      start_from_latest: true
+      process_historical: true
+    - name: "ecpedr"
+      start_from_latest: true
+      process_historical: false
+    - name: "rfemitterdetails"
       start_from_latest: true
       process_historical: false 

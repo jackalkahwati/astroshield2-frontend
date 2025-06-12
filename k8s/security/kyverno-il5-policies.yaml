@@ -1,0 +1,606 @@
+---
+# Kyverno Security Policies for DoD IL-5 ATO Compliance
+# Implements NIST 800-53 controls and DoD Cloud SRG requirements
+
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: require-signed-images
+  annotations:
+    policies.kyverno.io/title: Require Signed Container Images
+    policies.kyverno.io/category: Supply Chain Security
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/description: >-
+      Ensures all container images are signed with cosign and verified against
+      trusted public keys. Implements NIST 800-53 SI-7 (Software Integrity).
+spec:
+  validationFailureAction: enforce
+  background: false
+  rules:
+  - name: check-image-signature
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+          namespaces:
+          - astroshield-production
+          - astroshield-staging
+    verifyImages:
+    - imageReferences:
+      - "*"
+      attestors:
+      - entries:
+        - keys:
+            publicKeys: |-
+              -----BEGIN PUBLIC KEY-----
+              MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE8nXRh950IZbRj8Ra/N9sbqOPZrfM
+              5/KAQN0/KjHcorm/J5yctVd7iEcnessRQjU917hmKO6JWVGHpDguIyakZA==
+              -----END PUBLIC KEY-----
+      - entries:
+        - keyless:
+            url: https://fulcio.sigstore.dev
+            rekor:
+              url: https://rekor.sigstore.dev
+
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: disallow-privileged-containers
+  annotations:
+    policies.kyverno.io/title: Disallow Privileged Containers
+    policies.kyverno.io/category: Pod Security Standards (Restricted)
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/description: >-
+      Privileged containers share namespaces with the host and should not be allowed.
+      Implements NIST 800-53 AC-6 (Least Privilege).
+spec:
+  validationFailureAction: enforce
+  background: true
+  rules:
+  - name: check-privileged
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    validate:
+      message: "Privileged containers are not allowed"
+      pattern:
+        spec:
+          =(securityContext):
+            =(privileged): "false"
+          containers:
+          - name: "*"
+            =(securityContext):
+              =(privileged): "false"
+
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: require-security-context
+  annotations:
+    policies.kyverno.io/title: Require Security Context
+    policies.kyverno.io/category: Pod Security Standards (Restricted)
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/description: >-
+      Requires security context with non-root user, read-only root filesystem,
+      and dropped capabilities. Implements NIST 800-53 AC-6 (Least Privilege).
+spec:
+  validationFailureAction: enforce
+  background: true
+  rules:
+  - name: require-non-root-user
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    validate:
+      message: "Containers must run as non-root user"
+      pattern:
+        spec:
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: ">0"
+          containers:
+          - name: "*"
+            securityContext:
+              runAsNonRoot: true
+              runAsUser: ">0"
+              readOnlyRootFilesystem: true
+              allowPrivilegeEscalation: false
+              capabilities:
+                drop:
+                - ALL
+
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: require-resource-limits
+  annotations:
+    policies.kyverno.io/title: Require Resource Limits
+    policies.kyverno.io/category: Resource Management
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/description: >-
+      Requires CPU and memory limits to prevent resource exhaustion attacks.
+      Implements NIST 800-53 SC-5 (Denial of Service Protection).
+spec:
+  validationFailureAction: enforce
+  background: true
+  rules:
+  - name: require-pod-resources
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    validate:
+      message: "Resource requests and limits are required"
+      pattern:
+        spec:
+          containers:
+          - name: "*"
+            resources:
+              requests:
+                memory: "?*"
+                cpu: "?*"
+              limits:
+                memory: "?*"
+                cpu: "?*"
+
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: require-network-policies
+  annotations:
+    policies.kyverno.io/title: Require Network Policies
+    policies.kyverno.io/category: Network Security
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/subject: Namespace
+    policies.kyverno.io/description: >-
+      Requires NetworkPolicy for each namespace to implement network segmentation.
+      Implements NIST 800-53 SC-7 (Boundary Protection).
+spec:
+  validationFailureAction: enforce
+  background: false
+  rules:
+  - name: require-networkpolicy
+    match:
+      any:
+      - resources:
+          kinds:
+          - Namespace
+    exclude:
+      any:
+      - resources:
+          namespaces:
+          - kube-system
+          - kube-public
+          - kyverno
+    generate:
+      kind: NetworkPolicy
+      name: default-deny-all
+      namespace: "{{request.object.metadata.name}}"
+      data:
+        spec:
+          podSelector: {}
+          policyTypes:
+          - Ingress
+          - Egress
+
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: require-pod-security-standards
+  annotations:
+    policies.kyverno.io/title: Require Pod Security Standards
+    policies.kyverno.io/category: Pod Security Standards (Restricted)
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/description: >-
+      Enforces Pod Security Standards at the restricted level.
+      Implements multiple NIST 800-53 controls for container security.
+spec:
+  validationFailureAction: enforce
+  background: true
+  rules:
+  - name: disallow-host-namespaces
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    validate:
+      message: "Sharing the host namespaces is disallowed"
+      pattern:
+        spec:
+          =(hostNetwork): "false"
+          =(hostIPC): "false"
+          =(hostPID): "false"
+  
+  - name: disallow-host-ports
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    validate:
+      message: "Use of host ports is disallowed"
+      pattern:
+        spec:
+          containers:
+          - name: "*"
+            =(ports):
+            - =(hostPort): "null"
+
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: require-labels-and-annotations
+  annotations:
+    policies.kyverno.io/title: Require Security Labels and Annotations
+    policies.kyverno.io/category: Compliance
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod,Service,Deployment
+    policies.kyverno.io/description: >-
+      Requires security classification labels and compliance annotations.
+      Implements NIST 800-53 AC-16 (Security Attributes).
+spec:
+  validationFailureAction: enforce
+  background: true
+  rules:
+  - name: require-security-labels
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+          - Service
+          - Deployment
+          namespaces:
+          - astroshield-production
+          - astroshield-staging
+    validate:
+      message: "Security classification labels are required"
+      pattern:
+        metadata:
+          labels:
+            security.astroshield.mil/classification: "?*"
+            security.astroshield.mil/data-sensitivity: "?*"
+            security.astroshield.mil/network-zone: "?*"
+          annotations:
+            compliance.astroshield.mil/nist-800-53: "?*"
+            compliance.astroshield.mil/dod-srg: "?*"
+
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: mutate-security-defaults
+  annotations:
+    policies.kyverno.io/title: Mutate Security Defaults
+    policies.kyverno.io/category: Security Hardening
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/description: >-
+      Automatically applies security defaults to pods that don't specify them.
+      Implements defense-in-depth security posture.
+spec:
+  background: true
+  rules:
+  - name: add-security-context
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+          namespaces:
+          - astroshield-production
+          - astroshield-staging
+    mutate:
+      patchStrategicMerge:
+        spec:
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 65534
+            runAsGroup: 65534
+            fsGroup: 65534
+            seccompProfile:
+              type: RuntimeDefault
+          containers:
+          - (name): "*"
+            securityContext:
+              runAsNonRoot: true
+              runAsUser: 65534
+              runAsGroup: 65534
+              readOnlyRootFilesystem: true
+              allowPrivilegeEscalation: false
+              capabilities:
+                drop:
+                - ALL
+              seccompProfile:
+                type: RuntimeDefault
+
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: disallow-insecure-registries
+  annotations:
+    policies.kyverno.io/title: Disallow Insecure Container Registries
+    policies.kyverno.io/category: Supply Chain Security
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/description: >-
+      Only allows images from approved, secure container registries.
+      Implements NIST 800-53 SI-7 (Software Integrity).
+spec:
+  validationFailureAction: enforce
+  background: true
+  rules:
+  - name: check-registry
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    validate:
+      message: "Images must come from approved registries"
+      pattern:
+        spec:
+          containers:
+          - name: "*"
+            image: "registry.astroshield.mil/* | ghcr.io/astroshield/* | 694529087306.dkr.ecr.us-gov-west-1.amazonaws.com/*"
+
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: require-sbom-attestation
+  annotations:
+    policies.kyverno.io/title: Require SBOM Attestation
+    policies.kyverno.io/category: Supply Chain Security
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/description: >-
+      Requires Software Bill of Materials (SBOM) attestation for all images.
+      Implements SLSA Level 3 requirements and supply chain transparency.
+spec:
+  validationFailureAction: enforce
+  background: false
+  rules:
+  - name: verify-sbom-attestation
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+          namespaces:
+          - astroshield-production
+    verifyImages:
+    - imageReferences:
+      - "*"
+      attestations:
+      - predicateType: https://spdx.dev/Document
+        conditions:
+        - all:
+          - key: "{{ creationInfo.created }}"
+            operator: DateAfter
+            value: "2024-01-01T00:00:00Z"
+
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: enforce-encryption-in-transit
+  annotations:
+    policies.kyverno.io/title: Enforce Encryption in Transit
+    policies.kyverno.io/category: Cryptographic Protection
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/subject: Service,Ingress
+    policies.kyverno.io/description: >-
+      Requires TLS encryption for all external-facing services.
+      Implements NIST 800-53 SC-8 (Transmission Confidentiality).
+spec:
+  validationFailureAction: enforce
+  background: true
+  rules:
+  - name: require-tls-ingress
+    match:
+      any:
+      - resources:
+          kinds:
+          - Ingress
+    validate:
+      message: "Ingress must use TLS encryption"
+      pattern:
+        spec:
+          tls:
+          - hosts:
+            - "?*"
+            secretName: "?*"
+  
+  - name: require-tls-service
+    match:
+      any:
+      - resources:
+          kinds:
+          - Service
+    validate:
+      message: "External services must use TLS"
+      anyPattern:
+      - spec:
+          type: "!LoadBalancer"
+      - spec:
+          type: LoadBalancer
+          ports:
+          - port: 443
+            protocol: TCP
+
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: audit-security-events
+  annotations:
+    policies.kyverno.io/title: Audit Security Events
+    policies.kyverno.io/category: Audit and Accountability
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod,Service,ConfigMap,Secret
+    policies.kyverno.io/description: >-
+      Generates audit events for security-relevant resource changes.
+      Implements NIST 800-53 AU-2 (Audit Events).
+spec:
+  background: true
+  rules:
+  - name: audit-privileged-operations
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+          - Service
+          - ConfigMap
+          - Secret
+          namespaces:
+          - astroshield-production
+    generate:
+      kind: Event
+      name: "security-audit-{{request.object.metadata.name}}-{{request.operation}}"
+      namespace: "{{request.object.metadata.namespace}}"
+      data:
+        type: Warning
+        reason: SecurityAudit
+        message: "Security-relevant operation: {{request.operation}} on {{request.kind.kind}}/{{request.object.metadata.name}}"
+        involvedObject:
+          kind: "{{request.kind.kind}}"
+          name: "{{request.object.metadata.name}}"
+          namespace: "{{request.object.metadata.namespace}}"
+
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: require-vulnerability-scanning
+  annotations:
+    policies.kyverno.io/title: Require Vulnerability Scanning
+    policies.kyverno.io/category: Vulnerability Management
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/description: >-
+      Requires vulnerability scan attestation for all container images.
+      Implements NIST 800-53 RA-5 (Vulnerability Scanning).
+spec:
+  validationFailureAction: enforce
+  background: false
+  rules:
+  - name: verify-vulnerability-scan
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+          namespaces:
+          - astroshield-production
+    verifyImages:
+    - imageReferences:
+      - "*"
+      attestations:
+      - predicateType: https://cosign.sigstore.dev/attestation/vuln/v1
+        conditions:
+        - all:
+          - key: "{{ scanner.result.summary.total }}"
+            operator: LessThan
+            value: "10"  # Max 10 vulnerabilities
+          - key: "{{ scanner.result.summary.critical }}"
+            operator: Equals
+            value: "0"   # No critical vulnerabilities
+
+---
+# Policy Reporter Configuration for IL-5 Compliance Dashboard
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kyverno-policy-reporter-config
+  namespace: kyverno
+data:
+  config.yaml: |
+    api:
+      port: 8080
+    metrics:
+      enabled: true
+    rest:
+      enabled: true
+    profiling:
+      enabled: false
+    reportFilter:
+      namespaces:
+        include: ["astroshield-production", "astroshield-staging"]
+      sources:
+        include: ["kyverno"]
+    targets:
+      - name: "compliance-dashboard"
+        webhook:
+          host: "http://compliance-dashboard.astroshield.mil"
+          headers:
+            Authorization: "Bearer ${COMPLIANCE_TOKEN}"
+        filter:
+          priorities: ["critical", "high", "medium"]
+      - name: "security-siem"
+        webhook:
+          host: "http://siem.astroshield.mil/api/events"
+          headers:
+            X-API-Key: "${SIEM_API_KEY}"
+        filter:
+          policies: ["require-signed-images", "disallow-privileged-containers"]
+
+---
+# ClusterRole for Kyverno Policy Management
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: kyverno-policy-manager
+rules:
+- apiGroups: ["kyverno.io"]
+  resources: ["policies", "clusterpolicies", "policyreports", "clusterpolicyreports"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+- apiGroups: [""]
+  resources: ["events"]
+  verbs: ["create"]
+- apiGroups: [""]
+  resources: ["configmaps", "secrets"]
+  verbs: ["get", "list", "watch"]
+
+---
+# ServiceAccount for Kyverno Policy Management
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: kyverno-policy-manager
+  namespace: kyverno
+
+---
+# ClusterRoleBinding for Kyverno Policy Management
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: kyverno-policy-manager
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: kyverno-policy-manager
+subjects:
+- kind: ServiceAccount
+  name: kyverno-policy-manager
+  namespace: kyverno 
