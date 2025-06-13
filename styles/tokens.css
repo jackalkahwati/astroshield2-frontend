@@ -1,0 +1,462 @@
+/* Material Design Dark Theme - AstroShield Design Tokens */
+
+:root {
+  /* ========================================
+     MATERIAL DESIGN DARK THEME BASE COLORS
+     ======================================== */
+  
+  /* Primary Surface Colors */
+  --md-surface-0: #121212;          /* Base surface - 0dp elevation */
+  --md-surface-1: #1e1e1e;          /* 1dp elevation - 5% overlay */
+  --md-surface-2: #232323;          /* 2dp elevation - 7% overlay */
+  --md-surface-3: #252525;          /* 3dp elevation - 8% overlay */
+  --md-surface-4: #272727;          /* 4dp elevation - 9% overlay */
+  --md-surface-6: #2c2c2c;          /* 6dp elevation - 11% overlay */
+  --md-surface-8: #2f2f2f;          /* 8dp elevation - 12% overlay */
+  --md-surface-12: #353535;         /* 12dp elevation - 14% overlay */
+  --md-surface-16: #373737;         /* 16dp elevation - 15% overlay */
+  --md-surface-24: #3a3a3a;         /* 24dp elevation - 16% overlay */
+  
+  /* Background Colors */
+  --md-background: #121212;
+  --md-surface: #121212;
+  
+  /* Primary Color Palette - Desaturated for dark theme */
+  --md-primary: #BB86FC;             /* Purple 200 - main primary */
+  --md-primary-variant: #3700B3;     /* Purple 700 - darker variant */
+  --md-primary-50: #F3E5F5;
+  --md-primary-100: #E1BEE7;
+  --md-primary-200: #BB86FC;         /* Main primary */
+  --md-primary-300: #9C6ADE;
+  --md-primary-700: #3700B3;         /* Primary variant */
+  --md-primary-900: #1A0E42;
+  
+  /* Secondary Color Palette - Desaturated Teal */
+  --md-secondary: #03DAC5;           /* Teal 200 - main secondary */
+  --md-secondary-variant: #018786;   /* Teal 700 - darker variant */
+  --md-secondary-50: #E0F2F1;
+  --md-secondary-100: #B2DFDB;
+  --md-secondary-200: #03DAC5;       /* Main secondary */
+  --md-secondary-300: #26A69A;
+  --md-secondary-700: #018786;       /* Secondary variant */
+  --md-secondary-900: #004D40;
+  
+  /* Error Colors */
+  --md-error: #CF6679;               /* Desaturated red */
+  --md-error-variant: #B00020;
+  
+  /* "On" Colors - Text and icons on colored surfaces */
+  --md-on-primary: #000000;          /* Black text on primary */
+  --md-on-secondary: #000000;        /* Black text on secondary */
+  --md-on-background: #FFFFFF;       /* White text on background */
+  --md-on-surface: #FFFFFF;          /* White text on surface */
+  --md-on-error: #000000;            /* Black text on error */
+  
+  /* Text Emphasis Levels (Material Design opacity standards) */
+  --md-text-high-emphasis: rgba(255, 255, 255, 0.87);      /* 87% white */
+  --md-text-medium-emphasis: rgba(255, 255, 255, 0.60);    /* 60% white */
+  --md-text-disabled: rgba(255, 255, 255, 0.38);           /* 38% white */
+  
+  /* Icon Emphasis Levels */
+  --md-icon-high-emphasis: rgba(255, 255, 255, 0.87);
+  --md-icon-medium-emphasis: rgba(255, 255, 255, 0.60);
+  --md-icon-disabled: rgba(255, 255, 255, 0.38);
+  
+  /* State Overlay Colors */
+  --md-state-hover: rgba(255, 255, 255, 0.04);              /* 4% white */
+  --md-state-focus: rgba(255, 255, 255, 0.12);              /* 12% white */
+  --md-state-pressed: rgba(255, 255, 255, 0.10);            /* 10% white */
+  --md-state-dragged: rgba(255, 255, 255, 0.08);            /* 8% white */
+  
+  /* Primary Color State Overlays */
+  --md-primary-state-hover: rgba(187, 134, 252, 0.04);      /* 4% primary */
+  --md-primary-state-focus: rgba(187, 134, 252, 0.12);      /* 12% primary */
+  --md-primary-state-pressed: rgba(187, 134, 252, 0.10);    /* 10% primary */
+  --md-primary-state-dragged: rgba(187, 134, 252, 0.08);    /* 8% primary */
+  
+  /* Disabled State Colors */
+  --md-disabled-container: rgba(255, 255, 255, 0.12);       /* 12% white */
+  --md-disabled-content: rgba(255, 255, 255, 0.38);         /* 38% white */
+  
+  /* ========================================
+     ASTROSHIELD SEMANTIC COLORS
+     (Applying Material Design principles)
+     ======================================== */
+  
+  /* Status Colors - Desaturated for dark theme accessibility */
+  --status-success: #4CAF50;         /* Desaturated green */
+  --status-warning: #FF9800;         /* Desaturated orange */
+  --status-error: #CF6679;           /* Material error color */
+  --status-info: #03DAC5;            /* Secondary color */
+  
+  /* Muted Status Colors for extended monitoring */
+  --status-success-muted: #2E7D32;   /* Darker green for less eye strain */
+  --status-warning-muted: #F57C00;   /* Darker orange */
+  --status-error-muted: #C62828;     /* Darker red */
+  --status-info-muted: #00695C;      /* Darker teal */
+  
+  /* Chart Colors - Muted palette for space operators */
+  --chart-1: #90A4AE;               /* Muted blue-grey */
+  --chart-2: #78909C;               /* Darker blue-grey */
+  --chart-3: #607D8B;               /* Steel blue-grey */
+  --chart-4: #546E7A;               /* Dark steel blue */
+  --chart-5: #455A64;               /* Very dark blue-grey */
+  --chart-6: #37474F;               /* Charcoal blue */
+  
+  /* Critical Alert Colors - Bright for emergencies only */
+  --alert-critical: #F44336;         /* Bright red for critical alerts */
+  --alert-urgent: #FF5722;           /* Bright orange for urgent alerts */
+  
+  /* Border and Outline Colors */
+  --border-subtle: rgba(255, 255, 255, 0.12);    /* 12% white */
+  --border-default: rgba(255, 255, 255, 0.20);   /* 20% white */
+  --border-strong: rgba(255, 255, 255, 0.30);    /* 30% white */
+  
+  /* ========================================
+     COMPONENT-SPECIFIC TOKENS
+     ======================================== */
+  
+  /* Cards and Surfaces */
+  --card-background: var(--md-surface-1);        /* 1dp elevation */
+  --card-hover: var(--md-surface-2);             /* 2dp elevation */
+  --card-border: var(--border-subtle);
+  
+  /* Navigation */
+  --nav-background: var(--md-surface-2);         /* 2dp elevation */
+  --nav-item-hover: var(--md-primary-state-hover);
+  --nav-item-active: var(--md-primary);
+  
+  /* Buttons */
+  --button-primary-bg: var(--md-primary);
+  --button-primary-text: var(--md-on-primary);
+  --button-primary-hover: var(--md-primary-state-hover);
+  
+  --button-secondary-bg: var(--md-secondary);
+  --button-secondary-text: var(--md-on-secondary);
+  --button-secondary-hover: var(--md-secondary-state-hover);
+  
+  /* Inputs */
+  --input-background: var(--md-surface-2);       /* 2dp elevation */
+  --input-border: var(--border-default);
+  --input-border-focus: var(--md-primary);
+  --input-text: var(--md-text-high-emphasis);
+  --input-placeholder: var(--md-text-medium-emphasis);
+  
+  /* Headers and Typography */
+  --header-background: var(--md-surface-8);      /* 8dp elevation */
+  --text-primary: var(--md-text-high-emphasis);
+  --text-secondary: var(--md-text-medium-emphasis);
+  --text-muted: var(--md-text-disabled);
+  
+  /* ========================================
+     LAYOUT AND SPACING
+     ======================================== */
+  
+  /* Material Design spacing scale */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 48px;
+  --spacing-3xl: 64px;
+  
+  /* Border radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  
+  /* Shadows for elevation (dark theme) */
+  --shadow-1: 0 1px 3px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.24);
+  --shadow-2: 0 3px 6px rgba(0, 0, 0, 0.4), 0 2px 4px rgba(0, 0, 0, 0.24);
+  --shadow-3: 0 10px 20px rgba(0, 0, 0, 0.4), 0 6px 6px rgba(0, 0, 0, 0.24);
+  --shadow-4: 0 14px 28px rgba(0, 0, 0, 0.4), 0 10px 10px rgba(0, 0, 0, 0.24);
+  --shadow-5: 0 19px 38px rgba(0, 0, 0, 0.4), 0 15px 12px rgba(0, 0, 0, 0.24);
+  
+  /* ========================================
+     RESPONSIVE BREAKPOINTS
+     ======================================== */
+  
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+  
+  /* ========================================
+     ANIMATION AND TRANSITIONS
+     ======================================== */
+  
+  /* Material Design motion curves */
+  --ease-standard: cubic-bezier(0.4, 0.0, 0.2, 1);
+  --ease-decelerate: cubic-bezier(0.0, 0.0, 0.2, 1);
+  --ease-accelerate: cubic-bezier(0.4, 0.0, 1, 1);
+  --ease-sharp: cubic-bezier(0.4, 0.0, 0.6, 1);
+  
+  /* Transition durations */
+  --duration-short: 150ms;
+  --duration-medium: 200ms;
+  --duration-long: 300ms;
+  --duration-extra-long: 500ms;
+}
+
+/* ========================================
+   LEGACY COMPATIBILITY MAPPINGS
+   ======================================== */
+
+:root {
+  /* Map legacy variables to Material Design system */
+  --background: var(--md-background);
+  --foreground: var(--md-on-background);
+  --card: var(--md-surface-1);
+  --card-foreground: var(--md-on-surface);
+  --popover: var(--md-surface-8);
+  --popover-foreground: var(--md-on-surface);
+  --primary: var(--md-primary);
+  --primary-foreground: var(--md-on-primary);
+  --secondary: var(--md-secondary);
+  --secondary-foreground: var(--md-on-secondary);
+  --muted: var(--md-surface-2);
+  --muted-foreground: var(--md-text-medium-emphasis);
+  --accent: var(--md-primary);
+  --accent-foreground: var(--md-on-primary);
+  --destructive: var(--md-error);
+  --destructive-foreground: var(--md-on-error);
+  --border: var(--border-subtle);
+  --input: var(--md-surface-2);
+  --ring: var(--md-primary);
+  --radius: var(--radius-md);
+  
+  /* Surface colors for different elevations */
+  --surface-0: var(--md-surface-0);
+  --surface-1: var(--md-surface-1);
+  --surface-2: var(--md-surface-2);
+  --surface-3: var(--md-surface-3);
+  --surface-4: var(--md-surface-4);
+  --surface-6: var(--md-surface-6);
+  --surface-8: var(--md-surface-8);
+  --surface-12: var(--md-surface-12);
+  --surface-16: var(--md-surface-16);
+  --surface-24: var(--md-surface-24);
+}
+
+/* AstroShield Design Tokens */
+:root {
+  /* Surface Colors - Background Tiers */
+  --surface-0: #ffffff;        /* Primary background */
+  --surface-1: #f8fafc;        /* Secondary background (cards, headers) */
+  --surface-2: #f1f5f9;        /* Tertiary background (inputs, hover states) */
+  --surface-3: #e2e8f0;        /* Quaternary background (disabled states) */
+
+  /* Brand Colors */
+  --primary: #2563eb;           /* AstroShield blue */
+  --primary-hover: #1d4ed8;     /* Primary hover state */
+  --primary-active: #1e40af;    /* Primary active state */
+  
+  /* Semantic Colors - Original bright colors for reference */
+  --success: #10b981;
+  --warning: #f59e0b;
+  --error: #ef4444;
+  --info: #3b82f6;
+
+  /* =================================== */
+  /* OPERATOR-FRIENDLY COLOR PALETTE     */
+  /* Designed for extended viewing comfort */
+  /* =================================== */
+  
+  /* Chart Colors - Muted and Easy on Eyes */
+  --chart-primary: #64748b;      /* Slate gray - primary data */
+  --chart-secondary: #6b7280;    /* Gray - secondary data */
+  --chart-tertiary: #78716c;     /* Stone gray - tertiary data */
+  --chart-accent: #71717a;       /* Zinc gray - accent elements */
+  
+  /* Status Colors - Muted for Normal Operations */
+  --status-good: #65a30d;        /* Muted green - good/operational */
+  --status-info: #0284c7;        /* Muted blue - informational */
+  --status-caution: #ca8a04;     /* Muted amber - caution/warning */
+  --status-neutral: #6b7280;     /* Gray - neutral/unknown */
+  
+  /* Alert Colors - BRIGHT for Critical Attention */
+  --alert-warning: #ea580c;      /* Bright orange - warnings that need attention */
+  
+  /* Chart Line Colors - For Multi-Line Graphs */
+  --line-1: #475569;             /* Slate - primary line */
+  --line-2: #0f766e;             /* Teal - secondary line */
+  --line-3: #7c2d12;             /* Brown - tertiary line */
+  --line-4: #581c87;             /* Purple - quaternary line */
+  --line-5: #365314;             /* Green - fifth line */
+  
+  /* Background Colors for Dark Mode Charts */
+  --chart-bg-primary: #0a0e1a;   /* Very dark blue-gray */
+  --chart-bg-secondary: #1a1f2e; /* Dark blue-gray */
+  --chart-bg-tertiary: #2a2f3e;  /* Medium blue-gray */
+  
+  /* Grid and Border Colors for Charts */
+  --chart-grid: #374151;         /* Muted grid lines */
+  --chart-border: #4b5563;       /* Chart borders */
+  --chart-axis: #9ca3af;         /* Axis labels and ticks */
+
+  /* Text Colors */
+  --text-primary: #0f172a;      /* Primary text */
+  --text-secondary: #64748b;    /* Secondary text */
+  --text-muted: #94a3b8;        /* Muted text */
+  --text-inverse: #ffffff;      /* Text on dark backgrounds */
+
+  /* Border Colors */
+  --border-subtle: #e2e8f0;     /* Subtle borders */
+  --border-default: #cbd5e1;    /* Default borders */
+  --border-strong: #94a3b8;     /* Strong borders */
+
+  /* Spacing */
+  --padding-base: 16px;         /* Base padding unit */
+  --padding-sm: 8px;            /* Small padding */
+  --padding-lg: 24px;           /* Large padding */
+  --padding-xl: 32px;           /* Extra large padding */
+
+  /* Border Radius */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+
+  /* Z-index layers */
+  --z-dropdown: 1000;
+  --z-sticky: 1010;
+  --z-fixed: 1020;
+  --z-modal-backdrop: 1030;
+  --z-modal: 1040;
+  --z-popover: 1050;
+  --z-tooltip: 1060;
+
+  /* Transitions */
+  --transition-fast: 150ms ease-in-out;
+  --transition-normal: 250ms ease-in-out;
+  --transition-slow: 350ms ease-in-out;
+}
+
+/* Dark Mode */
+[data-theme="dark"] {
+  --surface-0: #0f172a;
+  --surface-1: #1e293b;
+  --surface-2: #334155;
+  --surface-3: #475569;
+
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+  --text-inverse: #0f172a;
+
+  --border-subtle: #334155;
+  --border-default: #475569;
+  --border-strong: #64748b;
+}
+
+/* Responsive Breakpoints & Density Rules */
+@media (max-width: 1440px) {
+  .sidebar {
+    width: 64px;
+  }
+  .sidebar .sidebar-label {
+    display: none;
+  }
+}
+
+@media (max-width: 1024px) {
+  .sidebar {
+    display: none;
+  }
+  :root {
+    --padding-base: 12px;
+    --padding-lg: 20px;
+  }
+}
+
+@media (max-height: 720px) {
+  :root {
+    --padding-base: 8px;
+    --padding-sm: 4px;
+    --padding-lg: 16px;
+  }
+}
+
+/* Chat-specific styles */
+.chat-pane {
+  @apply flex flex-col flex-1 bg-surface-0;
+}
+
+.chat-messages {
+  @apply flex-1 overflow-y-auto space-y-3;
+  padding: var(--padding-base);
+  min-height: 70vh;
+  max-height: 85vh;
+}
+
+.chat-input-wrapper {
+  @apply sticky bottom-0 bg-surface-1 border-t;
+  border-color: var(--border-subtle);
+  padding: var(--padding-sm) var(--padding-base);
+  z-index: var(--z-sticky);
+  backdrop-filter: blur(8px);
+}
+
+.chat-input-form {
+  @apply flex gap-2 items-end;
+}
+
+.chat-textarea {
+  @apply flex-1 resize-none rounded-lg p-3 bg-surface-2;
+  border: 1px solid var(--border-subtle);
+  transition: border-color var(--transition-fast);
+}
+
+.chat-textarea:focus {
+  border-color: var(--primary);
+  outline: none;
+}
+
+/* Button styles */
+.btn {
+  @apply px-3 py-2 rounded-lg text-sm font-medium;
+  border-radius: var(--radius-lg);
+  transition: all var(--transition-fast);
+}
+
+.btn-primary {
+  @apply btn bg-primary text-white;
+  background-color: var(--primary);
+  color: var(--text-inverse);
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-hover);
+}
+
+.btn-ghost {
+  @apply btn bg-transparent;
+  background-color: transparent;
+  color: var(--text-secondary);
+}
+
+.btn-ghost:hover {
+  background-color: var(--surface-2);
+}
+
+/* Utility classes for design tokens */
+.bg-surface-0 { background-color: var(--surface-0); }
+.bg-surface-1 { background-color: var(--surface-1); }
+.bg-surface-2 { background-color: var(--surface-2); }
+.bg-surface-3 { background-color: var(--surface-3); }
+
+.text-primary { color: var(--text-primary); }
+.text-secondary { color: var(--text-secondary); }
+.text-muted { color: var(--text-muted); }
+
+.border-subtle { border-color: var(--border-subtle); }
+.border-default { border-color: var(--border-default); }
+.border-strong { border-color: var(--border-strong); } 

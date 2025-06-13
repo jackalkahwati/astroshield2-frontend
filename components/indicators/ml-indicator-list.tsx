@@ -1,0 +1,145 @@
+import { MLIndicator } from "./ml-indicator"
+
+const mlIndicators = [
+  {
+    title: "Object Stability",
+    version: "ML v2.3.1",
+    description: "Evaluates if the object is maintaining stable orbit and behavior",
+    confidenceScore: "97.0%",
+    trainingAccuracy: "96.0%",
+    algorithm: "LSTM Neural Network",
+    passCriteria: "No significant deviations from expected orbital parameters",
+    features: ["Orbital Elements", "Historical Stability", "Attitude Data"],
+  },
+  {
+    title: "Stability Change",
+    version: "ML v2.1.1",
+    description: "Detects changes in stability patterns over time",
+    confidenceScore: "95.0%",
+    trainingAccuracy: "94.0%",
+    algorithm: "Change Point Detection",
+    passCriteria: "No unexplained stability changes",
+    features: ["Stability Metrics", "Environmental Data"],
+  },
+  {
+    title: "Maneuvers Detected",
+    version: "ML v3.0.1",
+    description: "Identifies and classifies orbital maneuvers",
+    confidenceScore: "96.0%",
+    trainingAccuracy: "95.0%",
+    algorithm: "Bi-LSTM with Attention",
+    passCriteria: "All maneuvers match declared operations",
+    features: ["Trajectory Data", "Historical Maneuvers"],
+  },
+  {
+    title: "Imaging Maneuvers",
+    version: "ML v2.5.0",
+    description: "Detects maneuvers resulting in valid remote-sensing passes",
+    confidenceScore: "94.0%",
+    trainingAccuracy: "93.0%",
+    algorithm: "Pattern Recognition CNN",
+    passCriteria: "Maneuver patterns consistent with imaging operations",
+    features: ["Maneuver History", "Ground Track Analysis"],
+  },
+  {
+    title: "Coverage Gap Maneuvers",
+    version: "ML v2.1.0",
+    description: "Identifies maneuvers occurring in sensor coverage gaps",
+    confidenceScore: "92.0%",
+    trainingAccuracy: "91.0%",
+    algorithm: "Temporal Pattern Mining",
+    passCriteria: "No unexplained maneuvers during gaps",
+    features: ["Coverage Data", "Maneuver History"],
+  },
+  {
+    title: "RF Detected",
+    version: "ML v2.2.0",
+    description: "Detects and characterizes RF emissions",
+    confidenceScore: "95.0%",
+    trainingAccuracy: "94.0%",
+    algorithm: "Deep Neural Network",
+    passCriteria: "RF emissions match declared capabilities",
+    features: ["RF Spectrum", "Signal Characteristics"],
+  },
+  {
+    title: "RF POL Violation",
+    version: "ML v2.0.1",
+    description: "Identifies RF pattern-of-life violations",
+    confidenceScore: "93.0%",
+    trainingAccuracy: "92.0%",
+    algorithm: "Pattern Analysis",
+    passCriteria: "RF activity within normal parameters",
+    features: ["Historical RF Data", "Activity Patterns"],
+  },
+  {
+    title: "Subsatellite Deployment",
+    version: "ML v1.7.1",
+    description: "Detects deployment of sub-satellites",
+    confidenceScore: "96.0%",
+    trainingAccuracy: "95.0%",
+    algorithm: "Object Detection",
+    passCriteria: "All deployments match declarations",
+    features: ["Tracking Data", "Object Count"],
+  },
+  {
+    title: "AMR Anomaly",
+            version: "ML v2.6.0",
+    description: "Detects anomalies in area-to-mass ratio",
+    confidenceScore: "95.0%",
+    trainingAccuracy: "94.0%",
+    algorithm: "Physics-based ML",
+    passCriteria: "AMR within expected range",
+    features: ["AMR Data", "Object Properties"],
+  },
+  {
+    title: "Signature Mismatch",
+    version: "ML v2.1.2",
+    description: "Detects mismatches between optical and RADAR signatures",
+    confidenceScore: "93.0%",
+    trainingAccuracy: "92.0%",
+    algorithm: "Multi-modal Fusion",
+    passCriteria: "Signatures match expected characteristics",
+    features: ["Optical Data", "RADAR Data"],
+  },
+  {
+    title: "Orbit Family",
+    version: "ML v1.5.0",
+    description: "Identifies if orbit is out of family",
+    confidenceScore: "91.0%",
+    trainingAccuracy: "90.0%",
+    algorithm: "Clustering Analysis",
+    passCriteria: "Orbit matches expected family",
+    features: ["Orbital Elements", "Historical Data"],
+  },
+  {
+    title: "Unexpected Objects",
+    version: "ML v2.3.1",
+    description: "Detects if number of tracked objects exceeds expected count",
+    confidenceScore: "97.0%",
+    trainingAccuracy: "96.0%",
+    algorithm: "Object Tracking",
+    passCriteria: "Object count matches launch manifest",
+    features: ["Launch Data", "Object Tracking"],
+  },
+  {
+    title: "Analyst Disagreement",
+    version: "ML v1.5.2",
+    description: "Identifies disagreements between analysts",
+    confidenceScore: "94.0%",
+    trainingAccuracy: "93.0%",
+    algorithm: "Consensus Analysis",
+    passCriteria: "No significant analyst disagreements",
+    features: ["Analyst Reports", "Historical Assessments"],
+  },
+]
+
+export function MLIndicatorList() {
+  return (
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      {mlIndicators.map((indicator, index) => (
+        <MLIndicator key={index} {...indicator} />
+      ))}
+    </div>
+  )
+}
+

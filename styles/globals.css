@@ -1,0 +1,601 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100;200;300;400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Import AstroShield design tokens */
+@import './tokens.css';
+
+@layer base {
+  :root {
+    --theme: light;
+
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221.2 83.2% 53.3%;
+    --radius: 0.5rem;
+
+    --success: 142.1 70.6% 45.3%;
+    --success-foreground: 144.9 80.4% 10%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 48 96% 89%;
+  }
+
+  [data-theme="dark"] {
+    --theme: dark;
+    
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 224.3 76.3% 48%;
+
+    --success: 142.1 70.6% 45.3%;
+    --success-foreground: 144.9 80.4% 10%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 48 96% 89%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Custom scrollbar styles */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-muted-foreground/20 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-muted-foreground/40;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--muted)) hsl(var(--background));
+}
+
+.animate-in {
+  animation: animate-in 0.5s ease-out;
+}
+
+@keyframes animate-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Color scheme classes */
+.dark {
+  color-scheme: dark;
+}
+
+.light {
+  color-scheme: light;
+}
+
+/* Material Design Dark Theme Global Styles */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  /* Use Material Design base surface color */
+  background-color: var(--md-background);
+  color: var(--md-text-high-emphasis);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* Light theme overrides (when needed) */
+html.light {
+  --md-background: #ffffff;
+  --md-surface-0: #ffffff;
+  --md-surface-1: #f5f5f5;
+  --md-surface-2: #eeeeee;
+  --md-surface-8: #e0e0e0;
+  --md-surface-24: #d5d5d5;
+  
+  --md-text-high-emphasis: rgba(0, 0, 0, 0.87);
+  --md-text-medium-emphasis: rgba(0, 0, 0, 0.60);
+  --md-text-disabled: rgba(0, 0, 0, 0.38);
+  
+  --border-subtle: rgba(0, 0, 0, 0.12);
+  --border-default: rgba(0, 0, 0, 0.20);
+  --border-strong: rgba(0, 0, 0, 0.30);
+}
+
+/* Dark theme (default - already defined in tokens.css) */
+html.dark {
+  /* Ensure dark theme values are applied */
+  background-color: #121212;
+  color: rgba(255, 255, 255, 0.87);
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  background-color: var(--md-background);
+  color: var(--md-text-high-emphasis);
+  line-height: 1.6;
+  font-size: 14px;
+  min-height: 100vh;
+  overflow-x: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* ========================================
+   MATERIAL DESIGN TYPOGRAPHY SCALE
+   ======================================== */
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--md-text-high-emphasis);
+  font-weight: 500;
+  line-height: 1.2;
+  margin: 0;
+}
+
+h1 {
+  font-size: 2.125rem;   /* 34px - Material headline1 */
+  font-weight: 300;
+  letter-spacing: -0.01562em;
+}
+
+h2 {
+  font-size: 1.5rem;     /* 24px - Material headline2 */
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+h3 {
+  font-size: 1.25rem;    /* 20px - Material headline3 */
+  font-weight: 500;
+  letter-spacing: 0.00735em;
+}
+
+h4 {
+  font-size: 1.125rem;   /* 18px - Material headline4 */
+  font-weight: 500;
+  letter-spacing: 0.00735em;
+}
+
+h5 {
+  font-size: 1rem;       /* 16px - Material headline5 */
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+h6 {
+  font-size: 0.875rem;   /* 14px - Material headline6 */
+  font-weight: 500;
+  letter-spacing: 0.0125em;
+}
+
+p {
+  color: var(--md-text-high-emphasis);
+  font-size: 0.875rem;   /* 14px - Material body1 */
+  line-height: 1.5;
+  letter-spacing: 0.00938em;
+  margin: 0;
+}
+
+small {
+  color: var(--md-text-medium-emphasis);
+  font-size: 0.75rem;    /* 12px - Material caption */
+  line-height: 1.33;
+  letter-spacing: 0.03333em;
+}
+
+/* ========================================
+   MATERIAL DESIGN COMPONENT STYLES
+   ======================================== */
+
+/* Cards with proper elevation */
+.md-card {
+  background-color: var(--md-surface-1);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-1);
+  transition: all var(--duration-medium) var(--ease-standard);
+}
+
+.md-card:hover {
+  background-color: var(--md-surface-2);
+  box-shadow: var(--shadow-2);
+}
+
+/* Buttons with Material Design styling */
+.md-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+  font-size: 0.875rem;
+  line-height: 1;
+  letter-spacing: 0.0892857143em;
+  text-transform: uppercase;
+  transition: all var(--duration-short) var(--ease-standard);
+  outline: none;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.md-button-primary {
+  background-color: var(--md-primary);
+  color: var(--md-on-primary);
+  min-height: 36px;
+  padding: 0 16px;
+}
+
+.md-button-primary:hover {
+  box-shadow: var(--shadow-2);
+}
+
+.md-button-primary:hover::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--md-state-hover);
+  pointer-events: none;
+}
+
+.md-button-secondary {
+  background-color: var(--md-secondary);
+  color: var(--md-on-secondary);
+  min-height: 36px;
+  padding: 0 16px;
+}
+
+.md-button-outlined {
+  background-color: transparent;
+  color: var(--md-primary);
+  border: 1px solid var(--md-primary);
+  min-height: 36px;
+  padding: 0 16px;
+}
+
+.md-button-text {
+  background-color: transparent;
+  color: var(--md-primary);
+  min-height: 36px;
+  padding: 0 8px;
+}
+
+/* Input fields */
+.md-input {
+  background-color: var(--input-background);
+  border: 1px solid var(--input-border);
+  border-radius: var(--radius-sm);
+  color: var(--input-text);
+  font-size: 0.875rem;
+  padding: 12px 16px;
+  transition: all var(--duration-short) var(--ease-standard);
+  width: 100%;
+}
+
+.md-input:focus {
+  border-color: var(--input-border-focus);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(187, 134, 252, 0.2);
+}
+
+.md-input::placeholder {
+  color: var(--input-placeholder);
+}
+
+/* Navigation with proper elevation */
+.md-navigation {
+  background-color: var(--nav-background);
+  border-right: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-1);
+}
+
+.md-nav-item {
+  color: var(--md-text-medium-emphasis);
+  transition: all var(--duration-short) var(--ease-standard);
+  border-radius: var(--radius-sm);
+  margin: 2px 8px;
+  position: relative;
+}
+
+.md-nav-item:hover {
+  background-color: var(--nav-item-hover);
+  color: var(--md-text-high-emphasis);
+}
+
+.md-nav-item.active {
+  background-color: var(--md-primary);
+  color: var(--md-on-primary);
+}
+
+/* Tables with Material Design styling */
+.md-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: var(--md-surface-1);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.md-table th {
+  background-color: var(--md-surface-2);
+  color: var(--md-text-medium-emphasis);
+  font-weight: 500;
+  font-size: 0.75rem;
+  letter-spacing: 0.0833333333em;
+  text-transform: uppercase;
+  padding: 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.md-table td {
+  color: var(--md-text-high-emphasis);
+  font-size: 0.875rem;
+  padding: 16px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.md-table tbody tr:hover {
+  background-color: var(--md-state-hover);
+}
+
+/* ========================================
+   ELEVATION UTILITY CLASSES
+   ======================================== */
+
+.elevation-0 { background-color: var(--md-surface-0); }
+.elevation-1 { 
+  background-color: var(--md-surface-1); 
+  box-shadow: var(--shadow-1);
+}
+.elevation-2 { 
+  background-color: var(--md-surface-2); 
+  box-shadow: var(--shadow-2);
+}
+.elevation-3 { 
+  background-color: var(--md-surface-3); 
+  box-shadow: var(--shadow-2);
+}
+.elevation-4 { 
+  background-color: var(--md-surface-4); 
+  box-shadow: var(--shadow-2);
+}
+.elevation-6 { 
+  background-color: var(--md-surface-6); 
+  box-shadow: var(--shadow-3);
+}
+.elevation-8 { 
+  background-color: var(--md-surface-8); 
+  box-shadow: var(--shadow-3);
+}
+.elevation-12 { 
+  background-color: var(--md-surface-12); 
+  box-shadow: var(--shadow-4);
+}
+.elevation-16 { 
+  background-color: var(--md-surface-16); 
+  box-shadow: var(--shadow-4);
+}
+.elevation-24 { 
+  background-color: var(--md-surface-24); 
+  box-shadow: var(--shadow-5);
+}
+
+/* ========================================
+   TEXT EMPHASIS UTILITY CLASSES
+   ======================================== */
+
+.text-high-emphasis { color: var(--md-text-high-emphasis); }
+.text-medium-emphasis { color: var(--md-text-medium-emphasis); }
+.text-disabled { color: var(--md-text-disabled); }
+
+.icon-high-emphasis { color: var(--md-icon-high-emphasis); }
+.icon-medium-emphasis { color: var(--md-icon-medium-emphasis); }
+.icon-disabled { color: var(--md-icon-disabled); }
+
+/* ========================================
+   STATE OVERLAY UTILITY CLASSES
+   ======================================== */
+
+.state-hover::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--md-state-hover);
+  opacity: 0;
+  transition: opacity var(--duration-short) var(--ease-standard);
+  pointer-events: none;
+}
+
+.state-hover:hover::before {
+  opacity: 1;
+}
+
+/* ========================================
+   SCROLLBAR STYLING (MATERIAL DESIGN)
+   ======================================== */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--md-surface-0);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--md-text-disabled);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--md-text-medium-emphasis);
+}
+
+/* ========================================
+   FOCUS INDICATORS (ACCESSIBILITY)
+   ======================================== */
+
+*:focus-visible {
+  outline: 2px solid var(--md-primary);
+  outline-offset: 2px;
+}
+
+/* ========================================
+   RESPONSIVE DESIGN HELPERS
+   ======================================== */
+
+@media (max-width: 768px) {
+  body {
+    font-size: 16px; /* Prevent zoom on iOS */
+  }
+  
+  h1 { font-size: 1.875rem; }
+  h2 { font-size: 1.375rem; }
+  h3 { font-size: 1.125rem; }
+}
+
+/* ========================================
+   DARK THEME SPECIFIC ADJUSTMENTS
+   ======================================== */
+
+/* Improve image contrast in dark theme */
+img {
+  filter: brightness(0.9) contrast(1.1);
+}
+
+/* Code blocks */
+code {
+  font-family: 'JetBrains Mono', 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  background-color: var(--md-surface-2);
+  color: var(--md-text-high-emphasis);
+  padding: 2px 4px;
+  border-radius: var(--radius-sm);
+  font-size: 0.875em;
+}
+
+pre {
+  background-color: var(--md-surface-2);
+  color: var(--md-text-high-emphasis);
+  padding: 16px;
+  border-radius: var(--radius-md);
+  overflow-x: auto;
+  border: 1px solid var(--border-subtle);
+}
+
+pre code {
+  background: none;
+  padding: 0;
+}
+
+/* Selection styling */
+::selection {
+  background-color: var(--md-primary);
+  color: var(--md-on-primary);
+}
+
+::-moz-selection {
+  background-color: var(--md-primary);
+  color: var(--md-on-primary);
+}
+
+/* ========================================
+   LOADING AND SKELETON STATES
+   ======================================== */
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--md-surface-2) 25%,
+    var(--md-surface-3) 50%,
+    var(--md-surface-2) 75%
+  );
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: var(--radius-sm);
+}
+
+@keyframes loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ========================================
+   PRINT STYLES
+   ======================================== */
+
+@media print {
+  * {
+    background: white !important;
+    color: black !important;
+    box-shadow: none !important;
+  }
+}
+
